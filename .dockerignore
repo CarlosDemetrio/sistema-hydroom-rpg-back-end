@@ -1,0 +1,23 @@
+# Ignore IDE files
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Ignore build outputs
+target/
+*.class
+
+# Ignore logs
+*.log
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore env files
+.env
+.env.local
+
+# Ignore Docker volumes
+postgres_data/

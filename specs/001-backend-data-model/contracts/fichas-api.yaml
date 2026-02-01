@@ -1,0 +1,1029 @@
+openapi: 3.1.0
+info:
+  title: Klayrah RPG - Fichas API
+  description: API de gerenciamento de fichas de personagem
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Development server
+
+tags:
+  - name: Fichas
+    description: CRUD de fichas
+  - name: Atributos
+    description: Atributos da ficha
+  - name: Aptidões
+    description: Aptidões da ficha
+  - name: Vida
+    description: Sistema de vida
+  - name: Prospecção
+    description: Sistema de prospecção
+  - name: Anotações
+    description: Anotações da ficha
+  - name: Histórico
+    description: Histórico de alterações (Mestre)
+
+paths:
+  /jogos/{jogoId}/fichas:
+    get:
+      tags: [Fichas]
+      summary: Listar fichas do jogo
+      operationId: listarFichas
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+        - name: apenasMinhas
+          in: query
+          schema:
+            type: boolean
+            default: false
+        - name: incluirNpcs
+          in: query
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Lista de fichas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FichaResumoResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    post:
+      tags: [Fichas]
+      summary: Criar nova ficha
+      operationId: criarFicha
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CriarFichaRequest'
+      responses:
+        '201':
+          description: Ficha criada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FichaResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /jogos/{jogoId}/fichas/{fichaId}:
+    get:
+      tags: [Fichas]
+      summary: Obter ficha completa
+      operationId: obterFicha
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+        - $ref: '#/components/parameters/FichaId'
+      responses:
+        '200':
+          description: Ficha completa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FichaResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [Fichas]
+      summary: Atualizar dados básicos da ficha
+      operationId: atualizarFicha
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+        - $ref: '#/components/parameters/FichaId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AtualizarFichaRequest'
+      responses:
+        '200':
+          description: Ficha atualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FichaResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags: [Fichas]
+      summary: Arquivar ficha (soft delete)
+      operationId: arquivarFicha
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+        - $ref: '#/components/parameters/FichaId'
+      responses:
+        '204':
+          description: Ficha arquivada
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /jogos/{jogoId}/fichas/{fichaId}/atributos:
+    put:
+      tags: [Atributos]
+      summary: Atualizar atributos da ficha
+      operationId: atualizarAtributos
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+        - $ref: '#/components/parameters/FichaId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/AtualizarAtributoRequest'
+      responses:
+        '200':
+          description: Atributos atualizados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtributosResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /jogos/{jogoId}/fichas/{fichaId}/aptidoes:
+    put:
+      tags: [Aptidões]
+      summary: Atualizar aptidões da ficha
+      operationId: atualizarAptidoes
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+        - $ref: '#/components/parameters/FichaId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/AtualizarAptidaoRequest'
+      responses:
+        '200':
+          description: Aptidões atualizadas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AptidaoResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /jogos/{jogoId}/fichas/{fichaId}/vida:
+    put:
+      tags: [Vida]
+      summary: Atualizar vida e danos da ficha
+      operationId: atualizarVida
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+        - $ref: '#/components/parameters/FichaId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AtualizarVidaRequest'
+      responses:
+        '200':
+          description: Vida atualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VidaResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /jogos/{jogoId}/fichas/{fichaId}/prospeccao:
+    put:
+      tags: [Prospecção]
+      summary: Atualizar contador de prospecção
+      operationId: atualizarProspeccao
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+        - $ref: '#/components/parameters/FichaId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AtualizarProspeccaoRequest'
+      responses:
+        '200':
+          description: Prospecção atualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProspeccaoResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /jogos/{jogoId}/fichas/{fichaId}/anotacoes:
+    get:
+      tags: [Anotações]
+      summary: Listar anotações da ficha
+      operationId: listarAnotacoes
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+        - $ref: '#/components/parameters/FichaId'
+      responses:
+        '200':
+          description: Lista de anotações
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AnotacaoResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    post:
+      tags: [Anotações]
+      summary: Criar anotação
+      operationId: criarAnotacao
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+        - $ref: '#/components/parameters/FichaId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CriarAnotacaoRequest'
+      responses:
+        '201':
+          description: Anotação criada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnotacaoResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /jogos/{jogoId}/fichas/{fichaId}/anotacoes/{anotacaoId}:
+    delete:
+      tags: [Anotações]
+      summary: Excluir anotação
+      operationId: excluirAnotacao
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+        - $ref: '#/components/parameters/FichaId'
+        - name: anotacaoId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Anotação excluída
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /jogos/{jogoId}/fichas/{fichaId}/historico:
+    get:
+      tags: [Histórico]
+      summary: Obter histórico de alterações (apenas Mestre)
+      operationId: obterHistorico
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+        - $ref: '#/components/parameters/FichaId'
+        - name: pagina
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: tamanho
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Histórico de alterações
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoricoPageResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: /oauth2/authorization/google
+          tokenUrl: /oauth2/token
+          scopes:
+            openid: OpenID
+
+  parameters:
+    JogoId:
+      name: jogoId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+
+    FichaId:
+      name: fichaId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+
+  schemas:
+    CriarFichaRequest:
+      type: object
+      required:
+        - nomePersonagem
+      properties:
+        nomePersonagem:
+          type: string
+          minLength: 2
+          maxLength: 100
+        classeId:
+          type: integer
+          format: int64
+        racaId:
+          type: integer
+          format: int64
+        isNpc:
+          type: boolean
+          default: false
+          description: Se true, cria ficha de NPC (apenas Mestre)
+
+    AtualizarFichaRequest:
+      type: object
+      properties:
+        nomePersonagem:
+          type: string
+          minLength: 2
+          maxLength: 100
+        tituloHeroico:
+          type: string
+          maxLength: 100
+        insolitus:
+          type: string
+          maxLength: 200
+        origem:
+          type: string
+          maxLength: 100
+        genero:
+          type: string
+          maxLength: 20
+        experiencia:
+          type: integer
+          minimum: 0
+        renascimentos:
+          type: integer
+          minimum: 0
+        classeId:
+          type: integer
+          format: int64
+        racaId:
+          type: integer
+          format: int64
+        jogadorNome:
+          type: string
+          maxLength: 100
+        idade:
+          type: integer
+          minimum: 0
+        alturaCm:
+          type: integer
+          minimum: 0
+        pesoKg:
+          type: number
+          format: double
+          minimum: 0
+        corCabelo:
+          type: string
+          maxLength: 50
+        tamanhoCabelo:
+          type: string
+          maxLength: 50
+        corOlhos:
+          type: string
+          maxLength: 50
+        indole:
+          type: string
+          maxLength: 50
+        presenca:
+          type: string
+          maxLength: 50
+        arquetipoReferencia:
+          type: string
+          maxLength: 200
+
+    AtualizarAtributoRequest:
+      type: object
+      required:
+        - atributoConfigId
+      properties:
+        atributoConfigId:
+          type: integer
+          format: int64
+        base:
+          type: integer
+          minimum: 0
+        nivel:
+          type: integer
+          minimum: 0
+        outrosBonus:
+          type: integer
+
+    AtualizarAptidaoRequest:
+      type: object
+      required:
+        - aptidaoConfigId
+      properties:
+        aptidaoConfigId:
+          type: integer
+          format: int64
+        base:
+          type: integer
+          minimum: 0
+        sorte:
+          type: integer
+          minimum: 0
+        classeBonus:
+          type: integer
+          minimum: 0
+
+    AtualizarVidaRequest:
+      type: object
+      properties:
+        vantagensBonus:
+          type: integer
+          minimum: 0
+        outrosBonus:
+          type: integer
+        membros:
+          type: array
+          items:
+            type: object
+            properties:
+              membroConfigId:
+                type: integer
+                format: int64
+              danoAtual:
+                type: integer
+                minimum: 0
+
+    AtualizarProspeccaoRequest:
+      type: object
+      required:
+        - dadoConfigId
+        - valorAtual
+      properties:
+        dadoConfigId:
+          type: integer
+          format: int64
+        valorAtual:
+          type: integer
+          minimum: 0
+
+    CriarAnotacaoRequest:
+      type: object
+      required:
+        - conteudo
+      properties:
+        conteudo:
+          type: string
+          minLength: 1
+          maxLength: 10000
+
+    FichaResumoResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        nomePersonagem:
+          type: string
+        classeNome:
+          type: string
+        racaNome:
+          type: string
+        nivel:
+          type: integer
+        isNpc:
+          type: boolean
+        jogadorNome:
+          type: string
+        imagemUrl:
+          type: string
+        validacaoStatus:
+          type: string
+          enum: [OK, PONTOS_SOBRANDO, PONTOS_EXCEDIDOS]
+
+    FichaResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        jogoId:
+          type: integer
+          format: int64
+        nomePersonagem:
+          type: string
+        tituloHeroico:
+          type: string
+        insolitus:
+          type: string
+        origem:
+          type: string
+        genero:
+          type: string
+        experiencia:
+          type: integer
+        nivel:
+          type: integer
+          description: Calculado automaticamente
+        limitador:
+          type: integer
+          description: Valor máximo de atributo para o nível atual
+        renascimentos:
+          type: integer
+        classeId:
+          type: integer
+          format: int64
+        classeNome:
+          type: string
+        racaId:
+          type: integer
+          format: int64
+        racaNome:
+          type: string
+        isNpc:
+          type: boolean
+        jogadorNome:
+          type: string
+        descricaoFisica:
+          $ref: '#/components/schemas/DescricaoFisicaResponse'
+        personalidade:
+          $ref: '#/components/schemas/PersonalidadeResponse'
+        atributos:
+          $ref: '#/components/schemas/AtributosResponse'
+        aptidoes:
+          type: array
+          items:
+            $ref: '#/components/schemas/AptidaoResponse'
+        bonus:
+          type: array
+          items:
+            $ref: '#/components/schemas/BonusResponse'
+        vida:
+          $ref: '#/components/schemas/VidaResponse'
+        essencia:
+          $ref: '#/components/schemas/EssenciaResponse'
+        ameaca:
+          $ref: '#/components/schemas/AmeacaResponse'
+        prospeccao:
+          $ref: '#/components/schemas/ProspeccaoResponse'
+        vantagens:
+          type: array
+          items:
+            $ref: '#/components/schemas/FichaVantagemResponse'
+        pontosVantagem:
+          $ref: '#/components/schemas/PontosVantagemResponse'
+        validacao:
+          $ref: '#/components/schemas/ValidacaoResponse'
+        criadoEm:
+          type: string
+          format: date-time
+        atualizadoEm:
+          type: string
+          format: date-time
+
+    PontosVantagemResponse:
+      type: object
+      properties:
+        pontosTotais:
+          type: integer
+          description: Total de pontos de vantagem disponíveis (nível × pontos_por_nivel + pontos_iniciais)
+        pontosGastos:
+          type: integer
+          description: Pontos já gastos em vantagens
+        pontosDisponiveis:
+          type: integer
+          description: Pontos restantes para gastar
+
+    DescricaoFisicaResponse:
+      type: object
+      properties:
+        idade:
+          type: integer
+        alturaCm:
+          type: integer
+        pesoKg:
+          type: number
+        corCabelo:
+          type: string
+        tamanhoCabelo:
+          type: string
+        corOlhos:
+          type: string
+        imagemUrl:
+          type: string
+
+    PersonalidadeResponse:
+      type: object
+      properties:
+        indole:
+          type: string
+        presenca:
+          type: string
+        arquetipoReferencia:
+          type: string
+
+    AtributosResponse:
+      type: object
+      properties:
+        lista:
+          type: array
+          items:
+            $ref: '#/components/schemas/AtributoResponse'
+        pontosDistribuidos:
+          type: integer
+        pontosEsperados:
+          type: integer
+
+    AtributoResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        atributoConfigId:
+          type: integer
+          format: int64
+        nome:
+          type: string
+        descricao:
+          type: string
+        base:
+          type: integer
+        nivel:
+          type: integer
+        outrosBonus:
+          type: integer
+        total:
+          type: integer
+          description: Calculado (base + nivel + outrosBonus)
+        impeto:
+          type: number
+          description: Calculado pela fórmula do atributo
+        impetoDescricao:
+          type: string
+
+    AptidaoResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        aptidaoConfigId:
+          type: integer
+          format: int64
+        nome:
+          type: string
+        tipo:
+          type: string
+        base:
+          type: integer
+        sorte:
+          type: integer
+        classeBonus:
+          type: integer
+        total:
+          type: integer
+          description: Calculado (base + sorte + classeBonus)
+
+    BonusResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        bonusConfigId:
+          type: integer
+          format: int64
+        nome:
+          type: string
+        base:
+          type: integer
+          description: Calculado pela fórmula
+        vantagens:
+          type: integer
+        classeBonus:
+          type: integer
+        itens:
+          type: integer
+        gloria:
+          type: integer
+        outrosBonus:
+          type: integer
+        total:
+          type: integer
+          description: Soma de todos
+
+    VidaResponse:
+      type: object
+      properties:
+        vidaTotal:
+          type: integer
+          description: Vigor + Nivel + Vantagens + Renascimentos + Outros
+        vantagensBonus:
+          type: integer
+        outrosBonus:
+          type: integer
+        membros:
+          type: array
+          items:
+            $ref: '#/components/schemas/VidaMembroResponse'
+
+    VidaMembroResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        membroConfigId:
+          type: integer
+          format: int64
+        nome:
+          type: string
+        porcentagem:
+          type: number
+        vidaBase:
+          type: integer
+          description: VidaTotal * Porcentagem
+        danoAtual:
+          type: integer
+        vidaAtual:
+          type: integer
+          description: VidaBase - DanoAtual
+
+    EssenciaResponse:
+      type: object
+      properties:
+        essenciaTotal:
+          type: integer
+        vantagensBonus:
+          type: integer
+        outrosBonus:
+          type: integer
+        gastosAtual:
+          type: integer
+        essenciaRestante:
+          type: integer
+          description: Total - Gastos
+
+    AmeacaResponse:
+      type: object
+      properties:
+        ameacaTotal:
+          type: integer
+        itensBonus:
+          type: integer
+        titulosBonus:
+          type: integer
+        outrosBonus:
+          type: integer
+
+    ProspeccaoResponse:
+      type: object
+      properties:
+        dadoSelecionado:
+          type: string
+          description: Nome do dado (ex "d6")
+        dadoConfigId:
+          type: integer
+          format: int64
+        valorAtual:
+          type: integer
+        valorMaximo:
+          type: integer
+        dadosDisponiveis:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                format: int64
+              nome:
+                type: string
+              valorMaximo:
+                type: integer
+
+    ValidacaoResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [OK, PONTOS_SOBRANDO, PONTOS_EXCEDIDOS]
+        mensagem:
+          type: string
+        pontosDistribuidos:
+          type: integer
+        pontosEsperados:
+          type: integer
+        diferenca:
+          type: integer
+
+    AnotacaoResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        conteudo:
+          type: string
+        criadoEm:
+          type: string
+          format: date-time
+
+    HistoricoPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/HistoricoResponse'
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        number:
+          type: integer
+        size:
+          type: integer
+
+    HistoricoResponse:
+      type: object
+      properties:
+        revisao:
+          type: integer
+        dataAlteracao:
+          type: string
+          format: date-time
+        tipoAlteracao:
+          type: string
+          enum: [CRIACAO, ATUALIZACAO, EXCLUSAO]
+        usuarioNome:
+          type: string
+        usuarioEmail:
+          type: string
+        entidade:
+          type: string
+        camposAlterados:
+          type: array
+          items:
+            type: object
+            properties:
+              campo:
+                type: string
+              valorAnterior:
+                type: string
+              valorNovo:
+                type: string
+
+    ProblemDetail:
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+
+  responses:
+    BadRequest:
+      description: Requisição inválida
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+
+    Unauthorized:
+      description: Não autenticado
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+
+    Forbidden:
+      description: Sem permissão
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+
+    NotFound:
+      description: Recurso não encontrado
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'

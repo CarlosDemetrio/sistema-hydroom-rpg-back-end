@@ -123,6 +123,7 @@ public final class ValidationMessages {
         public static final String OPERACAO_INVALIDA = "Operação inválida";
         public static final String DADOS_INVALIDOS = "Dados inválidos";
         public static final String CONFLITO = "Conflito ao processar requisição";
+        public static final String INTEGRIDADE_DADOS = "Violação de integridade dos dados";
 
         private Erro() {}
     }

@@ -1,19 +1,29 @@
 package br.com.hydroom.rpg.fichacontrolador.controller;
 
 import br.com.hydroom.rpg.fichacontrolador.constants.ValidationMessages;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.UsuarioResponse;
 import br.com.hydroom.rpg.fichacontrolador.exception.BusinessException;
+import br.com.hydroom.rpg.fichacontrolador.mapper.UsuarioMapper;
+import br.com.hydroom.rpg.fichacontrolador.model.Usuario;
+import br.com.hydroom.rpg.fichacontrolador.repository.UsuarioRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -21,12 +31,66 @@ import java.util.Map;
 
 @RestController
 @Slf4j
+@RequiredArgsConstructor
 @Tag(name = "Autenticação", description = "Endpoints de autenticação e informações do usuário")
 public class AuthController {
 
+    private final UsuarioRepository usuarioRepository;
+    private final UsuarioMapper usuarioMapper;
+
+    @Operation(summary = "Obter dados completos do usuário autenticado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dados do usuário retornados com sucesso",
+                    content = @Content(schema = @Schema(implementation = UsuarioResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Usuário não autenticado")
+    })
+    @SecurityRequirement(name = "Session")
+    @GetMapping("/api/v1/auth/me")
+    public ResponseEntity<UsuarioResponse> getMe(@AuthenticationPrincipal OAuth2User principal) {
+        if (principal == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        String providerId = principal.getAttribute("sub");
+        log.debug("Buscando usuário autenticado - ProviderId: {}", providerId);
+
+        Usuario usuario = usuarioRepository.findByProviderId(providerId)
+                .orElseThrow(() -> {
+                    log.error("Usuário autenticado não encontrado no banco - ProviderId: {}", providerId);
+                    return new BusinessException("Usuário não encontrado");
+                });
+
+        UsuarioResponse response = usuarioMapper.toResponse(usuario);
+        log.debug("Usuário autenticado retornado - ID: {}, Email: {}", usuario.getId(), usuario.getEmail());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Realizar logout")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Logout realizado com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Usuário não autenticado")
+    })
+    @SecurityRequirement(name = "Session")
+    @PostMapping("/api/v1/auth/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response,
+                                       @AuthenticationPrincipal OAuth2User principal) {
+        if (principal == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        String email = principal.getAttribute("email");
+        log.info("Realizando logout - Email: {}", email);
+
+        SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
+        logoutHandler.logout(request, response, null);
+
+        return ResponseEntity.ok().build();
+    }
+
     @Operation(
-            summary = "Obter informações do usuário autenticado",
-            description = "Retorna os dados do usuário logado via OAuth2 (nome, email, foto)"
+            summary = "Obter informações do usuário autenticado (formato simplificado)",
+            description = "Retorna os dados do usuário logado via OAuth2 (nome, email, foto) - DEPRECATED: Use /api/v1/auth/me"
     )
     @ApiResponses(value = {
             @ApiResponse(

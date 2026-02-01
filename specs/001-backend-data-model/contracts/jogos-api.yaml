@@ -1,0 +1,423 @@
+openapi: 3.1.0
+info:
+  title: Klayrah RPG - Jogos API
+  description: API de gerenciamento de jogos/campanhas
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Development server
+
+tags:
+  - name: Jogos
+    description: Gerenciamento de jogos/campanhas
+  - name: Participantes
+    description: Gerenciamento de participantes do jogo
+
+paths:
+  /jogos:
+    get:
+      tags: [Jogos]
+      summary: Listar jogos do usuário
+      operationId: listarJogos
+      security:
+        - oauth2: []
+      responses:
+        '200':
+          description: Lista de jogos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/JogoResumoResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags: [Jogos]
+      summary: Criar novo jogo (usuário vira Mestre)
+      operationId: criarJogo
+      security:
+        - oauth2: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CriarJogoRequest'
+      responses:
+        '201':
+          description: Jogo criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JogoResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /jogos/{jogoId}:
+    get:
+      tags: [Jogos]
+      summary: Obter detalhes do jogo
+      operationId: obterJogo
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+      responses:
+        '200':
+          description: Detalhes do jogo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JogoResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [Jogos]
+      summary: Atualizar jogo (apenas Mestre)
+      operationId: atualizarJogo
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AtualizarJogoRequest'
+      responses:
+        '200':
+          description: Jogo atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JogoResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags: [Jogos]
+      summary: Arquivar jogo (apenas Mestre)
+      operationId: arquivarJogo
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+      responses:
+        '204':
+          description: Jogo arquivado
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /jogos/{jogoId}/participantes:
+    get:
+      tags: [Participantes]
+      summary: Listar participantes do jogo
+      operationId: listarParticipantes
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+      responses:
+        '200':
+          description: Lista de participantes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ParticipanteResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    post:
+      tags: [Participantes]
+      summary: Convidar jogador (apenas Mestre)
+      operationId: convidarJogador
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConvidarJogadorRequest'
+      responses:
+        '201':
+          description: Convite enviado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParticipanteResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /jogos/{jogoId}/participantes/{participanteId}:
+    delete:
+      tags: [Participantes]
+      summary: Remover participante (apenas Mestre)
+      operationId: removerParticipante
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+        - name: participanteId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Participante removido
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /jogos/{jogoId}/config/template/klayrah:
+    post:
+      tags: [Jogos]
+      summary: Aplicar template Klayrah padrão (apenas Mestre)
+      operationId: aplicarTemplateKlayrah
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+      responses:
+        '200':
+          description: Template aplicado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JogoResponse'
+        '400':
+          description: Jogo já possui configurações
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: /oauth2/authorization/google
+          tokenUrl: /oauth2/token
+          scopes:
+            openid: OpenID
+            profile: Profile
+            email: Email
+
+  parameters:
+    JogoId:
+      name: jogoId
+      in: path
+      required: true
+      description: ID do jogo
+      schema:
+        type: integer
+        format: int64
+
+  schemas:
+    CriarJogoRequest:
+      type: object
+      required:
+        - nome
+      properties:
+        nome:
+          type: string
+          minLength: 3
+          maxLength: 100
+          example: "Campanha do Dragão"
+        descricao:
+          type: string
+          maxLength: 1000
+          example: "Uma aventura épica..."
+        imagemUrl:
+          type: string
+          format: uri
+        usarTemplateKlayrah:
+          type: boolean
+          default: true
+          description: Se true, aplica o template Klayrah padrão
+
+    AtualizarJogoRequest:
+      type: object
+      properties:
+        nome:
+          type: string
+          minLength: 3
+          maxLength: 100
+        descricao:
+          type: string
+          maxLength: 1000
+        imagemUrl:
+          type: string
+          format: uri
+
+    ConvidarJogadorRequest:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+          example: "jogador@email.com"
+
+    JogoResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        nome:
+          type: string
+        descricao:
+          type: string
+        imagemUrl:
+          type: string
+        ativo:
+          type: boolean
+        criadoEm:
+          type: string
+          format: date-time
+        atualizadoEm:
+          type: string
+          format: date-time
+        meuRole:
+          type: string
+          enum: [MESTRE, JOGADOR]
+        totalParticipantes:
+          type: integer
+        totalFichas:
+          type: integer
+        configuracaoCompleta:
+          type: boolean
+          description: Se o jogo tem todas as configurações necessárias
+
+    JogoResumoResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        nome:
+          type: string
+        imagemUrl:
+          type: string
+        meuRole:
+          type: string
+          enum: [MESTRE, JOGADOR]
+        totalParticipantes:
+          type: integer
+
+    ParticipanteResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        usuario:
+          $ref: '#/components/schemas/UsuarioResumoResponse'
+        role:
+          type: string
+          enum: [MESTRE, JOGADOR]
+        entrouEm:
+          type: string
+          format: date-time
+
+    UsuarioResumoResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        nome:
+          type: string
+        email:
+          type: string
+        imagemUrl:
+          type: string
+
+    ProblemDetail:
+      type: object
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+          format: uri
+
+  responses:
+    BadRequest:
+      description: Requisição inválida
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+
+    Unauthorized:
+      description: Não autenticado
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+
+    Forbidden:
+      description: Sem permissão
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+
+    NotFound:
+      description: Recurso não encontrado
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'

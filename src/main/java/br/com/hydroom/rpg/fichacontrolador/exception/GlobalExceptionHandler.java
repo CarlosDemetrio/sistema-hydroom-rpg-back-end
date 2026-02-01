@@ -2,6 +2,7 @@ package br.com.hydroom.rpg.fichacontrolador.exception;
 
 import br.com.hydroom.rpg.fichacontrolador.constants.ValidationMessages;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -151,6 +152,59 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now(),
                 HttpStatus.CONFLICT.value(),
                 ex.getMessage() != null ? ex.getMessage() : ValidationMessages.Erro.JA_EXISTE,
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    /**
+     * Trata erros de validação customizados.
+     */
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ValidationErrorResponse> handleCustomValidationException(
+            ValidationException ex,
+            HttpServletRequest request) {
+
+        log.warn("Erro de validação customizada: {} - {}", request.getRequestURI(), ex.getMessage());
+
+        ValidationErrorResponse response = new ValidationErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage() != null ? ex.getMessage() : ValidationMessages.Erro.DADOS_INVALIDOS,
+                request.getRequestURI(),
+                ex.getErrors()
+        );
+
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    /**
+     * Trata violações de integridade do banco de dados (constraints, unique, etc).
+     */
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(
+            DataIntegrityViolationException ex,
+            HttpServletRequest request) {
+
+        log.warn("Violação de integridade de dados: {} - {}",
+                request.getRequestURI(),
+                ex.getMostSpecificCause().getMessage());
+
+        String message = ValidationMessages.Erro.INTEGRIDADE_DADOS;
+
+        // Detecta tipo de violação para mensagem mais específica
+        String errorMsg = ex.getMostSpecificCause().getMessage().toLowerCase();
+        if (errorMsg.contains("unique") || errorMsg.contains("duplicate")) {
+            message = ValidationMessages.Erro.JA_EXISTE;
+        } else if (errorMsg.contains("foreign key") || errorMsg.contains("fk_")) {
+            message = "Operação inválida: registro está sendo referenciado por outros dados";
+        }
+
+        ErrorResponse response = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(),
+                message,
                 request.getRequestURI()
         );
 

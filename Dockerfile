@@ -1,3 +1,23 @@
+# Development stage with hot-reload
+FROM maven:3.9-eclipse-temurin-25 AS development
+WORKDIR /app
+
+# Copy Maven wrapper and pom.xml
+COPY mvnw .
+COPY .mvn .mvn
+COPY pom.xml .
+
+# Download dependencies
+RUN ./mvnw dependency:go-offline -B
+
+# Expose ports
+EXPOSE 8080 35729
+
+# Start with Spring Boot DevTools for hot-reload
+CMD ["./mvnw", "spring-boot:run"]
+# Start with Spring Boot DevTools for hot-reload
+CMD ["./mvnw", "spring-boot:run", "-Dspring-boot.run.jvmArguments=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"]
+
 # Build stage
 FROM maven:3.9-eclipse-temurin-25 AS build
 WORKDIR /app
@@ -10,8 +30,8 @@ RUN mvn dependency:go-offline -B
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-# Runtime stage
-FROM eclipse-temurin:25-jre
+# Runtime stage (production)
+FROM eclipse-temurin:25-jre AS production
 WORKDIR /app
 
 # Copy jar from build stage

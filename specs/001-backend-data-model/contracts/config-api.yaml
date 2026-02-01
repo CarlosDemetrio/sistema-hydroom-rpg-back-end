@@ -1,0 +1,1011 @@
+openapi: 3.1.0
+info:
+  title: Klayrah RPG - Configuração API
+  description: API de configuração do jogo (apenas Mestre)
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Development server
+
+tags:
+  - name: Atributos Config
+    description: Configuração de atributos
+  - name: Níveis Config
+    description: Configuração de níveis
+  - name: Aptidões Config
+    description: Configuração de aptidões
+  - name: Bônus Config
+    description: Configuração de bônus
+  - name: Membros Config
+    description: Configuração de membros do corpo
+  - name: Classes
+    description: Classes de personagem
+  - name: Raças
+    description: Raças
+  - name: Prospecção Config
+    description: Configuração de dados de prospecção
+  - name: Vantagens Config
+    description: Configuração de categorias e vantagens
+  - name: Pontos Vantagem Config
+    description: Configuração de pontos de vantagem por nível
+
+paths:
+  # ==================== ATRIBUTOS ====================
+  /jogos/{jogoId}/config/atributos:
+    get:
+      tags: [Atributos Config]
+      summary: Listar atributos configurados
+      operationId: listarAtributosConfig
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+      responses:
+        '200':
+          description: Lista de atributos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AtributoConfigResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    post:
+      tags: [Atributos Config]
+      summary: Criar atributo (apenas Mestre)
+      operationId: criarAtributoConfig
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CriarAtributoConfigRequest'
+      responses:
+        '201':
+          description: Atributo criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtributoConfigResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /jogos/{jogoId}/config/atributos/{id}:
+    put:
+      tags: [Atributos Config]
+      summary: Atualizar atributo (apenas Mestre)
+      operationId: atualizarAtributoConfig
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+        - $ref: '#/components/parameters/ConfigId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AtualizarAtributoConfigRequest'
+      responses:
+        '200':
+          description: Atributo atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtributoConfigResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags: [Atributos Config]
+      summary: Desativar atributo (apenas Mestre)
+      operationId: desativarAtributoConfig
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+        - $ref: '#/components/parameters/ConfigId'
+      responses:
+        '204':
+          description: Atributo desativado
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ==================== NÍVEIS ====================
+  /jogos/{jogoId}/config/niveis:
+    get:
+      tags: [Níveis Config]
+      summary: Listar níveis configurados
+      operationId: listarNiveisConfig
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+      responses:
+        '200':
+          description: Lista de níveis
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NivelConfigResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    post:
+      tags: [Níveis Config]
+      summary: Criar nível (apenas Mestre)
+      operationId: criarNivelConfig
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CriarNivelConfigRequest'
+      responses:
+        '201':
+          description: Nível criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NivelConfigResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  # ==================== CLASSES ====================
+  /jogos/{jogoId}/config/classes:
+    get:
+      tags: [Classes]
+      summary: Listar classes
+      operationId: listarClasses
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+      responses:
+        '200':
+          description: Lista de classes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ClasseResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    post:
+      tags: [Classes]
+      summary: Criar classe (apenas Mestre)
+      operationId: criarClasse
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CriarClasseRequest'
+      responses:
+        '201':
+          description: Classe criada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClasseResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  # ==================== RAÇAS ====================
+  /jogos/{jogoId}/config/racas:
+    get:
+      tags: [Raças]
+      summary: Listar raças
+      operationId: listarRacas
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+      responses:
+        '200':
+          description: Lista de raças
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RacaResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    post:
+      tags: [Raças]
+      summary: Criar raça (apenas Mestre)
+      operationId: criarRaca
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CriarRacaRequest'
+      responses:
+        '201':
+          description: Raça criada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RacaResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  # ==================== PROSPECÇÃO ====================
+  /jogos/{jogoId}/config/prospeccao:
+    get:
+      tags: [Prospecção Config]
+      summary: Listar dados de prospecção
+      operationId: listarDadosProspeccao
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+      responses:
+        '200':
+          description: Lista de dados
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DadoProspeccaoConfigResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    post:
+      tags: [Prospecção Config]
+      summary: Criar dado de prospecção (apenas Mestre)
+      operationId: criarDadoProspeccao
+      security:
+        - oauth2: []
+      parameters:
+        - $ref: '#/components/parameters/JogoId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CriarDadoProspeccaoRequest'
+      responses:
+        '201':
+          description: Dado criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DadoProspeccaoConfigResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: /oauth2/authorization/google
+          tokenUrl: /oauth2/token
+          scopes:
+            openid: OpenID
+
+  parameters:
+    JogoId:
+      name: jogoId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+
+    ConfigId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+
+  schemas:
+    # ==================== ATRIBUTOS ====================
+    CriarAtributoConfigRequest:
+      type: object
+      required:
+        - nome
+      properties:
+        nome:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: "Força"
+        descricao:
+          type: string
+          maxLength: 500
+        formulaImpeto:
+          type: string
+          maxLength: 100
+          example: "TOTAL * 3"
+        descricaoImpeto:
+          type: string
+          maxLength: 200
+          example: "Capacidade de carga em kg"
+        valorMinimo:
+          type: integer
+          default: 0
+        valorMaximo:
+          type: integer
+          default: 999
+        ordemExibicao:
+          type: integer
+          default: 0
+
+    AtualizarAtributoConfigRequest:
+      type: object
+      properties:
+        nome:
+          type: string
+          minLength: 2
+          maxLength: 50
+        descricao:
+          type: string
+          maxLength: 500
+        formulaImpeto:
+          type: string
+          maxLength: 100
+        descricaoImpeto:
+          type: string
+          maxLength: 200
+        valorMinimo:
+          type: integer
+        valorMaximo:
+          type: integer
+        ordemExibicao:
+          type: integer
+
+    AtributoConfigResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        nome:
+          type: string
+        descricao:
+          type: string
+        formulaImpeto:
+          type: string
+        descricaoImpeto:
+          type: string
+        valorMinimo:
+          type: integer
+        valorMaximo:
+          type: integer
+        ordemExibicao:
+          type: integer
+        ativo:
+          type: boolean
+
+    # ==================== NÍVEIS ====================
+    CriarNivelConfigRequest:
+      type: object
+      required:
+        - numeroNivel
+        - experienciaNecessaria
+        - limitadorAtributo
+      properties:
+        numeroNivel:
+          type: integer
+          minimum: 0
+          example: 1
+        experienciaNecessaria:
+          type: integer
+          minimum: 0
+          example: 1000
+        limitadorAtributo:
+          type: integer
+          minimum: 1
+          example: 10
+        pontosAtributo:
+          type: integer
+          default: 3
+        descricao:
+          type: string
+          maxLength: 100
+          example: "Novato"
+        permiteRenascimento:
+          type: boolean
+          default: false
+
+    NivelConfigResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        numeroNivel:
+          type: integer
+        experienciaNecessaria:
+          type: integer
+        limitadorAtributo:
+          type: integer
+        pontosAtributo:
+          type: integer
+        descricao:
+          type: string
+        permiteRenascimento:
+          type: boolean
+
+    # ==================== CLASSES ====================
+    CriarClasseRequest:
+      type: object
+      required:
+        - nome
+      properties:
+        nome:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: "Guerreiro"
+        descricao:
+          type: string
+          maxLength: 2000
+        nivelMinimo:
+          type: integer
+          default: 1
+        bonus:
+          type: array
+          items:
+            type: object
+            properties:
+              bonusConfigId:
+                type: integer
+                format: int64
+              valor:
+                type: integer
+              nivelNecessario:
+                type: integer
+                default: 1
+        aptidaoBonus:
+          type: array
+          items:
+            type: object
+            properties:
+              aptidaoConfigId:
+                type: integer
+                format: int64
+              valor:
+                type: integer
+              nivelNecessario:
+                type: integer
+                default: 1
+
+    ClasseResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        nome:
+          type: string
+        descricao:
+          type: string
+        nivelMinimo:
+          type: integer
+        ativo:
+          type: boolean
+        bonus:
+          type: array
+          items:
+            type: object
+            properties:
+              bonusConfigId:
+                type: integer
+                format: int64
+              bonusNome:
+                type: string
+              valor:
+                type: integer
+              nivelNecessario:
+                type: integer
+        aptidaoBonus:
+          type: array
+          items:
+            type: object
+            properties:
+              aptidaoConfigId:
+                type: integer
+                format: int64
+              aptidaoNome:
+                type: string
+              valor:
+                type: integer
+              nivelNecessario:
+                type: integer
+
+    # ==================== RAÇAS ====================
+    CriarRacaRequest:
+      type: object
+      required:
+        - nome
+      properties:
+        nome:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: "Elfo"
+        descricao:
+          type: string
+          maxLength: 2000
+        atributoBonus:
+          type: array
+          items:
+            type: object
+            properties:
+              atributoConfigId:
+                type: integer
+                format: int64
+              valorBonus:
+                type: integer
+                description: Pode ser negativo
+        classesPermitidas:
+          type: array
+          description: Se vazio, todas as classes são permitidas
+          items:
+            type: integer
+            format: int64
+
+    RacaResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        nome:
+          type: string
+        descricao:
+          type: string
+        ativo:
+          type: boolean
+        atributoBonus:
+          type: array
+          items:
+            type: object
+            properties:
+              atributoConfigId:
+                type: integer
+                format: int64
+              atributoNome:
+                type: string
+              valorBonus:
+                type: integer
+        classesPermitidas:
+          type: array
+          items:
+            type: object
+            properties:
+              classeId:
+                type: integer
+                format: int64
+              classeNome:
+                type: string
+
+    # ==================== PROSPECÇÃO ====================
+    CriarDadoProspeccaoRequest:
+      type: object
+      required:
+        - nome
+        - valorMaximo
+      properties:
+        nome:
+          type: string
+          minLength: 2
+          maxLength: 10
+          example: "d6"
+        valorMaximo:
+          type: integer
+          minimum: 1
+          example: 6
+        ordemExibicao:
+          type: integer
+          default: 0
+
+    DadoProspeccaoConfigResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        nome:
+          type: string
+        valorMaximo:
+          type: integer
+        ordemExibicao:
+          type: integer
+        ativo:
+          type: boolean
+
+    # ==================== VANTAGENS ====================
+    CriarCategoriaVantagemRequest:
+      type: object
+      required:
+        - nome
+      properties:
+        nome:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: "Treinamento Físico"
+        descricao:
+          type: string
+          maxLength: 500
+        ordemExibicao:
+          type: integer
+          default: 0
+
+    CategoriaVantagemResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        nome:
+          type: string
+        descricao:
+          type: string
+        ordemExibicao:
+          type: integer
+        ativo:
+          type: boolean
+        quantidadeVantagens:
+          type: integer
+
+    CriarVantagemRequest:
+      type: object
+      required:
+        - nome
+        - categoriaId
+        - custoBase
+      properties:
+        nome:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: "Treinamento em Combate Ofensivo"
+        sigla:
+          type: string
+          maxLength: 10
+          example: "TCO"
+        categoriaId:
+          type: integer
+          format: int64
+        descricao:
+          type: string
+          maxLength: 5000
+        custoBase:
+          type: integer
+          minimum: 1
+          example: 4
+        formulaCusto:
+          type: string
+          maxLength: 100
+          default: "CUSTO_BASE * NIVEL"
+          description: "Fórmula para calcular custo por nível"
+        niveisMaximos:
+          type: integer
+          minimum: 1
+          default: 1
+          example: 10
+        dadosProgressao:
+          type: string
+          maxLength: 50
+          example: "1D3 + D.UP/PN"
+        notas:
+          type: string
+          maxLength: 2000
+        preRequisitos:
+          type: array
+          items:
+            $ref: '#/components/schemas/PreRequisitoRequest'
+        efeitos:
+          type: array
+          items:
+            $ref: '#/components/schemas/EfeitoRequest'
+
+    AtualizarVantagemRequest:
+      type: object
+      properties:
+        nome:
+          type: string
+          minLength: 2
+          maxLength: 100
+        sigla:
+          type: string
+          maxLength: 10
+        categoriaId:
+          type: integer
+          format: int64
+        descricao:
+          type: string
+          maxLength: 5000
+        custoBase:
+          type: integer
+          minimum: 1
+        formulaCusto:
+          type: string
+          maxLength: 100
+        niveisMaximos:
+          type: integer
+          minimum: 1
+        dadosProgressao:
+          type: string
+          maxLength: 50
+        notas:
+          type: string
+          maxLength: 2000
+        preRequisitos:
+          type: array
+          items:
+            $ref: '#/components/schemas/PreRequisitoRequest'
+        efeitos:
+          type: array
+          items:
+            $ref: '#/components/schemas/EfeitoRequest'
+
+    PreRequisitoRequest:
+      type: object
+      required:
+        - tipoRequisito
+        - valorMinimo
+      properties:
+        tipoRequisito:
+          type: string
+          enum: [ATRIBUTO, BONUS, NIVEL_PERSONAGEM, RENASCIMENTOS, VANTAGEM]
+        referenciaId:
+          type: integer
+          format: int64
+          description: "ID do atributo/bonus/vantagem (NULL se NIVEL ou RENASCIMENTOS)"
+        valorMinimo:
+          type: integer
+          example: 5
+        descricao:
+          type: string
+          maxLength: 200
+          example: "B.B.A 5+"
+
+    EfeitoRequest:
+      type: object
+      required:
+        - tipoEfeito
+        - descricao
+      properties:
+        tipoEfeito:
+          type: string
+          enum: [BONUS, ATRIBUTO, APTIDAO, VIDA, ESSENCIA, REDUCAO_DANO, ESPECIAL]
+        referenciaId:
+          type: integer
+          format: int64
+          description: "ID do bonus/atributo/aptidao (NULL se ESPECIAL)"
+        valorPorNivel:
+          type: integer
+          example: 1
+          description: "Valor do bônus multiplicado pelo nível da vantagem"
+        descricao:
+          type: string
+          maxLength: 200
+          example: "+1 de B.B.A por nível"
+        formula:
+          type: string
+          maxLength: 200
+          description: "Fórmula customizada para efeitos especiais"
+
+    VantagemConfigResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        nome:
+          type: string
+        sigla:
+          type: string
+        categoriaId:
+          type: integer
+          format: int64
+        categoriaNome:
+          type: string
+        descricao:
+          type: string
+        custoBase:
+          type: integer
+        formulaCusto:
+          type: string
+        niveisMaximos:
+          type: integer
+        dadosProgressao:
+          type: string
+        notas:
+          type: string
+        ordemExibicao:
+          type: integer
+        ativo:
+          type: boolean
+        preRequisitos:
+          type: array
+          items:
+            $ref: '#/components/schemas/PreRequisitoResponse'
+        efeitos:
+          type: array
+          items:
+            $ref: '#/components/schemas/EfeitoResponse'
+
+    PreRequisitoResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        tipoRequisito:
+          type: string
+          enum: [ATRIBUTO, BONUS, NIVEL_PERSONAGEM, RENASCIMENTOS, VANTAGEM]
+        referenciaId:
+          type: integer
+          format: int64
+        referenciaNome:
+          type: string
+          description: "Nome do atributo/bonus/vantagem referenciado"
+        valorMinimo:
+          type: integer
+        descricao:
+          type: string
+
+    EfeitoResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        tipoEfeito:
+          type: string
+          enum: [BONUS, ATRIBUTO, APTIDAO, VIDA, ESSENCIA, REDUCAO_DANO, ESPECIAL]
+        referenciaId:
+          type: integer
+          format: int64
+        referenciaNome:
+          type: string
+          description: "Nome do bonus/atributo/aptidao referenciado"
+        valorPorNivel:
+          type: integer
+        descricao:
+          type: string
+        formula:
+          type: string
+
+    AtualizarPontosVantagemRequest:
+      type: object
+      properties:
+        pontosPorNivel:
+          type: integer
+          minimum: 0
+          example: 3
+        pontosIniciais:
+          type: integer
+          minimum: 0
+          example: 0
+
+    PontosVantagemConfigResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        pontosPorNivel:
+          type: integer
+        pontosIniciais:
+          type: integer
+
+    ProblemDetail:
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+
+  responses:
+    BadRequest:
+      description: Requisição inválida
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+
+    Unauthorized:
+      description: Não autenticado
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+
+    Forbidden:
+      description: Sem permissão
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+
+    NotFound:
+      description: Recurso não encontrado
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'

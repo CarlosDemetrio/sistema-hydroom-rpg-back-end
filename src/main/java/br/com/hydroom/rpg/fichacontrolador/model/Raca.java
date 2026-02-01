@@ -10,7 +10,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.envers.Audited;
 
 /**
  * Entidade que representa uma raça de personagem configurável pelo Mestre.
@@ -20,13 +19,12 @@ import org.hibernate.envers.Audited;
 @Table(name = "racas", uniqueConstraints = {
     @UniqueConstraint(name = "uk_raca_jogo_nome", columnNames = {"jogo_id", "nome"})
 })
-@Audited
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Raca extends AuditableEntity {
+public class Raca extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

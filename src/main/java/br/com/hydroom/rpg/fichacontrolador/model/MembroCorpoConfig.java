@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.envers.Audited;
 
 import java.math.BigDecimal;
 
@@ -20,13 +19,12 @@ import java.math.BigDecimal;
 }, uniqueConstraints = {
     @UniqueConstraint(name = "uk_membro_corpo_jogo_nome", columnNames = {"jogo_id", "nome"})
 })
-@Audited
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MembroCorpoConfig extends AuditableEntity {
+public class MembroCorpoConfig extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

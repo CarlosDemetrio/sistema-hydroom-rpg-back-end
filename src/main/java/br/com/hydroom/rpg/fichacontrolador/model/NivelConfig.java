@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.envers.Audited;
 
 /**
  * Tabela de progressão de níveis - XP necessária por nível.
@@ -21,8 +20,7 @@ import org.hibernate.envers.Audited;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Audited
-public class NivelConfig extends AuditableEntity {
+public class NivelConfig extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

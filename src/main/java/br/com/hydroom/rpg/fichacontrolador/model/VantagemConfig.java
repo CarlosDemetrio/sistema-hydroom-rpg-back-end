@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.envers.Audited;
 
 /**
  * Configuração de vantagem do jogo.
@@ -19,13 +18,12 @@ import org.hibernate.envers.Audited;
 }, uniqueConstraints = {
     @UniqueConstraint(name = "uk_vantagem_config_jogo_nome", columnNames = {"jogo_id", "nome"})
 })
-@Audited
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class VantagemConfig extends AuditableEntity {
+public class VantagemConfig extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

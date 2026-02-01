@@ -36,7 +36,7 @@ public interface JogoRepository extends JpaRepository<Jogo, Long> {
         WHERE p.usuario.id = :usuarioId
         AND j.ativo = true
         AND p.ativo = true
-        ORDER BY j.criadoEm DESC
+        ORDER BY j.nome ASC
     """)
     List<Jogo> findJogosByUsuarioId(@Param("usuarioId") Long usuarioId);
 
@@ -50,7 +50,7 @@ public interface JogoRepository extends JpaRepository<Jogo, Long> {
         AND p.role = 'MESTRE'
         AND j.ativo = true
         AND p.ativo = true
-        ORDER BY j.criadoEm DESC
+        ORDER BY j.nome ASC
     """)
     List<Jogo> findJogosByMestre(@Param("usuarioId") Long usuarioId);
 }

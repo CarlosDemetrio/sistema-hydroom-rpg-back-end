@@ -9,7 +9,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.envers.Audited;
 
 /**
  * Entidade que armazena os danos nos membros do corpo de uma ficha.
@@ -21,13 +20,12 @@ import org.hibernate.envers.Audited;
 }, uniqueConstraints = {
     @UniqueConstraint(name = "uk_ficha_vida_membro", columnNames = {"ficha_id", "membro_corpo_config_id"})
 })
-@Audited
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FichaVidaMembro extends AuditableEntity {
+public class FichaVidaMembro extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

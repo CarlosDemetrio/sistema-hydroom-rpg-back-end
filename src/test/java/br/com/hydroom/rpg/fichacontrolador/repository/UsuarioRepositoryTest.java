@@ -60,8 +60,6 @@ class UsuarioRepositoryTest {
         assertThat(usuarioSalvo.getProvider()).isEqualTo("GOOGLE");
         assertThat(usuarioSalvo.getProviderId()).isEqualTo("google-123456");
         assertThat(usuarioSalvo.getAtivo()).isTrue();
-        assertThat(usuarioSalvo.getCriadoEm()).isNotNull();
-        assertThat(usuarioSalvo.getAtualizadoEm()).isNotNull();
     }
 
     @Test
@@ -190,7 +188,6 @@ class UsuarioRepositoryTest {
         assertThat(usuarioAtualizado.getNome()).isEqualTo("Nome Atualizado");
         assertThat(usuarioAtualizado.getImagemUrl()).isEqualTo("https://example.com/nova-foto.jpg");
         assertThat(usuarioAtualizado.getEmail()).isEqualTo("teste@example.com"); // Não mudou
-        assertThat(usuarioAtualizado.getAtualizadoEm()).isAfter(usuarioAtualizado.getCriadoEm());
     }
 
     @Test

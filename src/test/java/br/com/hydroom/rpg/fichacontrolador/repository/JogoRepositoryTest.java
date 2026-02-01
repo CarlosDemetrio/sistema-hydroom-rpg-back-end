@@ -118,8 +118,6 @@ class JogoRepositoryTest {
         assertThat(saved.getId()).isNotNull();
         assertThat(saved.getNome()).isEqualTo("D&D 5e - Lost Mine of Phandelver");
         assertThat(saved.getAtivo()).isTrue();
-        assertThat(saved.getCriadoEm()).isNotNull();
-        assertThat(saved.getAtualizadoEm()).isNotNull();
     }
 
     @Test
@@ -222,7 +220,6 @@ class JogoRepositoryTest {
         // Assert
         assertThat(updated.getNome()).isEqualTo("Campanha de Tormenta - ATUALIZADO");
         assertThat(updated.getDescricao()).isEqualTo("Descrição atualizada");
-        assertThat(updated.getAtualizadoEm()).isNotNull();
     }
 
     @Test

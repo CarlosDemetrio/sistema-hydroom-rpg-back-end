@@ -9,7 +9,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.envers.Audited;
 
 /**
  * Entidade que armazena os dados de ameaça de uma ficha.
@@ -20,13 +19,12 @@ import org.hibernate.envers.Audited;
 }, uniqueConstraints = {
     @UniqueConstraint(name = "uk_ficha_ameaca", columnNames = {"ficha_id"})
 })
-@Audited
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FichaAmeaca extends AuditableEntity {
+public class FichaAmeaca extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

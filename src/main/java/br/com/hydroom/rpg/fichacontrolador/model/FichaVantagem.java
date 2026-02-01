@@ -9,7 +9,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.envers.Audited;
 
 /**
  * Entidade que armazena as vantagens compradas por uma ficha.
@@ -21,13 +20,12 @@ import org.hibernate.envers.Audited;
 }, uniqueConstraints = {
     @UniqueConstraint(name = "uk_ficha_vantagem", columnNames = {"ficha_id", "vantagem_config_id"})
 })
-@Audited
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FichaVantagem extends AuditableEntity {
+public class FichaVantagem extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

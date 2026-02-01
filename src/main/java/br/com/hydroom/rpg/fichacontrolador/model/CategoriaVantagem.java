@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.envers.Audited;
 
 /**
  * Categorias de vantagens (ex: Atributo, Combate, Magia, Social, etc).
@@ -22,8 +21,7 @@ import org.hibernate.envers.Audited;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Audited
-public class CategoriaVantagem extends AuditableEntity {
+public class CategoriaVantagem extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

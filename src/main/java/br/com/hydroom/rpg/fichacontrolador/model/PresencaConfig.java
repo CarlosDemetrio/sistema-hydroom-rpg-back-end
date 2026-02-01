@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.envers.Audited;
 
 /**
  * Configuração de presenças disponíveis (Leal, Caótico, Neutro, etc).
@@ -22,8 +21,7 @@ import org.hibernate.envers.Audited;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Audited
-public class PresencaConfig extends AuditableEntity {
+public class PresencaConfig extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

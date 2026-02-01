@@ -5,7 +5,6 @@ import br.com.hydroom.rpg.fichacontrolador.model.enums.RoleJogo;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.hibernate.envers.Audited;
 
 /**
  * Representa a participação de um usuário em um jogo.
@@ -25,8 +24,7 @@ import org.hibernate.envers.Audited;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Audited
-public class JogoParticipante extends AuditableEntity {
+public class JogoParticipante extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

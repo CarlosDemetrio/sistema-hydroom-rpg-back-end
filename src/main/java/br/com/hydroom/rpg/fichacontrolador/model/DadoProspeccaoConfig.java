@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.envers.Audited;
 
 /**
  * Configuração de dado de prospecção do jogo (d4, d6, d8, d10, d12, d20, d100).
@@ -18,13 +17,12 @@ import org.hibernate.envers.Audited;
 }, uniqueConstraints = {
     @UniqueConstraint(name = "uk_dado_prospeccao_config_jogo_nome", columnNames = {"jogo_id", "nome"})
 })
-@Audited
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DadoProspeccaoConfig extends AuditableEntity {
+public class DadoProspeccaoConfig extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

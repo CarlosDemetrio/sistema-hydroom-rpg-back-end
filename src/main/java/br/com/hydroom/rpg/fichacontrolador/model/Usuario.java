@@ -10,7 +10,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.envers.Audited;
 
 /**
  * Entidade que representa um usuário autenticado via OAuth2.
@@ -18,13 +17,12 @@ import org.hibernate.envers.Audited;
  */
 @Entity
 @Table(name = "usuarios")
-@Audited
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Usuario extends AuditableEntity {
+public class Usuario extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

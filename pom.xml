@@ -62,11 +62,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Hibernate Envers for Auditing -->
-        <dependency>
-            <groupId>org.hibernate.orm</groupId>
-            <artifactId>hibernate-envers</artifactId>
-        </dependency>
+
 
         <!-- Flyway for Database Migrations -->
         <dependency>

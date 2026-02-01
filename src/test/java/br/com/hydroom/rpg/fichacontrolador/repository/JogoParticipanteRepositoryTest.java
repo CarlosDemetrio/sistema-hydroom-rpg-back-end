@@ -111,8 +111,6 @@ class JogoParticipanteRepositoryTest {
         assertThat(saved.getUsuario().getId()).isEqualTo(mestre.getId());
         assertThat(saved.getRole()).isEqualTo(RoleJogo.MESTRE);
         assertThat(saved.getAtivo()).isTrue();
-        assertThat(saved.getCriadoEm()).isNotNull();
-        assertThat(saved.getAtualizadoEm()).isNotNull();
     }
 
     @Test
@@ -162,7 +160,7 @@ class JogoParticipanteRepositoryTest {
 
         // Assert
         assertThat(participantes).hasSize(1);
-        assertThat(participantes.get(0).getRole()).isEqualTo(RoleJogo.MESTRE);
+        assertThat(participantes.getFirst().getRole()).isEqualTo(RoleJogo.MESTRE);
     }
 
     @Test
@@ -277,7 +275,6 @@ class JogoParticipanteRepositoryTest {
 
         // Assert
         assertThat(updated.getRole()).isEqualTo(RoleJogo.MESTRE);
-        assertThat(updated.getAtualizadoEm()).isNotNull();
     }
 
     @Test

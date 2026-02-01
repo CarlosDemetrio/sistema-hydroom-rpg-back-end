@@ -50,8 +50,6 @@ public interface JogoMapper {
             .totalParticipantes((int) jogo.getParticipantes().stream()
                 .filter(JogoParticipante::getAtivo)
                 .count())
-            .criadoEm(jogo.getCriadoEm())
-            .atualizadoEm(jogo.getAtualizadoEm())
             .build();
     }
 

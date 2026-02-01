@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 /**
  * DTO de resposta com dados do usuário autenticado.
  */
@@ -22,6 +20,4 @@ public class UsuarioResponse {
     private String imagemUrl;
     private String provider;
     private Boolean ativo;
-    private LocalDateTime criadoEm;
-    private LocalDateTime atualizadoEm;
 }

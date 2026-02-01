@@ -10,7 +10,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.envers.Audited;
 
 /**
  * Entidade que representa uma classe de personagem configurável pelo Mestre.
@@ -20,13 +19,12 @@ import org.hibernate.envers.Audited;
 @Table(name = "classes_personagem", uniqueConstraints = {
     @UniqueConstraint(name = "uk_classe_jogo_nome", columnNames = {"jogo_id", "nome"})
 })
-@Audited
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClassePersonagem extends AuditableEntity {
+public class ClassePersonagem extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

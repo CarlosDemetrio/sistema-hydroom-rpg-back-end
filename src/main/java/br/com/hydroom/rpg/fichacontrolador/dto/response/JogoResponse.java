@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 /**
  * Response com dados completos de um jogo.
@@ -28,6 +27,4 @@ public class JogoResponse {
     private Boolean ativo;
     private RoleJogo meuRole;
     private Integer totalParticipantes;
-    private LocalDateTime criadoEm;
-    private LocalDateTime atualizadoEm;
 }

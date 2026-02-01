@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.envers.Audited;
 
 import java.math.BigDecimal;
 
@@ -21,13 +20,12 @@ import java.math.BigDecimal;
     @Index(name = "idx_ficha_jogo_usuario_ativo", columnList = "jogo_id, usuario_id, ativo"),
     @Index(name = "idx_ficha_nome_personagem", columnList = "nome_personagem")
 })
-@Audited
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Ficha extends AuditableEntity {
+public class Ficha extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

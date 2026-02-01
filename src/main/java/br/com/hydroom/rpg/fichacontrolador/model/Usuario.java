@@ -8,19 +8,23 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.envers.Audited;
 
-import java.time.LocalDateTime;
-
+/**
+ * Entidade que representa um usuário autenticado via OAuth2.
+ * Estende AuditableEntity para ter campos de auditoria automáticos.
+ */
 @Entity
 @Table(name = "usuarios")
+@Audited
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Usuario {
+public class Usuario extends AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,14 +60,7 @@ public class Usuario {
     @Column(nullable = false, unique = true, length = ValidationMessages.Limites.USUARIO_PROVIDER_ID_MAX)
     private String providerId;
 
+    @Builder.Default
     @Column(nullable = false)
     private Boolean ativo = true;
-
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime criadoEm;
-
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private LocalDateTime atualizadoEm;
 }

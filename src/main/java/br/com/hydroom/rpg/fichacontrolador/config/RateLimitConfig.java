@@ -2,20 +2,29 @@ package br.com.hydroom.rpg.fichacontrolador.config;
 
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
-import io.github.bucket4j.Refill;
-import org.springframework.context.annotation.Bean;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 
-import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Configuração de Rate Limiting usando Bucket4j.
  * Protege contra ataques de força bruta e DoS/DDoS.
+ *
+ * As configurações podem ser customizadas via application.properties:
+ * - app.rate-limit.general.capacity
+ * - app.rate-limit.general.refill-duration
+ * - app.rate-limit.auth.capacity
+ * - app.rate-limit.auth.refill-duration
+ * - app.rate-limit.public-endpoint.capacity
+ * - app.rate-limit.public-endpoint.refill-duration
  */
 @Configuration
+@RequiredArgsConstructor
 public class RateLimitConfig {
+
+    private final RateLimitProperties rateLimitProperties;
 
     /**
      * Cache de buckets por IP.
@@ -48,30 +57,33 @@ public class RateLimitConfig {
     }
 
     private Bucket createNewBucket() {
-        Bandwidth limit = Bandwidth.classic(
-                100, // capacidade máxima
-                Refill.intervally(100, Duration.ofMinutes(1)) // reabastece 100 tokens a cada 1 minuto
-        );
+        RateLimitProperties.EndpointConfig config = rateLimitProperties.getGeneral();
+        Bandwidth limit = Bandwidth.builder()
+                .capacity(config.getCapacity())
+                .refillGreedy(config.getCapacity(), config.getRefillDuration())
+                .build();
         return Bucket.builder()
                 .addLimit(limit)
                 .build();
     }
 
     private Bucket createAuthBucket() {
-        Bandwidth limit = Bandwidth.classic(
-                10, // capacidade máxima (proteção brute force)
-                Refill.intervally(10, Duration.ofMinutes(1)) // reabastece 10 tokens a cada 1 minuto
-        );
+        RateLimitProperties.EndpointConfig config = rateLimitProperties.getAuth();
+        Bandwidth limit = Bandwidth.builder()
+                .capacity(config.getCapacity())
+                .refillGreedy(config.getCapacity(), config.getRefillDuration())
+                .build();
         return Bucket.builder()
                 .addLimit(limit)
                 .build();
     }
 
     private Bucket createPublicBucket() {
-        Bandwidth limit = Bandwidth.classic(
-                200, // capacidade maior para APIs públicas
-                Refill.intervally(200, Duration.ofMinutes(1))
-        );
+        RateLimitProperties.EndpointConfig config = rateLimitProperties.getPublicEndpoint();
+        Bandwidth limit = Bandwidth.builder()
+                .capacity(config.getCapacity())
+                .refillGreedy(config.getCapacity(), config.getRefillDuration())
+                .build();
         return Bucket.builder()
                 .addLimit(limit)
                 .build();

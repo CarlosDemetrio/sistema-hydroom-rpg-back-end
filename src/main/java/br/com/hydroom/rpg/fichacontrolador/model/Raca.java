@@ -1,0 +1,59 @@
+package br.com.hydroom.rpg.fichacontrolador.model;
+
+import br.com.hydroom.rpg.fichacontrolador.constants.ValidationMessages;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import org.hibernate.envers.Audited;
+
+/**
+ * Entidade que representa uma raça de personagem configurável pelo Mestre.
+ * Exemplos: Humano, Elfo, Anão, etc.
+ */
+@Entity
+@Table(name = "racas", uniqueConstraints = {
+    @UniqueConstraint(name = "uk_raca_jogo_nome", columnNames = {"jogo_id", "nome"})
+})
+@Audited
+@Data
+@EqualsAndHashCode(callSuper = true)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Raca extends AuditableEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NotNull(message = ValidationMessages.Raca.JOGO_OBRIGATORIO)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "jogo_id", nullable = false)
+    private Jogo jogo;
+
+    @NotBlank(message = ValidationMessages.Raca.NOME_OBRIGATORIO)
+    @Size(min = ValidationMessages.Limites.RACA_NOME_MIN,
+          max = ValidationMessages.Limites.RACA_NOME_MAX,
+          message = ValidationMessages.Raca.NOME_TAMANHO)
+    @Column(nullable = false, length = ValidationMessages.Limites.RACA_NOME_MAX)
+    private String nome;
+
+    @Size(max = ValidationMessages.Limites.RACA_DESCRICAO_MAX,
+          message = ValidationMessages.Raca.DESCRICAO_TAMANHO)
+    @Column(columnDefinition = "TEXT")
+    private String descricao;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean ativo = true;
+
+    @Builder.Default
+    @Column(name = "ordem_exibicao", nullable = false)
+    private Integer ordemExibicao = 0;
+}

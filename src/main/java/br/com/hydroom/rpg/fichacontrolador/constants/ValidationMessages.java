@@ -36,25 +36,37 @@ public final class ValidationMessages {
 
     // ===== FICHA =====
     public static final class Ficha {
-        public static final String NOME_PERSONAGEM_OBRIGATORIO = "Nome do personagem é obrigatório";
-        public static final String NOME_PERSONAGEM_TAMANHO = "Nome deve ter entre 3 e 100 caracteres";
-        public static final String NOME_PERSONAGEM_CARACTERES = "Nome contém caracteres inválidos. Use apenas letras, números, espaços, hífens e apóstrofos";
-
-        public static final String CLASSE_OBRIGATORIA = "Classe é obrigatória";
-        public static final String CLASSE_TAMANHO = "Classe deve ter no máximo 50 caracteres";
-
-        public static final String NIVEL_MINIMO = "Nível mínimo é 1";
-        public static final String NIVEL_MAXIMO = "Nível máximo é 20";
-
-        public static final String RACA_TAMANHO = "Raça deve ter no máximo 50 caracteres";
-
-        public static final String HISTORIA_TAMANHO = "História deve ter no máximo 2000 caracteres";
-
-        public static final String ATRIBUTOS_TAMANHO = "Atributos excedem tamanho máximo permitido";
-        public static final String HABILIDADES_TAMANHO = "Habilidades excedem tamanho máximo permitido";
-        public static final String EQUIPAMENTOS_TAMANHO = "Equipamentos excedem tamanho máximo permitido";
-
+        public static final String JOGO_OBRIGATORIO = "Jogo é obrigatório";
         public static final String USUARIO_OBRIGATORIO = "Usuário é obrigatório";
+
+        public static final String NOME_OBRIGATORIO = "Nome do personagem é obrigatório";
+        public static final String NOME_TAMANHO = "Nome deve ter entre 3 e 100 caracteres";
+
+        public static final String JOGADOR_NOME_TAMANHO = "Nome do jogador deve ter no máximo 100 caracteres";
+        public static final String TITULO_TAMANHO = "Título heroico deve ter no máximo 200 caracteres";
+        public static final String INSOLITUS_TAMANHO = "Insolitus deve ter no máximo 200 caracteres";
+        public static final String ORIGEM_TAMANHO = "Origem deve ter no máximo 200 caracteres";
+        public static final String GENERO_TAMANHO = "Gênero deve ter no máximo 20 caracteres";
+        public static final String ARQUETIPO_TAMANHO = "Arquétipo de referência deve ter no máximo 200 caracteres";
+
+        public static final String IDADE_MINIMA = "Idade mínima é 0";
+        public static final String IDADE_MAXIMA = "Idade máxima é 9999";
+        public static final String ALTURA_MINIMA = "Altura mínima é 0 cm";
+        public static final String ALTURA_MAXIMA = "Altura máxima é 999 cm";
+        public static final String PESO_MINIMO = "Peso mínimo é 0 kg";
+        public static final String PESO_MAXIMO = "Peso máximo é 999.99 kg";
+        public static final String COR_CABELO_TAMANHO = "Cor do cabelo deve ter no máximo 50 caracteres";
+        public static final String TAMANHO_CABELO_TAMANHO = "Tamanho do cabelo deve ter no máximo 50 caracteres";
+        public static final String COR_OLHOS_TAMANHO = "Cor dos olhos deve ter no máximo 50 caracteres";
+
+        public static final String NIVEL_OBRIGATORIO = "Nível é obrigatório";
+        public static final String NIVEL_MINIMO = "Nível mínimo é 1";
+        public static final String NIVEL_MAXIMO = "Nível máximo é 99";
+
+        public static final String EXPERIENCIA_OBRIGATORIA = "Experiência é obrigatória";
+        public static final String EXPERIENCIA_MINIMA = "Experiência mínima é 0";
+
+        public static final String RENASCIMENTOS_MINIMO = "Renascimentos mínimo é 0";
 
         private Ficha() {}
     }
@@ -79,7 +91,6 @@ public final class ValidationMessages {
         public static final String CARISMA_MINIMO = "Carisma mínimo é 1";
         public static final String CARISMA_MAXIMO = "Carisma máximo é 20";
 
-        public static final String JSON_INVALIDO = "JSON de atributos inválido";
         public static final String ATRIBUTO_FORA_RANGE = "%s deve estar entre 1 e 20, valor recebido: %d";
 
         private Atributos() {}
@@ -88,19 +99,115 @@ public final class ValidationMessages {
     // ===== JOGO =====
     public static final class Jogo {
         public static final String NOME_OBRIGATORIO = "Nome do jogo é obrigatório";
-        public static final String NOME_TAMANHO = "Nome deve ter entre 3 e 100 caracteres";
+        public static final String NOME_TAMANHO = "Nome deve ter entre 3 e 200 caracteres";
 
-        public static final String DESCRICAO_TAMANHO = "Descrição deve ter no máximo 1000 caracteres";
-
-        public static final String SISTEMA_OBRIGATORIO = "Sistema de RPG é obrigatório";
-        public static final String SISTEMA_TAMANHO = "Sistema deve ter no máximo 50 caracteres";
+        public static final String DESCRICAO_TAMANHO = "Descrição deve ter no máximo 5000 caracteres";
 
         public static final String MESTRE_OBRIGATORIO = "Mestre é obrigatório";
 
-        public static final String MAX_JOGADORES_MINIMO = "Número mínimo de jogadores é 1";
-        public static final String MAX_JOGADORES_MAXIMO = "Número máximo de jogadores é 20";
+        public static final String IMAGEM_URL_TAMANHO = "URL da imagem deve ter no máximo 2000 caracteres";
 
         private Jogo() {}
+    }
+
+    // ===== CLASSE PERSONAGEM =====
+    public static final class ClassePersonagem {
+        public static final String NOME_OBRIGATORIO = "Nome da classe é obrigatório";
+        public static final String NOME_TAMANHO = "Nome deve ter entre 2 e 100 caracteres";
+
+        public static final String DESCRICAO_TAMANHO = "Descrição deve ter no máximo 2000 caracteres";
+
+        public static final String JOGO_OBRIGATORIO = "Jogo é obrigatório";
+
+        private ClassePersonagem() {}
+    }
+
+    // ===== RAÇA =====
+    public static final class Raca {
+        public static final String NOME_OBRIGATORIO = "Nome da raça é obrigatório";
+        public static final String NOME_TAMANHO = "Nome deve ter entre 2 e 100 caracteres";
+
+        public static final String DESCRICAO_TAMANHO = "Descrição deve ter no máximo 2000 caracteres";
+
+        public static final String JOGO_OBRIGATORIO = "Jogo é obrigatório";
+
+        private Raca() {}
+    }
+
+    // ===== FICHA ATRIBUTO =====
+    public static final class FichaAtributo {
+        public static final String FICHA_OBRIGATORIA = "Ficha é obrigatória";
+        public static final String ATRIBUTO_CONFIG_OBRIGATORIO = "Configuração de atributo é obrigatória";
+
+        private FichaAtributo() {}
+    }
+
+    // ===== FICHA APTIDAO =====
+    public static final class FichaAptidao {
+        public static final String FICHA_OBRIGATORIA = "Ficha é obrigatória";
+        public static final String APTIDAO_CONFIG_OBRIGATORIA = "Configuração de aptidão é obrigatória";
+
+        private FichaAptidao() {}
+    }
+
+    // ===== FICHA BONUS =====
+    public static final class FichaBonus {
+        public static final String FICHA_OBRIGATORIA = "Ficha é obrigatória";
+        public static final String BONUS_CONFIG_OBRIGATORIO = "Configuração de bônus é obrigatória";
+
+        private FichaBonus() {}
+    }
+
+    // ===== FICHA VIDA =====
+    public static final class FichaVida {
+        public static final String FICHA_OBRIGATORIA = "Ficha é obrigatória";
+
+        private FichaVida() {}
+    }
+
+    // ===== FICHA VIDA MEMBRO =====
+    public static final class FichaVidaMembro {
+        public static final String FICHA_OBRIGATORIA = "Ficha é obrigatória";
+        public static final String MEMBRO_CONFIG_OBRIGATORIO = "Configuração de membro do corpo é obrigatória";
+        public static final String DANO_MINIMO = "Dano recebido não pode ser negativo";
+
+        private FichaVidaMembro() {}
+    }
+
+    // ===== FICHA ESSENCIA =====
+    public static final class FichaEssencia {
+        public static final String FICHA_OBRIGATORIA = "Ficha é obrigatória";
+        public static final String GASTO_MINIMO = "Gasto de essência não pode ser negativo";
+
+        private FichaEssencia() {}
+    }
+
+    // ===== FICHA AMEACA =====
+    public static final class FichaAmeaca {
+        public static final String FICHA_OBRIGATORIA = "Ficha é obrigatória";
+        public static final String ITENS_MINIMO = "Valor de itens não pode ser negativo";
+        public static final String TITULOS_MINIMO = "Valor de títulos não pode ser negativo";
+
+        private FichaAmeaca() {}
+    }
+
+    // ===== FICHA VANTAGEM =====
+    public static final class FichaVantagem {
+        public static final String FICHA_OBRIGATORIA = "Ficha é obrigatória";
+        public static final String VANTAGEM_CONFIG_OBRIGATORIA = "Configuração de vantagem é obrigatória";
+        public static final String NIVEL_MINIMO = "Nível da vantagem deve ser no mínimo 1";
+        public static final String CUSTO_MINIMO = "Custo pago não pode ser negativo";
+
+        private FichaVantagem() {}
+    }
+
+    // ===== FICHA PROSPECCAO =====
+    public static final class FichaProspeccao {
+        public static final String FICHA_OBRIGATORIA = "Ficha é obrigatória";
+        public static final String DADO_CONFIG_OBRIGATORIO = "Configuração de dado de prospecção é obrigatória";
+        public static final String QUANTIDADE_MINIMA = "Quantidade não pode ser negativa";
+
+        private FichaProspeccao() {}
     }
 
     // ===== AUTENTICAÇÃO E SEGURANÇA =====
@@ -151,10 +258,16 @@ public final class ValidationMessages {
         // Ficha
         public static final int FICHA_NOME_MIN = 3;
         public static final int FICHA_NOME_MAX = 100;
+        public static final int FICHA_TITULO_MAX = 200;
+        public static final int FICHA_INSOLITUS_MAX = 200;
+        public static final int FICHA_ORIGEM_MAX = 200;
+        public static final int FICHA_GENERO_MAX = 20;
+        public static final int FICHA_ARQUETIPO_MAX = 200;
+        public static final int FICHA_COR_MAX = 50;
+        public static final int FICHA_JOGADOR_NOME_MAX = 100;
         public static final int FICHA_CLASSE_MAX = 50;
         public static final int FICHA_RACA_MAX = 50;
         public static final int FICHA_HISTORIA_MAX = 2000;
-        public static final int FICHA_JSON_MAX = 65535; // TEXT field max
         public static final int FICHA_NIVEL_MIN = 1;
         public static final int FICHA_NIVEL_MAX = 20;
 
@@ -164,11 +277,19 @@ public final class ValidationMessages {
 
         // Jogo
         public static final int JOGO_NOME_MIN = 3;
-        public static final int JOGO_NOME_MAX = 100;
-        public static final int JOGO_DESCRICAO_MAX = 1000;
-        public static final int JOGO_SISTEMA_MAX = 50;
-        public static final int JOGO_MAX_JOGADORES_MIN = 1;
-        public static final int JOGO_MAX_JOGADORES_MAX = 20;
+        public static final int JOGO_NOME_MAX = 200;
+        public static final int JOGO_DESCRICAO_MAX = 5000;
+        public static final int JOGO_IMAGEM_URL_MAX = 2000;
+
+        // Classe Personagem
+        public static final int CLASSE_NOME_MIN = 2;
+        public static final int CLASSE_NOME_MAX = 100;
+        public static final int CLASSE_DESCRICAO_MAX = 2000;
+
+        // Raça
+        public static final int RACA_NOME_MIN = 2;
+        public static final int RACA_NOME_MAX = 100;
+        public static final int RACA_DESCRICAO_MAX = 2000;
 
         private Limites() {}
     }

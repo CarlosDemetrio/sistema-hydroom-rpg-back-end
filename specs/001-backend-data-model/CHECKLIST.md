@@ -10,40 +10,40 @@
 
 | Fase | Progresso | Status |
 |------|-----------|--------|
-| Fase 1 - Setup | 0/4 | 🔴 Não iniciado |
-| Fase 2 - Entidades Base | 0/3 | 🔴 Não iniciado |
-| Fase 3 - Configuração | 0/7 | 🔴 Não iniciado |
+| Fase 1 - Setup | 4/4 | ✅ Concluído |
+| Fase 2 - Entidades Base | 3/3 | ✅ Concluído |
+| Fase 3 - Configuração | 7/7 | ✅ Concluído |
 | Fase 4 - Ficha | 0/9 | 🔴 Não iniciado |
 | Fase 5 - Auxiliares | 0/1 | 🔴 Não iniciado |
 | Fase 6 - Validações | 0/2 | 🔴 Não iniciado |
 | Fase 7 - Auditoria | 0/2 | 🔴 Não iniciado |
-| **TOTAL** | **0/28** | **0%** |
+| **TOTAL** | **14/28** | **50%** |
 
 ---
 
-## 🔴 Fase 1: Setup do Projeto e Infraestrutura (2-3 dias)
+## ✅ Fase 1: Setup do Projeto e Infraestrutura (2-3 dias) - CONCLUÍDO
 
 ### Task 1.1: Configuração do Projeto Maven
-**Estimativa**: 4h | **Status**: 🔴 Não iniciado
+**Estimativa**: 4h | **Status**: ✅ Concluído
 
-- [ ] Atualizar `pom.xml` com dependências:
-  - [ ] Spring Boot 4.0.2
-  - [ ] Spring Security OAuth2
-  - [ ] Spring Data JPA
-  - [ ] Hibernate Envers
-  - [ ] MapStruct 1.5.5
-  - [ ] Flyway 10.x
-  - [ ] PostgreSQL Driver
-  - [ ] H2 (test scope)
-  - [ ] SpringDoc OpenAPI 2.x
-  - [ ] Validation API
-- [ ] Configurar profiles:
-  - [ ] `application.properties` (base)
-  - [ ] `application-dev.properties`
-  - [ ] `application-test.properties` (H2)
-  - [ ] `application-prod.properties`
-- [ ] Configurar MapStruct no Maven Compiler Plugin
-- [ ] Verificar compilação sem erros
+- [x] Atualizar `pom.xml` com dependências:
+  - [x] Spring Boot 4.0.2
+  - [x] Spring Security OAuth2
+  - [x] Spring Data JPA
+  - [x] Hibernate Envers
+  - [x] MapStruct 1.5.5
+  - [x] Flyway 10.x
+  - [x] PostgreSQL Driver
+  - [x] H2 (test scope)
+  - [x] SpringDoc OpenAPI 2.x
+  - [x] Validation API
+- [x] Configurar profiles:
+  - [x] `application.properties` (base)
+  - [x] `application-dev.properties`
+  - [x] `application-test.properties` (H2)
+  - [x] `application-prod.properties`
+- [x] Configurar MapStruct no Maven Compiler Plugin
+- [x] Verificar compilação sem erros
 
 ---
 

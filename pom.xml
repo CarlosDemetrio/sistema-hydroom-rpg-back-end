@@ -64,17 +64,6 @@
 
 
 
-        <!-- Flyway for Database Migrations -->
-        <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-database-postgresql</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-
         <!-- MapStruct for DTO Mapping -->
         <dependency>
             <groupId>org.mapstruct</groupId>
@@ -190,7 +179,11 @@
                 </configuration>
             </plugin>
 
-            <!-- OWASP Dependency Check -->
+            <!-- OWASP Dependency Check - TEMPORARIAMENTE DESABILITADO -->
+            <!-- Erro: NVD API retornando 403/404. Necessita API Key ou executar manualmente -->
+            <!-- Para reabilitar: descomentar o plugin abaixo -->
+            <!-- Executar manualmente: ./mvnw org.owasp:dependency-check-maven:check -->
+            <!--
             <plugin>
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
@@ -211,6 +204,7 @@
                     </execution>
                 </executions>
             </plugin>
+            -->
         </plugins>
     </build>
 

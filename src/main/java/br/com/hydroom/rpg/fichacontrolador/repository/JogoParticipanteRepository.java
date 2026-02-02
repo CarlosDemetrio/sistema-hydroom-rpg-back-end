@@ -49,6 +49,16 @@ public interface JogoParticipanteRepository extends JpaRepository<JogoParticipan
     List<JogoParticipante> findByJogoIdAndRoleAndAtivoTrue(Long jogoId, RoleJogo role);
 
     /**
+     * Verifica se usuário participa do jogo (qualquer role).
+     */
+    boolean existsByUsuarioIdAndJogoIdAndAtivoTrue(Long usuarioId, Long jogoId);
+
+    /**
+     * Verifica se usuário tem role específica em um jogo.
+     */
+    boolean existsByUsuarioIdAndJogoIdAndRoleAndAtivoTrue(Long usuarioId, Long jogoId, RoleJogo role);
+
+    /**
      * Verifica se um usuário já participa de um jogo.
      */
     boolean existsByJogoIdAndUsuarioIdAndAtivoTrue(Long jogoId, Long usuarioId);

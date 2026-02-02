@@ -56,12 +56,6 @@ public class SecurityConfig {
                         .successHandler(oauth2SuccessHandler())
                         .failureUrl(frontendUrl + "/login?error=true")
                 )
-                .logout(logout -> logout
-                        .logoutUrl("/api/v1/auth/logout")
-                        .logoutSuccessUrl(frontendUrl + "/login")
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID", "XSRF-TOKEN")
-                )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                         .maximumSessions(1)
@@ -76,7 +70,7 @@ public class SecurityConfig {
             // Tenta obter a URL original salva antes do redirect OAuth2
             String targetUrl = request.getSession().getAttribute("REDIRECT_URL") != null
                 ? (String) request.getSession().getAttribute("REDIRECT_URL")
-                : frontendUrl + "/oauth2/callback";
+                : frontendUrl;
 
             // Remove o atributo da sessão após uso
             request.getSession().removeAttribute("REDIRECT_URL");

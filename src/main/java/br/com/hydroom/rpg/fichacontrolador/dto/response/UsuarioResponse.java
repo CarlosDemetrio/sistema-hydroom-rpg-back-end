@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 /**
  * DTO de resposta com dados do usuário autenticado.
  */
@@ -18,6 +20,10 @@ public class UsuarioResponse {
     private String email;
     private String nome;
     private String imagemUrl;
+    private String fotoPerfil; // Alias para imagemUrl (compatibilidade frontend)
     private String provider;
     private Boolean ativo;
+    private String role; // MESTRE ou JOGADOR
+    private LocalDateTime dataCriacao;
+    private LocalDateTime dataUltimaAtualizacao;
 }

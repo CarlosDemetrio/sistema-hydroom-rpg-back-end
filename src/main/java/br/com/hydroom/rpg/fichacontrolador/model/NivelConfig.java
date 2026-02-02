@@ -57,4 +57,8 @@ public class NivelConfig extends BaseEntity {
     @NotNull(message = "Limitador de atributo é obrigatório")
     @Min(value = 1, message = "Limitador de atributo deve ser maior que zero")
     private Integer limitadorAtributo;
+
+    @Column(nullable = false)
+    @NotNull(message = "Campo ativo é obrigatório")
+    private Boolean ativo = true;
 }

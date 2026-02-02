@@ -13,7 +13,7 @@ services:
     networks:
       - rpg-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U myuser"]
+      test: ["CMD-SHELL", "pg_isready -U myuser -d rpg_fichas"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -33,6 +33,8 @@ services:
       - 'SPRING_DATASOURCE_PASSWORD=secret'
       - 'GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}'
       - 'GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}'
+      # Fix OAuth2 redirect_uri to use localhost instead of container name
+      - 'SERVER_FORWARD_HEADERS_STRATEGY=framework'
     volumes:
       # Mount entire project for hot reload
       - .:/app:cached
@@ -64,7 +66,8 @@ services:
       - ../ficha-controlador-front-end/ficha-controlador-front-end/angular.json:/app/angular.json:ro
       - ../ficha-controlador-front-end/ficha-controlador-front-end/tsconfig.json:/app/tsconfig.json:ro
       - ../ficha-controlador-front-end/ficha-controlador-front-end/tsconfig.app.json:/app/tsconfig.app.json:ro
-      - ../ficha-controlador-front-end/ficha-controlador-front-end/package.json:/app/package.json:ro
+      - ../ficha-controlador-front-end/ficha-controlador-front-end/package.json:/app/package.json:rw
+      - ../ficha-controlador-front-end/ficha-controlador-front-end/package-lock.json:/app/package-lock.json:rw
       - ../ficha-controlador-front-end/ficha-controlador-front-end/proxy.conf.json:/app/proxy.conf.json:ro
       # Exclude node_modules from host
       - /app/node_modules

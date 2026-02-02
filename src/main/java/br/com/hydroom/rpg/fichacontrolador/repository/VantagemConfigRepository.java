@@ -13,6 +13,11 @@ import java.util.List;
 public interface VantagemConfigRepository extends JpaRepository<VantagemConfig, Long> {
 
     /**
+     * Busca todas as vantagens ativas ordenadas por nome.
+     */
+    List<VantagemConfig> findByAtivoTrueOrderByNome();
+
+    /**
      * Busca todas as vantagens ativas de um jogo, ordenadas.
      */
     List<VantagemConfig> findByJogoIdAndAtivoTrueOrderByOrdemExibicao(Long jogoId);

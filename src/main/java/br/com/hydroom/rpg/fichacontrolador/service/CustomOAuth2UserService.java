@@ -35,12 +35,21 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         log.info("Processando login OAuth2 - Provider: {}, Email: {}", provider, email);
 
-        // Busca ou cria o usuário
+        // Busca usuário por providerId OU por email (para casos de seed data)
         Usuario usuario = usuarioRepository.findByProviderId(providerId)
+                .or(() -> usuarioRepository.findByEmail(email))
                 .orElseGet(() -> {
                     log.info("Criando novo usuário - Email: {}, Provider: {}", email, provider);
                     return criarNovoUsuario(provider, providerId, email, nome, imagemUrl);
                 });
+
+        // Se usuário existia mas não tinha providerId (seed data), atualizar
+        if (usuario.getProviderId() == null || !usuario.getProviderId().equals(providerId)) {
+            usuario.setProviderId(providerId);
+            usuario.setProvider(provider);
+            usuarioRepository.save(usuario);
+            log.info("ProviderId atualizado para usuário existente - ID: {}, Email: {}", usuario.getId(), email);
+        }
 
         // Atualiza dados do usuário se mudaram
         if (atualizarDadosUsuario(usuario, email, nome, imagemUrl)) {

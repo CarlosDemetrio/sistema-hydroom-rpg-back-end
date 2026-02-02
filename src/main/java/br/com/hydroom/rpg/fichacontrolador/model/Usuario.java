@@ -61,4 +61,8 @@ public class Usuario extends BaseEntity {
     @Builder.Default
     @Column(nullable = false)
     private Boolean ativo = true;
+
+    @Builder.Default
+    @Column(nullable = false, length = 20)
+    private String role = "JOGADOR"; // JOGADOR (padrão) ou MESTRE (apenas via banco)
 }

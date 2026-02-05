@@ -1,0 +1,141 @@
+package br.com.hydroom.rpg.fichacontrolador.config;
+
+import br.com.hydroom.rpg.fichacontrolador.dto.defaults.*;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Provider de configurações padrão para inicialização de jogos.
+ *
+ * <p>Responsabilidades:</p>
+ * <ul>
+ *   <li>Prover valores padrão para todas as tabelas de configuração</li>
+ *   <li>Valores são configuráveis via código (não SQL)</li>
+ *   <li>Fácil manutenção e customização dos defaults</li>
+ * </ul>
+ *
+ * <p>Implementação padrão: {@code DefaultGameConfigProviderImpl}</p>
+ *
+ * @author Carlos Demétrio
+ * @see DefaultGameConfigProviderImpl
+ * @since 2026-02-05
+ */
+public interface GameDefaultConfigProvider {
+
+    /**
+     * Retorna os 7 atributos padrão.
+     * Exemplo: Força, Agilidade, Vigor, Sabedoria, Intuição, Inteligência, Astúcia
+     *
+     * @return Lista de AtributoConfigDTO com fórmulas de ímpeto
+     */
+    List<AtributoConfigDTO> getDefaultAtributos();
+
+    /**
+     * Retorna as 24 aptidões padrão (12 físicas + 12 mentais).
+     *
+     * @return Lista de AptidaoConfigDTO
+     */
+    List<AptidaoConfigDTO> getDefaultAptidoes();
+
+    /**
+     * Retorna os 36 níveis padrão (nível 0 até 35).
+     * Cada nível tem: XP necessária, pontos de atributo, pontos de vantagem, pontos de aptidão.
+     *
+     * @return Lista de NivelConfigDTO
+     */
+    List<NivelConfigDTO> getDefaultNiveis();
+
+    /**
+     * Retorna os 5 limitadores de atributo por faixa de nível.
+     *
+     * @return Lista de LimitadorConfigDTO
+     */
+    List<LimitadorConfigDTO> getDefaultLimitadores();
+
+    /**
+     * Retorna as 12 classes padrão.
+     * Exemplo: Guerreiro, Arqueiro, Monge, Mago, etc.
+     *
+     * @return Lista de ClasseConfigDTO
+     */
+    List<ClasseConfigDTO> getDefaultClasses();
+
+    /**
+     * Retorna as 4 raças padrão.
+     * Exemplo: Humano, Elfo, Anão, Meio-Elfo
+     *
+     * @return Lista de RacaConfigDTO
+     */
+    List<RacaConfigDTO> getDefaultRacas();
+
+    /**
+     * Retorna os bônus raciais de atributos.
+     * Mapa com chave = nome da raça, valor = lista de bônus de atributos.
+     *
+     * Exemplo:
+     * <pre>
+     * {
+     *   "Elfo": [
+     *     BonusAtributoDTO("Agilidade", +2),
+     *     BonusAtributoDTO("Vigor", -1)
+     *   ],
+     *   "Anão": [
+     *     BonusAtributoDTO("Vigor", +2),
+     *     BonusAtributoDTO("Agilidade", -1)
+     *   ]
+     * }
+     * </pre>
+     *
+     * @return Mapa de bônus raciais
+     */
+    Map<String, List<BonusAtributoDTO>> getDefaultBonusRaciais();
+
+    /**
+     * Retorna os 6 dados de prospecção padrão.
+     * Exemplo: d3, d4, d6, d8, d10, d12
+     *
+     * @return Lista de ProspeccaoConfigDTO
+     */
+    List<ProspeccaoConfigDTO> getDefaultProspeccoes();
+
+    /**
+     * Retorna os 4 gêneros padrão.
+     * Exemplo: Masculino, Feminino, Não-Binário, Prefiro não informar
+     *
+     * @return Lista de GeneroConfigDTO
+     */
+    List<GeneroConfigDTO> getDefaultGeneros();
+
+    /**
+     * Retorna as 9 índoles (alinhamentos) padrão.
+     * Exemplo: Ordeiro Bondoso, Neutro, Caótico Maligno, etc.
+     *
+     * @return Lista de IndoleConfigDTO
+     */
+    List<IndoleConfigDTO> getDefaultIndoles();
+
+    /**
+     * Retorna os 6 níveis de presença padrão.
+     * Exemplo: Insignificante, Fraco, Normal, Notável, Impressionante, Dominante
+     *
+     * @return Lista de PresencaConfigDTO
+     */
+    List<PresencaConfigDTO> getDefaultPresencas();
+
+    /**
+     * Retorna os 6 membros do corpo padrão.
+     * Exemplo: Cabeça, Tronco, Braço Direito, Braço Esquerdo, Perna Direita, Perna Esquerda
+     *
+     * @return Lista de MembroCorpoConfigDTO
+     */
+    List<MembroCorpoConfigDTO> getDefaultMembrosCorpo();
+
+    /**
+     * Retorna vantagens de exemplo (opcional).
+     * Pode retornar lista vazia se o mestre preferir criar suas próprias vantagens.
+     *
+     * @return Lista de VantagemConfigDTO
+     */
+    List<VantagemConfigDTO> getDefaultVantagens();
+}

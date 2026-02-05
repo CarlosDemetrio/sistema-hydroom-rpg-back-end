@@ -38,6 +38,11 @@ public class AtributoConfig extends BaseEntity {
     @Column(nullable = false, length = 50)
     private String nome;
 
+    @NotBlank
+    @Size(min = 2, max = 5)
+    @Column(nullable = false, length = 5, unique = true)
+    private String abreviacao;
+
     @Size(max = 500)
     @Column(length = 500)
     private String descricao;

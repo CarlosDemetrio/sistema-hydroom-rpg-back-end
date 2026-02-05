@@ -4,10 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 /**
  * Configuração de índoles disponíveis (Bom, Mau, Neutro, etc).
@@ -17,6 +14,7 @@ import lombok.Setter;
 @Table(name = "indoles_config", uniqueConstraints = {
         @UniqueConstraint(name = "uk_indole_nome_jogo", columnNames = {"jogo_id", "nome"})
 })
+@Builder
 @Getter
 @Setter
 @NoArgsConstructor

@@ -30,5 +30,11 @@ public interface ConfiguracaoAtributoRepository extends JpaRepository<AtributoCo
     @Query("SELECT COUNT(a) > 0 FROM AtributoConfig a WHERE a.jogo.id = :jogoId AND LOWER(a.nome) = LOWER(:nome)")
     boolean existsByJogoIdAndNomeIgnoreCase(Long jogoId, String nome);
 
+    /**
+     * Conta quantos atributos um jogo possui.
+     * Usado para verificar se o jogo já foi inicializado.
+     */
+    long countByJogoId(Long jogoId);
+
     List<AtributoConfig> findByAtivoTrueOrderByOrdemExibicao();
 }

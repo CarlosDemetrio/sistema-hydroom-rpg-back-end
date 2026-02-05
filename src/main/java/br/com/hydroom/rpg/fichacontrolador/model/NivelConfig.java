@@ -51,6 +51,15 @@ public class NivelConfig extends BaseEntity {
     private Integer pontosAtributo = 3;
 
     /**
+     * Pontos de aptidão ganhos ao atingir este nível.
+     * Padrão: 3 pontos por nível.
+     */
+    @Column(name = "pontos_aptidao", nullable = false)
+    @NotNull(message = "Pontos de aptidão são obrigatórios")
+    @Min(value = 0, message = "Pontos de aptidão não podem ser negativos")
+    private Integer pontosAptidao = 3;
+
+    /**
      * Valor máximo que atributos podem ter neste nível (limitador).
      */
     @Column(name = "limitador_atributo", nullable = false)

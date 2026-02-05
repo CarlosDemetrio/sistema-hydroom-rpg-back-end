@@ -1,0 +1,32 @@
+package br.com.hydroom.rpg.fichacontrolador.dto.defaults;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * DTO para configuração padrão de Classes de Personagem.
+ * Usado pelo GameDefaultConfigProvider para inicializar classes de um jogo.
+ */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ClasseConfigDTO {
+
+    private String nome;
+    private String descricao;
+    private Integer ordemExibicao;
+
+    /**
+     * Cria um ClasseConfigDTO com valores básicos.
+     */
+    public static ClasseConfigDTO of(String nome, String descricao, Integer ordemExibicao) {
+        return ClasseConfigDTO.builder()
+                .nome(nome)
+                .descricao(descricao)
+                .ordemExibicao(ordemExibicao)
+                .build();
+    }
+}

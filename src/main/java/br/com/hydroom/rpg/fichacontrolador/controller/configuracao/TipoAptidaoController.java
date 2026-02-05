@@ -20,7 +20,7 @@ import java.util.List;
  * CRUD completo - GET (MESTRE/JOGADOR), POST/PUT/DELETE (apenas MESTRE).
  */
 @RestController
-@RequestMapping("/api/configuracoes/tipos-aptidao")
+@RequestMapping("/api/v1/configuracoes/tipos-aptidao")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearer-jwt")
 @Tag(name = "Configurações - Tipos de Aptidão", description = "Gerenciamento de tipos de aptidão (Física, Mental, etc)")

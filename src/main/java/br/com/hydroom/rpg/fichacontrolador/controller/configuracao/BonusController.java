@@ -20,7 +20,7 @@ import java.util.List;
  * CRUD completo - GET (MESTRE/JOGADOR), POST/PUT/DELETE (apenas MESTRE).
  */
 @RestController
-@RequestMapping("/api/configuracoes/bonus")
+@RequestMapping("/api/v1/configuracoes/bonus")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearer-jwt")
 @Tag(name = "Configurações - Bônus", description = "Gerenciamento de bônus configuráveis (modificadores por raça, classe, etc)")

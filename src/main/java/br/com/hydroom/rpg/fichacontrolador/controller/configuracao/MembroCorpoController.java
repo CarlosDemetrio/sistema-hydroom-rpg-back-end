@@ -20,7 +20,7 @@ import java.util.List;
  * CRUD completo - GET (MESTRE/JOGADOR), POST/PUT/DELETE (apenas MESTRE).
  */
 @RestController
-@RequestMapping("/api/configuracoes/membros-corpo")
+@RequestMapping("/api/v1/configuracoes/membros-corpo")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearer-jwt")
 @Tag(name = "Configurações - Membros do Corpo", description = "Gerenciamento de membros do corpo para integridade física (Cabeça, Torso, Braços, Pernas)")

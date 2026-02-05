@@ -20,7 +20,7 @@ import java.util.List;
  * CRUD completo - GET (MESTRE/JOGADOR), POST/PUT/DELETE (apenas MESTRE).
  */
 @RestController
-@RequestMapping("/api/configuracoes/presencas")
+@RequestMapping("/api/v1/configuracoes/presencas")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearer-jwt")
 @Tag(name = "Configurações - Presenças", description = "Gerenciamento de níveis de presença disponíveis")

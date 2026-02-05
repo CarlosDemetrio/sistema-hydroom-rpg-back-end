@@ -20,7 +20,7 @@ import java.util.List;
  * CRUD completo - GET (MESTRE/JOGADOR), POST/PUT/DELETE (apenas MESTRE).
  */
 @RestController
-@RequestMapping("/api/configuracoes/dados-prospeccao")
+@RequestMapping("/api/v1/configuracoes/dados-prospeccao")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearer-jwt")
 @Tag(name = "Configurações - Dados de Prospecção", description = "Gerenciamento de dados disponíveis para prospecção (d3, d4, d6, d8, d10, d12, d20, d100)")

@@ -20,7 +20,7 @@ import java.util.List;
  * CRUD completo - GET (MESTRE/JOGADOR), POST/PUT/DELETE (apenas MESTRE).
  */
 @RestController
-@RequestMapping("/api/configuracoes/racas")
+@RequestMapping("/api/v1/configuracoes/racas")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearer-jwt")
 @Tag(name = "Configurações - Raças", description = "Gerenciamento de raças do jogo (Humano, Elfo, Anão, etc)")

@@ -20,7 +20,7 @@ import java.util.List;
  * CRUD completo - GET (MESTRE/JOGADOR), POST/PUT/DELETE (apenas MESTRE).
  */
 @RestController
-@RequestMapping("/api/configuracoes/indoles")
+@RequestMapping("/api/v1/configuracoes/indoles")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearer-jwt")
 @Tag(name = "Configurações - Indoles", description = "Gerenciamento de indoles/alinhamentos (Leal e Bom, Caótico e Mal, etc)")

@@ -23,7 +23,7 @@ import java.util.List;
  * CRUD completo - Apenas MESTREs podem criar, editar e deletar jogos.
  */
 @RestController
-@RequestMapping("/api/jogos")
+@RequestMapping("/api/v1/jogos")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearer-jwt")
 @Tag(name = "Jogos", description = "Gerenciamento de jogos/campanhas de RPG")

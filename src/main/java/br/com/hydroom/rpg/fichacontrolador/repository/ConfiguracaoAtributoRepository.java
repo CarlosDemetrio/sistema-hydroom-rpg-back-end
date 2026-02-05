@@ -35,6 +35,4 @@ public interface ConfiguracaoAtributoRepository extends JpaRepository<AtributoCo
      * Usado para verificar se o jogo já foi inicializado.
      */
     long countByJogoId(Long jogoId);
-
-    List<AtributoConfig> findByAtivoTrueOrderByOrdemExibicao();
 }

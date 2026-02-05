@@ -13,11 +13,6 @@ import java.util.List;
 public interface DadoProspeccaoConfigRepository extends JpaRepository<DadoProspeccaoConfig, Long> {
 
     /**
-     * Busca todos os dados de prospecção ativos ordenados.
-     */
-    List<DadoProspeccaoConfig> findByAtivoTrueOrderByOrdemExibicao();
-
-    /**
      * Busca todos os dados de prospecção ativos de um jogo, ordenados.
      */
     List<DadoProspeccaoConfig> findByJogoIdAndAtivoTrueOrderByOrdemExibicao(Long jogoId);

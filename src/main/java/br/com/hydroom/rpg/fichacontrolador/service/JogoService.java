@@ -1,5 +1,7 @@
 package br.com.hydroom.rpg.fichacontrolador.service;
 
+import br.com.hydroom.rpg.fichacontrolador.dto.request.CriarJogoRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.EditarJogoRequest;
 import br.com.hydroom.rpg.fichacontrolador.model.Jogo;
 import br.com.hydroom.rpg.fichacontrolador.model.JogoParticipante;
 import br.com.hydroom.rpg.fichacontrolador.model.Usuario;
@@ -15,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Service para gerenciar Jogos/Campanhas.
@@ -31,14 +32,14 @@ public class JogoService {
     private final UsuarioRepository usuarioRepository;
 
     public List<Jogo> listarJogosDoUsuario() {
-        Usuario usuarioAtual = getUsuarioAtual();
-        List<JogoParticipante> participacoes = jogoParticipanteRepository.findByUsuarioId(usuarioAtual.getId());
-        return participacoes.stream()
-                .map(JogoParticipante::getJogo)
-                .collect(Collectors.toList());
+        return jogoRepository.findByAtivoTrue();
     }
 
     public Jogo buscarJogo(Long id) {
+        return buscarJogoEntity(id);
+    }
+
+    private Jogo buscarJogoEntity(Long id) {
         Jogo jogo = jogoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Jogo não encontrado: " + id));
 
@@ -51,11 +52,16 @@ public class JogoService {
     }
 
     @Transactional
-    public Jogo criarJogo(Jogo jogo) {
+    public Jogo criarJogo(CriarJogoRequest request) {
         Usuario usuarioAtual = getUsuarioAtual();
 
-        jogo.setAtivo(true);
-        Jogo jogoSalvo = jogoRepository.save(jogo);
+        Jogo novoJogo = new Jogo();
+        novoJogo.setNome(request.getNome());
+        novoJogo.setDescricao(request.getDescricao());
+        novoJogo.setDataInicio(request.getDataInicio());
+        novoJogo.setAtivo(true);
+
+        Jogo jogoSalvo = jogoRepository.save(novoJogo);
 
         JogoParticipante participacao = JogoParticipante.builder()
                 .jogo(jogoSalvo)
@@ -70,7 +76,7 @@ public class JogoService {
     }
 
     @Transactional
-    public Jogo atualizarJogo(Long id, Jogo jogoAtualizado) {
+    public Jogo atualizarJogo(Long id, EditarJogoRequest request) {
         Jogo jogo = jogoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Jogo não encontrado: " + id));
 
@@ -79,9 +85,11 @@ public class JogoService {
             throw new AccessDeniedException("Apenas o Mestre do jogo pode editá-lo");
         }
 
-        jogo.setNome(jogoAtualizado.getNome());
-        jogo.setDescricao(jogoAtualizado.getDescricao());
-        jogo.setImagemUrl(jogoAtualizado.getImagemUrl());
+        jogo.setNome(request.getNome());
+        jogo.setDescricao(request.getDescricao());
+        jogo.setImagemUrl(request.getImagemUrl());
+        jogo.setDataInicio(request.getDataInicio());
+        jogo.setDataFim(request.getDataFim());
 
         return jogoRepository.save(jogo);
     }
@@ -123,8 +131,17 @@ public class JogoService {
         return jogoParticipanteRepository.existsByUsuarioIdAndJogoIdAndAtivoTrue(usuarioId, jogoId);
     }
 
+    public Long getUsuarioAtualId() {
+        return getUsuarioAtual().getId();
+    }
+
+    public RoleJogo getMeuRole(Long usuarioId, Long jogoId) {
+        return jogoParticipanteRepository.findRoleByJogoIdAndUsuarioId(jogoId, usuarioId).orElse(null);
+    }
+
     private Usuario getUsuarioAtual() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        assert authentication != null;
         String email = authentication.getName();
         return usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("Usuário não encontrado"));

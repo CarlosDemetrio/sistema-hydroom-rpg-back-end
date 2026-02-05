@@ -1,6 +1,10 @@
 package br.com.hydroom.rpg.fichacontrolador.controller;
 
-import br.com.hydroom.rpg.fichacontrolador.model.Jogo;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.CriarJogoRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.EditarJogoRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.JogoResponse;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.JogoResumoResponse;
+import br.com.hydroom.rpg.fichacontrolador.mapper.JogoMapper;
 import br.com.hydroom.rpg.fichacontrolador.service.JogoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -26,33 +30,43 @@ import java.util.List;
 public class JogoController {
 
     private final JogoService jogoService;
+    private final JogoMapper mapper;
 
     @GetMapping
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
     @Operation(summary = "Listar jogos do usuário", description = "Retorna todos os jogos onde o usuário é Mestre ou Jogador")
-    public ResponseEntity<List<Jogo>> listar() {
-        return ResponseEntity.ok(jogoService.listarJogosDoUsuario());
+    public ResponseEntity<List<JogoResumoResponse>> listar() {
+        var jogos = jogoService.listarJogosDoUsuario();
+        var response = jogos.stream().map(mapper::toResumoResponse).toList();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
     @Operation(summary = "Buscar jogo por ID", description = "Retorna detalhes do jogo se o usuário tiver acesso")
-    public ResponseEntity<Jogo> buscar(@PathVariable Long id) {
-        return ResponseEntity.ok(jogoService.buscarJogo(id));
+    public ResponseEntity<JogoResponse> buscar(@PathVariable Long id) {
+        var usuarioId = jogoService.getUsuarioAtualId();
+        var jogo = jogoService.buscarJogo(id);
+        var response = mapper.toResponse(jogo);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
     @PreAuthorize("hasRole('MESTRE')")
     @Operation(summary = "Criar novo jogo (Apenas MESTRE)", description = "Cria um novo jogo/campanha com o usuário como Mestre")
-    public ResponseEntity<Jogo> criar(@Valid @RequestBody Jogo jogo) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(jogoService.criarJogo(jogo));
+    public ResponseEntity<JogoResponse> criar(@Valid @RequestBody CriarJogoRequest request) {
+        var jogo = jogoService.criarJogo(request);
+        var response = mapper.toResponse(jogo);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('MESTRE')")
     @Operation(summary = "Atualizar jogo (Apenas MESTRE)", description = "Atualiza informações do jogo - apenas o Mestre do jogo pode fazer isso")
-    public ResponseEntity<Jogo> atualizar(@PathVariable Long id, @Valid @RequestBody Jogo jogo) {
-        return ResponseEntity.ok(jogoService.atualizarJogo(id, jogo));
+    public ResponseEntity<JogoResponse> atualizar(@PathVariable Long id, @Valid @RequestBody EditarJogoRequest request) {
+        var jogo = jogoService.atualizarJogo(id, request);
+        var response = mapper.toResponse(jogo);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
@@ -66,7 +80,9 @@ public class JogoController {
     @PostMapping("/{id}/ativar")
     @PreAuthorize("hasRole('MESTRE')")
     @Operation(summary = "Reativar jogo (Apenas MESTRE)", description = "Reativa um jogo marcado como inativo")
-    public ResponseEntity<Jogo> ativar(@PathVariable Long id) {
-        return ResponseEntity.ok(jogoService.ativarJogo(id));
+    public ResponseEntity<JogoResponse> ativar(@PathVariable Long id) {
+        var jogo = jogoService.ativarJogo(id);
+        var response = mapper.toResponse(jogo);
+        return ResponseEntity.ok(response);
     }
 }

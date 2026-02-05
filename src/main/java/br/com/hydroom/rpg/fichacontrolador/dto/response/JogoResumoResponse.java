@@ -20,7 +20,7 @@ public class JogoResumoResponse {
     private Long id;
     private String nome;
     private String descricao;
-    private RoleJogo meuRole;
     private Integer totalParticipantes;
     private Boolean ativo;
+    private RoleJogo meuRole;
 }

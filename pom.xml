@@ -88,7 +88,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.3.0</version>
+            <version>3.0.1</version>
         </dependency>
 
         <!-- Spring Boot Actuator -->
@@ -178,33 +178,6 @@
                     </excludes>
                 </configuration>
             </plugin>
-
-            <!-- OWASP Dependency Check - TEMPORARIAMENTE DESABILITADO -->
-            <!-- Erro: NVD API retornando 403/404. Necessita API Key ou executar manualmente -->
-            <!-- Para reabilitar: descomentar o plugin abaixo -->
-            <!-- Executar manualmente: ./mvnw org.owasp:dependency-check-maven:check -->
-            <!--
-            <plugin>
-                <groupId>org.owasp</groupId>
-                <artifactId>dependency-check-maven</artifactId>
-                <version>9.0.9</version>
-                <configuration>
-                    <failBuildOnCVSS>7</failBuildOnCVSS>
-                    <suppressionFile>owasp-suppressions.xml</suppressionFile>
-                    <formats>
-                        <format>HTML</format>
-                        <format>JSON</format>
-                    </formats>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            -->
         </plugins>
     </build>
 

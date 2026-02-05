@@ -58,7 +58,7 @@ public class Jogo extends BaseEntity {
     /**
      * Participantes do jogo (Mestre + Jogadores).
      */
-    @OneToMany(mappedBy = "jogo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "jogo", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
     @Builder.Default
     private Set<JogoParticipante> participantes = new HashSet<>();
 

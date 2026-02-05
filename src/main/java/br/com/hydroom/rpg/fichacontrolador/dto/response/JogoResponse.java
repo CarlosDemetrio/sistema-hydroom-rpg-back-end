@@ -25,6 +25,6 @@ public class JogoResponse {
     private LocalDate dataInicio;
     private LocalDate dataFim;
     private Boolean ativo;
-    private RoleJogo meuRole;
     private Integer totalParticipantes;
+    private RoleJogo meuRole;
 }

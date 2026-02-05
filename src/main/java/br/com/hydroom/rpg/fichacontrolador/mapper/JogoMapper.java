@@ -31,49 +31,17 @@ public interface JogoMapper {
      * Converte Jogo para JogoResponse.
      *
      * @param jogo Entidade Jogo
-     * @param meuRole Role do usuário logado neste jogo
      * @return JogoResponse com dados completos
      */
-    default JogoResponse toResponse(Jogo jogo, RoleJogo meuRole) {
-        if (jogo == null) {
-            return null;
-        }
-
-        return JogoResponse.builder()
-            .id(jogo.getId())
-            .nome(jogo.getNome())
-            .descricao(jogo.getDescricao())
-            .dataInicio(jogo.getDataInicio())
-            .dataFim(jogo.getDataFim())
-            .ativo(jogo.getAtivo())
-            .meuRole(meuRole)
-            .totalParticipantes((int) jogo.getParticipantes().stream()
-                .filter(JogoParticipante::getAtivo)
-                .count())
-            .build();
-    }
+    @Mapping(target = "totalParticipantes", expression = "java((int) (jogo.getParticipantes() == null ? 0 : jogo.getParticipantes().stream().filter(br.com.hydroom.rpg.fichacontrolador.model.JogoParticipante::getAtivo).count()))")
+    JogoResponse toResponse(Jogo jogo);
 
     /**
      * Converte Jogo para JogoResumoResponse.
      *
      * @param jogo Entidade Jogo
-     * @param meuRole Role do usuário logado neste jogo
      * @return JogoResumoResponse para listagens
      */
-    default JogoResumoResponse toResumoResponse(Jogo jogo, RoleJogo meuRole) {
-        if (jogo == null) {
-            return null;
-        }
-
-        return JogoResumoResponse.builder()
-            .id(jogo.getId())
-            .nome(jogo.getNome())
-            .descricao(jogo.getDescricao())
-            .meuRole(meuRole)
-            .totalParticipantes((int) jogo.getParticipantes().stream()
-                .filter(JogoParticipante::getAtivo)
-                .count())
-            .ativo(jogo.getAtivo())
-            .build();
-    }
+    @Mapping(target = "totalParticipantes", expression = "java((int) (jogo.getParticipantes() == null ? 0 : jogo.getParticipantes().stream().filter(br.com.hydroom.rpg.fichacontrolador.model.JogoParticipante::getAtivo).count()))")
+    JogoResumoResponse toResumoResponse(Jogo jogo);
 }

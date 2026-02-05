@@ -41,6 +41,15 @@ public class JogoController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
+    @Operation(summary = "Buscar jogo por ID", description = "Retorna os detalhes de um jogo específico se o usuário tiver acesso")
+    public ResponseEntity<JogoResponse> buscarPorId(@PathVariable Long id) {
+        var jogo = jogoService.buscarJogo(id);
+        var response = mapper.toResponse(jogo);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/ativo")
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
     @Operation(summary = "Buscar jogo ativo", description = "Retorna o jogo atualmente ativo onde o usuário é mestre (404 se não houver)")

@@ -39,7 +39,6 @@ class UsuarioRepositoryTest {
                 .imagemUrl("https://example.com/foto.jpg")
                 .provider("GOOGLE")
                 .providerId("google-123456")
-                .ativo(true)
                 .build();
     }
 
@@ -59,7 +58,7 @@ class UsuarioRepositoryTest {
         assertThat(usuarioSalvo.getNome()).isEqualTo("Usuário Teste");
         assertThat(usuarioSalvo.getProvider()).isEqualTo("GOOGLE");
         assertThat(usuarioSalvo.getProviderId()).isEqualTo("google-123456");
-        assertThat(usuarioSalvo.getAtivo()).isTrue();
+        assertThat(usuarioSalvoisActive()).isTrue();
     }
 
     @Test
@@ -138,7 +137,6 @@ class UsuarioRepositoryTest {
                 .nome("Outro Usuário")
                 .provider("GOOGLE")
                 .providerId("google-789012") // ProviderId diferente
-                .ativo(true)
                 .build();
 
         // Act & Assert
@@ -160,7 +158,6 @@ class UsuarioRepositoryTest {
                 .nome("Outro Usuário")
                 .provider("GOOGLE")
                 .providerId("google-123456") // ProviderId duplicado
-                .ativo(true)
                 .build();
 
         // Act & Assert
@@ -199,7 +196,6 @@ class UsuarioRepositoryTest {
                 .nome("Usuário 1")
                 .provider("GOOGLE")
                 .providerId("google-111")
-                .ativo(true)
                 .build();
 
         Usuario usuario2 = Usuario.builder()
@@ -207,7 +203,6 @@ class UsuarioRepositoryTest {
                 .nome("Usuário 2")
                 .provider("GOOGLE")
                 .providerId("google-222")
-                .ativo(true)
                 .build();
 
         // Act
@@ -241,11 +236,11 @@ class UsuarioRepositoryTest {
         Usuario usuarioSalvo = usuarioRepository.save(usuarioBase);
 
         // Act
-        usuarioSalvo.setAtivo(false);
+        usuarioSalvo.delete();
         Usuario usuarioDesativado = usuarioRepository.save(usuarioSalvo);
 
         // Assert
-        assertThat(usuarioDesativado.getAtivo()).isFalse();
+        assertThat(usuarioDesativadoisActive()).isFalse();
         assertThat(usuarioRepository.findById(usuarioDesativado.getId())).isPresent();
     }
 }

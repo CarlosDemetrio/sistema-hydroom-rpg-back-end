@@ -117,7 +117,7 @@ class JogoRepositoryTest {
         // Assert
         assertThat(saved.getId()).isNotNull();
         assertThat(saved.getNome()).isEqualTo("D&D 5e - Lost Mine of Phandelver");
-        assertThat(saved.getAtivo()).isTrue();
+        assertThat(savedisActive()).isTrue();
     }
 
     @Test
@@ -153,7 +153,7 @@ class JogoRepositoryTest {
     @DisplayName("Não deve buscar jogo inativo por ID")
     void testNaoBuscarJogoInativoPorId() {
         // Arrange
-        jogo.setAtivo(false);
+        jogo.delete();
         jogoRepository.save(jogo);
 
         // Act
@@ -197,7 +197,7 @@ class JogoRepositoryTest {
         JogoParticipante participante = participanteRepository
             .findByJogoIdAndUsuarioIdAndAtivoTrue(jogo.getId(), jogador.getId())
             .orElseThrow();
-        participante.setAtivo(false);
+        participante.delete();
         participanteRepository.save(participante);
 
         // Act
@@ -226,7 +226,7 @@ class JogoRepositoryTest {
     @DisplayName("Deve desativar jogo (soft delete)")
     void testDesativarJogo() {
         // Arrange
-        jogo.setAtivo(false);
+        jogo.delete();
 
         // Act
         jogoRepository.save(jogo);

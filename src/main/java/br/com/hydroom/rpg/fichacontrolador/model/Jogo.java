@@ -51,9 +51,14 @@ public class Jogo extends BaseEntity {
     @Column(name = "data_fim")
     private LocalDate dataFim;
 
-    @Column(nullable = false)
+    /**
+     * Indica se este é o jogo atualmente selecionado pelo mestre.
+     * REGRA: Apenas 1 jogo pode ter jogoAtivo=true por mestre por vez.
+     * Campo 'ativo' da BaseEntity indica se o jogo está ativo (soft delete).
+     */
+    @Column(name = "jogo_ativo", nullable = false)
     @Builder.Default
-    private Boolean ativo = true;
+    private Boolean jogoAtivo = false;
 
     /**
      * Participantes do jogo (Mestre + Jogadores).

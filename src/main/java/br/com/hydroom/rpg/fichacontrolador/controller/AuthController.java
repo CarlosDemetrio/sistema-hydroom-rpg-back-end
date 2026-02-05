@@ -3,9 +3,11 @@ package br.com.hydroom.rpg.fichacontrolador.controller;
 import br.com.hydroom.rpg.fichacontrolador.constants.ValidationMessages;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.UsuarioResponse;
 import br.com.hydroom.rpg.fichacontrolador.exception.BusinessException;
+import br.com.hydroom.rpg.fichacontrolador.mapper.JogoMapper;
 import br.com.hydroom.rpg.fichacontrolador.mapper.UsuarioMapper;
 import br.com.hydroom.rpg.fichacontrolador.model.Usuario;
 import br.com.hydroom.rpg.fichacontrolador.repository.UsuarioRepository;
+import br.com.hydroom.rpg.fichacontrolador.service.JogoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -37,6 +39,8 @@ public class AuthController {
 
     private final UsuarioRepository usuarioRepository;
     private final UsuarioMapper usuarioMapper;
+    private final JogoService jogoService;
+    private final JogoMapper jogoMapper;
 
     @Operation(summary = "Obter dados completos do usuário autenticado")
     @ApiResponses(value = {
@@ -61,6 +65,19 @@ public class AuthController {
                 });
 
         UsuarioResponse response = usuarioMapper.toResponse(usuario);
+
+        // Se for MESTRE, buscar jogo ativo
+        if ("MESTRE".equals(usuario.getRole())) {
+            try {
+                var jogoAtivo = jogoService.buscarJogoAtivo();
+                response.setJogoAtivo(jogoMapper.toResumoResponse(jogoAtivo));
+                log.debug("Jogo ativo encontrado para mestre - Jogo ID: {}", jogoAtivo.getId());
+            } catch (IllegalStateException e) {
+                // Nenhum jogo ativo - jogoAtivo fica null
+                log.debug("Nenhum jogo ativo para o mestre - ID: {}", usuario.getId());
+            }
+        }
+
         log.debug("Usuário autenticado retornado - ID: {}, Email: {}", usuario.getId(), usuario.getEmail());
 
         return ResponseEntity.ok(response);

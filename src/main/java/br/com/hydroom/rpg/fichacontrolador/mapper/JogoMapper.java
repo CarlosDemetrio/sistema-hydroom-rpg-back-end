@@ -22,7 +22,7 @@ public interface JogoMapper {
      * Converte CriarJogoRequest para Jogo.
      */
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "ativo", constant = "true")
+    @Mapping(target = "jogoAtivo", constant = "false")
     @Mapping(target = "dataFim", ignore = true)
     @Mapping(target = "participantes", ignore = true)
     Jogo toEntity(CriarJogoRequest request);

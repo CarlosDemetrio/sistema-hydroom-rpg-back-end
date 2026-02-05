@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
  */
 @Entity
 @Table(name = "aptidao_config", indexes = {
-    @Index(name = "idx_aptidao_config_jogo", columnList = "jogo_id, ativo"),
+    @Index(name = "idx_aptidao_config_jogo", columnList = "jogo_id"),
     @Index(name = "idx_aptidao_config_tipo", columnList = "tipo_aptidao_id")
 }, uniqueConstraints = {
     @UniqueConstraint(name = "uk_aptidao_config_jogo_nome", columnNames = {"jogo_id", "nome"})
@@ -51,8 +51,4 @@ public class AptidaoConfig extends BaseEntity {
     @Builder.Default
     @Column(name = "ordem_exibicao")
     private Integer ordemExibicao = 0;
-
-    @Builder.Default
-    @Column(nullable = false)
-    private Boolean ativo = true;
 }

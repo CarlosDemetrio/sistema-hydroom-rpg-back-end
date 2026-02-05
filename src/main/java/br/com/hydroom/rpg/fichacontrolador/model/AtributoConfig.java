@@ -13,9 +13,10 @@ import lombok.NoArgsConstructor;
  */
 @Entity
 @Table(name = "atributo_config", indexes = {
-    @Index(name = "idx_atributo_config_jogo", columnList = "jogo_id, ativo")
+    @Index(name = "idx_atributo_config_jogo", columnList = "jogo_id")
 }, uniqueConstraints = {
-    @UniqueConstraint(name = "uk_atributo_config_jogo_nome", columnNames = {"jogo_id", "nome"})
+    @UniqueConstraint(name = "uk_atributo_config_jogo_nome", columnNames = {"jogo_id", "nome"}),
+    @UniqueConstraint(name = "uk_atributo_config_jogo_abreviacao", columnNames = {"jogo_id", "abreviacao"})
 })
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -39,7 +40,7 @@ public class AtributoConfig extends BaseEntity {
     private String nome;
 
     @Size(min = 2, max = 5)
-    @Column(length = 5, unique = true)
+    @Column(length = 5)
     private String abreviacao;
 
     @Size(max = 500)
@@ -65,8 +66,4 @@ public class AtributoConfig extends BaseEntity {
     @Builder.Default
     @Column(name = "ordem_exibicao")
     private Integer ordemExibicao = 0;
-
-    @Builder.Default
-    @Column(nullable = false)
-    private Boolean ativo = true;
 }

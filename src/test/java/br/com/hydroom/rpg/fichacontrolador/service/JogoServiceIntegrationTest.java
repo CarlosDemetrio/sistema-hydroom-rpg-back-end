@@ -198,7 +198,7 @@ class JogoServiceIntegrationTest {
         // Assert
         assertThat(result.getId()).isNotNull();
         assertThat(result.getNome()).isEqualTo("Nova Campanha");
-        assertThat(result.getAtivo()).isTrue();
+        assertThat(resultisActive()).isTrue();
         assertThat(jogoParticipanteRepository.existsByUsuarioIdAndJogoIdAndRoleAndAtivoTrue(
             mestre.getId(), result.getId(), RoleJogo.MESTRE)).isTrue();
     }
@@ -244,21 +244,21 @@ class JogoServiceIntegrationTest {
 
         // Assert
         Jogo atualizado = jogoRepository.findById(jogo.getId()).orElseThrow();
-        assertThat(atualizado.getAtivo()).isFalse();
+        assertThat(atualizadoisActive()).isFalse();
     }
 
     @Test
     @DisplayName("Deve reativar jogo quando mestre")
     void ativarJogo() {
         // Arrange
-        jogo.setAtivo(false);
+        jogo.delete();
         jogoRepository.save(jogo);
 
         // Act
         Jogo result = jogoService.ativarJogo(jogo.getId());
 
         // Assert
-        assertThat(result.getAtivo()).isTrue();
+        assertThat(resultisActive()).isTrue();
     }
 
     // ========================================
@@ -281,7 +281,7 @@ class JogoServiceIntegrationTest {
         // Assert - Jogo criado
         assertThat(result.getId()).isNotNull();
         assertThat(result.getNome()).isEqualTo("Campanha com Configs");
-        assertThat(result.getAtivo()).isTrue();
+        assertThat(resultisActive()).isTrue();
 
         // Assert - Mestre registrado
         assertThat(jogoParticipanteRepository.existsByUsuarioIdAndJogoIdAndRoleAndAtivoTrue(

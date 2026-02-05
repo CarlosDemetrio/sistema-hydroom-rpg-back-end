@@ -33,7 +33,8 @@ public class JogoService {
     private final GameConfigInitializerService configInitializerService;
 
     public List<Jogo> listarJogosDoUsuario() {
-        return jogoRepository.findByAtivoTrue();
+        Usuario usuarioAtual = getUsuarioAtual();
+        return jogoRepository.findByParticipantesUsuarioIdAndAtivoTrue(usuarioAtual.getId());
     }
 
     public Jogo buscarJogo(Long id) {
@@ -60,7 +61,6 @@ public class JogoService {
         novoJogo.setNome(request.getNome());
         novoJogo.setDescricao(request.getDescricao());
         novoJogo.setDataInicio(request.getDataInicio());
-        novoJogo.setAtivo(true);
 
         Jogo jogoSalvo = jogoRepository.save(novoJogo);
 
@@ -69,7 +69,6 @@ public class JogoService {
                 .jogo(jogoSalvo)
                 .usuario(usuarioAtual)
                 .role(RoleJogo.MESTRE)
-                .ativo(true)
                 .build();
 
         jogoParticipanteRepository.save(participacao);
@@ -109,7 +108,8 @@ public class JogoService {
             throw new AccessDeniedException("Apenas o Mestre do jogo pode deletá-lo");
         }
 
-        jogo.setAtivo(false);
+        // Soft delete (seta deleted_at)
+        jogo.delete();
         jogoRepository.save(jogo);
     }
 
@@ -123,23 +123,31 @@ public class JogoService {
             throw new AccessDeniedException("Apenas o Mestre do jogo pode ativá-lo");
         }
 
-        // Desativar todos os outros jogos do mestre
-        jogoRepository.desativarTodosDoMestre(usuarioAtual.getId());
+        // REGRA: Apenas 1 jogo pode estar ativo por mestre
+        // Desativa todos os outros jogos do mestre
+        List<Jogo> jogosDoMestre = jogoRepository.findByMestreIdAndAtivoTrue(usuarioAtual.getId());
+        for (Jogo j : jogosDoMestre) {
+            if (j.getJogoAtivo() && !j.getId().equals(id)) {
+                j.setJogoAtivo(false);
+                jogoRepository.save(j);
+            }
+        }
 
-        // Ativar o jogo selecionado
-        jogo.setAtivo(true);
+        // Ativa o jogo selecionado
+        jogo.setJogoAtivo(true);
         return jogoRepository.save(jogo);
     }
 
     /**
      * Busca o jogo ativo do mestre logado.
+     * Jogo ativo = jogo selecionado atualmente (jogoAtivo=true).
      *
      * @return Jogo ativo
      * @throws IllegalStateException se não houver jogo ativo
      */
     public Jogo buscarJogoAtivo() {
         Usuario usuarioAtual = getUsuarioAtual();
-        return jogoRepository.findByMestreIdAndAtivoTrue(usuarioAtual.getId())
+        return jogoRepository.findByMestreIdAndJogoAtivoTrue(usuarioAtual.getId())
                 .orElseThrow(() -> new IllegalStateException("Nenhum jogo ativo encontrado"));
     }
 

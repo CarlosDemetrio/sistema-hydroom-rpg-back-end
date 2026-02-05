@@ -26,4 +26,7 @@ public class UsuarioResponse {
     private String role; // MESTRE ou JOGADOR
     private LocalDateTime dataCriacao;
     private LocalDateTime dataUltimaAtualizacao;
+
+    // Jogo ativo do mestre (null se jogador ou se não houver jogo ativo)
+    private JogoResumoResponse jogoAtivo;
 }

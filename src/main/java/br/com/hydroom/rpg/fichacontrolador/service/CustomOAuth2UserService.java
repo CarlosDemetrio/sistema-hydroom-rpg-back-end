@@ -87,7 +87,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .email(email)
                 .nome(nome)
                 .imagemUrl(imagemUrl)
-                .ativo(true)
                 .build();
 
         return usuarioRepository.save(usuario);

@@ -163,7 +163,6 @@ public class GameConfigInitializerService {
                         .formulaImpeto(dto.getFormulaImpeto())
                         .descricaoImpeto(dto.getUnidadeImpeto())
                         .ordemExibicao(dto.getOrdemExibicao())
-                        .ativo(true)
                         .build())
                 .toList();
 
@@ -182,7 +181,6 @@ public class GameConfigInitializerService {
                 .nome("FISICA")
                 .descricao("Aptidões físicas e corporais")
                 .ordemExibicao(1)
-                .ativo(true)
                 .build();
 
         TipoAptidao mental = TipoAptidao.builder()
@@ -190,7 +188,6 @@ public class GameConfigInitializerService {
                 .nome("MENTAL")
                 .descricao("Aptidões mentais e sociais")
                 .ordemExibicao(2)
-                .ativo(true)
                 .build();
 
         List<TipoAptidao> saved = tipoAptidaoRepository.saveAll(List.of(fisica, mental));
@@ -215,7 +212,6 @@ public class GameConfigInitializerService {
                             .nome(dto.getNome())
                             .descricao(dto.getDescricao())
                             .ordemExibicao(dto.getOrdemExibicao())
-                            .ativo(true)
                             .build();
                 })
                 .toList();
@@ -257,7 +253,6 @@ public class GameConfigInitializerService {
                         .nome(dto.getNome())
                         .descricao(dto.getDescricao())
                         .ordemExibicao(dto.getOrdemExibicao())
-                        .ativo(true)
                         .build())
                 .toList();
 
@@ -276,7 +271,6 @@ public class GameConfigInitializerService {
                         .nome(dto.getNome())
                         .descricao(dto.getDescricao())
                         .ordemExibicao(dto.getOrdemExibicao())
-                        .ativo(true)
                         .build())
                 .toList();
 
@@ -352,7 +346,6 @@ public class GameConfigInitializerService {
                         .nome(dto.getNome())
                         .numeroFaces(dto.getNumLados())
                         .ordemExibicao(dto.getOrdemExibicao())
-                        .ativo(true)
                         .build())
                 .toList();
 
@@ -388,7 +381,6 @@ public class GameConfigInitializerService {
                         .jogo(jogo)
                         .nome(dto.getNome())
                         .ordem(dto.getOrdemExibicao())
-                        .ativo(true)
                         .build())
                 .toList();
 
@@ -405,7 +397,6 @@ public class GameConfigInitializerService {
                         .jogo(jogo)
                         .nome(dto.getNome())
                         .ordem(dto.getOrdemExibicao())
-                        .ativo(true)
                         .build())
                 .toList();
 
@@ -423,7 +414,6 @@ public class GameConfigInitializerService {
                         .nome(dto.getNome())
                         .porcentagemVida(dto.getPorcentagemVida())
                         .ordemExibicao(dto.getOrdemExibicao())
-                        .ativo(true)
                         .build())
                 .toList();
 
@@ -444,7 +434,6 @@ public class GameConfigInitializerService {
                         .formulaCusto(dto.getFormulaCusto())
                         .descricaoEfeito(dto.getTipoBonus()) // Map tipoBonus to descricaoEfeito
                         .ordemExibicao(dto.getOrdemExibicao() != null ? dto.getOrdemExibicao() : 0)
-                        .ativo(true)
                         .build())
                 .toList();
 

@@ -143,14 +143,14 @@ class JogoServiceTest {
         // Assert
         assertThat(result.getId()).isEqualTo(99L);
         assertThat(result.getNome()).isEqualTo("Campanha Teste");
-        assertThat(result.getAtivo()).isTrue();
+        assertThat(resultisActive()).isTrue();
 
         ArgumentCaptor<JogoParticipante> captor = ArgumentCaptor.forClass(JogoParticipante.class);
         verify(jogoParticipanteRepository).save(captor.capture());
         var participacao = captor.getValue();
         assertThat(participacao.getUsuario()).isEqualTo(usuario);
         assertThat(participacao.getRole()).isEqualTo(RoleJogo.MESTRE);
-        assertThat(participacao.getAtivo()).isTrue();
+        assertThat(participacaoisActive()).isTrue();
     }
 
     @Test
@@ -215,7 +215,7 @@ class JogoServiceTest {
         // Assert
         ArgumentCaptor<Jogo> captor = ArgumentCaptor.forClass(Jogo.class);
         verify(jogoRepository).save(captor.capture());
-        assertThat(captor.getValue().getAtivo()).isFalse();
+        assertThat(captor.getValue()isActive()).isFalse();
     }
 
     @Test
@@ -234,6 +234,6 @@ class JogoServiceTest {
         var result = jogoService.ativarJogo(10L);
 
         // Assert
-        assertThat(result.getAtivo()).isTrue();
+        assertThat(resultisActive()).isTrue();
     }
 }

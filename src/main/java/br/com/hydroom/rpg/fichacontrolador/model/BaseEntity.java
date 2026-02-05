@@ -11,15 +11,15 @@ import java.time.LocalDateTime;
 
 /**
  * Classe base para entidades com soft delete e auditoria de timestamps.
- * Registros nunca são deletados fisicamente, apenas marcados como inativos.
+ * Soft delete via campo deleted_at (null = ativo, preenchido = deletado).
  */
 @Getter
 @Setter
 @MappedSuperclass
 public abstract class BaseEntity {
 
-    @Column(name = "ativo", nullable = false)
-    private Boolean ativo = true;
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -28,17 +28,31 @@ public abstract class BaseEntity {
     private LocalDateTime updatedAt;
 
     /**
-     * Marca o registro como inativo (soft delete).
+     * Marca o registro como deletado (soft delete).
      */
-    public void desativar() {
-        this.ativo = false;
+    public void delete() {
+        this.deletedAt = LocalDateTime.now();
     }
 
     /**
-     * Reativa um registro previamente desativado.
+     * Restaura um registro previamente deletado.
      */
-    public void ativar() {
-        this.ativo = true;
+    public void restore() {
+        this.deletedAt = null;
+    }
+
+    /**
+     * Verifica se o registro foi deletado.
+     */
+    public boolean isDeleted() {
+        return this.deletedAt != null;
+    }
+
+    /**
+     * Verifica se o registro está ativo (não deletado).
+     */
+    public boolean isActive() {
+        return this.deletedAt == null;
     }
 
     @PrePersist

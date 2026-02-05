@@ -33,7 +33,7 @@ public class NivelConfig extends BaseEntity {
 
     @Column(nullable = false)
     @NotNull(message = "Nível é obrigatório")
-    @Min(value = 1, message = "Nível deve ser maior que zero")
+    @Min(value = 0, message = "Nível não pode ser negativo")
     private Integer nivel;
 
     @Column(name = "xp_necessaria", nullable = false)
@@ -54,8 +54,7 @@ public class NivelConfig extends BaseEntity {
      * Pontos de aptidão ganhos ao atingir este nível.
      * Padrão: 3 pontos por nível.
      */
-    @Column(name = "pontos_aptidao", nullable = false)
-    @NotNull(message = "Pontos de aptidão são obrigatórios")
+    @Column(name = "pontos_aptidao")
     @Min(value = 0, message = "Pontos de aptidão não podem ser negativos")
     private Integer pontosAptidao = 3;
 

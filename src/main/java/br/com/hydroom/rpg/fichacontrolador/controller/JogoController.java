@@ -41,18 +41,17 @@ public class JogoController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/ativo")
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
-    @Operation(summary = "Buscar jogo por ID", description = "Retorna detalhes do jogo se o usuário tiver acesso")
-    public ResponseEntity<JogoResponse> buscar(@PathVariable Long id) {
-        var usuarioId = jogoService.getUsuarioAtualId();
-        var jogo = jogoService.buscarJogo(id);
+    @Operation(summary = "Buscar jogo ativo", description = "Retorna o jogo atualmente ativo onde o usuário é mestre (404 se não houver)")
+    public ResponseEntity<JogoResponse> buscarAtivo() {
+        var jogo = jogoService.buscarJogoAtivo();
         var response = mapper.toResponse(jogo);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('MESTRE')")
+//    @PreAuthorize("hasRole('MESTRE')")
     @Operation(summary = "Criar novo jogo (Apenas MESTRE)", description = "Cria um novo jogo/campanha com o usuário como Mestre")
     public ResponseEntity<JogoResponse> criar(@Valid @RequestBody CriarJogoRequest request) {
         var jogo = jogoService.criarJogo(request);

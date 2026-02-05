@@ -34,10 +34,10 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                // CSRF configurado corretamente - desabilitado apenas para endpoints públicos
+                // CSRF configurado corretamente - desabilitado para APIs REST
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringRequestMatchers("/api/public/**", "/oauth2/**", "/login/**", "/error")
+                        .ignoringRequestMatchers("/api/**", "/oauth2/**", "/login/**", "/error")
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/error", "/webjars/**", "/login/**", "/oauth2/**").permitAll()

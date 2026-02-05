@@ -3,6 +3,7 @@ package br.com.hydroom.rpg.fichacontrolador.config;
 import br.com.hydroom.rpg.fichacontrolador.dto.defaults.*;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -271,13 +272,14 @@ public class DefaultGameConfigProviderImpl implements GameDefaultConfigProvider 
 
     @Override
     public List<MembroCorpoConfigDTO> getDefaultMembrosCorpo() {
+        // Distribuição padrão de vida por membro (total = 100%)
         return List.of(
-            MembroCorpoConfigDTO.of("Cabeça", 1),
-            MembroCorpoConfigDTO.of("Tronco", 2),
-            MembroCorpoConfigDTO.of("Braço Direito", 3),
-            MembroCorpoConfigDTO.of("Braço Esquerdo", 4),
-            MembroCorpoConfigDTO.of("Perna Direita", 5),
-            MembroCorpoConfigDTO.of("Perna Esquerda", 6)
+            MembroCorpoConfigDTO.of("Cabeça", new BigDecimal("0.25"), 1),           // 25% da vida
+            MembroCorpoConfigDTO.of("Tronco", new BigDecimal("0.35"), 2),           // 35% da vida
+            MembroCorpoConfigDTO.of("Braço Direito", new BigDecimal("0.10"), 3),    // 10% da vida
+            MembroCorpoConfigDTO.of("Braço Esquerdo", new BigDecimal("0.10"), 4),   // 10% da vida
+            MembroCorpoConfigDTO.of("Perna Direita", new BigDecimal("0.10"), 5),    // 10% da vida
+            MembroCorpoConfigDTO.of("Perna Esquerda", new BigDecimal("0.10"), 6)    // 10% da vida
         );
     }
 

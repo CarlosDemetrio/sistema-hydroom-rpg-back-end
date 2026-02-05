@@ -30,6 +30,7 @@ public class JogoService {
     private final JogoRepository jogoRepository;
     private final JogoParticipanteRepository jogoParticipanteRepository;
     private final UsuarioRepository usuarioRepository;
+    private final GameConfigInitializerService configInitializerService;
 
     public List<Jogo> listarJogosDoUsuario() {
         return jogoRepository.findByAtivoTrue();
@@ -63,6 +64,7 @@ public class JogoService {
 
         Jogo jogoSalvo = jogoRepository.save(novoJogo);
 
+        // Adicionar mestre como participante
         JogoParticipante participacao = JogoParticipante.builder()
                 .jogo(jogoSalvo)
                 .usuario(usuarioAtual)
@@ -71,6 +73,9 @@ public class JogoService {
                 .build();
 
         jogoParticipanteRepository.save(participacao);
+
+        // Inicializar configurações padrão do jogo
+        configInitializerService.initializeGameConfigs(jogoSalvo.getId());
 
         return jogoSalvo;
     }
@@ -115,11 +120,27 @@ public class JogoService {
 
         Usuario usuarioAtual = getUsuarioAtual();
         if (!usuarioEhMestreDoJogo(usuarioAtual.getId(), id)) {
-            throw new AccessDeniedException("Apenas o Mestre do jogo pode reativá-lo");
+            throw new AccessDeniedException("Apenas o Mestre do jogo pode ativá-lo");
         }
 
+        // Desativar todos os outros jogos do mestre
+        jogoRepository.desativarTodosDoMestre(usuarioAtual.getId());
+
+        // Ativar o jogo selecionado
         jogo.setAtivo(true);
         return jogoRepository.save(jogo);
+    }
+
+    /**
+     * Busca o jogo ativo do mestre logado.
+     *
+     * @return Jogo ativo
+     * @throws IllegalStateException se não houver jogo ativo
+     */
+    public Jogo buscarJogoAtivo() {
+        Usuario usuarioAtual = getUsuarioAtual();
+        return jogoRepository.findByMestreIdAndAtivoTrue(usuarioAtual.getId())
+                .orElseThrow(() -> new IllegalStateException("Nenhum jogo ativo encontrado"));
     }
 
     public boolean usuarioEhMestreDoJogo(Long usuarioId, Long jogoId) {

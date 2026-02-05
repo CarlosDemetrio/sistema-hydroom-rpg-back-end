@@ -4,12 +4,18 @@ import br.com.hydroom.rpg.fichacontrolador.model.Usuario;
 import br.com.hydroom.rpg.fichacontrolador.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Serviço customizado para processar usuários OAuth2.
@@ -57,7 +63,21 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             log.info("Dados do usuário atualizados - ID: {}, Email: {}", usuario.getId(), email);
         }
 
-        return oauth2User;
+        // Criar authorities baseadas na role do usuário
+        Set<GrantedAuthority> authorities = new HashSet<>(oauth2User.getAuthorities());
+
+        // Adicionar role do banco de dados como authority
+        // Spring Security espera prefixo "ROLE_" para @PreAuthorize("hasRole('...')")
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + usuario.getRole()));
+
+        log.info("Authorities configuradas para usuário {}: {}", email, authorities);
+
+        // Retornar novo OAuth2User com authorities customizadas
+        return new DefaultOAuth2User(
+                authorities,
+                oauth2User.getAttributes(),
+                "email" // Nome do atributo que será usado como principal
+        );
     }
 
     private Usuario criarNovoUsuario(String provider, String providerId, String email, String nome, String imagemUrl) {

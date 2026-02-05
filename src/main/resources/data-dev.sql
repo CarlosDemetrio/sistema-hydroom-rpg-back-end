@@ -1,15 +1,19 @@
 -- ========================================
--- SEED DATA - IDEMPOTENT (Safe for Production)
+-- SEED DATA - DISABLED
 -- ========================================
--- Usa INSERT ON CONFLICT DO NOTHING
--- Pode executar multiplas vezes sem duplicar
+-- GameConfigInitializerService criará as configurações automaticamente
+-- quando você criar um jogo via API POST /api/v1/jogos
 -- ========================================
 
+-- Descomente apenas se precisar de dados de teste específicos
+-- E lembre-se de resetar as sequences depois!
+
+/*
 -- ========================================
 -- USUARIO DE TESTE
 -- ========================================
-INSERT INTO usuarios (id, nome, email, provider, provider_id, ativo, role, created_at, updated_at)
-VALUES (1, 'Admin Teste', 'admin@teste.com', 'LOCAL', 'admin-local-1', true, 'MESTRE', NOW(), NOW())
+INSERT INTO usuarios (nome, email, provider, provider_id, ativo, role, created_at, updated_at)
+VALUES ('Admin Teste', 'admin@teste.com', 'LOCAL', 'admin-local-1', true, 'MESTRE', NOW(), NOW())
 ON CONFLICT (email) DO NOTHING;
 
 -- ========================================
@@ -29,13 +33,13 @@ ON CONFLICT (id) DO NOTHING;
 -- ========================================
 -- ATRIBUTOS
 -- ========================================
-INSERT INTO atributo_config (id, jogo_id, nome, descricao, ordem_exibicao, formula_impeto, ativo, created_at, updated_at) VALUES
-(1, 1, 'Forca', 'Representa poder fisico', 1, 'FOR', true, NOW(), NOW()),
-(2, 1, 'Destreza', 'Agilidade e reflexos', 2, 'DES', true, NOW(), NOW()),
-(3, 1, 'Constituicao', 'Resistencia fisica', 3, 'CON', true, NOW(), NOW()),
-(4, 1, 'Inteligencia', 'Capacidade mental', 4, 'INT', true, NOW(), NOW()),
-(5, 1, 'Sabedoria', 'Percepcao e intuicao', 5, 'SAB', true, NOW(), NOW()),
-(6, 1, 'Carisma', 'Forca de personalidade', 6, 'CAR', true, NOW(), NOW())
+INSERT INTO atributo_config (id, jogo_id, nome, abreviacao, descricao, ordem_exibicao, formula_impeto, ativo, created_at, updated_at) VALUES
+(1, 1, 'Forca', 'FOR', 'Representa poder fisico', 1, 'total * 3', true, NOW(), NOW()),
+(2, 1, 'Destreza', 'DES', 'Agilidade e reflexos', 2, 'total * 3', true, NOW(), NOW()),
+(3, 1, 'Constituicao', 'CON', 'Resistencia fisica', 3, 'total * 3', true, NOW(), NOW()),
+(4, 1, 'Inteligencia', 'INT', 'Capacidade mental', 4, 'total / 3', true, NOW(), NOW()),
+(5, 1, 'Sabedoria', 'SAB', 'Percepcao e intuicao', 5, 'total / 10', true, NOW(), NOW()),
+(6, 1, 'Carisma', 'CAR', 'Forca de personalidade', 6, 'total / 10', true, NOW(), NOW())
 ON CONFLICT (id) DO NOTHING;
 
 -- ========================================
@@ -112,17 +116,17 @@ ON CONFLICT (id) DO NOTHING;
 -- ========================================
 -- NIVEIS
 -- ========================================
-INSERT INTO niveis_config (id, jogo_id, nivel, xp_necessaria, pontos_atributo, limitador_atributo, ativo, created_at, updated_at) VALUES
-(1, 1, 1, 0, 3, 18, true, NOW(), NOW()),
-(2, 1, 2, 300, 3, 18, true, NOW(), NOW()),
-(3, 1, 3, 900, 3, 18, true, NOW(), NOW()),
-(4, 1, 4, 2700, 3, 19, true, NOW(), NOW()),
-(5, 1, 5, 6500, 3, 19, true, NOW(), NOW()),
-(6, 1, 6, 14000, 3, 20, true, NOW(), NOW()),
-(7, 1, 7, 23000, 3, 20, true, NOW(), NOW()),
-(8, 1, 8, 34000, 3, 20, true, NOW(), NOW()),
-(9, 1, 9, 48000, 3, 20, true, NOW(), NOW()),
-(10, 1, 10, 64000, 3, 20, true, NOW(), NOW())
+INSERT INTO niveis_config (id, jogo_id, nivel, xp_necessaria, pontos_atributo, pontos_aptidao, limitador_atributo, ativo, created_at, updated_at) VALUES
+(1, 1, 1, 0, 3, 3, 18, true, NOW(), NOW()),
+(2, 1, 2, 300, 3, 3, 18, true, NOW(), NOW()),
+(3, 1, 3, 900, 3, 3, 18, true, NOW(), NOW()),
+(4, 1, 4, 2700, 3, 3, 19, true, NOW(), NOW()),
+(5, 1, 5, 6500, 3, 3, 19, true, NOW(), NOW()),
+(6, 1, 6, 14000, 3, 3, 20, true, NOW(), NOW()),
+(7, 1, 7, 23000, 3, 3, 20, true, NOW(), NOW()),
+(8, 1, 8, 34000, 3, 3, 20, true, NOW(), NOW()),
+(9, 1, 9, 48000, 3, 3, 20, true, NOW(), NOW()),
+(10, 1, 10, 64000, 3, 3, 20, true, NOW(), NOW())
 ON CONFLICT (id) DO NOTHING;
 
 -- ========================================
@@ -156,7 +160,7 @@ ON CONFLICT (id) DO NOTHING;
 INSERT INTO bonus_config (id, jogo_id, nome, descricao, formula_base, ordem_exibicao, ativo, created_at, updated_at) VALUES
 (1, 1, 'BBA', 'Bonus Base de Ataque', 'NIVEL', 1, true, NOW(), NOW()),
 (2, 1, 'BBD', 'Bonus Base de Defesa', 'DES / 2', 2, true, NOW(), NOW())
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO NOTHING;x
 
 -- ========================================
 -- VANTAGENS
@@ -166,3 +170,12 @@ INSERT INTO vantagem_config (id, jogo_id, nome, descricao, nivel_maximo, formula
 (2, 1, 'Ataque Poderoso', 'Bonus ataque', 5, 'NIVEL * NIVEL', '+1 ataque/nivel', 2, true, NOW(), NOW()),
 (3, 1, 'Defesa Aprimorada', 'Bonus defesa', 5, 'NIVEL * 3', '+1 defesa/nivel', 3, true, NOW(), NOW())
 ON CONFLICT (id) DO NOTHING;
+*/
+
+-- ========================================
+-- FIM DO SEED DATA COMENTADO
+-- ========================================
+-- Para ter dados de teste, crie um jogo via API:
+-- POST /api/v1/jogos { "nome": "Meu Jogo", "descricao": "...", "dataInicio": "2026-02-05" }
+-- O GameConfigInitializerService criará TODAS as configurações automaticamente!
+-- ========================================

@@ -421,6 +421,7 @@ public class GameConfigInitializerService {
                 .map(dto -> MembroCorpoConfig.builder()
                         .jogo(jogo)
                         .nome(dto.getNome())
+                        .porcentagemVida(dto.getPorcentagemVida())
                         .ordemExibicao(dto.getOrdemExibicao())
                         .ativo(true)
                         .build())

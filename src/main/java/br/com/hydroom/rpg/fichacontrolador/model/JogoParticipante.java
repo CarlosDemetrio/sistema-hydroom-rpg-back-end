@@ -46,10 +46,6 @@ public class JogoParticipante extends BaseEntity {
     @Builder.Default
     private RoleJogo role = RoleJogo.JOGADOR;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private Boolean ativo = true;
-
     /**
      * Verifica se o participante é o mestre do jogo.
      */

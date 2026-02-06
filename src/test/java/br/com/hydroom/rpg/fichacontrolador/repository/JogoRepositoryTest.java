@@ -188,11 +188,11 @@ class JogoRepositoryTest {
     @Test
     @DisplayName("Não deve buscar jogos de participantes inativos")
     void testNaoBuscarJogosDeParticipantesInativos() {
-        // Arrange - Desativar participação do jogador
+        // Arrange - Desativar participação do jogador (soft delete)
         JogoParticipante participante = participanteRepository
             .findByJogoIdAndUsuarioIdAndAtivoTrue(jogo.getId(), jogador.getId())
             .orElseThrow();
-        participante.setAtivo(false);
+        participante.delete();
         participanteRepository.save(participante);
 
         // Act

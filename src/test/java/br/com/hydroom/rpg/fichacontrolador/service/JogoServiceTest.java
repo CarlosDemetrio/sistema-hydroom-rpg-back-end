@@ -149,7 +149,7 @@ class JogoServiceTest {
         var participacao = captor.getValue();
         assertThat(participacao.getUsuario()).isEqualTo(usuario);
         assertThat(participacao.getRole()).isEqualTo(RoleJogo.MESTRE);
-        assertThat(participacao.getAtivo()).isTrue();
+        assertThat(participacao.isActive()).isTrue();
     }
 
     @Test

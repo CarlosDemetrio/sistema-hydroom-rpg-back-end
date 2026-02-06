@@ -23,11 +23,9 @@ public interface JogoMapper {
      */
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "jogoAtivo", constant = "false")
+    @Mapping(target = "imagemUrl", ignore = true)
     @Mapping(target = "dataFim", ignore = true)
     @Mapping(target = "participantes", ignore = true)
-    @Mapping(target = "deletedAt", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
     Jogo toEntity(CriarJogoRequest request);
 
     /**
@@ -37,6 +35,8 @@ public interface JogoMapper {
      * @return JogoResponse com dados completos
      */
     @Mapping(target = "totalParticipantes", expression = "java((int) (jogo.getParticipantes() == null ? 0 : jogo.getParticipantes().stream().filter(br.com.hydroom.rpg.fichacontrolador.model.JogoParticipante::isActive).count()))")
+    @Mapping(target = "ativo", source = "jogoAtivo")
+    @Mapping(target = "meuRole", ignore = true)
     JogoResponse toResponse(Jogo jogo);
 
     /**
@@ -46,5 +46,7 @@ public interface JogoMapper {
      * @return JogoResumoResponse para listagens
      */
     @Mapping(target = "totalParticipantes", expression = "java((int) (jogo.getParticipantes() == null ? 0 : jogo.getParticipantes().stream().filter(br.com.hydroom.rpg.fichacontrolador.model.JogoParticipante::isActive).count()))")
+    @Mapping(target = "ativo", source = "jogoAtivo")
+    @Mapping(target = "meuRole", ignore = true)
     JogoResumoResponse toResumoResponse(Jogo jogo);
 }

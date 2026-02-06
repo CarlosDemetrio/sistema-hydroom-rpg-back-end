@@ -60,7 +60,6 @@ class JogoServiceIntegrationTest {
             .email("mestre@test.com")
             .provider("google")
             .providerId("google-mestre")
-            .ativo(true)
             .build());
 
         jogador = usuarioRepository.save(Usuario.builder()
@@ -68,28 +67,24 @@ class JogoServiceIntegrationTest {
             .email("jogador@test.com")
             .provider("google")
             .providerId("google-jogador")
-            .ativo(true)
             .build());
 
         jogo = jogoRepository.save(Jogo.builder()
             .nome("Campanha Integracao")
             .descricao("Descricao teste")
             .dataInicio(LocalDate.now())
-            .ativo(true)
             .build());
 
         jogoParticipanteRepository.save(JogoParticipante.builder()
             .jogo(jogo)
             .usuario(mestre)
             .role(RoleJogo.MESTRE)
-            .ativo(true)
             .build());
 
         jogoParticipanteRepository.save(JogoParticipante.builder()
             .jogo(jogo)
             .usuario(jogador)
             .role(RoleJogo.JOGADOR)
-            .ativo(true)
             .build());
 
         setAuth(mestre);
@@ -104,14 +99,17 @@ class JogoServiceIntegrationTest {
     @DisplayName("Deve listar apenas jogos ativos")
     void listarJogosDoUsuario() {
         // Arrange
-        jogoRepository.save(Jogo.builder().nome("Jogo Inativo").ativo(false).build());
+        Jogo jogoInativo = Jogo.builder().nome("Jogo Inativo").build();
+        jogoInativo = jogoRepository.save(jogoInativo);
+        jogoInativo.delete();
+        jogoRepository.save(jogoInativo);
 
         // Act
         List<Jogo> result = jogoService.listarJogosDoUsuario();
 
         // Assert
         assertThat(result).hasSize(1);
-        assertThat(result.getFirst().getId()).isEqualTo(jogo.getId());
+        assertThat(result.get(0).getId()).isEqualTo(jogo.getId());
     }
 
     @Test
@@ -136,7 +134,6 @@ class JogoServiceIntegrationTest {
             .email("outro@test.com")
             .provider("google")
             .providerId("google-outro")
-            .ativo(true)
             .build());
         setAuth(outro);
 
@@ -160,7 +157,7 @@ class JogoServiceIntegrationTest {
         // Assert
         assertThat(result.getId()).isNotNull();
         assertThat(result.getNome()).isEqualTo("Nova Campanha");
-        assertThat(result.getAtivo()).isTrue();
+        assertThat(result.isActive()).isTrue();
         assertThat(jogoParticipanteRepository.existsByUsuarioIdAndJogoIdAndRoleAndAtivoTrue(
             mestre.getId(), result.getId(), RoleJogo.MESTRE)).isTrue();
     }
@@ -206,21 +203,21 @@ class JogoServiceIntegrationTest {
 
         // Assert
         Jogo atualizado = jogoRepository.findById(jogo.getId()).orElseThrow();
-        assertThat(atualizado.getAtivo()).isFalse();
+        assertThat(atualizado.isDeleted()).isTrue();
     }
 
     @Test
     @DisplayName("Deve reativar jogo quando mestre")
     void ativarJogo() {
         // Arrange
-        jogo.setAtivo(false);
+        jogo.delete();
         jogoRepository.save(jogo);
 
         // Act
         Jogo result = jogoService.ativarJogo(jogo.getId());
 
         // Assert
-        assertThat(result.getAtivo()).isTrue();
+        assertThat(result.isActive()).isTrue();
     }
 
     private void setAuth(Usuario usuario) {

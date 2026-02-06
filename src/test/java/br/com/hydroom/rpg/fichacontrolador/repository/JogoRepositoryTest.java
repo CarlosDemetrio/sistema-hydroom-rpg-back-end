@@ -56,7 +56,6 @@ class JogoRepositoryTest {
             .email("mestre@test.com")
             .provider("google")
             .providerId("google123")
-            .ativo(true)
             .build();
         mestre = usuarioRepository.save(mestre);
 
@@ -65,7 +64,6 @@ class JogoRepositoryTest {
             .email("jogador@test.com")
             .provider("google")
             .providerId("google456")
-            .ativo(true)
             .build();
         jogador = usuarioRepository.save(jogador);
 
@@ -74,7 +72,6 @@ class JogoRepositoryTest {
             .nome("Campanha de Tormenta")
             .descricao("Uma aventura épica no mundo de Arton")
             .dataInicio(LocalDate.now())
-            .ativo(true)
             .build();
         jogo = jogoRepository.save(jogo);
 
@@ -83,7 +80,6 @@ class JogoRepositoryTest {
             .jogo(jogo)
             .usuario(mestre)
             .role(RoleJogo.MESTRE)
-            .ativo(true)
             .build();
         participanteRepository.save(mestreParticipante);
 
@@ -91,7 +87,6 @@ class JogoRepositoryTest {
             .jogo(jogo)
             .usuario(jogador)
             .role(RoleJogo.JOGADOR)
-            .ativo(true)
             .build();
         participanteRepository.save(jogadorParticipante);
 
@@ -108,7 +103,6 @@ class JogoRepositoryTest {
             .nome("D&D 5e - Lost Mine of Phandelver")
             .descricao("Aventura iniciante de D&D")
             .dataInicio(LocalDate.now())
-            .ativo(true)
             .build();
 
         // Act
@@ -117,7 +111,7 @@ class JogoRepositoryTest {
         // Assert
         assertThat(saved.getId()).isNotNull();
         assertThat(saved.getNome()).isEqualTo("D&D 5e - Lost Mine of Phandelver");
-        assertThat(saved.getAtivo()).isTrue();
+        assertThat(saved.isActive()).isTrue();
     }
 
     @Test
@@ -126,8 +120,9 @@ class JogoRepositoryTest {
         // Arrange
         Jogo jogoInativo = Jogo.builder()
             .nome("Jogo Inativo")
-            .ativo(false)
             .build();
+        jogoInativo = jogoRepository.save(jogoInativo);
+        jogoInativo.delete();
         jogoRepository.save(jogoInativo);
 
         // Act
@@ -135,7 +130,7 @@ class JogoRepositoryTest {
 
         // Assert
         assertThat(jogosAtivos).hasSize(1);
-        assertThat(jogosAtivos.getFirst().getNome()).isEqualTo("Campanha de Tormenta");
+        assertThat(jogosAtivos.get(0).getNome()).isEqualTo("Campanha de Tormenta");
     }
 
     @Test
@@ -153,7 +148,7 @@ class JogoRepositoryTest {
     @DisplayName("Não deve buscar jogo inativo por ID")
     void testNaoBuscarJogoInativoPorId() {
         // Arrange
-        jogo.setAtivo(false);
+        jogo.delete();
         jogoRepository.save(jogo);
 
         // Act
@@ -173,8 +168,8 @@ class JogoRepositoryTest {
         // Assert
         assertThat(jogosDoMestre).hasSize(1);
         assertThat(jogosDoJogador).hasSize(1);
-        assertThat(jogosDoMestre.getFirst().getId()).isEqualTo(jogo.getId());
-        assertThat(jogosDoJogador.getFirst().getId()).isEqualTo(jogo.getId());
+        assertThat(jogosDoMestre.get(0).getId()).isEqualTo(jogo.getId());
+        assertThat(jogosDoJogador.get(0).getId()).isEqualTo(jogo.getId());
     }
 
     @Test
@@ -187,7 +182,7 @@ class JogoRepositoryTest {
         // Assert
         assertThat(jogosDoMestre).hasSize(1);
         assertThat(jogosDoJogador).isEmpty();
-        assertThat(jogosDoMestre.getFirst().getId()).isEqualTo(jogo.getId());
+        assertThat(jogosDoMestre.get(0).getId()).isEqualTo(jogo.getId());
     }
 
     @Test
@@ -225,10 +220,8 @@ class JogoRepositoryTest {
     @Test
     @DisplayName("Deve desativar jogo (soft delete)")
     void testDesativarJogo() {
-        // Arrange
-        jogo.setAtivo(false);
-
         // Act
+        jogo.delete();
         jogoRepository.save(jogo);
         Optional<Jogo> found = jogoRepository.findByIdAndAtivoTrue(jogo.getId());
 
@@ -244,7 +237,7 @@ class JogoRepositoryTest {
         Long jogoId = jogo.getId();
 
         // Act
-        jogoRepository.delete(jogo);
+        jogoRepository.deleteById(jogoId);
 
         // Assert
         assertThat(jogoRepository.findById(jogoId)).isEmpty();

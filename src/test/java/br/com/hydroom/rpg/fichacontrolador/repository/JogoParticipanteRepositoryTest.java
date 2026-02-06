@@ -59,7 +59,6 @@ class JogoParticipanteRepositoryTest {
             .email("mestre@test.com")
             .provider("google")
             .providerId("google123")
-            .ativo(true)
             .build();
         mestre = usuarioRepository.save(mestre);
 
@@ -68,7 +67,6 @@ class JogoParticipanteRepositoryTest {
             .email("jogador1@test.com")
             .provider("google")
             .providerId("google456")
-            .ativo(true)
             .build();
         jogador1 = usuarioRepository.save(jogador1);
 
@@ -77,7 +75,6 @@ class JogoParticipanteRepositoryTest {
             .email("jogador2@test.com")
             .provider("google")
             .providerId("google789")
-            .ativo(true)
             .build();
         jogador2 = usuarioRepository.save(jogador2);
 
@@ -86,7 +83,6 @@ class JogoParticipanteRepositoryTest {
             .nome("Campanha de Tormenta")
             .descricao("Uma aventura épica")
             .dataInicio(LocalDate.now())
-            .ativo(true)
             .build();
         jogo = jogoRepository.save(jogo);
     }
@@ -99,7 +95,6 @@ class JogoParticipanteRepositoryTest {
             .jogo(jogo)
             .usuario(mestre)
             .role(RoleJogo.MESTRE)
-            .ativo(true)
             .build();
 
         // Act
@@ -110,7 +105,7 @@ class JogoParticipanteRepositoryTest {
         assertThat(saved.getJogo().getId()).isEqualTo(jogo.getId());
         assertThat(saved.getUsuario().getId()).isEqualTo(mestre.getId());
         assertThat(saved.getRole()).isEqualTo(RoleJogo.MESTRE);
-        assertThat(saved.getAtivo()).isTrue();
+        assertThat(saved.isActive()).isTrue();
     }
 
     @Test
@@ -139,7 +134,7 @@ class JogoParticipanteRepositoryTest {
         JogoParticipante participante = participanteRepository
             .findByJogoIdAndUsuarioIdAndAtivoTrue(jogo.getId(), jogador1.getId())
             .orElseThrow();
-        participante.setAtivo(false);
+        participante.delete();
         participanteRepository.save(participante);
 
         // Act
@@ -160,7 +155,7 @@ class JogoParticipanteRepositoryTest {
 
         // Assert
         assertThat(participantes).hasSize(1);
-        assertThat(participantes.getFirst().getRole()).isEqualTo(RoleJogo.MESTRE);
+        assertThat(participantes.get(0).getRole()).isEqualTo(RoleJogo.MESTRE);
     }
 
     @Test
@@ -186,8 +181,9 @@ class JogoParticipanteRepositoryTest {
             .jogo(jogo)
             .usuario(mestre)
             .role(RoleJogo.MESTRE)
-            .ativo(false)
             .build();
+        participante = participanteRepository.save(participante);
+        participante.delete();
         participanteRepository.save(participante);
 
         // Act
@@ -240,7 +236,6 @@ class JogoParticipanteRepositoryTest {
             .jogo(jogo)
             .usuario(mestre)
             .role(RoleJogo.MESTRE)
-            .ativo(true)
             .build();
         participanteRepository.save(participante1);
 
@@ -248,7 +243,6 @@ class JogoParticipanteRepositoryTest {
             .jogo(jogo)
             .usuario(mestre)
             .role(RoleJogo.JOGADOR)
-            .ativo(true)
             .build();
 
         // Act & Assert
@@ -265,7 +259,6 @@ class JogoParticipanteRepositoryTest {
             .jogo(jogo)
             .usuario(jogador1)
             .role(RoleJogo.JOGADOR)
-            .ativo(true)
             .build();
         participante = participanteRepository.save(participante);
 
@@ -285,13 +278,12 @@ class JogoParticipanteRepositoryTest {
             .jogo(jogo)
             .usuario(mestre)
             .role(RoleJogo.MESTRE)
-            .ativo(true)
             .build();
         participante = participanteRepository.save(participante);
         Long participanteId = participante.getId();
 
         // Act
-        participante.setAtivo(false);
+        participante.delete();
         participanteRepository.save(participante);
 
         // Assert
@@ -309,13 +301,12 @@ class JogoParticipanteRepositoryTest {
             .jogo(jogo)
             .usuario(mestre)
             .role(RoleJogo.MESTRE)
-            .ativo(true)
             .build();
         participante = participanteRepository.save(participante);
         Long participanteId = participante.getId();
 
         // Act
-        participanteRepository.delete(participante);
+        participanteRepository.deleteById(participanteId);
 
         // Assert
         assertThat(participanteRepository.findById(participanteId)).isEmpty();
@@ -329,7 +320,6 @@ class JogoParticipanteRepositoryTest {
             .jogo(jogo)
             .usuario(mestre)
             .role(RoleJogo.MESTRE)
-            .ativo(true)
             .build();
         participanteRepository.save(mestreParticipante);
 
@@ -337,7 +327,6 @@ class JogoParticipanteRepositoryTest {
             .jogo(jogo)
             .usuario(jogador1)
             .role(RoleJogo.JOGADOR)
-            .ativo(true)
             .build();
         participanteRepository.save(jogador1Participante);
 
@@ -345,7 +334,6 @@ class JogoParticipanteRepositoryTest {
             .jogo(jogo)
             .usuario(jogador2)
             .role(RoleJogo.JOGADOR)
-            .ativo(true)
             .build();
         participanteRepository.save(jogador2Participante);
     }

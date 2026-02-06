@@ -57,7 +57,6 @@ class JogoServiceTest {
             .email("user@test.com")
             .provider("google")
             .providerId("google123")
-            .ativo(true)
             .build();
 
         var authentication = new UsernamePasswordAuthenticationToken(usuario.getEmail(), "n/a");
@@ -143,7 +142,7 @@ class JogoServiceTest {
         // Assert
         assertThat(result.getId()).isEqualTo(99L);
         assertThat(result.getNome()).isEqualTo("Campanha Teste");
-        assertThat(result.getAtivo()).isTrue();
+        assertThat(result.isActive()).isTrue();
 
         ArgumentCaptor<JogoParticipante> captor = ArgumentCaptor.forClass(JogoParticipante.class);
         verify(jogoParticipanteRepository).save(captor.capture());
@@ -203,7 +202,7 @@ class JogoServiceTest {
     void deletarJogoComPermissao() {
         // Arrange
         stubUsuarioAtual();
-        var jogo = Jogo.builder().id(10L).ativo(true).build();
+        var jogo = Jogo.builder().id(10L).build();
 
         when(jogoRepository.findById(10L)).thenReturn(Optional.of(jogo));
         when(jogoParticipanteRepository.existsByUsuarioIdAndJogoIdAndRoleAndAtivoTrue(usuario.getId(), 10L, RoleJogo.MESTRE))
@@ -215,7 +214,7 @@ class JogoServiceTest {
         // Assert
         ArgumentCaptor<Jogo> captor = ArgumentCaptor.forClass(Jogo.class);
         verify(jogoRepository).save(captor.capture());
-        assertThat(captor.getValue().getAtivo()).isFalse();
+        assertThat(captor.getValue().isDeleted()).isTrue();
     }
 
     @Test
@@ -223,7 +222,8 @@ class JogoServiceTest {
     void ativarJogoComPermissao() {
         // Arrange
         stubUsuarioAtual();
-        var jogo = Jogo.builder().id(10L).ativo(false).build();
+        var jogo = Jogo.builder().id(10L).build();
+        jogo.delete();
 
         when(jogoRepository.findById(10L)).thenReturn(Optional.of(jogo));
         when(jogoParticipanteRepository.existsByUsuarioIdAndJogoIdAndRoleAndAtivoTrue(usuario.getId(), 10L, RoleJogo.MESTRE))
@@ -234,6 +234,6 @@ class JogoServiceTest {
         var result = jogoService.ativarJogo(10L);
 
         // Assert
-        assertThat(result.getAtivo()).isTrue();
+        assertThat(result.isActive()).isTrue();
     }
 }

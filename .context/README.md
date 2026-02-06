@@ -1,12 +1,39 @@
 # Project Context for AI Code Generation
 
-Este diretório contém guias de melhores práticas para as tecnologias usadas no projeto.
+> 🤖 **Guias para GitHub Copilot, Cursor, Claude, ChatGPT e outras IAs**
+
+Este diretório contém contexto técnico e guias de melhores práticas para o projeto.
+
+## 📖 Documentação Principal
+
+### Backend (Spring Boot)
+**CONSULTE SEMPRE**: [/docs/AI_GUIDELINES_BACKEND.md](../docs/AI_GUIDELINES_BACKEND.md)
+
+Documentação modular completa em `/docs/backend/`:
+- **01-architecture.md** - Estrutura de camadas
+- **02-entities-dtos.md** - Modelagem de dados
+- **03-exceptions.md** - Tratamento de erros
+- **04-repositories.md** - Acesso a dados
+- **05-services.md** - Lógica de negócio
+- **06-mappers.md** - Conversões Entity ↔ DTO
+- **07-controllers.md** - APIs REST + Swagger
+- **08-security.md** - OAuth2 + Session
+- **09-testing.md** - Testes (prioridade: integração)
+- **10-database.md** - PostgreSQL + JPA
+- **11-owasp-security.md** - Security checklist
+
+### Frontend (Angular)
+**CONSULTE**: [/ficha-controlador-front-end/.github/copilot-instructions.md](../../ficha-controlador-front-end/ficha-controlador-front-end/.github/copilot-instructions.md)
 
 ## 🎯 Objetivo
 
-Garantir que o código gerado por IA (GitHub Copilot, ChatGPT, etc.) siga sempre as **melhores práticas** e **APIs mais recentes** (não deprecated).
+Garantir código de alta qualidade seguindo:
+- ✅ Melhores práticas da indústria
+- ✅ APIs mais recentes (não deprecated)
+- ✅ Padrões de segurança (OWASP)
+- ✅ Arquitetura limpa e testável
 
-## 📚 Guias Disponíveis
+## 📚 Guias Técnicos Específicos
 
 ### 1. [Spring Boot 4](./spring-boot-4.md)
 - Virtual Threads (Project Loom)
@@ -21,13 +48,6 @@ Garantir que o código gerado por IA (GitHub Copilot, ChatGPT, etc.) siga sempre
 - Integração com Spring
 - Patterns de Entity ↔ DTO
 - **IMPORTANTE:** Use MapStruct SEMPRE ao invés de JPA Converters
-
-### 3. [Flyway](./flyway.md)
-- Versionamento de schema
-- Naming conventions
-- Best practices para migrations
-- Rollback strategies
-- **IMPORTANTE:** Seguir convenção V{numero}__{descricao}.sql
 
 ### 4. [Bucket4j](./bucket4j.md)
 - Rate limiting
@@ -153,4 +173,5 @@ Antes de gerar código para este projeto, leia:
 
 ---
 
-**Última atualização:** 2026-02-01
+**Última atualização:** 2026-02-06  
+**Java 25 + Spring Boot 4.0.2**

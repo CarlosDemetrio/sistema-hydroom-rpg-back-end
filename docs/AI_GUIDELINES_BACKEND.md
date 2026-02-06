@@ -1,298 +1,195 @@
-# Backend AI Guidelines
+# Backend AI Guidelines - Índice Principal
+
+> 📚 **Documentação modular e organizada para facilitar consumo pela IA**
+
+## 🎯 Quick Start
+
+Para implementar uma nova feature:
+1. Consulte [01-architecture.md](./backend/01-architecture.md) para estrutura
+2. Siga templates em cada arquivo específico
+3. Use [09-testing.md](./backend/09-testing.md) para testes de integração
+
+## 📋 Contexto do Projeto
+- **Java 25** (com Virtual Threads, Records, Pattern Matching, Sealed Classes)
+- **Spring Boot 4.0.2** (RestClient, JdbcClient, Problem Details RFC 9457)
+- **PostgreSQL** database
+- **OAuth2 Google** authentication with **session-based security** (NÃO JWT!)
+- **RESTful API** architecture
+- **MapStruct 1.5.5** para mapeamento Entity ↔ DTO
+
+## 📚 Documentação Modular
+
+### [📖 README Principal](./backend/README.md)
+Visão geral completa, checklist rápido e links úteis.
+
+### [🏗️ 01. Arquitetura e Estrutura](./backend/01-architecture.md)
+- Layer Structure (Controller → Service → Repository)
+- Dependency Injection patterns
+- Responsabilidades por camada
+- Fluxo completo de uma request
+
+### [🏛️ 02. Entities e DTOs](./backend/02-entities-dtos.md)
+- Entity patterns com Lombok
+- DTO patterns (Request, Response, Update)
+- ValidationMessages centralizadas
+- Bean Validation annotations
+
+### [⚠️ 03. Exceptions e Error Handling](./backend/03-exceptions.md)
+- Hierarquia de exceptions customizadas
+- GlobalExceptionHandler completo
+- Error response patterns
+- HTTP status codes
+
+### [🗄️ 04. Repositories](./backend/04-repositories.md)
+- JpaRepository patterns
+- Query methods naming convention
+- Uso correto de Optional
+- Performance tips (N+1, @EntityGraph)
+
+### [⚙️ 05. Services](./backend/05-services.md)
+- Business logic patterns
+- Transaction management
+- Optional vs Exceptions
+- Validações de negócio
+
+### [🔄 06. Mappers](./backend/06-mappers.md)
+- Entity ↔ DTO conversions
+- Por que mapper na controller (não no service)
+- Mapper patterns
+- MapStruct alternativa
+
+### [🌐 07. Controllers e Swagger](./backend/07-controllers.md)
+- RESTful API patterns
+- Swagger/OpenAPI documentation completa
+- HTTP status codes
+- Query parameters e paginação
+
+### [🔐 08. Security](./backend/08-security.md)
+- OAuth2 configuration (Session-based, NÃO JWT!)
+- SecurityService patterns
+- Method security (@PreAuthorize)
+- CORS configuration
+
+### [🧪 09. Testing - Prioridade: Integração](./backend/09-testing.md)
+- **Testes de integração (80%)** - PRIORIDADE
+- Testes unitários (20%) - quando necessário
+- Padrão Arrange-Act-Assert
+- AssertJ best practices
+
+### [🗃️ 10. Database](./backend/10-database.md)
+- Naming conventions (snake_case)
+- JPA mapping patterns
+- Relationships (ManyToOne, OneToMany)
+- Audit fields e soft delete
+
+### [🛡️ 11. OWASP Security](./backend/11-owasp-security.md)
+- OWASP Top 10 - 2021 (todas as vulnerabilidades)
+- Security best practices por categoria
+- Vulnerability prevention
+- Security checklist para produção
+- Security tools (Dependency Check, SpotBugs)
+
+## ⚡ Templates Rápidos
+
+### Nova Feature - Checklist
+```
+1. ✅ Entity (02-entities-dtos.md)
+2. ✅ Repository (04-repositories.md)
+3. ✅ Service (05-services.md)
+4. ✅ DTOs (02-entities-dtos.md)
+5. ✅ Mapper (06-mappers.md)
+6. ✅ Controller (07-controllers.md)
+7. ✅ Exception handling (03-exceptions.md)
+8. ✅ Testes de integração (09-testing.md)
+9. ✅ Security (@PreAuthorize, validações)
+```
+
+### Fluxo de Request
+```
+HTTP POST → Controller
+    ↓
+    Mapper: DTO → Entity
+    ↓
+    Service: Business Logic + Validações
+    ↓
+    Repository: Persist
+    ↓
+    Service: Return Entity
+    ↓
+    Mapper: Entity → Response DTO
+    ↓
+    Controller: ResponseEntity
+```
+
+## 🚫 Top 12 Erros Comuns
+
+1. ❌ Lógica de negócio na controller
+2. ❌ Expor entities diretamente nas APIs
+3. ❌ Mappers no service (devem estar na controller)
+4. ❌ Não usar Optional corretamente
+5. ❌ Usar exceptions genéricas
+6. ❌ Não usar ValidationMessages
+7. ❌ Não documentar com JavaDoc e Swagger
+8. ❌ Esquecer @Transactional em escritas
+9. ❌ Não preferir testes de integração
+10. ❌ Usar JWT quando temos session-based auth
+11. ❌ Não validar permissões (@PreAuthorize)
+12. ❌ Expor stack traces em produção
+
+## 🎓 Princípios Fundamentais
+
+### Separação de Responsabilidades
+- **Controller**: Coordena HTTP, valida DTOs, converte com Mapper
+- **Service**: TODA lógica de negócio, trabalha com Entities
+- **Repository**: Apenas acesso a dados
+- **Mapper**: Conversões Entity ↔ DTO (NA CONTROLLER!)
+
+### Tratamento de Erros
+- Use exceptions específicas (ResourceNotFoundException, BusinessRuleException, etc.)
+- GlobalExceptionHandler centralizado
+- Mensagens claras e descritivas
+- HTTP status codes apropriados
+
+### Testes
+- **PRIORIDADE: Testes de Integração** (80%)
+- Testes unitários apenas para lógica complexa isolada (20%)
+- Padrão Arrange-Act-Assert
+- Verificar persistência no banco
+
+### Segurança
+- OAuth2 com **session-based** auth (NÃO JWT!)
+- HttpOnly cookies
+- @PreAuthorize para permissões
+- CORS configurado corretamente
+
+---
+
+## 📖 Navegação Rápida
+
+- **Dúvida sobre estrutura?** → [01-architecture.md](./backend/01-architecture.md)
+- **Como criar DTOs?** → [02-entities-dtos.md](./backend/02-entities-dtos.md)
+- **Qual exception usar?** → [03-exceptions.md](./backend/03-exceptions.md)
+- **Como fazer queries?** → [04-repositories.md](./backend/04-repositories.md)
+- **Onde vai lógica de negócio?** → [05-services.md](./backend/05-services.md)
+- **Mapper na controller ou service?** → [06-mappers.md](./backend/06-mappers.md)
+- **Como documentar API?** → [07-controllers.md](./backend/07-controllers.md)
+- **OAuth2 ou JWT?** → [08-security.md](./backend/08-security.md)
+- **Como testar?** → [09-testing.md](./backend/09-testing.md)
+- **Naming conventions?** → [10-database.md](./backend/10-database.md)
+- **Como prevenir vulnerabilidades?** → [11-owasp-security.md](./backend/11-owasp-security.md)
+
+---
+
+**Versão anterior (arquivo único):** Este arquivo foi refatorado em múltiplos arquivos modulares para facilitar o consumo pela IA e manutenção.
 
 ## Project Context
-- Java 21 + Spring Boot 3.x
-- PostgreSQL database
-- OAuth2 Google authentication with session-based security
-- RESTful API architecture
 
-## Architecture Patterns
 
-### Layer Structure
-```
-Controller → Service → Repository → Database
-     ↓          ↓
-    DTO    ←  Entity
-```
+## User Roles & API Endpoints
 
-### Dependency Injection
-Always use constructor injection with Lombok:
-```java
-@RequiredArgsConstructor
-public class MyService {
-    private final MyRepository repository;
-}
-```
-
-## Code Standards
-
-### 1. Entities
-```java
-@Entity
-@Table(name = "table_name")
-@Getter @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class MyEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    @Column(nullable = false)
-    private String name;
-    
-    @CreatedDate
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-    
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
-}
-```
-
-**Rules:**
-- Always use Lombok annotations
-- Table names in snake_case
-- Add audit fields (createdAt, updatedAt)
-- Use FetchType.LAZY for relationships
-- Never expose sensitive data (passwords, tokens)
-
-### 2. DTOs
-```java
-@Data
-@Builder
-public class MyDTO {
-    private Long id;
-    
-    @NotBlank(message = "Campo obrigatório")
-    @Size(max = 100, message = "Máximo 100 caracteres")
-    private String name;
-    
-    @Email(message = "Email inválido")
-    private String email;
-}
-```
-
-**Rules:**
-- Use Bean Validation annotations
-- DTOs for requests AND responses
-- Never return entities directly from controllers
-- Use record classes for simple DTOs when appropriate
-
-### 3. Repositories
-```java
-public interface MyRepository extends JpaRepository<MyEntity, Long> {
-    List<MyEntity> findByUserId(Long userId);
-    
-    @Query("SELECT e FROM MyEntity e WHERE e.name LIKE %:name%")
-    List<MyEntity> searchByName(@Param("name") String name);
-}
-```
-
-**Rules:**
-- Extend JpaRepository<Entity, ID>
-- Use query methods naming convention
-- Use @Query for complex queries
-- Add custom queries only when needed
-
-### 4. Services
-```java
-@Service
-@RequiredArgsConstructor
-@Transactional
-public class MyService {
-    private final MyRepository repository;
-    private final MyMapper mapper;
-    
-    public List<MyDTO> findAll() {
-        return repository.findAll().stream()
-            .map(mapper::toDTO)
-            .toList();
-    }
-    
-    public MyDTO findById(Long id) {
-        return repository.findById(id)
-            .map(mapper::toDTO)
-            .orElseThrow(() -> new NotFoundException("Not found: " + id));
-    }
-    
-    @Transactional
-    public MyDTO create(MyCreateDTO dto) {
-        MyEntity entity = mapper.toEntity(dto);
-        entity = repository.save(entity);
-        return mapper.toDTO(entity);
-    }
-}
-```
-
-**Rules:**
-- All business logic in services
-- @Transactional for data modification
-- Always use DTOs, never expose entities
-- Throw specific exceptions
-- Use mappers for Entity ↔ DTO conversion
-
-### 5. Controllers
-```java
-@RestController
-@RequestMapping("/api/resources")
-@RequiredArgsConstructor
-public class MyController {
-    private final MyService service;
-    
-    @GetMapping
-    public ResponseEntity<List<MyDTO>> findAll() {
-        return ResponseEntity.ok(service.findAll());
-    }
-    
-    @GetMapping("/{id}")
-    public ResponseEntity<MyDTO> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(service.findById(id));
-    }
-    
-    @PostMapping
-    public ResponseEntity<MyDTO> create(@Valid @RequestBody MyCreateDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .body(service.create(dto));
-    }
-    
-    @PutMapping("/{id}")
-    public ResponseEntity<MyDTO> update(
-            @PathVariable Long id,
-            @Valid @RequestBody MyUpdateDTO dto) {
-        return ResponseEntity.ok(service.update(id, dto));
-    }
-    
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        service.delete(id);
-        return ResponseEntity.noContent().build();
-    }
-}
-```
-
-**Rules:**
-- Controllers coordinate only, no business logic
-- Always return ResponseEntity<T>
-- Use appropriate HTTP status codes
-- RESTful endpoints (no /getResource, /createResource)
-- @Valid for DTO validation
-- Thin controllers, fat services
-
-### 6. Exception Handling
-```java
-@RestControllerAdvice
-public class GlobalExceptionHandler {
-    
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(new ErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value()));
-    }
-    
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ValidationErrorResponse> handleValidation(
-            MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors()
-            .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
-        return ResponseEntity.badRequest()
-            .body(new ValidationErrorResponse(errors));
-    }
-}
-```
-
-### 7. Security Configuration
-
-**CRITICAL: OAuth2 with Session, NOT JWT Resource Server**
-
-```java
-@Configuration
-@EnableWebSecurity
-public class SecurityConfig {
-    
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) {
-        http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/public/**").permitAll()
-                .anyRequest().authenticated()
-            )
-            .oauth2Login(oauth2 -> oauth2
-                .successHandler(oauth2SuccessHandler())
-            )
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-            );
-        return http.build();
-    }
-}
-```
-
-**NEVER USE:**
-- ❌ `.oauth2ResourceServer()` - conflicts with session auth
-- ❌ `SessionCreationPolicy.STATELESS` - we need sessions!
-- ❌ JWT tokens for user authentication
-
-## Database
-
-### Naming Conventions
-- Tables: `snake_case` (users, user_games, character_sheets)
-- Columns: `snake_case` (created_at, user_id)
-- Foreign keys: `{table}_id` (user_id, game_id)
-
-### Migration
-Use Hibernate DDL auto for development:
-```properties
-spring.jpa.hibernate.ddl-auto=update  # dev
-spring.jpa.hibernate.ddl-auto=validate  # prod
-```
-
-## Testing
-
-```java
-@SpringBootTest
-class MyServiceTest {
-    @Autowired
-    private MyService service;
-    
-    @MockBean
-    private MyRepository repository;
-    
-    @Test
-    void shouldFindById() {
-        MyEntity entity = MyEntity.builder()
-            .id(1L)
-            .name("Test")
-            .build();
-            
-        when(repository.findById(1L))
-            .thenReturn(Optional.of(entity));
-            
-        MyDTO result = service.findById(1L);
-        
-        assertNotNull(result);
-        assertEquals("Test", result.getName());
-    }
-}
-```
-
-## Project Specific Rules
-
-### User Roles
-- MESTRE: Full access, creates games, manages players
-- JOGADOR: Limited access, only own games and sheets
-
-### OAuth2 Flow
-1. User clicks "Login with Google"
-2. Backend redirects to Google
-3. Google authenticates and returns to backend
-4. Backend creates session with httpOnly cookie
-5. Backend redirects to frontend callback
-6. Frontend stores user info and navigates to home
+### Roles
+- **MESTRE**: Full access, creates games, manages players
+- **JOGADOR**: Limited access, only own games and sheets
 
 ### API Endpoints Pattern
 ```
@@ -302,19 +199,6 @@ class MyServiceTest {
 /api/fichas       - Character sheets
 /api/admin/*      - Admin only (MESTRE role)
 ```
-
-## Common Mistakes to Avoid
-
-1. ❌ Exposing entities directly from controllers
-2. ❌ Business logic in controllers
-3. ❌ Missing @Transactional on data modification
-4. ❌ Not validating DTOs
-5. ❌ Using JWT when we have session-based auth
-6. ❌ Returning null instead of Optional
-7. ❌ Not handling exceptions properly
-8. ❌ Missing CORS configuration
-9. ❌ Hardcoded values instead of properties
-10. ❌ Not using Lombok annotations
 
 ## Dependencies
 

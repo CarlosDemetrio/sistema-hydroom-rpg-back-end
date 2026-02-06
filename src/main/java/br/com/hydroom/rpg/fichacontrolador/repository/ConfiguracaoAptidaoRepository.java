@@ -17,12 +17,14 @@ public interface ConfiguracaoAptidaoRepository extends JpaRepository<AptidaoConf
     /**
      * Busca todas as aptidões ativas de um jogo, ordenadas por ordem de exibição.
      */
-    List<AptidaoConfig> findByJogoIdAndAtivoTrueOrderByOrdemExibicao(Long jogoId);
+    @Query("SELECT a FROM AptidaoConfig a WHERE a.jogo.id = :jogoId AND a.deletedAt IS NULL ORDER BY a.ordemExibicao")
+    List<AptidaoConfig> findByJogoIdOrderByOrdemExibicao(Long jogoId);
 
     /**
      * Busca aptidões por tipo em um jogo.
      */
-    List<AptidaoConfig> findByJogoIdAndTipoAptidaoAndAtivoTrueOrderByOrdemExibicao(Long jogoId, TipoAptidao tipoAptidao);
+    @Query("SELECT a FROM AptidaoConfig a WHERE a.jogo.id = :jogoId AND a.tipoAptidao = :tipoAptidao AND a.deletedAt IS NULL ORDER BY a.ordemExibicao")
+    List<AptidaoConfig> findByJogoIdAndTipoAptidaoOrderByOrdemExibicao(Long jogoId, TipoAptidao tipoAptidao);
 
     /**
      * Busca aptidão por nome em um jogo (case-insensitive).

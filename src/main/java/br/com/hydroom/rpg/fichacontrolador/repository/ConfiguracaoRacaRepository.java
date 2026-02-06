@@ -16,7 +16,7 @@ public interface ConfiguracaoRacaRepository extends JpaRepository<Raca, Long> {
     /**
      * Busca todas as raças ativas de um jogo, ordenadas por ordem de exibição.
      */
-    List<Raca> findByJogoIdAndAtivoTrueOrderByOrdemExibicao(Long jogoId);
+    List<Raca> findByJogoIdOrderByOrdemExibicao(Long jogoId);
 
     /**
      * Busca raça por nome em um jogo (case-insensitive).

@@ -15,7 +15,7 @@ public interface DadoProspeccaoConfigRepository extends JpaRepository<DadoProspe
     /**
      * Busca todos os dados de prospecção ativos de um jogo, ordenados.
      */
-    List<DadoProspeccaoConfig> findByJogoIdAndAtivoTrueOrderByOrdemExibicao(Long jogoId);
+    List<DadoProspeccaoConfig> findByJogoIdOrderByOrdemExibicao(Long jogoId);
 
     /**
      * Busca dado de prospecção por nome em um jogo.

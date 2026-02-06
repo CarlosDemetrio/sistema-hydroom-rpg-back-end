@@ -98,7 +98,6 @@ class JogoServiceIntegrationTest {
             .email("mestre@test.com")
             .provider("google")
             .providerId("google-mestre")
-            .ativo(true)
             .build());
 
         jogador = usuarioRepository.save(Usuario.builder()
@@ -106,28 +105,25 @@ class JogoServiceIntegrationTest {
             .email("jogador@test.com")
             .provider("google")
             .providerId("google-jogador")
-            .ativo(true)
             .build());
 
         jogo = jogoRepository.save(Jogo.builder()
             .nome("Campanha Integracao")
             .descricao("Descricao teste")
             .dataInicio(LocalDate.now())
-            .ativo(true)
+            .jogoAtivo(true)
             .build());
 
         jogoParticipanteRepository.save(JogoParticipante.builder()
             .jogo(jogo)
             .usuario(mestre)
             .role(RoleJogo.MESTRE)
-            .ativo(true)
             .build());
 
         jogoParticipanteRepository.save(JogoParticipante.builder()
             .jogo(jogo)
             .usuario(jogador)
             .role(RoleJogo.JOGADOR)
-            .ativo(true)
             .build());
 
         setAuth(mestre);
@@ -142,7 +138,7 @@ class JogoServiceIntegrationTest {
     @DisplayName("Deve listar apenas jogos ativos")
     void listarJogosDoUsuario() {
         // Arrange
-        jogoRepository.save(Jogo.builder().nome("Jogo Inativo").ativo(false).build());
+        jogoRepository.save(Jogo.builder().nome("Jogo Inativo").jogoAtivo(false).build());
 
         // Act
         List<Jogo> result = jogoService.listarJogosDoUsuario();
@@ -174,7 +170,6 @@ class JogoServiceIntegrationTest {
             .email("outro@test.com")
             .provider("google")
             .providerId("google-outro")
-            .ativo(true)
             .build());
         setAuth(outro);
 
@@ -198,9 +193,9 @@ class JogoServiceIntegrationTest {
         // Assert
         assertThat(result.getId()).isNotNull();
         assertThat(result.getNome()).isEqualTo("Nova Campanha");
-        assertThat(resultisActive()).isTrue();
-        assertThat(jogoParticipanteRepository.existsByUsuarioIdAndJogoIdAndRoleAndAtivoTrue(
-            mestre.getId(), result.getId(), RoleJogo.MESTRE)).isTrue();
+        assertThat(result.isActive()).isTrue();
+        assertThat(jogoParticipanteRepository.existsByJogoIdAndUsuarioIdAndRole(
+            result.getId(), mestre.getId(), RoleJogo.MESTRE)).isTrue();
     }
 
     @Test
@@ -244,7 +239,7 @@ class JogoServiceIntegrationTest {
 
         // Assert
         Jogo atualizado = jogoRepository.findById(jogo.getId()).orElseThrow();
-        assertThat(atualizadoisActive()).isFalse();
+        assertThat(atualizado.isActive()).isFalse();
     }
 
     @Test
@@ -258,7 +253,7 @@ class JogoServiceIntegrationTest {
         Jogo result = jogoService.ativarJogo(jogo.getId());
 
         // Assert
-        assertThat(resultisActive()).isTrue();
+        assertThat(result.isActive()).isTrue();
     }
 
     // ========================================
@@ -281,36 +276,36 @@ class JogoServiceIntegrationTest {
         // Assert - Jogo criado
         assertThat(result.getId()).isNotNull();
         assertThat(result.getNome()).isEqualTo("Campanha com Configs");
-        assertThat(resultisActive()).isTrue();
+        assertThat(result.isActive()).isTrue();
 
         // Assert - Mestre registrado
-        assertThat(jogoParticipanteRepository.existsByUsuarioIdAndJogoIdAndRoleAndAtivoTrue(
-            mestre.getId(), result.getId(), RoleJogo.MESTRE)).isTrue();
+        assertThat(jogoParticipanteRepository.existsByJogoIdAndUsuarioIdAndRole(
+            result.getId(), mestre.getId(), RoleJogo.MESTRE)).isTrue();
 
         // Assert - Configurações criadas
         Long jogoId = result.getId();
 
-        assertThat(atributoRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(jogoId))
+        assertThat(atributoRepository.findByJogoIdOrderByOrdemExibicao(jogoId))
             .as("Deve criar 7 atributos")
             .hasSize(7);
 
-        assertThat(tipoAptidaoRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(jogoId))
+        assertThat(tipoAptidaoRepository.findByJogoIdOrderByOrdemExibicao(jogoId))
             .as("Deve criar 2 tipos de aptidão (FISICA e MENTAL)")
             .hasSize(2);
 
-        assertThat(aptidaoRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(jogoId))
+        assertThat(aptidaoRepository.findByJogoIdOrderByOrdemExibicao(jogoId))
             .as("Deve criar 24 aptidões (12 físicas + 12 mentais)")
             .hasSize(24);
 
-        assertThat(nivelRepository.findByJogoIdAndAtivoTrueOrderByNivel(jogoId))
+        assertThat(nivelRepository.findByJogoIdOrderByNivel(jogoId))
             .as("Deve criar 36 níveis (0-35)")
             .hasSize(36);
 
-        assertThat(classeRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(jogoId))
+        assertThat(classeRepository.findByJogoIdOrderByOrdemExibicao(jogoId))
             .as("Deve criar 12 classes")
             .hasSize(12);
 
-        assertThat(racaRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(jogoId))
+        assertThat(racaRepository.findByJogoIdOrderByOrdemExibicao(jogoId))
             .as("Deve criar 4 raças")
             .hasSize(4);
 
@@ -318,28 +313,28 @@ class JogoServiceIntegrationTest {
             .as("Deve criar pelo menos 6 bônus raciais")
             .hasSizeGreaterThanOrEqualTo(6);
 
-        assertThat(prospeccaoRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(jogoId))
+        assertThat(prospeccaoRepository.findByJogoIdOrderByOrdemExibicao(jogoId))
             .as("Deve criar 6 dados de prospecção")
             .hasSize(6);
 
-        assertThat(generoRepository.findByJogoIdAndAtivoTrueOrderByOrdem(jogoId))
+        assertThat(generoRepository.findByJogoIdOrderByOrdem(jogoId))
             .as("Deve criar 4 gêneros")
             .hasSize(4);
 
-        assertThat(indoleRepository.findByJogoIdAndAtivoTrueOrderByOrdem(jogoId))
+        assertThat(indoleRepository.findByJogoIdOrderByOrdem(jogoId))
             .as("Deve criar 9 índoles")
             .hasSize(9);
 
-        assertThat(presencaRepository.findByJogoIdAndAtivoTrueOrderByOrdem(jogoId))
+        assertThat(presencaRepository.findByJogoIdOrderByOrdem(jogoId))
             .as("Deve criar 6 presenças")
             .hasSize(6);
 
-        assertThat(membroCorpoRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(jogoId))
+        assertThat(membroCorpoRepository.findByJogoIdOrderByOrdemExibicao(jogoId))
             .as("Deve criar 6 membros do corpo")
             .hasSize(6);
 
         // Vantagens são opcionais, apenas verificar que não falhou
-        var vantagens = vantagemRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(jogoId);
+        var vantagens = vantagemRepository.findByJogoIdOrderByOrdemExibicao(jogoId);
         assertThat(vantagens)
             .as("Deve criar vantagens (quantidade pode variar)")
             .isNotEmpty();
@@ -358,7 +353,7 @@ class JogoServiceIntegrationTest {
         Jogo result = jogoService.criarJogo(request);
 
         // Assert - Buscar nível 0
-        var niveis = nivelRepository.findByJogoIdAndAtivoTrueOrderByNivel(result.getId());
+        var niveis = nivelRepository.findByJogoIdOrderByNivel(result.getId());
         var nivel0Opt = niveis.stream()
             .filter(n -> n.getNivel() == 0)
             .findFirst();
@@ -386,7 +381,7 @@ class JogoServiceIntegrationTest {
         Jogo result = jogoService.criarJogo(request);
 
         // Assert - Verificar atributos esperados (conforme DefaultGameConfigProviderImpl)
-        var atributos = atributoRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(result.getId());
+        var atributos = atributoRepository.findByJogoIdOrderByOrdemExibicao(result.getId());
 
         assertThat(atributos)
             .hasSize(7)
@@ -406,7 +401,7 @@ class JogoServiceIntegrationTest {
         Jogo result = jogoService.criarJogo(request);
 
         // Assert - Verificar tipos de aptidão
-        var tipos = tipoAptidaoRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(result.getId());
+        var tipos = tipoAptidaoRepository.findByJogoIdOrderByOrdemExibicao(result.getId());
 
         assertThat(tipos)
             .hasSize(2)
@@ -424,7 +419,7 @@ class JogoServiceIntegrationTest {
             .findFirst()
             .orElseThrow();
 
-        var todasAptidoes = aptidaoRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(result.getId());
+        var todasAptidoes = aptidaoRepository.findByJogoIdOrderByOrdemExibicao(result.getId());
 
         long aptidoesFisicas = todasAptidoes.stream()
             .filter(a -> a.getTipoAptidao().getId().equals(tipoFisica.getId()))
@@ -450,7 +445,7 @@ class JogoServiceIntegrationTest {
         Jogo result = jogoService.criarJogo(request);
 
         // Assert - Verificar raças
-        var racas = racaRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(result.getId());
+        var racas = racaRepository.findByJogoIdOrderByOrdemExibicao(result.getId());
 
         assertThat(racas)
             .hasSize(4)
@@ -481,7 +476,7 @@ class JogoServiceIntegrationTest {
         Jogo result = jogoService.criarJogo(request);
 
         // Assert - Verificar membros
-        var membros = membroCorpoRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(result.getId());
+        var membros = membroCorpoRepository.findByJogoIdOrderByOrdemExibicao(result.getId());
 
         assertThat(membros)
             .hasSize(6)
@@ -520,14 +515,14 @@ class JogoServiceIntegrationTest {
             .build();
 
         Jogo jogo1 = jogoService.criarJogo(request);
-        var atributos1 = atributoRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(jogo1.getId());
+        var atributos1 = atributoRepository.findByJogoIdOrderByOrdemExibicao(jogo1.getId());
         int atributosCount1 = atributos1.size();
 
         // Act - Tentar criar configs novamente (simulando bug)
         // Nota: GameConfigInitializerService já previne isso internamente
 
         // Assert - Quantidade não deve mudar
-        var atributos2 = atributoRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(jogo1.getId());
+        var atributos2 = atributoRepository.findByJogoIdOrderByOrdemExibicao(jogo1.getId());
         int atributosCount2 = atributos2.size();
         assertThat(atributosCount2).isEqualTo(atributosCount1);
     }
@@ -545,12 +540,12 @@ class JogoServiceIntegrationTest {
             .build());
 
         // Assert - Ambos têm configs
-        assertThat(atributoRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(jogo1.getId())).hasSize(7);
-        assertThat(atributoRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(jogo2.getId())).hasSize(7);
+        assertThat(atributoRepository.findByJogoIdOrderByOrdemExibicao(jogo1.getId())).hasSize(7);
+        assertThat(atributoRepository.findByJogoIdOrderByOrdemExibicao(jogo2.getId())).hasSize(7);
 
         // Assert - Configs são independentes (IDs diferentes)
-        var atributosJogo1 = atributoRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(jogo1.getId());
-        var atributosJogo2 = atributoRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(jogo2.getId());
+        var atributosJogo1 = atributoRepository.findByJogoIdOrderByOrdemExibicao(jogo1.getId());
+        var atributosJogo2 = atributoRepository.findByJogoIdOrderByOrdemExibicao(jogo2.getId());
 
         var idsJogo1 = atributosJogo1.stream().map(a -> a.getId()).toList();
         var idsJogo2 = atributosJogo2.stream().map(a -> a.getId()).toList();

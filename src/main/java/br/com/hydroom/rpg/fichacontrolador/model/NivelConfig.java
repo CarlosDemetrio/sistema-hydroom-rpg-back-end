@@ -31,7 +31,6 @@ public class NivelConfig extends BaseEntity {
     @NotNull(message = "Jogo é obrigatório")
     private Jogo jogo;
 
-    @Column(nullable = false)
     @NotNull(message = "Nível é obrigatório")
     @Min(value = 0, message = "Nível não pode ser negativo")
     private Integer nivel;
@@ -66,7 +65,4 @@ public class NivelConfig extends BaseEntity {
     @Min(value = 1, message = "Limitador de atributo deve ser maior que zero")
     private Integer limitadorAtributo;
 
-    @Column(nullable = false)
-    @NotNull(message = "Campo ativo é obrigatório")
-    private Boolean ativo = true;
 }

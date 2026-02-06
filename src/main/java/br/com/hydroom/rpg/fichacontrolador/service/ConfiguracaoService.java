@@ -36,7 +36,7 @@ public class ConfiguracaoService {
     // ===================================================================
 
     public List<AtributoConfig> listarAtributos(Long jogoId) {
-        return atributoRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(jogoId);
+        return atributoRepository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
     public AtributoConfig buscarAtributo(Long id) {
@@ -49,11 +49,11 @@ public class ConfiguracaoService {
     // ===================================================================
 
     public List<AptidaoConfig> listarAptidoes(Long jogoId) {
-        return aptidaoRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(jogoId);
+        return aptidaoRepository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
     public List<AptidaoConfig> listarAptidoesPorTipo(Long jogoId, TipoAptidao tipoAptidao) {
-        return aptidaoRepository.findByJogoIdAndTipoAptidaoAndAtivoTrueOrderByOrdemExibicao(jogoId, tipoAptidao);
+        return aptidaoRepository.findByJogoIdAndTipoAptidaoOrderByOrdemExibicao(jogoId, tipoAptidao);
     }
 
     public AptidaoConfig buscarAptidao(Long id) {
@@ -66,7 +66,7 @@ public class ConfiguracaoService {
     // ===================================================================
 
     public List<ClassePersonagem> listarClasses(Long jogoId) {
-        return classeRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(jogoId);
+        return classeRepository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
     public ClassePersonagem buscarClasse(Long id) {
@@ -79,7 +79,7 @@ public class ConfiguracaoService {
     // ===================================================================
 
     public List<Raca> listarRacas(Long jogoId) {
-        return racaRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(jogoId);
+        return racaRepository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
     public Raca buscarRaca(Long id) {
@@ -92,7 +92,7 @@ public class ConfiguracaoService {
     // ===================================================================
 
     public List<DadoProspeccaoConfig> listarDadosProspeccao(Long jogoId) {
-        return dadoProspeccaoRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(jogoId);
+        return dadoProspeccaoRepository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
     public DadoProspeccaoConfig buscarDadoProspeccao(Long id) {
@@ -105,7 +105,7 @@ public class ConfiguracaoService {
     // ===================================================================
 
     public List<VantagemConfig> listarVantagens(Long jogoId) {
-        return vantagemRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(jogoId);
+        return vantagemRepository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
     public VantagemConfig buscarVantagem(Long id) {
@@ -310,7 +310,7 @@ public class ConfiguracaoService {
     // ===================================================================
 
     public List<GeneroConfig> listarGeneros(Long jogoId) {
-        return generoRepository.findByJogoIdAndAtivoTrueOrderByOrdem(jogoId);
+        return generoRepository.findByJogoIdOrderByOrdem(jogoId);
     }
 
     public GeneroConfig buscarGenero(Long id) {
@@ -350,7 +350,7 @@ public class ConfiguracaoService {
     // ===================================================================
 
     public List<IndoleConfig> listarIndoles(Long jogoId) {
-        return indoleRepository.findByJogoIdAndAtivoTrueOrderByOrdem(jogoId);
+        return indoleRepository.findByJogoIdOrderByOrdem(jogoId);
     }
 
     public IndoleConfig buscarIndole(Long id) {
@@ -390,7 +390,7 @@ public class ConfiguracaoService {
     // ===================================================================
 
     public List<PresencaConfig> listarPresencas(Long jogoId) {
-        return presencaRepository.findByJogoIdAndAtivoTrueOrderByOrdem(jogoId);
+        return presencaRepository.findByJogoIdOrderByOrdem(jogoId);
     }
 
     public PresencaConfig buscarPresenca(Long id) {
@@ -430,7 +430,7 @@ public class ConfiguracaoService {
     // ===================================================================
 
     public List<MembroCorpoConfig> listarMembrosCorpo(Long jogoId) {
-        return membroCorpoRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(jogoId);
+        return membroCorpoRepository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
     public MembroCorpoConfig buscarMembroCorpo(Long id) {
@@ -470,7 +470,7 @@ public class ConfiguracaoService {
     // ===================================================================
 
     public List<NivelConfig> listarNiveis(Long jogoId) {
-        return nivelRepository.findByJogoIdAndAtivoTrueOrderByNivel(jogoId);
+        return nivelRepository.findByJogoIdOrderByNivel(jogoId);
     }
 
     public NivelConfig buscarNivel(Long id) {
@@ -511,7 +511,7 @@ public class ConfiguracaoService {
     // ===================================================================
 
     public List<BonusConfig> listarBonus(Long jogoId) {
-        return bonusRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(jogoId);
+        return bonusRepository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
     public BonusConfig buscarBonus(Long id) {
@@ -552,7 +552,7 @@ public class ConfiguracaoService {
     // ===================================================================
 
     public List<TipoAptidao> listarTiposAptidao(Long jogoId) {
-        return tipoAptidaoRepository.findByJogoIdAndAtivoTrueOrderByOrdemExibicao(jogoId);
+        return tipoAptidaoRepository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
     public TipoAptidao buscarTipoAptidao(Long id) {

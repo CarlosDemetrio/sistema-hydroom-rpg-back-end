@@ -34,7 +34,7 @@ public class JogoService {
 
     public List<Jogo> listarJogosDoUsuario() {
         Usuario usuarioAtual = getUsuarioAtual();
-        return jogoRepository.findByParticipantesUsuarioIdAndAtivoTrue(usuarioAtual.getId());
+        return jogoRepository.findByParticipantesUsuarioId(usuarioAtual.getId());
     }
 
     public Jogo buscarJogo(Long id) {
@@ -125,7 +125,7 @@ public class JogoService {
 
         // REGRA: Apenas 1 jogo pode estar ativo por mestre
         // Desativa todos os outros jogos do mestre
-        List<Jogo> jogosDoMestre = jogoRepository.findByMestreIdAndAtivoTrue(usuarioAtual.getId());
+        List<Jogo> jogosDoMestre = jogoRepository.findByMestreId(usuarioAtual.getId());
         for (Jogo j : jogosDoMestre) {
             if (j.getJogoAtivo() && !j.getId().equals(id)) {
                 j.setJogoAtivo(false);
@@ -134,6 +134,7 @@ public class JogoService {
         }
 
         // Ativa o jogo selecionado
+        jogo.restore(); // Remove soft delete se houver
         jogo.setJogoAtivo(true);
         return jogoRepository.save(jogo);
     }
@@ -152,12 +153,12 @@ public class JogoService {
     }
 
     public boolean usuarioEhMestreDoJogo(Long usuarioId, Long jogoId) {
-        return jogoParticipanteRepository.existsByUsuarioIdAndJogoIdAndRoleAndAtivoTrue(
-                usuarioId, jogoId, RoleJogo.MESTRE);
+        return jogoParticipanteRepository.existsByJogoIdAndUsuarioIdAndRole(
+                jogoId, usuarioId, RoleJogo.MESTRE);
     }
 
     public boolean usuarioPertenceAoJogo(Long usuarioId, Long jogoId) {
-        return jogoParticipanteRepository.existsByUsuarioIdAndJogoIdAndAtivoTrue(usuarioId, jogoId);
+        return jogoParticipanteRepository.existsByUsuarioIdAndJogoId(usuarioId, jogoId);
     }
 
     public Long getUsuarioAtualId() {

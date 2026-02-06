@@ -16,7 +16,7 @@ public interface ConfiguracaoClasseRepository extends JpaRepository<ClassePerson
     /**
      * Busca todas as classes ativas de um jogo, ordenadas por ordem de exibição.
      */
-    List<ClassePersonagem> findByJogoIdAndAtivoTrueOrderByOrdemExibicao(Long jogoId);
+    List<ClassePersonagem> findByJogoIdOrderByOrdemExibicao(Long jogoId);
 
     /**
      * Busca classe por nome em um jogo (case-insensitive).

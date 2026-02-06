@@ -132,13 +132,13 @@ class JogoParticipanteRepositoryTest {
 
         // Desativar um participante
         JogoParticipante participante = participanteRepository
-            .findByJogoIdAndUsuarioIdAndAtivoTrue(jogo.getId(), jogador1.getId())
+            .findByJogoIdAndUsuarioId(jogo.getId(), jogador1.getId())
             .orElseThrow();
         participante.delete();
         participanteRepository.save(participante);
 
         // Act
-        List<JogoParticipante> participantes = participanteRepository.findByJogoIdAndAtivoTrue(jogo.getId());
+        List<JogoParticipante> participantes = participanteRepository.findByJogoId(jogo.getId());
 
         // Assert
         assertThat(participantes).hasSize(2); // Apenas mestre e jogador2
@@ -166,7 +166,7 @@ class JogoParticipanteRepositoryTest {
 
         // Act
         Optional<JogoParticipante> found = participanteRepository
-            .findByJogoIdAndUsuarioIdAndAtivoTrue(jogo.getId(), mestre.getId());
+            .findByJogoIdAndUsuarioId(jogo.getId(), mestre.getId());
 
         // Assert
         assertThat(found).isPresent();
@@ -181,13 +181,14 @@ class JogoParticipanteRepositoryTest {
             .jogo(jogo)
             .usuario(mestre)
             .role(RoleJogo.MESTRE)
-            .ativo(false)
             .build();
+        participante = participanteRepository.save(participante);
+        participante.delete();
         participanteRepository.save(participante);
 
         // Act
         Optional<JogoParticipante> found = participanteRepository
-            .findByJogoIdAndUsuarioIdAndAtivoTrue(jogo.getId(), mestre.getId());
+            .findByJogoIdAndUsuarioId(jogo.getId(), mestre.getId());
 
         // Assert
         assertThat(found).isEmpty();
@@ -200,9 +201,9 @@ class JogoParticipanteRepositoryTest {
         criarParticipantes();
 
         // Act
-        boolean mestreEhMestre = participanteRepository.existsByJogoIdAndUsuarioIdAndRoleAndAtivoTrue(
+        boolean mestreEhMestre = participanteRepository.existsByJogoIdAndUsuarioIdAndRole(
             jogo.getId(), mestre.getId(), RoleJogo.MESTRE);
-        boolean jogadorEhMestre = participanteRepository.existsByJogoIdAndUsuarioIdAndRoleAndAtivoTrue(
+        boolean jogadorEhMestre = participanteRepository.existsByJogoIdAndUsuarioIdAndRole(
             jogo.getId(), jogador1.getId(), RoleJogo.MESTRE);
 
         // Assert
@@ -218,7 +219,7 @@ class JogoParticipanteRepositoryTest {
 
         // Act
         List<JogoParticipante> jogadores = participanteRepository
-            .findByJogoIdAndRoleAndAtivoTrue(jogo.getId(), RoleJogo.JOGADOR);
+            .findByJogoIdAndRole(jogo.getId(), RoleJogo.JOGADOR);
 
         // Assert
         assertThat(jogadores).hasSize(2);
@@ -287,7 +288,7 @@ class JogoParticipanteRepositoryTest {
 
         // Assert
         Optional<JogoParticipante> found = participanteRepository
-            .findByJogoIdAndUsuarioIdAndAtivoTrue(jogo.getId(), mestre.getId());
+            .findByJogoIdAndUsuarioId(jogo.getId(), mestre.getId());
         assertThat(found).isEmpty();
         assertThat(participanteRepository.findById(participanteId)).isPresent();
     }

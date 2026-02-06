@@ -1,6 +1,5 @@
 package br.com.hydroom.rpg.fichacontrolador.model;
 
-import br.com.hydroom.rpg.fichacontrolador.model.audit.AuditableEntity;
 import br.com.hydroom.rpg.fichacontrolador.model.enums.RoleJogo;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -45,10 +44,6 @@ public class JogoParticipante extends BaseEntity {
     @Column(nullable = false, length = 20)
     @Builder.Default
     private RoleJogo role = RoleJogo.JOGADOR;
-
-    @Column(nullable = false)
-    @Builder.Default
-    private Boolean ativo = true;
 
     /**
      * Verifica se o participante é o mestre do jogo.

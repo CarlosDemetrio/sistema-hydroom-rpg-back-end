@@ -58,7 +58,7 @@ class UsuarioRepositoryTest {
         assertThat(usuarioSalvo.getNome()).isEqualTo("Usuário Teste");
         assertThat(usuarioSalvo.getProvider()).isEqualTo("GOOGLE");
         assertThat(usuarioSalvo.getProviderId()).isEqualTo("google-123456");
-        assertThat(usuarioSalvoisActive()).isTrue();
+        assertThat(usuarioSalvo.isActive()).isTrue();
     }
 
     @Test
@@ -240,7 +240,7 @@ class UsuarioRepositoryTest {
         Usuario usuarioDesativado = usuarioRepository.save(usuarioSalvo);
 
         // Assert
-        assertThat(usuarioDesativadoisActive()).isFalse();
+        assertThat(usuarioDesativado.isActive()).isFalse();
         assertThat(usuarioRepository.findById(usuarioDesativado.getId())).isPresent();
     }
 }

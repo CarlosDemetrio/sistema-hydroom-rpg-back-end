@@ -28,7 +28,7 @@ public interface JogoRepository extends JpaRepository<Jogo, Long> {
         AND p.deletedAt IS NULL
         ORDER BY j.jogoAtivo DESC, j.nome ASC
     """)
-    List<Jogo> findByParticipantesUsuarioIdAndAtivoTrue(@Param("usuarioId") Long usuarioId);
+    List<Jogo> findByParticipantesUsuarioId(@Param("usuarioId") Long usuarioId);
 
     /**
      * Busca jogos não deletados onde o usuário é mestre.
@@ -42,7 +42,7 @@ public interface JogoRepository extends JpaRepository<Jogo, Long> {
         AND p.deletedAt IS NULL
         ORDER BY j.jogoAtivo DESC, j.nome ASC
     """)
-    List<Jogo> findByMestreIdAndAtivoTrue(@Param("usuarioId") Long usuarioId);
+    List<Jogo> findByMestreId(@Param("usuarioId") Long usuarioId);
 
     /**
      * Busca o jogo selecionado (jogoAtivo=true) do mestre.

@@ -57,7 +57,6 @@ class JogoServiceTest {
             .email("user@test.com")
             .provider("google")
             .providerId("google123")
-            .ativo(true)
             .build();
 
         var authentication = new UsernamePasswordAuthenticationToken(usuario.getEmail(), "n/a");
@@ -77,8 +76,9 @@ class JogoServiceTest {
     @DisplayName("Deve listar jogos ativos")
     void listarJogosDoUsuario() {
         // Arrange
+        stubUsuarioAtual();
         var jogos = List.of(Jogo.builder().id(1L).build(), Jogo.builder().id(2L).build());
-        when(jogoRepository.findByAtivoTrue()).thenReturn(jogos);
+        when(jogoRepository.findByParticipantesUsuarioId(usuario.getId())).thenReturn(jogos);
 
         // Act
         var result = jogoService.listarJogosDoUsuario();
@@ -86,7 +86,7 @@ class JogoServiceTest {
         // Assert
         assertThat(result).hasSize(2);
         assertThat(result).isEqualTo(jogos);
-        verify(jogoRepository).findByAtivoTrue();
+        verify(jogoRepository).findByParticipantesUsuarioId(usuario.getId());
     }
 
     @Test
@@ -96,7 +96,7 @@ class JogoServiceTest {
         stubUsuarioAtual();
         var jogo = Jogo.builder().id(10L).build();
         when(jogoRepository.findById(10L)).thenReturn(Optional.of(jogo));
-        when(jogoParticipanteRepository.existsByUsuarioIdAndJogoIdAndAtivoTrue(usuario.getId(), 10L))
+        when(jogoParticipanteRepository.existsByUsuarioIdAndJogoId(usuario.getId(), 10L))
             .thenReturn(false);
 
         // Act + Assert
@@ -110,7 +110,7 @@ class JogoServiceTest {
         stubUsuarioAtual();
         var jogo = Jogo.builder().id(10L).build();
         when(jogoRepository.findById(10L)).thenReturn(Optional.of(jogo));
-        when(jogoParticipanteRepository.existsByUsuarioIdAndJogoIdAndAtivoTrue(usuario.getId(), 10L))
+        when(jogoParticipanteRepository.existsByUsuarioIdAndJogoId(usuario.getId(), 10L))
             .thenReturn(true);
 
         // Act
@@ -143,14 +143,14 @@ class JogoServiceTest {
         // Assert
         assertThat(result.getId()).isEqualTo(99L);
         assertThat(result.getNome()).isEqualTo("Campanha Teste");
-        assertThat(resultisActive()).isTrue();
+        assertThat(result.isActive()).isTrue();
 
         ArgumentCaptor<JogoParticipante> captor = ArgumentCaptor.forClass(JogoParticipante.class);
         verify(jogoParticipanteRepository).save(captor.capture());
         var participacao = captor.getValue();
         assertThat(participacao.getUsuario()).isEqualTo(usuario);
         assertThat(participacao.getRole()).isEqualTo(RoleJogo.MESTRE);
-        assertThat(participacaoisActive()).isTrue();
+        assertThat(participacao.isActive()).isTrue();
     }
 
     @Test
@@ -162,7 +162,7 @@ class JogoServiceTest {
         var request = EditarJogoRequest.builder().nome("Novo Nome").build();
 
         when(jogoRepository.findById(10L)).thenReturn(Optional.of(jogo));
-        when(jogoParticipanteRepository.existsByUsuarioIdAndJogoIdAndRoleAndAtivoTrue(usuario.getId(), 10L, RoleJogo.MESTRE))
+        when(jogoParticipanteRepository.existsByJogoIdAndUsuarioIdAndRole(10L, usuario.getId(), RoleJogo.MESTRE))
             .thenReturn(false);
 
         // Act + Assert
@@ -184,7 +184,7 @@ class JogoServiceTest {
             .build();
 
         when(jogoRepository.findById(10L)).thenReturn(Optional.of(jogo));
-        when(jogoParticipanteRepository.existsByUsuarioIdAndJogoIdAndRoleAndAtivoTrue(usuario.getId(), 10L, RoleJogo.MESTRE))
+        when(jogoParticipanteRepository.existsByJogoIdAndUsuarioIdAndRole(10L, usuario.getId(), RoleJogo.MESTRE))
             .thenReturn(true);
         when(jogoRepository.save(any(Jogo.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -203,10 +203,10 @@ class JogoServiceTest {
     void deletarJogoComPermissao() {
         // Arrange
         stubUsuarioAtual();
-        var jogo = Jogo.builder().id(10L).ativo(true).build();
+        var jogo = Jogo.builder().id(10L).build();
 
         when(jogoRepository.findById(10L)).thenReturn(Optional.of(jogo));
-        when(jogoParticipanteRepository.existsByUsuarioIdAndJogoIdAndRoleAndAtivoTrue(usuario.getId(), 10L, RoleJogo.MESTRE))
+        when(jogoParticipanteRepository.existsByJogoIdAndUsuarioIdAndRole(10L, usuario.getId(), RoleJogo.MESTRE))
             .thenReturn(true);
 
         // Act
@@ -215,7 +215,7 @@ class JogoServiceTest {
         // Assert
         ArgumentCaptor<Jogo> captor = ArgumentCaptor.forClass(Jogo.class);
         verify(jogoRepository).save(captor.capture());
-        assertThat(captor.getValue()isActive()).isFalse();
+        assertThat(captor.getValue().isActive()).isFalse();
     }
 
     @Test
@@ -223,17 +223,18 @@ class JogoServiceTest {
     void ativarJogoComPermissao() {
         // Arrange
         stubUsuarioAtual();
-        var jogo = Jogo.builder().id(10L).ativo(false).build();
+        var jogo = Jogo.builder().id(10L).build();
 
         when(jogoRepository.findById(10L)).thenReturn(Optional.of(jogo));
-        when(jogoParticipanteRepository.existsByUsuarioIdAndJogoIdAndRoleAndAtivoTrue(usuario.getId(), 10L, RoleJogo.MESTRE))
+        when(jogoParticipanteRepository.existsByJogoIdAndUsuarioIdAndRole(10L, usuario.getId(), RoleJogo.MESTRE))
             .thenReturn(true);
+        when(jogoRepository.findByMestreId(usuario.getId())).thenReturn(List.of());
         when(jogoRepository.save(any(Jogo.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // Act
         var result = jogoService.ativarJogo(10L);
 
         // Assert
-        assertThat(resultisActive()).isTrue();
+        assertThat(result.getJogoAtivo()).isTrue();
     }
 }

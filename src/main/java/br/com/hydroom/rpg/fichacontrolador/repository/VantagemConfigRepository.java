@@ -15,7 +15,7 @@ public interface VantagemConfigRepository extends JpaRepository<VantagemConfig, 
     /**
      * Busca todas as vantagens ativas de um jogo, ordenadas.
      */
-    List<VantagemConfig> findByJogoIdAndAtivoTrueOrderByOrdemExibicao(Long jogoId);
+    List<VantagemConfig> findByJogoIdOrderByOrdemExibicao(Long jogoId);
 
     /**
      * Verifica se uma vantagem com o nome já existe no jogo.

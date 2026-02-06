@@ -39,11 +39,8 @@ public class IndoleConfig extends BaseEntity {
     @Size(max = 200, message = "Descrição não pode ter mais de 200 caracteres")
     private String descricao;
 
-    @Column(nullable = false)
-    @NotNull(message = "Campo ativo é obrigatório")
-    private Boolean ativo = true;
-
+    @Builder.Default
     @Column(name = "ordem", nullable = false)
     @NotNull(message = "Ordem de exibição é obrigatória")
-    private Integer ordem;
+    private Integer ordem = 0;
 }

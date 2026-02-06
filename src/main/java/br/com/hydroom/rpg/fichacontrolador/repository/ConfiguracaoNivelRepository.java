@@ -17,7 +17,7 @@ public interface ConfiguracaoNivelRepository extends JpaRepository<NivelConfig, 
     /**
      * Busca todos os níveis ativos de um jogo ordenados por nível.
      */
-    List<NivelConfig> findByJogoIdAndAtivoTrueOrderByNivel(Long jogoId);
+    List<NivelConfig> findByJogoIdOrderByNivel(Long jogoId);
 
     /**
      * Busca configuração de um nível específico em um jogo.
@@ -27,12 +27,12 @@ public interface ConfiguracaoNivelRepository extends JpaRepository<NivelConfig, 
     /**
      * Calcula o nível baseado na experiência para um jogo específico.
      */
-    @Query("SELECT n FROM NivelConfig n WHERE n.jogo.id = :jogoId AND n.xpNecessaria <= :experiencia AND n.ativo = true ORDER BY n.xpNecessaria DESC LIMIT 1")
+    @Query("SELECT n FROM NivelConfig n WHERE n.jogo.id = :jogoId AND n.xpNecessaria <= :experiencia AND n.deletedAt IS NULL ORDER BY n.xpNecessaria DESC LIMIT 1")
     Optional<NivelConfig> findNivelPorExperiencia(Long jogoId, Long experiencia);
 
     /**
      * Busca próximo nível após o nível atual em um jogo.
      */
-    @Query("SELECT n FROM NivelConfig n WHERE n.jogo.id = :jogoId AND n.nivel > :nivelAtual AND n.ativo = true ORDER BY n.nivel ASC LIMIT 1")
+    @Query("SELECT n FROM NivelConfig n WHERE n.jogo.id = :jogoId AND n.nivel > :nivelAtual AND n.deletedAt IS NULL ORDER BY n.nivel ASC LIMIT 1")
     Optional<NivelConfig> findProximoNivel(Long jogoId, Integer nivelAtual);
 }

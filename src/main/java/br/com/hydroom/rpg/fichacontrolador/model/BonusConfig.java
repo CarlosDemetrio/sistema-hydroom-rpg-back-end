@@ -49,8 +49,4 @@ public class BonusConfig extends BaseEntity {
     @Builder.Default
     @Column(name = "ordem_exibicao")
     private Integer ordemExibicao = 0;
-
-    @Builder.Default
-    @Column(nullable = false)
-    private Boolean ativo = true;
 }

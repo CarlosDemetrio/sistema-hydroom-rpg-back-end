@@ -58,9 +58,6 @@ public class Usuario extends BaseEntity {
     @Column(nullable = false, unique = true, length = ValidationMessages.Limites.USUARIO_PROVIDER_ID_MAX)
     private String providerId;
 
-    @Builder.Default
-    @Column(nullable = false)
-    private Boolean ativo = true;
 
     @Builder.Default
     @Column(nullable = false, length = 20)

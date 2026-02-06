@@ -15,5 +15,5 @@ public interface TipoAptidaoRepository extends JpaRepository<TipoAptidao, Long> 
     /**
      * Busca todos os tipos de aptidão ativos de um jogo ordenados por ordem de exibição.
      */
-    List<TipoAptidao> findByJogoIdAndAtivoTrueOrderByOrdemExibicao(Long jogoId);
+    List<TipoAptidao> findByJogoIdOrderByOrdemExibicao(Long jogoId);
 }

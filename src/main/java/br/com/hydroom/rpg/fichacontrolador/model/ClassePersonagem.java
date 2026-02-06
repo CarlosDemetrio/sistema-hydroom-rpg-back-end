@@ -47,9 +47,6 @@ public class ClassePersonagem extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String descricao;
 
-    @Builder.Default
-    @Column(nullable = false)
-    private Boolean ativo = true;
 
     @Builder.Default
     @Column(name = "ordem_exibicao", nullable = false)

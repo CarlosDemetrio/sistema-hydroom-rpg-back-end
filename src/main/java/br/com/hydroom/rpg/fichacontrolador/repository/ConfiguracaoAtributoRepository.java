@@ -14,9 +14,10 @@ import java.util.List;
 public interface ConfiguracaoAtributoRepository extends JpaRepository<AtributoConfig, Long> {
 
     /**
-     * Busca todos os atributos ativos de um jogo, ordenados por ordem de exibição.
+     * Busca todos os atributos ativos (não deletados) de um jogo, ordenados por ordem de exibição.
      */
-    List<AtributoConfig> findByJogoIdAndAtivoTrueOrderByOrdemExibicao(Long jogoId);
+    @Query("SELECT a FROM AtributoConfig a WHERE a.jogo.id = :jogoId AND a.deletedAt IS NULL ORDER BY a.ordemExibicao")
+    List<AtributoConfig> findByJogoIdOrderByOrdemExibicao(Long jogoId);
 
     /**
      * Busca atributo por nome em um jogo (case-insensitive).

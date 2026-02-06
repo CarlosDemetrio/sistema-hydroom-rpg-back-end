@@ -25,6 +25,7 @@ public interface JogoMapper {
     @Mapping(target = "jogoAtivo", constant = "false")
     @Mapping(target = "dataFim", ignore = true)
     @Mapping(target = "participantes", ignore = true)
+    @Mapping(target = "imagemUrl", ignore = true)
     Jogo toEntity(CriarJogoRequest request);
 
     /**
@@ -33,7 +34,9 @@ public interface JogoMapper {
      * @param jogo Entidade Jogo
      * @return JogoResponse com dados completos
      */
-    @Mapping(target = "totalParticipantes", expression = "java((int) (jogo.getParticipantes() == null ? 0 : jogo.getParticipantes().stream().filter(br.com.hydroom.rpg.fichacontrolador.model.JogoParticipante::getAtivo).count()))")
+    @Mapping(target = "ativo", expression = "java(jogo.isActive())")
+    @Mapping(target = "meuRole", ignore = true)
+    @Mapping(target = "totalParticipantes", expression = "java((int) (jogo.getParticipantes() == null ? 0 : jogo.getParticipantes().stream().filter(p -> p.isActive()).count()))")
     JogoResponse toResponse(Jogo jogo);
 
     /**
@@ -42,6 +45,8 @@ public interface JogoMapper {
      * @param jogo Entidade Jogo
      * @return JogoResumoResponse para listagens
      */
-    @Mapping(target = "totalParticipantes", expression = "java((int) (jogo.getParticipantes() == null ? 0 : jogo.getParticipantes().stream().filter(br.com.hydroom.rpg.fichacontrolador.model.JogoParticipante::getAtivo).count()))")
+    @Mapping(target = "ativo", expression = "java(jogo.isActive())")
+    @Mapping(target = "meuRole", ignore = true)
+    @Mapping(target = "totalParticipantes", expression = "java((int) (jogo.getParticipantes() == null ? 0 : jogo.getParticipantes().stream().filter(p -> p.isActive()).count()))")
     JogoResumoResponse toResumoResponse(Jogo jogo);
 }

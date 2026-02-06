@@ -233,7 +233,6 @@ public class GameConfigInitializerService {
                     nivel.setPontosAtributo(dto.getPontosAtributo());
                     nivel.setPontosAptidao(dto.getPontosAptidao());
                     nivel.setLimitadorAtributo(50); // Default limitador (will be configurable later)
-                    nivel.setAtivo(true);
                     return nivel;
                 })
                 .toList();
@@ -363,7 +362,6 @@ public class GameConfigInitializerService {
                     genero.setJogo(jogo);
                     genero.setNome(dto.getNome());
                     genero.setOrdem(dto.getOrdemExibicao());
-                    genero.setAtivo(true);
                     return genero;
                 })
                 .toList();

@@ -41,9 +41,6 @@ public class GeneroConfig extends BaseEntity {
     @Size(max = 200, message = "Descrição não pode ter mais de 200 caracteres")
     private String descricao;
 
-    @Column(nullable = false)
-    @NotNull(message = "Campo ativo é obrigatório")
-    private Boolean ativo = true;
 
     @Column(name = "ordem", nullable = false)
     @NotNull(message = "Ordem de exibição é obrigatória")

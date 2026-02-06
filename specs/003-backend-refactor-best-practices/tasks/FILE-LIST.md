@@ -1,0 +1,79 @@
+# Master File Checklist
+
+Use this list as the authoritative scope for backend refactor tasks.
+
+## Controllers
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/controller/configuracao/AptidaoController.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/controller/configuracao/AtributoController.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/controller/configuracao/BonusController.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/controller/configuracao/ClasseController.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/controller/configuracao/DadoProspeccaoController.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/controller/configuracao/GeneroController.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/controller/configuracao/IndoleController.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/controller/configuracao/MembroCorpoController.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/controller/configuracao/NivelController.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/controller/configuracao/PresencaController.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/controller/configuracao/RacaController.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/controller/configuracao/TipoAptidaoController.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/controller/configuracao/VantagemController.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/controller/AuthController.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/controller/JogoController.java`
+
+## Services
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/service/ConfiguracaoService.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/service/CustomOAuth2UserService.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/service/FormulaEvaluatorService.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/service/GameConfigInitializerService.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/service/JogoService.java`
+
+## Repositories
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/repository/BonusConfigRepository.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/repository/ConfiguracaoAptidaoRepository.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/repository/ConfiguracaoAtributoRepository.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/repository/ConfiguracaoClasseRepository.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/repository/ConfiguracaoNivelRepository.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/repository/ConfiguracaoRacaRepository.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/repository/DadoProspeccaoConfigRepository.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/repository/FichaRepository.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/repository/GeneroConfigRepository.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/repository/IndoleConfigRepository.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/repository/JogoParticipanteRepository.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/repository/JogoRepository.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/repository/MembroCorpoConfigRepository.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/repository/PresencaConfigRepository.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/repository/RacaBonusAtributoRepository.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/repository/TipoAptidaoRepository.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/repository/UsuarioRepository.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/repository/VantagemConfigRepository.java`
+
+## Models
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/AptidaoConfig.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/AtributoConfig.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/BaseEntity.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/BonusConfig.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/CategoriaVantagem.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/ClassePersonagem.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/DadoProspeccaoConfig.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/Ficha.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/FichaAmeaca.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/FichaAptidao.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/FichaAtributo.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/FichaBonus.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/FichaEssencia.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/FichaProspeccao.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/FichaVantagem.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/FichaVida.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/FichaVidaMembro.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/GeneroConfig.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/IndoleConfig.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/Jogo.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/JogoParticipante.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/MembroCorpoConfig.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/NivelConfig.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/PontosVantagemConfig.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/PresencaConfig.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/Raca.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/RacaBonusAtributo.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/TipoAptidao.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/Usuario.java`
+- `src/main/java/br/com/hydroom/rpg/fichacontrolador/model/VantagemConfig.java`

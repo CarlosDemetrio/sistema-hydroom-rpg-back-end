@@ -545,48 +545,6 @@ public class ExternalApiService {
 
 ---
 
-## Ferramentas
-
-### OWASP Dependency Check
-```xml
-<plugin>
-    <groupId>org.owasp</groupId>
-    <artifactId>dependency-check-maven</artifactId>
-    <version>8.4.0</version>
-    <executions>
-        <execution>
-            <goals>
-                <goal>check</goal>
-            </goals>
-        </execution>
-    </executions>
-</plugin>
-```
-
-```bash
-# Executar scan
-mvn dependency-check:check
-```
-
-### SpotBugs Security
-```xml
-<plugin>
-    <groupId>com.github.spotbugs</groupId>
-    <artifactId>spotbugs-maven-plugin</artifactId>
-    <configuration>
-        <plugins>
-            <plugin>
-                <groupId>com.h3xstream.findsecbugs</groupId>
-                <artifactId>findsecbugs-plugin</artifactId>
-                <version>1.12.0</version>
-            </plugin>
-        </plugins>
-    </configuration>
-</plugin>
-```
-
----
-
 ## Referências
 
 - [OWASP Top 10 - 2021](https://owasp.org/Top10/)

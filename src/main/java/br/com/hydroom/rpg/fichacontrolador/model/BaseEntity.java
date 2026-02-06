@@ -6,6 +6,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -18,10 +19,13 @@ import java.time.LocalDateTime;
  * <p>Auditoria automática de timestamps (createdAt, updatedAt) e usuários (createdBy, updatedBy).</p>
  *
  * <p>Todos os campos de auditoria são preenchidos automaticamente via @PrePersist e @PreUpdate.</p>
+ *
+ * <p>@SQLRestriction garante que apenas registros não deletados sejam retornados automaticamente.</p>
  */
 @Getter
 @Setter
 @MappedSuperclass
+@SQLRestriction("deleted_at IS NULL")
 public abstract class BaseEntity {
 
     @Column(name = "deleted_at")

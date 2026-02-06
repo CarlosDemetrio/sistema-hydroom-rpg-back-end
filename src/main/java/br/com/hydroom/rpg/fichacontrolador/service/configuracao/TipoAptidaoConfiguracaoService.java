@@ -32,9 +32,35 @@ public class TipoAptidaoConfiguracaoService extends AbstractConfiguracaoService<
     }
 
     @Override
+    protected void validarAntesCriar(TipoAptidao configuracao) {
+        validateUniqueNome(configuracao.getNome(), configuracao.getJogo().getId());
+    }
+
+    @Override
+    protected void validarAntesAtualizar(TipoAptidao configuracaoExistente, TipoAptidao configuracaoAtualizada) {
+        // Validar nome único apenas se mudou
+        if (!configuracaoExistente.getNome().equals(configuracaoAtualizada.getNome())) {
+            validateUniqueNome(configuracaoAtualizada.getNome(), configuracaoExistente.getJogo().getId());
+        }
+    }
+
+    @Override
     protected void atualizarCampos(TipoAptidao existente, TipoAptidao atualizado) {
         existente.setNome(atualizado.getNome());
         existente.setDescricao(atualizado.getDescricao());
         existente.setOrdemExibicao(atualizado.getOrdemExibicao());
+    }
+
+    /**
+     * Valida se já existe um tipo de aptidão com o mesmo nome no jogo.
+     *
+     * @param nome Nome do tipo de aptidão
+     * @param jogoId ID do jogo
+     * @throws ConflictException se nome já existe
+     */
+    private void validateUniqueNome(String nome, Long jogoId) {
+        if (repository.existsByJogoIdAndNomeIgnoreCase(jogoId, nome)) {
+            throw new ConflictException("Já existe um tipo de aptidão com o nome '" + nome + "' neste jogo");
+        }
     }
 }

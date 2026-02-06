@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
  */
 @Entity
 @Table(name = "tipo_aptidao", indexes = {
-    @Index(name = "idx_tipo_aptidao_jogo", columnList = "jogo_id, ativo")
+    @Index(name = "idx_tipo_aptidao_jogo", columnList = "jogo_id")
 }, uniqueConstraints = {
     @UniqueConstraint(name = "uk_tipo_aptidao_jogo_nome", columnNames = {"jogo_id", "nome"})
 })

@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface FichaRepository extends JpaRepository<Ficha, Long> {
 
-    List<Ficha> findByUsuarioAndAtivoTrue(Usuario usuario);
+    List<Ficha> findByUsuarioTrue(Usuario usuario);
 
-    List<Ficha> findByUsuarioIdAndAtivoTrue(Long usuarioId);
+    List<Ficha> findByUsuarioIdTrue(Long usuarioId);
 }

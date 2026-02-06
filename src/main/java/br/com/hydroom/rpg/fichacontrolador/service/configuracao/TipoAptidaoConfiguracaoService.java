@@ -1,5 +1,6 @@
 package br.com.hydroom.rpg.fichacontrolador.service.configuracao;
 
+import br.com.hydroom.rpg.fichacontrolador.exception.ConflictException;
 import br.com.hydroom.rpg.fichacontrolador.model.TipoAptidao;
 import br.com.hydroom.rpg.fichacontrolador.repository.TipoAptidaoRepository;
 import lombok.extern.slf4j.Slf4j;

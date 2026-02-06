@@ -44,6 +44,9 @@ class JogoServiceTest {
     @Mock
     private UsuarioRepository usuarioRepository;
 
+    @Mock
+    private GameConfigInitializerService configInitializerService;
+
     @InjectMocks
     private JogoService jogoService;
 

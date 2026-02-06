@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -17,6 +18,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "jogos")
+@SQLRestriction("deleted_at IS NULL")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -67,19 +69,5 @@ public class Jogo extends BaseEntity {
     @Builder.Default
     private Set<JogoParticipante> participantes = new HashSet<>();
 
-    /**
-     * Adiciona um participante ao jogo.
-     */
-    public void adicionarParticipante(JogoParticipante participante) {
-        participantes.add(participante);
-        participante.setJogo(this);
-    }
 
-    /**
-     * Remove um participante do jogo.
-     */
-    public void removerParticipante(JogoParticipante participante) {
-        participantes.remove(participante);
-        participante.setJogo(null);
-    }
 }

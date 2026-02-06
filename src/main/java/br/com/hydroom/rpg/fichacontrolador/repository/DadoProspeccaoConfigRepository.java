@@ -2,6 +2,8 @@ package br.com.hydroom.rpg.fichacontrolador.repository;
 
 import br.com.hydroom.rpg.fichacontrolador.model.DadoProspeccaoConfig;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,12 +17,14 @@ public interface DadoProspeccaoConfigRepository extends JpaRepository<DadoProspe
     /**
      * Busca todos os dados de prospecção ativos ordenados.
      */
+    @Query("SELECT d FROM DadoProspeccaoConfig d WHERE d.deletedAt IS NULL ORDER BY d.ordemExibicao")
     List<DadoProspeccaoConfig> findByAtivoTrueOrderByOrdemExibicao();
 
     /**
      * Busca todos os dados de prospecção ativos de um jogo, ordenados.
      */
-    List<DadoProspeccaoConfig> findByJogoIdAndAtivoTrueOrderByOrdemExibicao(Long jogoId);
+    @Query("SELECT d FROM DadoProspeccaoConfig d WHERE d.jogo.id = :jogoId AND d.deletedAt IS NULL ORDER BY d.ordemExibicao")
+    List<DadoProspeccaoConfig> findByJogoIdAndAtivoTrueOrderByOrdemExibicao(@Param("jogoId") Long jogoId);
 
     /**
      * Busca dado de prospecção por nome em um jogo.

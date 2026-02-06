@@ -59,7 +59,7 @@ public class JogoService {
         novoJogo.setNome(request.getNome());
         novoJogo.setDescricao(request.getDescricao());
         novoJogo.setDataInicio(request.getDataInicio());
-        novoJogo.setAtivo(true);
+        novoJogo.setJogoAtivo(false); // Novo jogo não é o ativo por padrão
 
         Jogo jogoSalvo = jogoRepository.save(novoJogo);
 
@@ -67,7 +67,6 @@ public class JogoService {
                 .jogo(jogoSalvo)
                 .usuario(usuarioAtual)
                 .role(RoleJogo.MESTRE)
-                .ativo(true)
                 .build();
 
         jogoParticipanteRepository.save(participacao);
@@ -104,7 +103,8 @@ public class JogoService {
             throw new AccessDeniedException("Apenas o Mestre do jogo pode deletá-lo");
         }
 
-        jogo.setAtivo(false);
+        // Soft delete
+        jogo.delete();
         jogoRepository.save(jogo);
     }
 
@@ -118,7 +118,8 @@ public class JogoService {
             throw new AccessDeniedException("Apenas o Mestre do jogo pode reativá-lo");
         }
 
-        jogo.setAtivo(true);
+        // Restaura jogo deletado
+        jogo.restore();
         return jogoRepository.save(jogo);
     }
 

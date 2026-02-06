@@ -3,6 +3,7 @@ package br.com.hydroom.rpg.fichacontrolador.repository;
 import br.com.hydroom.rpg.fichacontrolador.model.ClassePersonagem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,7 +17,8 @@ public interface ConfiguracaoClasseRepository extends JpaRepository<ClassePerson
     /**
      * Busca todas as classes ativas de um jogo, ordenadas por ordem de exibição.
      */
-    List<ClassePersonagem> findByJogoIdAndAtivoTrueOrderByOrdemExibicao(Long jogoId);
+    @Query("SELECT c FROM ClassePersonagem c WHERE c.jogo.id = :jogoId AND c.deletedAt IS NULL ORDER BY c.ordemExibicao")
+    List<ClassePersonagem> findByJogoIdAndAtivoTrueOrderByOrdemExibicao(@Param("jogoId") Long jogoId);
 
     /**
      * Busca classe por nome em um jogo (case-insensitive).

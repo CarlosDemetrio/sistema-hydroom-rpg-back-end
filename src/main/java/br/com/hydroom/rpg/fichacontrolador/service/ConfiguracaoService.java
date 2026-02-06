@@ -141,7 +141,7 @@ public class ConfiguracaoService {
         AtributoConfig atributo = atributoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Atributo não encontrado: " + id));
 
-        atributo.setAtivo(false);
+        atributo.delete();
         atributoRepository.save(atributo);
     }
 
@@ -173,7 +173,7 @@ public class ConfiguracaoService {
         AptidaoConfig aptidao = aptidaoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Aptidão não encontrada: " + id));
 
-        aptidao.setAtivo(false);
+        aptidao.delete();
         aptidaoRepository.save(aptidao);
     }
 
@@ -204,7 +204,7 @@ public class ConfiguracaoService {
         ClassePersonagem classe = classeRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Classe não encontrada: " + id));
 
-        classe.setAtivo(false);
+        classe.delete();
         classeRepository.save(classe);
     }
 
@@ -235,7 +235,7 @@ public class ConfiguracaoService {
         Raca raca = racaRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Raça não encontrada: " + id));
 
-        raca.setAtivo(false);
+        raca.delete();
         racaRepository.save(raca);
     }
 
@@ -269,7 +269,7 @@ public class ConfiguracaoService {
         VantagemConfig vantagem = vantagemRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Vantagem não encontrada: " + id));
 
-        vantagem.setAtivo(false);
+        vantagem.delete();
         vantagemRepository.save(vantagem);
     }
 
@@ -301,7 +301,7 @@ public class ConfiguracaoService {
         DadoProspeccaoConfig dado = dadoProspeccaoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Dado de prospecção não encontrado: " + id));
 
-        dado.setAtivo(false);
+        dado.delete();
         dadoProspeccaoRepository.save(dado);
     }
 
@@ -341,7 +341,7 @@ public class ConfiguracaoService {
         GeneroConfig genero = generoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Gênero não encontrado: " + id));
 
-        genero.setAtivo(false);
+        genero.delete();
         generoRepository.save(genero);
     }
 
@@ -381,7 +381,7 @@ public class ConfiguracaoService {
         IndoleConfig indole = indoleRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Indole não encontrada: " + id));
 
-        indole.setAtivo(false);
+        indole.delete();
         indoleRepository.save(indole);
     }
 
@@ -421,7 +421,7 @@ public class ConfiguracaoService {
         PresencaConfig presenca = presencaRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Presença não encontrada: " + id));
 
-        presenca.setAtivo(false);
+        presenca.delete();
         presencaRepository.save(presenca);
     }
 
@@ -461,7 +461,7 @@ public class ConfiguracaoService {
         MembroCorpoConfig membro = membroCorpoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Membro do corpo não encontrado: " + id));
 
-        membro.setAtivo(false);
+        membro.delete();
         membroCorpoRepository.save(membro);
     }
 
@@ -502,7 +502,7 @@ public class ConfiguracaoService {
         NivelConfig nivel = nivelRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Nível não encontrado: " + id));
 
-        nivel.setAtivo(false);
+        nivel.delete();
         nivelRepository.save(nivel);
     }
 
@@ -543,7 +543,7 @@ public class ConfiguracaoService {
         BonusConfig bonus = bonusRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Bônus não encontrado: " + id));
 
-        bonus.setAtivo(false);
+        bonus.delete();
         bonusRepository.save(bonus);
     }
 
@@ -583,7 +583,7 @@ public class ConfiguracaoService {
         TipoAptidao tipoAptidao = tipoAptidaoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Tipo de aptidão não encontrado: " + id));
 
-        tipoAptidao.setAtivo(false);
+        tipoAptidao.delete();
         tipoAptidaoRepository.save(tipoAptidao);
     }
 }

@@ -19,49 +19,63 @@ import java.util.Optional;
 public interface JogoParticipanteRepository extends JpaRepository<JogoParticipante, Long> {
 
     /**
-     * Busca todos os participantes de um jogo.
+     * Busca todos os participantes de um jogo (não deletados).
      */
-    List<JogoParticipante> findByJogoId(Long jogoId);
+    @Query("SELECT p FROM JogoParticipante p WHERE p.jogo.id = :jogoId AND p.deletedAt IS NULL")
+    List<JogoParticipante> findByJogoId(@Param("jogoId") Long jogoId);
 
     /**
-     * Busca todos os participantes ativos de um jogo.
+     * Busca todos os participantes não deletados de um jogo.
+     *
+     * @deprecated Use {@link #findByJogoId(Long)} instead. This method maintains backward compatibility
+     * with the legacy naming convention but has identical implementation. The method name suggests
+     * filtering by "ativo=true" which is now replaced by the soft delete pattern (deletedAt IS NULL).
+     * This method will be removed in a future version.
      */
-    List<JogoParticipante> findByJogoIdAndAtivoTrue(Long jogoId);
+    @Query("SELECT p FROM JogoParticipante p WHERE p.jogo.id = :jogoId AND p.deletedAt IS NULL")
+    List<JogoParticipante> findByJogoIdAndAtivoTrue(@Param("jogoId") Long jogoId);
 
     /**
      * Busca todos os jogos em que um usuário participa.
      */
-    List<JogoParticipante> findByUsuarioId(Long usuarioId);
+    @Query("SELECT p FROM JogoParticipante p WHERE p.usuario.id = :usuarioId AND p.deletedAt IS NULL")
+    List<JogoParticipante> findByUsuarioId(@Param("usuarioId") Long usuarioId);
 
     /**
-     * Busca participação específica de um usuário em um jogo (apenas ativas).
+     * Busca participação específica de um usuário em um jogo (apenas não deletadas).
      */
-    Optional<JogoParticipante> findByJogoIdAndUsuarioIdAndAtivoTrue(Long jogoId, Long usuarioId);
+    @Query("SELECT p FROM JogoParticipante p WHERE p.jogo.id = :jogoId AND p.usuario.id = :usuarioId AND p.deletedAt IS NULL")
+    Optional<JogoParticipante> findByJogoIdAndUsuarioIdAndAtivoTrue(@Param("jogoId") Long jogoId, @Param("usuarioId") Long usuarioId);
 
     /**
      * Verifica se um usuário tem uma role específica em um jogo.
      */
-    boolean existsByJogoIdAndUsuarioIdAndRoleAndAtivoTrue(Long jogoId, Long usuarioId, RoleJogo role);
+    @Query("SELECT COUNT(p) > 0 FROM JogoParticipante p WHERE p.jogo.id = :jogoId AND p.usuario.id = :usuarioId AND p.role = :role AND p.deletedAt IS NULL")
+    boolean existsByJogoIdAndUsuarioIdAndRoleAndAtivoTrue(@Param("jogoId") Long jogoId, @Param("usuarioId") Long usuarioId, @Param("role") RoleJogo role);
 
     /**
      * Busca participantes por jogo e role.
      */
-    List<JogoParticipante> findByJogoIdAndRoleAndAtivoTrue(Long jogoId, RoleJogo role);
+    @Query("SELECT p FROM JogoParticipante p WHERE p.jogo.id = :jogoId AND p.role = :role AND p.deletedAt IS NULL")
+    List<JogoParticipante> findByJogoIdAndRoleAndAtivoTrue(@Param("jogoId") Long jogoId, @Param("role") RoleJogo role);
 
     /**
      * Verifica se usuário participa do jogo (qualquer role).
      */
-    boolean existsByUsuarioIdAndJogoIdAndAtivoTrue(Long usuarioId, Long jogoId);
+    @Query("SELECT COUNT(p) > 0 FROM JogoParticipante p WHERE p.usuario.id = :usuarioId AND p.jogo.id = :jogoId AND p.deletedAt IS NULL")
+    boolean existsByUsuarioIdAndJogoIdAndAtivoTrue(@Param("usuarioId") Long usuarioId, @Param("jogoId") Long jogoId);
 
     /**
      * Verifica se usuário tem role específica em um jogo.
      */
-    boolean existsByUsuarioIdAndJogoIdAndRoleAndAtivoTrue(Long usuarioId, Long jogoId, RoleJogo role);
+    @Query("SELECT COUNT(p) > 0 FROM JogoParticipante p WHERE p.usuario.id = :usuarioId AND p.jogo.id = :jogoId AND p.role = :role AND p.deletedAt IS NULL")
+    boolean existsByUsuarioIdAndJogoIdAndRoleAndAtivoTrue(@Param("usuarioId") Long usuarioId, @Param("jogoId") Long jogoId, @Param("role") RoleJogo role);
 
     /**
      * Verifica se um usuário já participa de um jogo.
      */
-    boolean existsByJogoIdAndUsuarioIdAndAtivoTrue(Long jogoId, Long usuarioId);
+    @Query("SELECT COUNT(p) > 0 FROM JogoParticipante p WHERE p.jogo.id = :jogoId AND p.usuario.id = :usuarioId AND p.deletedAt IS NULL")
+    boolean existsByJogoIdAndUsuarioIdAndAtivoTrue(@Param("jogoId") Long jogoId, @Param("usuarioId") Long usuarioId);
 
     /**
      * Busca o role de um usuário em um jogo.
@@ -70,7 +84,7 @@ public interface JogoParticipanteRepository extends JpaRepository<JogoParticipan
         SELECT p.role FROM JogoParticipante p
         WHERE p.jogo.id = :jogoId
         AND p.usuario.id = :usuarioId
-        AND p.ativo = true
+        AND p.deletedAt IS NULL
     """)
     Optional<RoleJogo> findRoleByJogoIdAndUsuarioId(
         @Param("jogoId") Long jogoId,
@@ -84,12 +98,13 @@ public interface JogoParticipanteRepository extends JpaRepository<JogoParticipan
         SELECT p FROM JogoParticipante p
         WHERE p.jogo.id = :jogoId
         AND p.role = 'MESTRE'
-        AND p.ativo = true
+        AND p.deletedAt IS NULL
     """)
     Optional<JogoParticipante> findMestreByJogoId(@Param("jogoId") Long jogoId);
 
     /**
-     * Conta participantes ativos em um jogo.
+     * Conta participantes não deletados em um jogo.
      */
-    long countByJogoIdAndAtivoTrue(Long jogoId);
+    @Query("SELECT COUNT(p) FROM JogoParticipante p WHERE p.jogo.id = :jogoId AND p.deletedAt IS NULL")
+    long countByJogoIdAndAtivoTrue(@Param("jogoId") Long jogoId);
 }

@@ -57,10 +57,18 @@ public class JogoService {
     public Jogo criarJogo(CriarJogoRequest request) {
         Usuario usuarioAtual = getUsuarioAtual();
 
+        // Verificar se já existe algum jogo ativo para este mestre
+        boolean temJogoAtivo = jogoRepository.findByMestreIdAndJogoAtivoTrue(usuarioAtual.getId()).isPresent();
+
         Jogo novoJogo = new Jogo();
         novoJogo.setNome(request.getNome());
         novoJogo.setDescricao(request.getDescricao());
         novoJogo.setDataInicio(request.getDataInicio());
+
+        // Se não houver nenhum jogo ativo, este será o jogo ativo automaticamente
+        if (!temJogoAtivo) {
+            novoJogo.setJogoAtivo(true);
+        }
 
         Jogo jogoSalvo = jogoRepository.save(novoJogo);
 

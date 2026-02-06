@@ -199,6 +199,75 @@ class JogoServiceIntegrationTest {
     }
 
     @Test
+    @DisplayName("Deve marcar automaticamente o primeiro jogo criado como jogo ativo")
+    void criarPrimeiroJogoDeveSerJogoAtivo() {
+        // Arrange - Criar um novo mestre sem jogos
+        Usuario novoMestre = Usuario.builder()
+            .nome("Novo Mestre")
+            .email("novomestre@test.com")
+            .provider("google")
+            .providerId("google999")
+            .build();
+        novoMestre = usuarioRepository.save(novoMestre);
+
+        // Autenticar como novo mestre
+        autenticarComo(novoMestre);
+
+        var request = CriarJogoRequest.builder()
+            .nome("Primeira Campanha")
+            .descricao("Meu primeiro jogo")
+            .dataInicio(LocalDate.now())
+            .build();
+
+        // Act
+        Jogo primeiroJogo = jogoService.criarJogo(request);
+
+        // Assert
+        assertThat(primeiroJogo.getJogoAtivo()).isTrue();
+        assertThat(primeiroJogo.getNome()).isEqualTo("Primeira Campanha");
+    }
+
+    @Test
+    @DisplayName("Segundo jogo criado NÃO deve ser automaticamente o jogo ativo")
+    void criarSegundoJogoNaoDeveSerJogoAtivo() {
+        // Arrange - Criar um novo mestre
+        Usuario novoMestre = Usuario.builder()
+            .nome("Mestre Experiente")
+            .email("mestreexperiente@test.com")
+            .provider("google")
+            .providerId("google888")
+            .build();
+        novoMestre = usuarioRepository.save(novoMestre);
+
+        // Autenticar como novo mestre
+        autenticarComo(novoMestre);
+
+        // Criar primeiro jogo (que será automaticamente ativo)
+        var request1 = CriarJogoRequest.builder()
+            .nome("Campanha Original")
+            .descricao("Primeiro jogo")
+            .dataInicio(LocalDate.now())
+            .build();
+        Jogo primeiroJogo = jogoService.criarJogo(request1);
+
+        // Act - Criar segundo jogo
+        var request2 = CriarJogoRequest.builder()
+            .nome("Nova Campanha")
+            .descricao("Segundo jogo")
+            .dataInicio(LocalDate.now())
+            .build();
+        Jogo segundoJogo = jogoService.criarJogo(request2);
+
+        // Assert
+        assertThat(primeiroJogo.getJogoAtivo()).isTrue();
+        assertThat(segundoJogo.getJogoAtivo()).isFalse(); // Segundo jogo NÃO deve ser ativo
+
+        // Verificar que ainda existe apenas 1 jogo ativo
+        Jogo jogoAtivoAtual = jogoService.buscarJogoAtivo();
+        assertThat(jogoAtivoAtual.getId()).isEqualTo(primeiroJogo.getId());
+    }
+
+    @Test
     @DisplayName("Deve atualizar jogo quando mestre")
     void atualizarJogo() {
         // Arrange
@@ -558,5 +627,10 @@ class JogoServiceIntegrationTest {
     private void setAuth(Usuario usuario) {
         var authentication = new UsernamePasswordAuthenticationToken(usuario.getEmail(), "n/a");
         SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    private void autenticarComo(Usuario usuario) {
+        var auth = new UsernamePasswordAuthenticationToken(usuario.getEmail(), "n/a");
+        SecurityContextHolder.getContext().setAuthentication(auth);
     }
 }

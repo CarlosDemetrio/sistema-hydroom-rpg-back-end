@@ -20,7 +20,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class NivelConfig extends BaseEntity {
+public class NivelConfig extends BaseEntity implements ConfiguracaoEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

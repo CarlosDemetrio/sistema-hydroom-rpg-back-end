@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DadoProspeccaoConfig extends BaseEntity {
+public class DadoProspeccaoConfig extends BaseEntity implements ConfiguracaoEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,8 +51,4 @@ public class DadoProspeccaoConfig extends BaseEntity {
     @Builder.Default
     @Column(name = "ordem_exibicao")
     private Integer ordemExibicao = 0;
-
-    @Builder.Default
-    @Column(nullable = false)
-    private Boolean ativo = true;
 }

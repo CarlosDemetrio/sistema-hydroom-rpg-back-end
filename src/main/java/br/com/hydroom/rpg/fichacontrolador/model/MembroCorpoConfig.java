@@ -24,7 +24,7 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MembroCorpoConfig extends BaseEntity {
+public class MembroCorpoConfig extends BaseEntity implements ConfiguracaoEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,8 +49,4 @@ public class MembroCorpoConfig extends BaseEntity {
     @Builder.Default
     @Column(name = "ordem_exibicao")
     private Integer ordemExibicao = 0;
-
-    @Builder.Default
-    @Column(nullable = false)
-    private Boolean ativo = true;
 }

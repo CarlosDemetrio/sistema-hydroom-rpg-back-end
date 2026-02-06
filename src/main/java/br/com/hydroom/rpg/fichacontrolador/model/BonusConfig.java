@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BonusConfig extends BaseEntity {
+public class BonusConfig extends BaseEntity implements ConfiguracaoEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

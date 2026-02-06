@@ -21,7 +21,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GeneroConfig extends BaseEntity {
+public class GeneroConfig extends BaseEntity implements ConfiguracaoEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

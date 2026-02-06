@@ -1,13 +1,21 @@
 package br.com.hydroom.rpg.fichacontrolador.controller.configuracao;
 
+import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.CreateNivelRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.UpdateNivelRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.NivelResponse;
+import br.com.hydroom.rpg.fichacontrolador.mapper.configuracao.NivelConfigMapper;
 import br.com.hydroom.rpg.fichacontrolador.model.NivelConfig;
-import br.com.hydroom.rpg.fichacontrolador.service.ConfiguracaoService;
+import br.com.hydroom.rpg.fichacontrolador.service.configuracao.NivelConfiguracaoService;
+import br.com.hydroom.rpg.fichacontrolador.service.JogoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,10 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * Controller para gerenciar Níveis de um jogo.
- * CRUD completo - GET (MESTRE/JOGADOR), POST/PUT/DELETE (apenas MESTRE).
- */
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/configuracoes/niveis")
 @RequiredArgsConstructor
@@ -26,44 +31,49 @@ import java.util.List;
 @Tag(name = "Configurações - Níveis", description = "Gerenciamento de níveis e progressão de XP")
 public class NivelController {
 
-    private final ConfiguracaoService configuracaoService;
+    private final NivelConfiguracaoService configuracaoService;
+    private final JogoService jogoService;
+    private final NivelConfigMapper mapper;
 
     @GetMapping
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
-    @Operation(summary = "Listar níveis de um jogo", description = "Retorna todos os níveis ativos do jogo especificado")
-    public ResponseEntity<List<NivelConfig>> listar(
-            @Parameter(description = "ID do jogo", required = true) @RequestParam Long jogoId) {
-        return ResponseEntity.ok(configuracaoService.listarNiveis(jogoId));
+    @Operation(summary = "Listar níveis de um jogo")
+    public ResponseEntity<List<NivelResponse>> listar(@RequestParam Long jogoId) {
+        log.info("Listando níveis do jogo: {}", jogoId);
+        return ResponseEntity.ok(configuracaoService.listar(jogoId).stream().map(mapper::toResponse).toList());
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
     @Operation(summary = "Buscar nível por ID")
-    public ResponseEntity<NivelConfig> buscar(@PathVariable Long id) {
-        return ResponseEntity.ok(configuracaoService.buscarNivel(id));
+    public ResponseEntity<NivelResponse> buscar(@PathVariable Long id) {
+        return ResponseEntity.ok(mapper.toResponse(configuracaoService.buscarPorId(id)));
     }
 
     @PostMapping
     @PreAuthorize("hasRole('MESTRE')")
-    @Operation(summary = "Criar nível (Apenas MESTRE)", description = "Cria um novo nível para o jogo")
-    public ResponseEntity<NivelConfig> criar(@Valid @RequestBody NivelConfig nivel) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(configuracaoService.criarNivel(nivel));
+    @Operation(summary = "Criar nível (Apenas MESTRE)")
+    public ResponseEntity<NivelResponse> criar(@Valid @RequestBody CreateNivelRequest request) {
+        log.info("Criando nível {} para jogo ID: {}", request.nivel(), request.jogoId());
+        NivelConfig nivel = mapper.toEntity(request);
+        nivel.setJogo(jogoService.buscarJogo(request.jogoId()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toResponse(configuracaoService.criar(nivel)));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('MESTRE')")
-    @Operation(summary = "Atualizar nível (Apenas MESTRE)", description = "Atualiza um nível existente")
-    public ResponseEntity<NivelConfig> atualizar(
-            @PathVariable Long id,
-            @Valid @RequestBody NivelConfig nivel) {
-        return ResponseEntity.ok(configuracaoService.atualizarNivel(id, nivel));
+    @Operation(summary = "Atualizar nível (Apenas MESTRE)")
+    public ResponseEntity<NivelResponse> atualizar(@PathVariable Long id, @Valid @RequestBody UpdateNivelRequest request) {
+        NivelConfig nivel = configuracaoService.buscarPorId(id);
+        mapper.updateEntity(request, nivel);
+        return ResponseEntity.ok(mapper.toResponse(configuracaoService.atualizar(id, nivel)));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('MESTRE')")
-    @Operation(summary = "Deletar nível (Apenas MESTRE)", description = "Soft delete - marca o nível como inativo")
+    @Operation(summary = "Deletar nível (Apenas MESTRE)")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        configuracaoService.deletarNivel(id);
+        configuracaoService.deletar(id);
         return ResponseEntity.noContent().build();
     }
 }

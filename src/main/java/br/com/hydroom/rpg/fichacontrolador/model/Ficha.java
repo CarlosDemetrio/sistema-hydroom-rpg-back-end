@@ -157,10 +157,6 @@ public class Ficha extends BaseEntity {
     // ===== CONTROLE =====
 
     @Builder.Default
-    @Column(nullable = false)
-    private Boolean ativo = true;
-
-    @Builder.Default
     @Column(name = "compartilhada_com_jogadores", nullable = false)
     private Boolean compartilhadaComJogadores = false;
 }

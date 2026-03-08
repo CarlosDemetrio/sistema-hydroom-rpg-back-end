@@ -134,7 +134,13 @@ Avalia expressões matemáticas via exp4j. Variáveis disponíveis: `total`, `ni
 
 ## Docs
 
-- `docs/GLOSSARIO.md` — **LEIA PRIMEIRO**: glossário completo do domínio Klayrah RPG, explica o que é cada conceito (atributos, ímpeto, prospecção, vantagens, etc.) e como se relacionam
+- `docs/GLOSSARIO.md` — **LEIA PRIMEIRO**: resumo e índice do glossário do domínio Klayrah RPG
+- `docs/glossario/` — glossário completo dividido em módulos:
+  - `01-contexto-geral.md` — o que é Klayrah, quem usa, conceitos estruturais
+  - `02-configuracoes-jogo.md` — as 13+1 configurações detalhadas
+  - `03-termos-dominio.md` — glossário de termos por sistema (Atributos, Vida, Vantagens, etc.)
+  - `04-siglas-formulas.md` — sistema de siglas, unicidade por jogo, motor de fórmulas
+  - `05-termos-tecnicos-fluxo.md` — termos técnicos, fluxo configuração→ficha, status
 
 Padrões detalhados em `docs/backend/`:
 - `01-architecture.md` — camadas, DI, fluxo completo

@@ -121,6 +121,8 @@ Todas estendem `BaseEntity` + implementam `ConfiguracaoEntity`, têm unique cons
 
 Avalia expressões matemáticas via exp4j. Variáveis disponíveis: `total`, `nivel`, `base`, abreviações de atributos (`FOR`, `AGI`, `VIG`, `SAB`, `INT`, `INTU`, `AST`). Métodos: `calcularImpeto()`, `calcularDerivado()`, `calcularCustoVantagem()`, `isValid()`.
 
+**⚠️ REGRA CRÍTICA**: Toda sigla/abreviação deve ser **ÚNICA por jogo, cross-entity**. Se `FOR` existe como abreviação de atributo, nenhuma vantagem, bônus ou outra configuração do mesmo jogo pode usar `FOR`. Validar unicidade no escopo do jogo inteiro ao criar/editar.
+
 ## Key properties
 
 | Property | Default |
@@ -131,6 +133,8 @@ Avalia expressões matemáticas via exp4j. Variáveis disponíveis: `total`, `ni
 | CORS | `http://localhost:4200,http://localhost:80` |
 
 ## Docs
+
+- `docs/GLOSSARIO.md` — **LEIA PRIMEIRO**: glossário completo do domínio Klayrah RPG, explica o que é cada conceito (atributos, ímpeto, prospecção, vantagens, etc.) e como se relacionam
 
 Padrões detalhados em `docs/backend/`:
 - `01-architecture.md` — camadas, DI, fluxo completo

@@ -162,7 +162,7 @@ Cada atributo possui 4 campos:
 
 #### 2.3.2 Sistema de Distribuição de Pontos de Atributo
 - **Regra:** 3 pontos por nível para distribuir no campo "NÍVEL" dos atributos
-- **Validação:** 
+- **Validação:**
   - Sistema notifica se há pontos disponíveis para distribuir
   - Sistema alerta se pontos foram gastos em excesso
   - Notificação exibe: pontos esperados vs pontos distribuídos
@@ -481,7 +481,7 @@ Cada nota contém:
   - Sombra suave
 
 #### 4.2.5 Conteúdo da Nota
-- **Texto:** 
+- **Texto:**
   - Preserva quebras de linha (whitespace-pre-wrap)
   - Cor cinza escuro
   - Scroll automático se muito longo
@@ -492,7 +492,7 @@ Cada nota contém:
 
 #### 4.2.6 Exclusão de Nota
 - **Interface:** Botão X no canto superior direito
-- **Estilo:** 
+- **Estilo:**
   - Cinza claro normal
   - Vermelho no hover
   - Ícone SVG de círculo com X
@@ -593,7 +593,7 @@ Componente auxiliar para rastrear recursos de prospecção durante o jogo.
   - Desabilitado quando contador = 0
   - Cinza claro com hover cinza
   - Circular
-  
+
 - **Botão "+":**
   - Incrementa em 1
   - Desabilitado quando contador = máximo do dado
@@ -982,7 +982,7 @@ Sistema para rolar dados durante o jogo (não especificado).
 - **Ímpeto:** Efeito derivado de um atributo
 - **Insólitus:** Característica especial ou incomum
 - **Limitador:** Valor máximo que atributos podem atingir
-- **Prospecção:** Sistema de rastreamento de recursos durante jogo
+- **Prospecção:** Dado adicional para jogadas de alto risco, onde o mestre dá uma quantidade super limitada por nivel, ou a x niveis
 - **Renascimento:** Ciclo de ressurreição do personagem
 - **VG:** Vida do Vigor
 - **VT:** Vida de Vantagens

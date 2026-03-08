@@ -19,6 +19,13 @@ Para implementar uma nova feature:
 
 ## 📚 Documentação Modular
 
+### [📖 GLOSSÁRIO DO DOMÍNIO](./GLOSSARIO.md) ⭐ LEIA PRIMEIRO
+Explica o que é cada conceito do sistema Klayrah RPG em linguagem natural:
+- Atributos, Ímpeto, Limitador, Bônus (B.B.A, B.B.M...)
+- Aptidões, Vantagens, Prospecção, Essência, Ameaça
+- Renascimento, Índole, Presença, Insólitus
+- Fluxo de Configuração → Ficha
+
 ### [📖 README Principal](./backend/README.md)
 Visão geral completa, checklist rápido e links úteis.
 

@@ -6,6 +6,8 @@
 
 ## 📖 Documentation
 
+**DOMAIN GLOSSARY**: `/docs/GLOSSARIO.md` ⭐ (o que é cada conceito do RPG: atributos, ímpeto, prospecção, vantagens, etc.)
+
 **PRIMARY SOURCE**: `/docs/AI_GUIDELINES_BACKEND.md`
 
 Modular documentation in `/docs/backend/`:
@@ -48,10 +50,10 @@ public class Resource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @Column(nullable = false)
     private String name;
-    
+
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -93,12 +95,12 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
 @Transactional(readOnly = true)
 public class ResourceService {
     private final ResourceRepository repository;
-    
+
     public Resource findById(Long id) {
         return repository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Resource", id));
     }
-    
+
     @Transactional
     public Resource create(Resource resource) {
         if (repository.existsByName(resource.getName())) {
@@ -120,7 +122,7 @@ public class ResourceMapper {
             .createdAt(entity.getCreatedAt())
             .build();
     }
-    
+
     public Resource toEntity(CreateResourceDTO dto) {
         return Resource.builder()
             .name(dto.name())
@@ -138,14 +140,14 @@ public class ResourceMapper {
 public class ResourceController {
     private final ResourceService service;
     private final ResourceMapper mapper;
-    
+
     @GetMapping("/{id}")
     @Operation(summary = "Get resource by ID")
     public ResponseEntity<ResourceResponseDTO> findById(@PathVariable Long id) {
         Resource entity = service.findById(id);
         return ResponseEntity.ok(mapper.toResponseDTO(entity));
     }
-    
+
     @PostMapping
     @Operation(summary = "Create resource")
     @ApiResponses({
@@ -170,29 +172,29 @@ public class ResourceController {
 class ResourceControllerIntegrationTest {
     @Autowired
     private TestRestTemplate restTemplate;
-    
+
     @Autowired
     private ResourceRepository repository;
-    
+
     @BeforeEach
     void setUp() {
         repository.deleteAll();
     }
-    
+
     @Test
     @DisplayName("Should create resource successfully")
     void shouldCreateResource() {
         // Arrange
         CreateResourceDTO dto = new CreateResourceDTO("Test Resource");
-        
+
         // Act
         ResponseEntity<ResourceResponseDTO> response = restTemplate
             .postForEntity("/api/resources", dto, ResourceResponseDTO.class);
-        
+
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody().getName()).isEqualTo("Test Resource");
-        
+
         // Verify in database
         assertThat(repository.findAll()).hasSize(1);
     }

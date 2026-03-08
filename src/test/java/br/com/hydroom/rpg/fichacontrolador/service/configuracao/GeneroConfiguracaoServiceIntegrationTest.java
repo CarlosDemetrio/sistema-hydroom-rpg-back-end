@@ -46,7 +46,11 @@ class GeneroConfiguracaoServiceIntegrationTest extends
 
     @Override
     protected GeneroConfig criarConfiguracaoComNomeDuplicado(Jogo jogo, GeneroConfig configuracaoExistente) {
-        return null; // GeneroConfig não valida nome duplicado
+        return GeneroConfig.builder()
+            .jogo(jogo)
+            .nome(configuracaoExistente.getNome())
+            .descricao("Descrição diferente")
+            .build();
     }
 
     @Override

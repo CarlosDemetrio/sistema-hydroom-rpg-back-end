@@ -1,5 +1,6 @@
 package br.com.hydroom.rpg.fichacontrolador.service.configuracao;
 
+import br.com.hydroom.rpg.fichacontrolador.exception.ConflictException;
 import br.com.hydroom.rpg.fichacontrolador.model.MembroCorpoConfig;
 import br.com.hydroom.rpg.fichacontrolador.repository.MembroCorpoConfigRepository;
 import lombok.extern.slf4j.Slf4j;

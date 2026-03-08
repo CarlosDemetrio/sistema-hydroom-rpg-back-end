@@ -16,4 +16,6 @@ public interface BonusConfigRepository extends JpaRepository<BonusConfig, Long> 
      * Busca todos os bônus ativos de um jogo ordenados por ordem de exibição.
      */
     List<BonusConfig> findByJogoIdOrderByOrdemExibicao(Long jogoId);
+
+    boolean existsByJogoIdAndNomeIgnoreCase(Long jogoId, String nome);
 }

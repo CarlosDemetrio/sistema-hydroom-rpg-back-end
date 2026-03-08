@@ -47,7 +47,12 @@ class BonusConfiguracaoServiceIntegrationTest extends
 
     @Override
     protected BonusConfig criarConfiguracaoComNomeDuplicado(Jogo jogo, BonusConfig configuracaoExistente) {
-        return null; // BonusConfig não valida nome duplicado
+        return BonusConfig.builder()
+            .jogo(jogo)
+            .nome(configuracaoExistente.getNome())
+            .descricao("Descrição diferente")
+            .formulaBase("NIVEL")
+            .build();
     }
 
     @Override

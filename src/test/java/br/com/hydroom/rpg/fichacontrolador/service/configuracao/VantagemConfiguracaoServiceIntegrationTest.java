@@ -49,7 +49,13 @@ class VantagemConfiguracaoServiceIntegrationTest extends
 
     @Override
     protected VantagemConfig criarConfiguracaoComNomeDuplicado(Jogo jogo, VantagemConfig configuracaoExistente) {
-        return null; // VantagemConfig não valida nome duplicado
+        return VantagemConfig.builder()
+            .jogo(jogo)
+            .nome(configuracaoExistente.getNome())
+            .descricao("Descrição diferente")
+            .nivelMaximo(3)
+            .formulaCusto("NIVEL")
+            .build();
     }
 
     @Override

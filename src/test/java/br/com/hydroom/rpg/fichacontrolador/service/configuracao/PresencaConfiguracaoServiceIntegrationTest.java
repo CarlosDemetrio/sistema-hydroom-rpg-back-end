@@ -46,7 +46,11 @@ class PresencaConfiguracaoServiceIntegrationTest extends
 
     @Override
     protected PresencaConfig criarConfiguracaoComNomeDuplicado(Jogo jogo, PresencaConfig configuracaoExistente) {
-        return null; // PresencaConfig não valida nome duplicado
+        return PresencaConfig.builder()
+            .jogo(jogo)
+            .nome(configuracaoExistente.getNome())
+            .descricao("Descrição diferente")
+            .build();
     }
 
     @Override

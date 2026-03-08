@@ -20,5 +20,5 @@ public interface VantagemConfigRepository extends JpaRepository<VantagemConfig, 
     /**
      * Verifica se uma vantagem com o nome já existe no jogo.
      */
-    boolean existsByJogoIdAndNome(Long jogoId, String nome);
+    boolean existsByJogoIdAndNomeIgnoreCase(Long jogoId, String nome);
 }

@@ -1,5 +1,6 @@
 package br.com.hydroom.rpg.fichacontrolador.service.configuracao;
 
+import br.com.hydroom.rpg.fichacontrolador.exception.ConflictException;
 import br.com.hydroom.rpg.fichacontrolador.model.BonusConfig;
 import br.com.hydroom.rpg.fichacontrolador.repository.BonusConfigRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,22 @@ public class BonusConfiguracaoService extends AbstractConfiguracaoService<BonusC
     public List<BonusConfig> listar(Long jogoId) {
         log.debug("Listando bônus para jogo ID: {}", jogoId);
         return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
+    }
+
+    @Override
+    protected void validarAntesCriar(BonusConfig configuracao) {
+        if (repository.existsByJogoIdAndNomeIgnoreCase(configuracao.getJogo().getId(), configuracao.getNome())) {
+            throw new ConflictException("Já existe um bônus com o nome '" + configuracao.getNome() + "' neste jogo");
+        }
+    }
+
+    @Override
+    protected void validarAntesAtualizar(BonusConfig configuracaoExistente, BonusConfig configuracaoAtualizada) {
+        if (!configuracaoExistente.getNome().equals(configuracaoAtualizada.getNome())) {
+            if (repository.existsByJogoIdAndNomeIgnoreCase(configuracaoExistente.getJogo().getId(), configuracaoAtualizada.getNome())) {
+                throw new ConflictException("Já existe um bônus com o nome '" + configuracaoAtualizada.getNome() + "' neste jogo");
+            }
+        }
     }
 
     @Override

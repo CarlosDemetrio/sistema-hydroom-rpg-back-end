@@ -1,5 +1,6 @@
 package br.com.hydroom.rpg.fichacontrolador.service.configuracao;
 
+import br.com.hydroom.rpg.fichacontrolador.exception.ConflictException;
 import br.com.hydroom.rpg.fichacontrolador.model.PresencaConfig;
 import br.com.hydroom.rpg.fichacontrolador.repository.PresencaConfigRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,22 @@ public class PresencaConfiguracaoService extends AbstractConfiguracaoService<Pre
     public List<PresencaConfig> listar(Long jogoId) {
         log.debug("Listando presenças para jogo ID: {}", jogoId);
         return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
+    }
+
+    @Override
+    protected void validarAntesCriar(PresencaConfig configuracao) {
+        if (repository.existsByJogoIdAndNomeIgnoreCase(configuracao.getJogo().getId(), configuracao.getNome())) {
+            throw new ConflictException("Já existe uma presença com o nome '" + configuracao.getNome() + "' neste jogo");
+        }
+    }
+
+    @Override
+    protected void validarAntesAtualizar(PresencaConfig configuracaoExistente, PresencaConfig configuracaoAtualizada) {
+        if (!configuracaoExistente.getNome().equals(configuracaoAtualizada.getNome())) {
+            if (repository.existsByJogoIdAndNomeIgnoreCase(configuracaoExistente.getJogo().getId(), configuracaoAtualizada.getNome())) {
+                throw new ConflictException("Já existe uma presença com o nome '" + configuracaoAtualizada.getNome() + "' neste jogo");
+            }
+        }
     }
 
     @Override

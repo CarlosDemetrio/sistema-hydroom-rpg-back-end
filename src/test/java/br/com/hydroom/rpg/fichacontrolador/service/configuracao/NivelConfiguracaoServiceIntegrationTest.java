@@ -53,7 +53,14 @@ class NivelConfiguracaoServiceIntegrationTest extends
 
     @Override
     protected NivelConfig criarConfiguracaoComNomeDuplicado(Jogo jogo, NivelConfig configuracaoExistente) {
-        return null; // NivelConfig não valida nome duplicado
+        NivelConfig config = new NivelConfig();
+        config.setJogo(jogo);
+        config.setNivel(configuracaoExistente.getNivel());
+        config.setXpNecessaria(100L);
+        config.setPontosAtributo(3);
+        config.setPontosAptidao(3);
+        config.setLimitadorAtributo(10);
+        return config;
     }
 
     @Override

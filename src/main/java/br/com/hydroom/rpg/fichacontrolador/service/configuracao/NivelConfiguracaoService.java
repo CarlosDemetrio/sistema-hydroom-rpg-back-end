@@ -1,5 +1,6 @@
 package br.com.hydroom.rpg.fichacontrolador.service.configuracao;
 
+import br.com.hydroom.rpg.fichacontrolador.exception.ConflictException;
 import br.com.hydroom.rpg.fichacontrolador.model.NivelConfig;
 import br.com.hydroom.rpg.fichacontrolador.repository.ConfiguracaoNivelRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -32,10 +33,27 @@ public class NivelConfiguracaoService extends AbstractConfiguracaoService<NivelC
     }
 
     @Override
+    protected void validarAntesCriar(NivelConfig configuracao) {
+        if (repository.existsByJogoIdAndNivel(configuracao.getJogo().getId(), configuracao.getNivel())) {
+            throw new ConflictException("Já existe configuração para o nível " + configuracao.getNivel() + " neste jogo");
+        }
+    }
+
+    @Override
+    protected void validarAntesAtualizar(NivelConfig configuracaoExistente, NivelConfig configuracaoAtualizada) {
+        if (!configuracaoExistente.getNivel().equals(configuracaoAtualizada.getNivel())) {
+            if (repository.existsByJogoIdAndNivel(configuracaoExistente.getJogo().getId(), configuracaoAtualizada.getNivel())) {
+                throw new ConflictException("Já existe configuração para o nível " + configuracaoAtualizada.getNivel() + " neste jogo");
+            }
+        }
+    }
+
+    @Override
     protected void atualizarCampos(NivelConfig existente, NivelConfig atualizado) {
         existente.setNivel(atualizado.getNivel());
         existente.setXpNecessaria(atualizado.getXpNecessaria());
         existente.setPontosAtributo(atualizado.getPontosAtributo());
+        existente.setPontosAptidao(atualizado.getPontosAptidao());
         existente.setLimitadorAtributo(atualizado.getLimitadorAtributo());
     }
 }

@@ -1,5 +1,6 @@
 package br.com.hydroom.rpg.fichacontrolador.service.configuracao;
 
+import br.com.hydroom.rpg.fichacontrolador.exception.ConflictException;
 import br.com.hydroom.rpg.fichacontrolador.model.GeneroConfig;
 import br.com.hydroom.rpg.fichacontrolador.repository.GeneroConfigRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,22 @@ public class GeneroConfiguracaoService extends AbstractConfiguracaoService<Gener
     public List<GeneroConfig> listar(Long jogoId) {
         log.debug("Listando gêneros para jogo ID: {}", jogoId);
         return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
+    }
+
+    @Override
+    protected void validarAntesCriar(GeneroConfig configuracao) {
+        if (repository.existsByJogoIdAndNomeIgnoreCase(configuracao.getJogo().getId(), configuracao.getNome())) {
+            throw new ConflictException("Já existe um gênero com o nome '" + configuracao.getNome() + "' neste jogo");
+        }
+    }
+
+    @Override
+    protected void validarAntesAtualizar(GeneroConfig configuracaoExistente, GeneroConfig configuracaoAtualizada) {
+        if (!configuracaoExistente.getNome().equals(configuracaoAtualizada.getNome())) {
+            if (repository.existsByJogoIdAndNomeIgnoreCase(configuracaoExistente.getJogo().getId(), configuracaoAtualizada.getNome())) {
+                throw new ConflictException("Já existe um gênero com o nome '" + configuracaoAtualizada.getNome() + "' neste jogo");
+            }
+        }
     }
 
     @Override

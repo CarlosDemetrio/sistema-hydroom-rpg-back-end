@@ -47,7 +47,12 @@ class DadoProspeccaoConfiguracaoServiceIntegrationTest extends
 
     @Override
     protected DadoProspeccaoConfig criarConfiguracaoComNomeDuplicado(Jogo jogo, DadoProspeccaoConfig configuracaoExistente) {
-        return null; // DadoProspeccaoConfig não valida nome duplicado
+        return DadoProspeccaoConfig.builder()
+            .jogo(jogo)
+            .nome(configuracaoExistente.getNome())
+            .descricao("Descrição diferente")
+            .numeroFaces(6)
+            .build();
     }
 
     @Override

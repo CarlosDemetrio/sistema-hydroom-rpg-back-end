@@ -35,4 +35,6 @@ public interface ConfiguracaoNivelRepository extends JpaRepository<NivelConfig, 
      */
     @Query("SELECT n FROM NivelConfig n WHERE n.jogo.id = :jogoId AND n.nivel > :nivelAtual AND n.deletedAt IS NULL ORDER BY n.nivel ASC LIMIT 1")
     Optional<NivelConfig> findProximoNivel(Long jogoId, Integer nivelAtual);
+
+    boolean existsByJogoIdAndNivel(Long jogoId, Integer nivel);
 }

@@ -46,7 +46,11 @@ class IndoleConfiguracaoServiceIntegrationTest extends
 
     @Override
     protected IndoleConfig criarConfiguracaoComNomeDuplicado(Jogo jogo, IndoleConfig configuracaoExistente) {
-        return null; // IndoleConfig não valida nome duplicado
+        return IndoleConfig.builder()
+            .jogo(jogo)
+            .nome(configuracaoExistente.getNome())
+            .descricao("Descrição diferente")
+            .build();
     }
 
     @Override

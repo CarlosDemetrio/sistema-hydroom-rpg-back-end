@@ -17,7 +17,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @since 1.0
  */
 @DisplayName("MembroCorpoConfiguracaoService - Testes de Integração")
-class MembroCorpoConfiguracaoServiceIntegrationTest extends
+class
+MembroCorpoConfiguracaoServiceIntegrationTest extends
     BaseConfiguracaoServiceIntegrationTest<MembroCorpoConfig, MembroCorpoConfiguracaoService, MembroCorpoConfigRepository> {
 
     @Autowired

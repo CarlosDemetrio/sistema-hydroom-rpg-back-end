@@ -16,4 +16,6 @@ public interface MembroCorpoConfigRepository extends JpaRepository<MembroCorpoCo
      * Busca todos os membros do corpo ativos de um jogo ordenados por ordem de exibição.
      */
     List<MembroCorpoConfig> findByJogoIdOrderByOrdemExibicao(Long jogoId);
+
+    boolean existsByJogoIdAndNomeIgnoreCase(Long jogoId, String nome);
 }

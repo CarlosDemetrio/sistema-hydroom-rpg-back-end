@@ -10,7 +10,7 @@ import jakarta.validation.constraints.Size;
  * @param jogoId ID do jogo
  * @param nome Nome da índole
  * @param descricao Descrição da índole
- * @param ordem Ordem de exibição
+ * @param ordemExibicao Ordem de exibição
  */
 public record CreateIndoleRequest(
     @NotNull(message = "Jogo é obrigatório")
@@ -23,6 +23,5 @@ public record CreateIndoleRequest(
     @Size(max = 200, message = "Descrição não pode ter mais de 200 caracteres")
     String descricao,
 
-    @NotNull(message = "Ordem de exibição é obrigatória")
-    Integer ordem
+    Integer ordemExibicao
 ) {}

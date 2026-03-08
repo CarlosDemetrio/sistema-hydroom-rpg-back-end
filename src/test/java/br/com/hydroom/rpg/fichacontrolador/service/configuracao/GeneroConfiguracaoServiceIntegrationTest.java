@@ -36,13 +36,12 @@ class GeneroConfiguracaoServiceIntegrationTest extends
 
     @Override
     protected GeneroConfig criarConfiguracaoValida(Jogo jogo) {
-        return new GeneroConfig(
-            null,
-            jogo,
-            "Masculino " + getUniqueSuffix(),
-            "Gênero masculino",
-            1
-        );
+        return GeneroConfig.builder()
+            .jogo(jogo)
+            .nome("Masculino " + getUniqueSuffix())
+            .descricao("Gênero masculino")
+            .ordemExibicao(1)
+            .build();
     }
 
     @Override
@@ -54,13 +53,13 @@ class GeneroConfiguracaoServiceIntegrationTest extends
     protected void atualizarCamposParaTeste(GeneroConfig configuracao) {
         configuracao.setNome("Masculino Atualizado");
         configuracao.setDescricao("Nova descrição");
-        configuracao.setOrdem(10);
+        configuracao.setOrdemExibicao(10);
     }
 
     @Override
     protected void verificarCamposAtualizados(GeneroConfig configuracao) {
         assertThat(configuracao.getNome()).isEqualTo("Masculino Atualizado");
         assertThat(configuracao.getDescricao()).isEqualTo("Nova descrição");
-        assertThat(configuracao.getOrdem()).isEqualTo(10);
+        assertThat(configuracao.getOrdemExibicao()).isEqualTo(10);
     }
 }

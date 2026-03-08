@@ -28,13 +28,13 @@ public class PresencaConfiguracaoService extends AbstractConfiguracaoService<Pre
     @Override
     public List<PresencaConfig> listar(Long jogoId) {
         log.debug("Listando presenças para jogo ID: {}", jogoId);
-        return repository.findByJogoIdOrderByOrdem(jogoId);
+        return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
     @Override
     protected void atualizarCampos(PresencaConfig existente, PresencaConfig atualizado) {
         existente.setNome(atualizado.getNome());
         existente.setDescricao(atualizado.getDescricao());
-        existente.setOrdem(atualizado.getOrdem());
+        existente.setOrdemExibicao(atualizado.getOrdemExibicao());
     }
 }

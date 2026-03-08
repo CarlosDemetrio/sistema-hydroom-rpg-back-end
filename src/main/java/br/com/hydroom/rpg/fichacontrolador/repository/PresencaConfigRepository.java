@@ -15,5 +15,5 @@ public interface PresencaConfigRepository extends JpaRepository<PresencaConfig, 
     /**
      * Busca todas as presenças ativas de um jogo ordenadas por ordem de exibição.
      */
-    List<PresencaConfig> findByJogoIdOrderByOrdem(Long jogoId);
+    List<PresencaConfig> findByJogoIdOrderByOrdemExibicao(Long jogoId);
 }

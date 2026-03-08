@@ -357,13 +357,11 @@ public class GameConfigInitializerService {
      */
     private void createGeneros(Jogo jogo, List<GeneroConfigDTO> dtos) {
         List<GeneroConfig> entities = dtos.stream()
-                .map(dto -> {
-                    GeneroConfig genero = new GeneroConfig();
-                    genero.setJogo(jogo);
-                    genero.setNome(dto.getNome());
-                    genero.setOrdem(dto.getOrdemExibicao());
-                    return genero;
-                })
+                .map(dto -> GeneroConfig.builder()
+                        .jogo(jogo)
+                        .nome(dto.getNome())
+                        .ordemExibicao(dto.getOrdemExibicao())
+                        .build())
                 .toList();
 
         generoRepository.saveAll(entities);
@@ -378,7 +376,7 @@ public class GameConfigInitializerService {
                 .map(dto -> IndoleConfig.builder()
                         .jogo(jogo)
                         .nome(dto.getNome())
-                        .ordem(dto.getOrdemExibicao())
+                        .ordemExibicao(dto.getOrdemExibicao())
                         .build())
                 .toList();
 
@@ -394,7 +392,7 @@ public class GameConfigInitializerService {
                 .map(dto -> PresencaConfig.builder()
                         .jogo(jogo)
                         .nome(dto.getNome())
-                        .ordem(dto.getOrdemExibicao())
+                        .ordemExibicao(dto.getOrdemExibicao())
                         .build())
                 .toList();
 

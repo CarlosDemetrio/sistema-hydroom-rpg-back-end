@@ -28,13 +28,13 @@ public class GeneroConfiguracaoService extends AbstractConfiguracaoService<Gener
     @Override
     public List<GeneroConfig> listar(Long jogoId) {
         log.debug("Listando gêneros para jogo ID: {}", jogoId);
-        return repository.findByJogoIdOrderByOrdem(jogoId);
+        return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
     @Override
     protected void atualizarCampos(GeneroConfig existente, GeneroConfig atualizado) {
         existente.setNome(atualizado.getNome());
         existente.setDescricao(atualizado.getDescricao());
-        existente.setOrdem(atualizado.getOrdem());
+        existente.setOrdemExibicao(atualizado.getOrdemExibicao());
     }
 }

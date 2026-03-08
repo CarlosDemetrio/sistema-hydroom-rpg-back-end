@@ -40,7 +40,7 @@ class PresencaConfiguracaoServiceIntegrationTest extends
             .jogo(jogo)
             .nome("Leal " + getUniqueSuffix())
             .descricao("Personagem com presença leal")
-            .ordem(1)
+            .ordemExibicao(1)
             .build();
     }
 
@@ -53,13 +53,13 @@ class PresencaConfiguracaoServiceIntegrationTest extends
     protected void atualizarCamposParaTeste(PresencaConfig configuracao) {
         configuracao.setNome("Leal Atualizado");
         configuracao.setDescricao("Nova descrição");
-        configuracao.setOrdem(10);
+        configuracao.setOrdemExibicao(10);
     }
 
     @Override
     protected void verificarCamposAtualizados(PresencaConfig configuracao) {
         assertThat(configuracao.getNome()).isEqualTo("Leal Atualizado");
         assertThat(configuracao.getDescricao()).isEqualTo("Nova descrição");
-        assertThat(configuracao.getOrdem()).isEqualTo(10);
+        assertThat(configuracao.getOrdemExibicao()).isEqualTo(10);
     }
 }

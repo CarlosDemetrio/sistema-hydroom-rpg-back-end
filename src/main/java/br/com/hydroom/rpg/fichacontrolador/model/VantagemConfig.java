@@ -61,14 +61,4 @@ public class VantagemConfig extends BaseEntity implements ConfiguracaoEntity {
     @Builder.Default
     @Column(name = "ordem_exibicao")
     private Integer ordemExibicao = 0;
-
-    /**
-     * Calcula o custo para subir do nível atual para o próximo nível.
-     * A fórmula é configurável pelo Mestre.
-     */
-    public int calcularCusto(int nivelAtual) {
-        // Implementação será feita no service com parser de expressões
-        // Por enquanto, apenas um placeholder
-        return nivelAtual * 2;
-    }
 }

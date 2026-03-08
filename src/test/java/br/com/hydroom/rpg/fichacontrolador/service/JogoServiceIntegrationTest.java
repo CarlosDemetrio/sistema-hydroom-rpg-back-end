@@ -386,15 +386,15 @@ class JogoServiceIntegrationTest {
             .as("Deve criar 6 dados de prospecção")
             .hasSize(6);
 
-        assertThat(generoRepository.findByJogoIdOrderByOrdem(jogoId))
+        assertThat(generoRepository.findByJogoIdOrderByOrdemExibicao(jogoId))
             .as("Deve criar 4 gêneros")
             .hasSize(4);
 
-        assertThat(indoleRepository.findByJogoIdOrderByOrdem(jogoId))
+        assertThat(indoleRepository.findByJogoIdOrderByOrdemExibicao(jogoId))
             .as("Deve criar 9 índoles")
             .hasSize(9);
 
-        assertThat(presencaRepository.findByJogoIdOrderByOrdem(jogoId))
+        assertThat(presencaRepository.findByJogoIdOrderByOrdemExibicao(jogoId))
             .as("Deve criar 6 presenças")
             .hasSize(6);
 

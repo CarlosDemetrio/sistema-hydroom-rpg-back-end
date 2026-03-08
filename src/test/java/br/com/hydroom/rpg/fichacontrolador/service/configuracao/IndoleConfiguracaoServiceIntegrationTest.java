@@ -40,7 +40,7 @@ class IndoleConfiguracaoServiceIntegrationTest extends
             .jogo(jogo)
             .nome("Bom " + getUniqueSuffix())
             .descricao("Personagem com índole boa")
-            .ordem(1)
+            .ordemExibicao(1)
             .build();
     }
 
@@ -53,13 +53,13 @@ class IndoleConfiguracaoServiceIntegrationTest extends
     protected void atualizarCamposParaTeste(IndoleConfig configuracao) {
         configuracao.setNome("Bom Atualizado");
         configuracao.setDescricao("Nova descrição");
-        configuracao.setOrdem(10);
+        configuracao.setOrdemExibicao(10);
     }
 
     @Override
     protected void verificarCamposAtualizados(IndoleConfig configuracao) {
         assertThat(configuracao.getNome()).isEqualTo("Bom Atualizado");
         assertThat(configuracao.getDescricao()).isEqualTo("Nova descrição");
-        assertThat(configuracao.getOrdem()).isEqualTo(10);
+        assertThat(configuracao.getOrdemExibicao()).isEqualTo(10);
     }
 }

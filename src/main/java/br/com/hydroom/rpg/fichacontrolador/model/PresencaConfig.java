@@ -14,8 +14,8 @@ import lombok.*;
 @Table(name = "presencas_config", uniqueConstraints = {
         @UniqueConstraint(name = "uk_presenca_nome_jogo", columnNames = {"jogo_id", "nome"})
 })
-@Getter
-@Setter
+@Data
+@EqualsAndHashCode(callSuper = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -40,7 +40,6 @@ public class PresencaConfig extends BaseEntity implements ConfiguracaoEntity {
     private String descricao;
 
     @Builder.Default
-    @Column(name = "ordem", nullable = false)
-    @NotNull(message = "Ordem de exibição é obrigatória")
-    private Integer ordem = 0;
+    @Column(name = "ordem_exibicao", nullable = false)
+    private Integer ordemExibicao = 0;
 }

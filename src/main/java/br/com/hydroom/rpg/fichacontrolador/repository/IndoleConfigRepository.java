@@ -15,5 +15,5 @@ public interface IndoleConfigRepository extends JpaRepository<IndoleConfig, Long
     /**
      * Busca todas as indoles ativas de um jogo ordenadas por ordem de exibição.
      */
-    List<IndoleConfig> findByJogoIdOrderByOrdem(Long jogoId);
+    List<IndoleConfig> findByJogoIdOrderByOrdemExibicao(Long jogoId);
 }

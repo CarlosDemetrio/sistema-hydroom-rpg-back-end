@@ -28,13 +28,13 @@ public class IndoleConfiguracaoService extends AbstractConfiguracaoService<Indol
     @Override
     public List<IndoleConfig> listar(Long jogoId) {
         log.debug("Listando índoles para jogo ID: {}", jogoId);
-        return repository.findByJogoIdOrderByOrdem(jogoId);
+        return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
     @Override
     protected void atualizarCampos(IndoleConfig existente, IndoleConfig atualizado) {
         existente.setNome(atualizado.getNome());
         existente.setDescricao(atualizado.getDescricao());
-        existente.setOrdem(atualizado.getOrdem());
+        existente.setOrdemExibicao(atualizado.getOrdemExibicao());
     }
 }

@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
  *
  * @param nome Nome do gênero
  * @param descricao Descrição do gênero
- * @param ordem Ordem de exibição
+ * @param ordemExibicao Ordem de exibição
  */
 public record UpdateGeneroRequest(
     @Size(max = 50, message = "Nome do gênero não pode ter mais de 50 caracteres")
@@ -16,5 +16,5 @@ public record UpdateGeneroRequest(
     @Size(max = 200, message = "Descrição não pode ter mais de 200 caracteres")
     String descricao,
 
-    Integer ordem
+    Integer ordemExibicao
 ) {}

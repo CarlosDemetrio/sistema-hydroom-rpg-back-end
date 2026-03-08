@@ -53,19 +53,27 @@ public class AptidaoController {
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
     @Operation(
         summary = "Listar aptidões de um jogo",
-        description = "Retorna todas as aptidões ativas do jogo especificado"
+        description = "Retorna todas as aptidões ativas do jogo. Use tipoAptidaoId para filtrar por tipo."
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Lista de aptidões retornada com sucesso"),
         @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
-        @ApiResponse(responseCode = "404", description = "Jogo não encontrado")
+        @ApiResponse(responseCode = "404", description = "Jogo ou TipoAptidao não encontrado")
     })
     public ResponseEntity<List<AptidaoResponse>> listar(
             @Parameter(description = "ID do jogo", required = true, example = "1")
-            @RequestParam Long jogoId) {
+            @RequestParam Long jogoId,
+            @Parameter(description = "Filtrar por tipo de aptidão (opcional)", example = "1")
+            @RequestParam(required = false) Long tipoAptidaoId) {
 
-        log.info("Listando aptidões do jogo: {}", jogoId);
-        List<AptidaoConfig> aptidoes = configuracaoService.listar(jogoId);
+        log.info("Listando aptidões do jogo: {}, tipoAptidaoId: {}", jogoId, tipoAptidaoId);
+        List<AptidaoConfig> aptidoes;
+        if (tipoAptidaoId != null) {
+            TipoAptidao tipoAptidao = tipoAptidaoService.buscarPorId(tipoAptidaoId);
+            aptidoes = configuracaoService.listarPorTipo(jogoId, tipoAptidao);
+        } else {
+            aptidoes = configuracaoService.listar(jogoId);
+        }
         List<AptidaoResponse> response = aptidoes.stream()
             .map(mapper::toResponse)
             .toList();

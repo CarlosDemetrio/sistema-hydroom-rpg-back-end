@@ -14,9 +14,9 @@ import lombok.*;
 @Table(name = "indoles_config", uniqueConstraints = {
         @UniqueConstraint(name = "uk_indole_nome_jogo", columnNames = {"jogo_id", "nome"})
 })
+@Data
+@EqualsAndHashCode(callSuper = true)
 @Builder
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class IndoleConfig extends BaseEntity implements ConfiguracaoEntity {
@@ -30,17 +30,16 @@ public class IndoleConfig extends BaseEntity implements ConfiguracaoEntity {
     @NotNull(message = "Jogo é obrigatório")
     private Jogo jogo;
 
-    @Column(nullable = false, length = 50)
     @NotBlank(message = "Nome da índole é obrigatório")
     @Size(max = 50, message = "Nome da índole não pode ter mais de 50 caracteres")
+    @Column(nullable = false, length = 50)
     private String nome;
 
-    @Column(length = 200)
     @Size(max = 200, message = "Descrição não pode ter mais de 200 caracteres")
+    @Column(length = 200)
     private String descricao;
 
     @Builder.Default
-    @Column(name = "ordem", nullable = false)
-    @NotNull(message = "Ordem de exibição é obrigatória")
-    private Integer ordem = 0;
+    @Column(name = "ordem_exibicao", nullable = false)
+    private Integer ordemExibicao = 0;
 }

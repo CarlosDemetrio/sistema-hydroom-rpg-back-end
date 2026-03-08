@@ -9,8 +9,7 @@ import java.time.LocalDateTime;
  * @param jogoId ID do jogo
  * @param nome Nome da presença
  * @param descricao Descrição da presença
- * @param ordem Ordem de exibição
- * @param ativo Status da presença
+ * @param ordemExibicao Ordem de exibição
  * @param dataCriacao Data de criação
  * @param dataUltimaAtualizacao Data da última atualização
  */
@@ -19,7 +18,7 @@ public record PresencaResponse(
     Long jogoId,
     String nome,
     String descricao,
-    Integer ordem,
+    Integer ordemExibicao,
     LocalDateTime dataCriacao,
     LocalDateTime dataUltimaAtualizacao
 ) {}

@@ -5,9 +5,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  * Configuração de gêneros disponíveis no jogo.
@@ -17,8 +18,9 @@ import lombok.Setter;
 @Table(name = "generos_config", uniqueConstraints = {
         @UniqueConstraint(name = "uk_genero_nome_jogo", columnNames = {"jogo_id", "nome"})
 })
-@Getter
-@Setter
+@Data
+@EqualsAndHashCode(callSuper = true)
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class GeneroConfig extends BaseEntity implements ConfiguracaoEntity {
@@ -41,8 +43,7 @@ public class GeneroConfig extends BaseEntity implements ConfiguracaoEntity {
     @Size(max = 200, message = "Descrição não pode ter mais de 200 caracteres")
     private String descricao;
 
-
-    @Column(name = "ordem", nullable = false)
-    @NotNull(message = "Ordem de exibição é obrigatória")
-    private Integer ordem;
+    @Builder.Default
+    @Column(name = "ordem_exibicao", nullable = false)
+    private Integer ordemExibicao = 0;
 }

@@ -15,5 +15,5 @@ public interface GeneroConfigRepository extends JpaRepository<GeneroConfig, Long
     /**
      * Busca todos os gêneros ativos de um jogo ordenados por ordem de exibição.
      */
-    List<GeneroConfig> findByJogoIdOrderByOrdem(Long jogoId);
+    List<GeneroConfig> findByJogoIdOrderByOrdemExibicao(Long jogoId);
 }

@@ -3,7 +3,9 @@ package br.com.hydroom.rpg.fichacontrolador.service.configuracao;
 import br.com.hydroom.rpg.fichacontrolador.exception.ConflictException;
 import br.com.hydroom.rpg.fichacontrolador.model.AtributoConfig;
 import br.com.hydroom.rpg.fichacontrolador.repository.ConfiguracaoAtributoRepository;
+import br.com.hydroom.rpg.fichacontrolador.service.configuracao.SiglaValidationService.TipoSigla;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,9 @@ import java.util.List;
 @Slf4j
 public class AtributoConfiguracaoService extends AbstractConfiguracaoService<AtributoConfig, ConfiguracaoAtributoRepository> {
 
+    @Autowired
+    private SiglaValidationService siglaValidationService;
+
     public AtributoConfiguracaoService(ConfiguracaoAtributoRepository repository) {
         super(repository, "Atributo");
     }
@@ -35,13 +40,27 @@ public class AtributoConfiguracaoService extends AbstractConfiguracaoService<Atr
     @Override
     protected void validarAntesCriar(AtributoConfig configuracao) {
         validateUniqueNome(configuracao.getNome(), configuracao.getJogo().getId());
+        siglaValidationService.validarSiglaDisponivel(
+            configuracao.getAbreviacao(),
+            configuracao.getJogo().getId(),
+            null,
+            TipoSigla.ATRIBUTO
+        );
     }
 
     @Override
     protected void validarAntesAtualizar(AtributoConfig configuracaoExistente, AtributoConfig configuracaoAtualizada) {
-        // Validar nome único apenas se mudou
-        if (!configuracaoExistente.getNome().equals(configuracaoAtualizada.getNome())) {
+        if (!configuracaoExistente.getNome().equalsIgnoreCase(configuracaoAtualizada.getNome())) {
             validateUniqueNome(configuracaoAtualizada.getNome(), configuracaoExistente.getJogo().getId());
+        }
+        String abreviacaoNova = configuracaoAtualizada.getAbreviacao();
+        if (abreviacaoNova != null && !abreviacaoNova.equalsIgnoreCase(configuracaoExistente.getAbreviacao())) {
+            siglaValidationService.validarSiglaDisponivel(
+                abreviacaoNova,
+                configuracaoExistente.getJogo().getId(),
+                configuracaoExistente.getId(),
+                TipoSigla.ATRIBUTO
+            );
         }
     }
 

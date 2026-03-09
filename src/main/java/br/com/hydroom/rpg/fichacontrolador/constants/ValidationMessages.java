@@ -222,6 +222,14 @@ public final class ValidationMessages {
         private Seguranca() {}
     }
 
+    // ===== SIGLAS =====
+    public static final class Sigla {
+        public static final String SIGLA_JA_EM_USO =
+            "Sigla '%s' já está em uso em %s neste jogo. Siglas devem ser únicas por jogo.";
+
+        private Sigla() {}
+    }
+
     // ===== ERROS GERAIS =====
     public static final class Erro {
         public static final String INTERNO = "Erro interno do servidor";

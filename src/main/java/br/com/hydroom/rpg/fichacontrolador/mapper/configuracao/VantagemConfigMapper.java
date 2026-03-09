@@ -13,18 +13,19 @@ import org.mapstruct.*;
 public interface VantagemConfigMapper {
 
     @Mapping(target = "jogoId", source = "jogo.id")
+    @Mapping(target = "categoriaVantagemId", source = "categoriaVantagem.id")
     @Mapping(target = "dataCriacao", source = "createdAt")
     @Mapping(target = "dataUltimaAtualizacao", source = "updatedAt")
     VantagemResponse toResponse(VantagemConfig entity);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "jogo", ignore = true)
-
+    @Mapping(target = "categoriaVantagem", ignore = true)
     VantagemConfig toEntity(CreateVantagemRequest request);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "jogo", ignore = true)
-
+    @Mapping(target = "categoriaVantagem", ignore = true)
     void updateEntity(UpdateVantagemRequest request, @MappingTarget VantagemConfig entity);
 }

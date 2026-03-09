@@ -41,5 +41,7 @@ public record CreateVantagemRequest(
     @Size(max = 500, message = "Descrição do efeito deve ter no máximo 500 caracteres")
     String descricaoEfeito,
 
-    Integer ordemExibicao
+    Integer ordemExibicao,
+
+    Long categoriaVantagemId
 ) {}

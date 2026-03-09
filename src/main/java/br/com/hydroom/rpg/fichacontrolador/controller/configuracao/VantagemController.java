@@ -5,6 +5,7 @@ import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.UpdateVantag
 import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.VantagemResponse;
 import br.com.hydroom.rpg.fichacontrolador.mapper.configuracao.VantagemConfigMapper;
 import br.com.hydroom.rpg.fichacontrolador.model.VantagemConfig;
+import br.com.hydroom.rpg.fichacontrolador.service.configuracao.CategoriaVantagemService;
 import br.com.hydroom.rpg.fichacontrolador.service.configuracao.VantagemConfiguracaoService;
 import br.com.hydroom.rpg.fichacontrolador.service.JogoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,6 +31,7 @@ public class VantagemController {
 
     private final VantagemConfiguracaoService configuracaoService;
     private final JogoService jogoService;
+    private final CategoriaVantagemService categoriaVantagemService;
     private final VantagemConfigMapper mapper;
 
     @GetMapping
@@ -52,6 +54,9 @@ public class VantagemController {
     public ResponseEntity<VantagemResponse> criar(@Valid @RequestBody CreateVantagemRequest request) {
         VantagemConfig vantagem = mapper.toEntity(request);
         vantagem.setJogo(jogoService.buscarJogo(request.jogoId()));
+        if (request.categoriaVantagemId() != null) {
+            vantagem.setCategoriaVantagem(categoriaVantagemService.buscarPorId(request.categoriaVantagemId()));
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toResponse(configuracaoService.criar(vantagem)));
     }
 
@@ -61,6 +66,9 @@ public class VantagemController {
     public ResponseEntity<VantagemResponse> atualizar(@PathVariable Long id, @Valid @RequestBody UpdateVantagemRequest request) {
         VantagemConfig vantagem = configuracaoService.buscarPorId(id);
         mapper.updateEntity(request, vantagem);
+        if (request.categoriaVantagemId() != null) {
+            vantagem.setCategoriaVantagem(categoriaVantagemService.buscarPorId(request.categoriaVantagemId()));
+        }
         return ResponseEntity.ok(mapper.toResponse(configuracaoService.atualizar(id, vantagem)));
     }
 

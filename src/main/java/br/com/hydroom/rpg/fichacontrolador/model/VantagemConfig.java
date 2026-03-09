@@ -63,6 +63,10 @@ public class VantagemConfig extends BaseEntity implements ConfiguracaoEntity {
     @Column(name = "descricao_efeito", length = 500)
     private String descricaoEfeito;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "categoria_vantagem_id")
+    private CategoriaVantagem categoriaVantagem;
+
     @Builder.Default
     @Column(name = "ordem_exibicao")
     private Integer ordemExibicao = 0;

@@ -27,6 +27,7 @@ public record VantagemResponse(
     String formulaCusto,
     String descricaoEfeito,
     Integer ordemExibicao,
+    Long categoriaVantagemId,
     LocalDateTime dataCriacao,
     LocalDateTime dataUltimaAtualizacao
 ) {}

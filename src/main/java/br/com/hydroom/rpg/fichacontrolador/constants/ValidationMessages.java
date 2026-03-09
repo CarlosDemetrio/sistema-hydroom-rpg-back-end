@@ -249,6 +249,26 @@ public final class ValidationMessages {
         private VantagemConfig() {}
     }
 
+    // ===== CLASSE BONUS =====
+    public static final class ClasseBonus {
+        public static final String JA_EXISTE =
+            "Este bônus já está registrado para esta classe.";
+        public static final String JOGO_DIFERENTE =
+            "O bônus deve pertencer ao mesmo jogo da classe.";
+
+        private ClasseBonus() {}
+    }
+
+    // ===== CLASSE APTIDAO BONUS =====
+    public static final class ClasseAptidaoBonus {
+        public static final String JA_EXISTE =
+            "Este bônus de aptidão já está registrado para esta classe.";
+        public static final String JOGO_DIFERENTE =
+            "A aptidão deve pertencer ao mesmo jogo da classe.";
+
+        private ClasseAptidaoBonus() {}
+    }
+
     // ===== VANTAGEM PRÉ-REQUISITO =====
     public static final class VantagemPreRequisito {
         public static final String AUTO_REFERENCIA =

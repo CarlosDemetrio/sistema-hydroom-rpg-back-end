@@ -1,9 +1,15 @@
 package br.com.hydroom.rpg.fichacontrolador.controller.configuracao;
 
+import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.ClasseAptidaoBonusRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.ClasseBonusRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.CreateClasseRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.UpdateClasseRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.ClasseAptidaoBonusResponse;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.ClasseBonusResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.ClasseResponse;
 import br.com.hydroom.rpg.fichacontrolador.mapper.configuracao.ClassePersonagemMapper;
+import br.com.hydroom.rpg.fichacontrolador.model.ClasseAptidaoBonus;
+import br.com.hydroom.rpg.fichacontrolador.model.ClasseBonus;
 import br.com.hydroom.rpg.fichacontrolador.model.ClassePersonagem;
 import br.com.hydroom.rpg.fichacontrolador.model.Jogo;
 import br.com.hydroom.rpg.fichacontrolador.service.JogoService;
@@ -178,6 +184,64 @@ public class ClasseController {
         configuracaoService.deletar(id);
         log.info("Classe ID: {} deletada com sucesso", id);
 
+        return ResponseEntity.noContent().build();
+    }
+
+    // ===== ENDPOINTS DE BÔNUS =====
+
+    @GetMapping("/{id}/bonus")
+    @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
+    @Operation(summary = "Listar bônus de uma classe")
+    public ResponseEntity<List<ClasseBonusResponse>> listarBonus(@PathVariable Long id) {
+        return ResponseEntity.ok(
+            configuracaoService.listarBonus(id).stream().map(mapper::toBonusResponse).toList()
+        );
+    }
+
+    @PostMapping("/{id}/bonus")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Adicionar bônus a uma classe (Apenas MESTRE)")
+    public ResponseEntity<ClasseBonusResponse> adicionarBonus(
+            @PathVariable Long id,
+            @Valid @RequestBody ClasseBonusRequest request) {
+        ClasseBonus cb = configuracaoService.adicionarBonus(id, request.bonusId(), request.valorPorNivel());
+        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toBonusResponse(cb));
+    }
+
+    @DeleteMapping("/{id}/bonus/{bonusId}")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Remover bônus de uma classe (Apenas MESTRE)")
+    public ResponseEntity<Void> removerBonus(@PathVariable Long id, @PathVariable Long bonusId) {
+        configuracaoService.removerBonus(id, bonusId);
+        return ResponseEntity.noContent().build();
+    }
+
+    // ===== ENDPOINTS DE BÔNUS DE APTIDÃO =====
+
+    @GetMapping("/{id}/aptidao-bonus")
+    @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
+    @Operation(summary = "Listar bônus de aptidão de uma classe")
+    public ResponseEntity<List<ClasseAptidaoBonusResponse>> listarAptidaoBonus(@PathVariable Long id) {
+        return ResponseEntity.ok(
+            configuracaoService.listarAptidaoBonus(id).stream().map(mapper::toAptidaoResponse).toList()
+        );
+    }
+
+    @PostMapping("/{id}/aptidao-bonus")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Adicionar bônus de aptidão a uma classe (Apenas MESTRE)")
+    public ResponseEntity<ClasseAptidaoBonusResponse> adicionarAptidaoBonus(
+            @PathVariable Long id,
+            @Valid @RequestBody ClasseAptidaoBonusRequest request) {
+        ClasseAptidaoBonus cab = configuracaoService.adicionarAptidaoBonus(id, request.aptidaoId(), request.bonus());
+        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toAptidaoResponse(cab));
+    }
+
+    @DeleteMapping("/{id}/aptidao-bonus/{aptidaoBonusId}")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Remover bônus de aptidão de uma classe (Apenas MESTRE)")
+    public ResponseEntity<Void> removerAptidaoBonus(@PathVariable Long id, @PathVariable Long aptidaoBonusId) {
+        configuracaoService.removerAptidaoBonus(id, aptidaoBonusId);
         return ResponseEntity.noContent().build();
     }
 }

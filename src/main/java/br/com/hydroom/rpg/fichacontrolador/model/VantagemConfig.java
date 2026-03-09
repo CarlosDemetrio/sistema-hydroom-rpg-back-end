@@ -3,6 +3,8 @@ package br.com.hydroom.rpg.fichacontrolador.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -66,6 +68,10 @@ public class VantagemConfig extends BaseEntity implements ConfiguracaoEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoria_vantagem_id")
     private CategoriaVantagem categoriaVantagem;
+
+    @OneToMany(mappedBy = "vantagem", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<VantagemPreRequisito> preRequisitos = new ArrayList<>();
 
     @Builder.Default
     @Column(name = "ordem_exibicao")

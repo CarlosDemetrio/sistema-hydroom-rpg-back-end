@@ -2,6 +2,8 @@ package br.com.hydroom.rpg.fichacontrolador.model;
 
 import br.com.hydroom.rpg.fichacontrolador.constants.ValidationMessages;
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -47,6 +49,14 @@ public class ClassePersonagem extends BaseEntity implements ConfiguracaoEntity {
     @Column(columnDefinition = "TEXT")
     private String descricao;
 
+
+    @OneToMany(mappedBy = "classe", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<ClasseBonus> bonusConfig = new ArrayList<>();
+
+    @OneToMany(mappedBy = "classe", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<ClasseAptidaoBonus> aptidaoBonus = new ArrayList<>();
 
     @Builder.Default
     @Column(name = "ordem_exibicao", nullable = false)

@@ -269,6 +269,26 @@ public final class ValidationMessages {
         private ClasseAptidaoBonus() {}
     }
 
+    // ===== RACA CLASSE PERMITIDA =====
+    public static final class RacaClassePermitida {
+        public static final String JA_EXISTE =
+            "Esta classe já é permitida para esta raça.";
+        public static final String JOGO_DIFERENTE =
+            "A classe deve pertencer ao mesmo jogo da raça.";
+
+        private RacaClassePermitida() {}
+    }
+
+    // ===== RACA BONUS ATRIBUTO =====
+    public static final class RacaBonusAtributo {
+        public static final String JA_EXISTE =
+            "Este bônus de atributo já está registrado para esta raça.";
+        public static final String JOGO_DIFERENTE =
+            "O atributo deve pertencer ao mesmo jogo da raça.";
+
+        private RacaBonusAtributo() {}
+    }
+
     // ===== VANTAGEM PRÉ-REQUISITO =====
     public static final class VantagemPreRequisito {
         public static final String AUTO_REFERENCIA =

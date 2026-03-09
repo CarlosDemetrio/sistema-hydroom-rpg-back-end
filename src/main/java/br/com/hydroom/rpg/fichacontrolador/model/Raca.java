@@ -2,6 +2,8 @@ package br.com.hydroom.rpg.fichacontrolador.model;
 
 import br.com.hydroom.rpg.fichacontrolador.constants.ValidationMessages;
 import jakarta.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -47,6 +49,13 @@ public class Raca extends BaseEntity implements ConfiguracaoEntity {
     @Column(columnDefinition = "TEXT")
     private String descricao;
 
+    @OneToMany(mappedBy = "raca", fetch = FetchType.LAZY)
+    @Builder.Default
+    private Set<RacaBonusAtributo> bonusAtributos = new HashSet<>();
+
+    @OneToMany(mappedBy = "raca", fetch = FetchType.LAZY)
+    @Builder.Default
+    private Set<RacaClassePermitida> classesPermitidas = new HashSet<>();
 
     @Builder.Default
     @Column(name = "ordem_exibicao", nullable = false)

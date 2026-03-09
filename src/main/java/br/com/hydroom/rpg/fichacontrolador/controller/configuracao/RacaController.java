@@ -1,7 +1,11 @@
 package br.com.hydroom.rpg.fichacontrolador.controller.configuracao;
 
 import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.CreateRacaRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.RacaBonusAtributoRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.RacaClassePermitidaRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.UpdateRacaRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.RacaBonusAtributoResponse;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.RacaClassePermitidaResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.RacaResponse;
 import br.com.hydroom.rpg.fichacontrolador.mapper.configuracao.RacaMapper;
 import br.com.hydroom.rpg.fichacontrolador.model.Raca;
@@ -69,6 +73,70 @@ public class RacaController {
     @Operation(summary = "Deletar raça (Apenas MESTRE)")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         configuracaoService.deletar(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // ===== ENDPOINTS DE BÔNUS DE ATRIBUTO =====
+
+    @GetMapping("/{id}/bonus-atributos")
+    @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
+    @Operation(summary = "Listar bônus de atributo de uma raça")
+    public ResponseEntity<List<RacaBonusAtributoResponse>> listarBonusAtributo(@PathVariable Long id) {
+        return ResponseEntity.ok(
+            configuracaoService.listarBonusAtributo(id).stream().map(mapper::toBonusAtributoResponse).toList()
+        );
+    }
+
+    @PostMapping("/{id}/bonus-atributos")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Adicionar bônus de atributo a uma raça (Apenas MESTRE)")
+    public ResponseEntity<RacaBonusAtributoResponse> adicionarBonusAtributo(
+            @PathVariable Long id,
+            @Valid @RequestBody RacaBonusAtributoRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+            mapper.toBonusAtributoResponse(
+                configuracaoService.adicionarBonusAtributo(id, request.atributoId(), request.bonus())
+            )
+        );
+    }
+
+    @DeleteMapping("/{id}/bonus-atributos/{bonusAtributoId}")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Remover bônus de atributo de uma raça (Apenas MESTRE)")
+    public ResponseEntity<Void> removerBonusAtributo(@PathVariable Long id, @PathVariable Long bonusAtributoId) {
+        configuracaoService.removerBonusAtributo(id, bonusAtributoId);
+        return ResponseEntity.noContent().build();
+    }
+
+    // ===== ENDPOINTS DE CLASSES PERMITIDAS =====
+
+    @GetMapping("/{id}/classes-permitidas")
+    @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
+    @Operation(summary = "Listar classes permitidas para uma raça")
+    public ResponseEntity<List<RacaClassePermitidaResponse>> listarClassesPermitidas(@PathVariable Long id) {
+        return ResponseEntity.ok(
+            configuracaoService.listarClassesPermitidas(id).stream().map(mapper::toClassePermitidaResponse).toList()
+        );
+    }
+
+    @PostMapping("/{id}/classes-permitidas")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Permitir classe para uma raça (Apenas MESTRE)")
+    public ResponseEntity<RacaClassePermitidaResponse> permitirClasse(
+            @PathVariable Long id,
+            @Valid @RequestBody RacaClassePermitidaRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+            mapper.toClassePermitidaResponse(
+                configuracaoService.permitirClasse(id, request.classeId())
+            )
+        );
+    }
+
+    @DeleteMapping("/{id}/classes-permitidas/{classePermitidaId}")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Remover classe permitida de uma raça (Apenas MESTRE)")
+    public ResponseEntity<Void> removerClassePermitida(@PathVariable Long id, @PathVariable Long classePermitidaId) {
+        configuracaoService.removerClassePermitida(id, classePermitidaId);
         return ResponseEntity.noContent().build();
     }
 }

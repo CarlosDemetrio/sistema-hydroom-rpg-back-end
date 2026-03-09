@@ -24,4 +24,6 @@ public interface RacaBonusAtributoRepository extends JpaRepository<RacaBonusAtri
      * Busca todos os bônus que afetam um atributo específico.
      */
     List<RacaBonusAtributo> findByAtributoId(Long atributoId);
+
+    boolean existsByRacaIdAndAtributoId(Long racaId, Long atributoId);
 }

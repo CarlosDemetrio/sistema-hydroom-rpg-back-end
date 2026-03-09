@@ -249,6 +249,20 @@ public final class ValidationMessages {
         private VantagemConfig() {}
     }
 
+    // ===== VANTAGEM PRÉ-REQUISITO =====
+    public static final class VantagemPreRequisito {
+        public static final String AUTO_REFERENCIA =
+            "Uma vantagem não pode ser pré-requisito de si mesma.";
+        public static final String CICLO_DETECTADO =
+            "Adicionar este pré-requisito criaria uma dependência circular entre vantagens.";
+        public static final String JA_EXISTE =
+            "Este pré-requisito já está registrado para esta vantagem.";
+        public static final String JOGOS_DIFERENTES =
+            "O pré-requisito deve pertencer ao mesmo jogo da vantagem.";
+
+        private VantagemPreRequisito() {}
+    }
+
     // ===== SIGLAS =====
     public static final class Sigla {
         public static final String SIGLA_JA_EM_USO =

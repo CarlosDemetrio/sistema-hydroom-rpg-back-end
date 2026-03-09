@@ -24,6 +24,9 @@ public record CreateVantagemRequest(
     @Size(max = 100, message = "Nome deve ter no máximo 100 caracteres")
     String nome,
 
+    @Size(min = 2, max = 5, message = "Sigla deve ter entre 2 e 5 caracteres")
+    String sigla,
+
     @Size(max = 1000, message = "Descrição deve ter no máximo 1000 caracteres")
     String descricao,
 

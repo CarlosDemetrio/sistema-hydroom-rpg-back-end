@@ -51,6 +51,7 @@ public class VantagemConfiguracaoService extends AbstractConfiguracaoService<Van
     @Override
     protected void atualizarCampos(VantagemConfig existente, VantagemConfig atualizado) {
         existente.setNome(atualizado.getNome());
+        existente.setSigla(atualizado.getSigla());
         existente.setDescricao(atualizado.getDescricao());
         existente.setOrdemExibicao(atualizado.getOrdemExibicao());
         existente.setNivelMaximo(atualizado.getNivelMaximo());

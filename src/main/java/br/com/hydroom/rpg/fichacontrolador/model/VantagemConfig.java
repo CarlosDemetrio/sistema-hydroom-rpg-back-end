@@ -16,7 +16,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "vantagem_config", indexes = {
     @Index(name = "idx_vantagem_config_jogo", columnList = "jogo_id")
 }, uniqueConstraints = {
-    @UniqueConstraint(name = "uk_vantagem_config_jogo_nome", columnNames = {"jogo_id", "nome"})
+    @UniqueConstraint(name = "uk_vantagem_config_jogo_nome", columnNames = {"jogo_id", "nome"}),
+    @UniqueConstraint(name = "uk_vantagem_config_jogo_sigla", columnNames = {"jogo_id", "sigla"})
 })
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -42,6 +43,10 @@ public class VantagemConfig extends BaseEntity implements ConfiguracaoEntity {
     @Size(max = 1000)
     @Column(length = 1000)
     private String descricao;
+
+    @Size(min = 2, max = 5, message = "Sigla deve ter entre 2 e 5 caracteres")
+    @Column(name = "sigla", nullable = true, length = 5)
+    private String sigla;
 
     @NotNull
     @Min(1)

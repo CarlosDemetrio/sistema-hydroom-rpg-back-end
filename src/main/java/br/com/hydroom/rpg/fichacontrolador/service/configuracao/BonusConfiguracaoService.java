@@ -51,6 +51,7 @@ public class BonusConfiguracaoService extends AbstractConfiguracaoService<BonusC
     @Override
     protected void atualizarCampos(BonusConfig existente, BonusConfig atualizado) {
         existente.setNome(atualizado.getNome());
+        existente.setSigla(atualizado.getSigla());
         existente.setDescricao(atualizado.getDescricao());
         existente.setFormulaBase(atualizado.getFormulaBase());
         existente.setOrdemExibicao(atualizado.getOrdemExibicao());

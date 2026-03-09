@@ -6,6 +6,8 @@ import br.com.hydroom.rpg.fichacontrolador.repository.BonusConfigRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -17,6 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("BonusConfiguracaoService - Testes de Integração")
 class BonusConfiguracaoServiceIntegrationTest extends
     BaseConfiguracaoServiceIntegrationTest<BonusConfig, BonusConfiguracaoService, BonusConfigRepository> {
+
+    private final AtomicInteger siglaCounter = new AtomicInteger(0);
 
     @Autowired
     private BonusConfiguracaoService bonusService;
@@ -34,11 +38,16 @@ class BonusConfiguracaoServiceIntegrationTest extends
         return bonusRepository;
     }
 
+    private String getUniqueSigla() {
+        return "B" + String.format("%02d", siglaCounter.incrementAndGet());
+    }
+
     @Override
     protected BonusConfig criarConfiguracaoValida(Jogo jogo) {
         return BonusConfig.builder()
             .jogo(jogo)
             .nome("B.B.A " + getUniqueSuffix())
+            .sigla(getUniqueSigla())
             .descricao("Bônus Base de Ataque")
             .formulaBase("NIVEL + FOR/2")
             .ordemExibicao(1)
@@ -50,6 +59,7 @@ class BonusConfiguracaoServiceIntegrationTest extends
         return BonusConfig.builder()
             .jogo(jogo)
             .nome(configuracaoExistente.getNome())
+            .sigla(getUniqueSigla())
             .descricao("Descrição diferente")
             .formulaBase("NIVEL")
             .build();
@@ -58,6 +68,7 @@ class BonusConfiguracaoServiceIntegrationTest extends
     @Override
     protected void atualizarCamposParaTeste(BonusConfig configuracao) {
         configuracao.setNome("B.B.A Atualizado");
+        configuracao.setSigla("BBAT");
         configuracao.setDescricao("Nova descrição");
         configuracao.setFormulaBase("NIVEL + FOR");
         configuracao.setOrdemExibicao(10);
@@ -66,6 +77,7 @@ class BonusConfiguracaoServiceIntegrationTest extends
     @Override
     protected void verificarCamposAtualizados(BonusConfig configuracao) {
         assertThat(configuracao.getNome()).isEqualTo("B.B.A Atualizado");
+        assertThat(configuracao.getSigla()).isEqualTo("BBAT");
         assertThat(configuracao.getDescricao()).isEqualTo("Nova descrição");
         assertThat(configuracao.getFormulaBase()).isEqualTo("NIVEL + FOR");
         assertThat(configuracao.getOrdemExibicao()).isEqualTo(10);

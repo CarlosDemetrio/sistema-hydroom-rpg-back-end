@@ -21,6 +21,7 @@ public record VantagemResponse(
     Long id,
     Long jogoId,
     String nome,
+    String sigla,
     String descricao,
     Integer nivelMaximo,
     String formulaCusto,

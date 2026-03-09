@@ -48,9 +48,13 @@ public class AtributoConfiguracaoService extends AbstractConfiguracaoService<Atr
     @Override
     protected void atualizarCampos(AtributoConfig existente, AtributoConfig atualizado) {
         existente.setNome(atualizado.getNome());
+        existente.setAbreviacao(atualizado.getAbreviacao());
         existente.setDescricao(atualizado.getDescricao());
         existente.setOrdemExibicao(atualizado.getOrdemExibicao());
         existente.setFormulaImpeto(atualizado.getFormulaImpeto());
+        existente.setDescricaoImpeto(atualizado.getDescricaoImpeto());
+        existente.setValorMinimo(atualizado.getValorMinimo());
+        existente.setValorMaximo(atualizado.getValorMaximo());
     }
 
     /**

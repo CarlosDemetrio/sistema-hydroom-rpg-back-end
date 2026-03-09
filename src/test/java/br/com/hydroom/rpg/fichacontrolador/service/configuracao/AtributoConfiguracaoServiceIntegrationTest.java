@@ -40,7 +40,7 @@ class AtributoConfiguracaoServiceIntegrationTest extends
             .nome("Força " + suffix)
             .abreviacao("F" + suffix.substring(0, 3).toUpperCase())
             .descricao("Força física do personagem")
-            .formulaImpeto("FOR * 2")
+            .formulaImpeto("total * 2")
             .descricaoImpeto("Bônus de força no ímpeto")
             .valorMinimo(0)
             .valorMaximo(100)
@@ -64,7 +64,7 @@ class AtributoConfiguracaoServiceIntegrationTest extends
         configuracao.setNome("Força Atualizada");
         configuracao.setDescricao("Nova descrição");
         configuracao.setAbreviacao("FRC");
-        configuracao.setFormulaImpeto("FOR * 3");
+        configuracao.setFormulaImpeto("total * 3");
         configuracao.setOrdemExibicao(10);
     }
 
@@ -73,7 +73,7 @@ class AtributoConfiguracaoServiceIntegrationTest extends
         org.assertj.core.api.Assertions.assertThat(configuracao.getNome()).isEqualTo("Força Atualizada");
         org.assertj.core.api.Assertions.assertThat(configuracao.getDescricao()).isEqualTo("Nova descrição");
         org.assertj.core.api.Assertions.assertThat(configuracao.getAbreviacao()).isEqualTo("FRC");
-        org.assertj.core.api.Assertions.assertThat(configuracao.getFormulaImpeto()).isEqualTo("FOR * 3");
+        org.assertj.core.api.Assertions.assertThat(configuracao.getFormulaImpeto()).isEqualTo("total * 3");
         org.assertj.core.api.Assertions.assertThat(configuracao.getOrdemExibicao()).isEqualTo(10);
     }
 }

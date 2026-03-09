@@ -222,6 +222,33 @@ public final class ValidationMessages {
         private Seguranca() {}
     }
 
+    // ===== ATRIBUTO CONFIG =====
+    public static final class AtributoConfig {
+        public static final String FORMULA_IMPETO_SINTAXE_INVALIDA = "Fórmula de ímpeto com sintaxe inválida";
+        public static final String FORMULA_IMPETO_VARIAVEIS_INVALIDAS =
+            "Fórmula de ímpeto usa variáveis não permitidas: %s. Permitida: total";
+
+        private AtributoConfig() {}
+    }
+
+    // ===== BONUS CONFIG =====
+    public static final class BonusConfig {
+        public static final String FORMULA_BASE_SINTAXE_INVALIDA = "Fórmula base com sintaxe inválida";
+        public static final String FORMULA_BASE_VARIAVEIS_INVALIDAS =
+            "Fórmula base usa variáveis não registradas no jogo: %s";
+
+        private BonusConfig() {}
+    }
+
+    // ===== VANTAGEM CONFIG =====
+    public static final class VantagemConfig {
+        public static final String FORMULA_CUSTO_SINTAXE_INVALIDA = "Fórmula de custo com sintaxe inválida";
+        public static final String FORMULA_CUSTO_VARIAVEIS_INVALIDAS =
+            "Fórmula de custo usa variáveis inválidas: %s. Permitidas: custo_base, nivel_vantagem";
+
+        private VantagemConfig() {}
+    }
+
     // ===== SIGLAS =====
     public static final class Sigla {
         public static final String SIGLA_JA_EM_USO =

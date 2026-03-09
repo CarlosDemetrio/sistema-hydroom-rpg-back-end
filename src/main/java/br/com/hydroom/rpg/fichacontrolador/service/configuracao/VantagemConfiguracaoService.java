@@ -1,8 +1,12 @@
 package br.com.hydroom.rpg.fichacontrolador.service.configuracao;
 
+import br.com.hydroom.rpg.fichacontrolador.constants.ValidationMessages;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.FormulaValidationResult;
 import br.com.hydroom.rpg.fichacontrolador.exception.ConflictException;
+import br.com.hydroom.rpg.fichacontrolador.exception.ValidationException;
 import br.com.hydroom.rpg.fichacontrolador.model.VantagemConfig;
 import br.com.hydroom.rpg.fichacontrolador.repository.VantagemConfigRepository;
+import br.com.hydroom.rpg.fichacontrolador.service.FormulaEvaluatorService;
 import br.com.hydroom.rpg.fichacontrolador.service.configuracao.SiglaValidationService.TipoSigla;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Service para gerenciamento de configurações de Vantagens.
@@ -26,6 +31,9 @@ public class VantagemConfiguracaoService extends AbstractConfiguracaoService<Van
 
     @Autowired
     private SiglaValidationService siglaValidationService;
+
+    @Autowired
+    private FormulaEvaluatorService formulaEvaluatorService;
 
     public VantagemConfiguracaoService(VantagemConfigRepository repository) {
         super(repository, "Vantagem");
@@ -48,6 +56,7 @@ public class VantagemConfiguracaoService extends AbstractConfiguracaoService<Van
             null,
             TipoSigla.VANTAGEM
         );
+        validarFormulaCusto(configuracao.getFormulaCusto());
     }
 
     @Override
@@ -65,6 +74,21 @@ public class VantagemConfiguracaoService extends AbstractConfiguracaoService<Van
                 configuracaoExistente.getId(),
                 TipoSigla.VANTAGEM
             );
+        }
+        validarFormulaCusto(configuracaoAtualizada.getFormulaCusto());
+    }
+
+    private void validarFormulaCusto(String formula) {
+        if (formula == null || formula.isBlank()) return;
+        FormulaValidationResult result = formulaEvaluatorService.validarFormula(
+            formula, Set.of("custo_base", "nivel_vantagem")
+        );
+        if (!result.valid()) {
+            String msg = result.erroSintaxe() != null
+                ? ValidationMessages.VantagemConfig.FORMULA_CUSTO_SINTAXE_INVALIDA + ": " + result.erroSintaxe()
+                : ValidationMessages.VantagemConfig.FORMULA_CUSTO_VARIAVEIS_INVALIDAS
+                    .formatted(String.join(", ", result.variaveisInvalidas()));
+            throw new ValidationException(msg);
         }
     }
 

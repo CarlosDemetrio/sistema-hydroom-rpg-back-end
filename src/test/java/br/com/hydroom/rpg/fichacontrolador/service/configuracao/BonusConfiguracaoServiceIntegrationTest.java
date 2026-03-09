@@ -49,7 +49,7 @@ class BonusConfiguracaoServiceIntegrationTest extends
             .nome("B.B.A " + getUniqueSuffix())
             .sigla(getUniqueSigla())
             .descricao("Bônus Base de Ataque")
-            .formulaBase("NIVEL + FOR/2")
+            .formulaBase("nivel + base / 2")
             .ordemExibicao(1)
             .build();
     }
@@ -61,7 +61,7 @@ class BonusConfiguracaoServiceIntegrationTest extends
             .nome(configuracaoExistente.getNome())
             .sigla(getUniqueSigla())
             .descricao("Descrição diferente")
-            .formulaBase("NIVEL")
+            .formulaBase("nivel")
             .build();
     }
 
@@ -70,7 +70,7 @@ class BonusConfiguracaoServiceIntegrationTest extends
         configuracao.setNome("B.B.A Atualizado");
         configuracao.setSigla("BBAT");
         configuracao.setDescricao("Nova descrição");
-        configuracao.setFormulaBase("NIVEL + FOR");
+        configuracao.setFormulaBase("nivel + base");
         configuracao.setOrdemExibicao(10);
     }
 
@@ -79,7 +79,7 @@ class BonusConfiguracaoServiceIntegrationTest extends
         assertThat(configuracao.getNome()).isEqualTo("B.B.A Atualizado");
         assertThat(configuracao.getSigla()).isEqualTo("BBAT");
         assertThat(configuracao.getDescricao()).isEqualTo("Nova descrição");
-        assertThat(configuracao.getFormulaBase()).isEqualTo("NIVEL + FOR");
+        assertThat(configuracao.getFormulaBase()).isEqualTo("nivel + base");
         assertThat(configuracao.getOrdemExibicao()).isEqualTo(10);
     }
 }

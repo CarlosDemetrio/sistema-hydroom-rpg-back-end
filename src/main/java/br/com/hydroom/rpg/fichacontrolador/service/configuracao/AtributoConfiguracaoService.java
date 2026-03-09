@@ -1,8 +1,12 @@
 package br.com.hydroom.rpg.fichacontrolador.service.configuracao;
 
+import br.com.hydroom.rpg.fichacontrolador.constants.ValidationMessages;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.FormulaValidationResult;
 import br.com.hydroom.rpg.fichacontrolador.exception.ConflictException;
+import br.com.hydroom.rpg.fichacontrolador.exception.ValidationException;
 import br.com.hydroom.rpg.fichacontrolador.model.AtributoConfig;
 import br.com.hydroom.rpg.fichacontrolador.repository.ConfiguracaoAtributoRepository;
+import br.com.hydroom.rpg.fichacontrolador.service.FormulaEvaluatorService;
 import br.com.hydroom.rpg.fichacontrolador.service.configuracao.SiglaValidationService.TipoSigla;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Service para gerenciamento de configurações de Atributos.
@@ -26,6 +31,9 @@ public class AtributoConfiguracaoService extends AbstractConfiguracaoService<Atr
 
     @Autowired
     private SiglaValidationService siglaValidationService;
+
+    @Autowired
+    private FormulaEvaluatorService formulaEvaluatorService;
 
     public AtributoConfiguracaoService(ConfiguracaoAtributoRepository repository) {
         super(repository, "Atributo");
@@ -46,6 +54,7 @@ public class AtributoConfiguracaoService extends AbstractConfiguracaoService<Atr
             null,
             TipoSigla.ATRIBUTO
         );
+        validarFormulaImpeto(configuracao.getFormulaImpeto());
     }
 
     @Override
@@ -62,6 +71,7 @@ public class AtributoConfiguracaoService extends AbstractConfiguracaoService<Atr
                 TipoSigla.ATRIBUTO
             );
         }
+        validarFormulaImpeto(configuracaoAtualizada.getFormulaImpeto());
     }
 
     @Override
@@ -74,6 +84,18 @@ public class AtributoConfiguracaoService extends AbstractConfiguracaoService<Atr
         existente.setDescricaoImpeto(atualizado.getDescricaoImpeto());
         existente.setValorMinimo(atualizado.getValorMinimo());
         existente.setValorMaximo(atualizado.getValorMaximo());
+    }
+
+    private void validarFormulaImpeto(String formula) {
+        if (formula == null || formula.isBlank()) return;
+        FormulaValidationResult result = formulaEvaluatorService.validarFormula(formula, Set.of("total"));
+        if (!result.valid()) {
+            String msg = result.erroSintaxe() != null
+                ? ValidationMessages.AtributoConfig.FORMULA_IMPETO_SINTAXE_INVALIDA + ": " + result.erroSintaxe()
+                : ValidationMessages.AtributoConfig.FORMULA_IMPETO_VARIAVEIS_INVALIDAS
+                    .formatted(String.join(", ", result.variaveisInvalidas()));
+            throw new ValidationException(msg);
+        }
     }
 
     /**

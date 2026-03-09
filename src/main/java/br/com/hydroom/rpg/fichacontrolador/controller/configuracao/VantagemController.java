@@ -2,7 +2,10 @@ package br.com.hydroom.rpg.fichacontrolador.controller.configuracao;
 
 import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.CreateVantagemRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.UpdateVantagemRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.VantagemPreRequisitoRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.VantagemPreRequisitoResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.VantagemResponse;
+import br.com.hydroom.rpg.fichacontrolador.model.VantagemPreRequisito;
 import br.com.hydroom.rpg.fichacontrolador.mapper.configuracao.VantagemConfigMapper;
 import br.com.hydroom.rpg.fichacontrolador.model.VantagemConfig;
 import br.com.hydroom.rpg.fichacontrolador.service.configuracao.CategoriaVantagemService;
@@ -77,6 +80,38 @@ public class VantagemController {
     @Operation(summary = "Deletar vantagem (Apenas MESTRE)")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         configuracaoService.deletar(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // ===== ENDPOINTS DE PRÉ-REQUISITOS =====
+
+    @GetMapping("/{id}/prerequisitos")
+    @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
+    @Operation(summary = "Listar pré-requisitos de uma vantagem")
+    public ResponseEntity<List<VantagemPreRequisitoResponse>> listarPreRequisitos(@PathVariable Long id) {
+        return ResponseEntity.ok(
+            configuracaoService.listarPreRequisitos(id).stream()
+                .map(mapper::toPreRequisitoResponse)
+                .toList()
+        );
+    }
+
+    @PostMapping("/{id}/prerequisitos")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Adicionar pré-requisito a uma vantagem (Apenas MESTRE)")
+    public ResponseEntity<VantagemPreRequisitoResponse> adicionarPreRequisito(
+            @PathVariable Long id,
+            @Valid @RequestBody VantagemPreRequisitoRequest request) {
+        VantagemPreRequisito pr = configuracaoService.adicionarPreRequisito(
+            id, request.requisitoId(), request.nivelMinimo());
+        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toPreRequisitoResponse(pr));
+    }
+
+    @DeleteMapping("/{id}/prerequisitos/{prId}")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Remover pré-requisito de uma vantagem (Apenas MESTRE)")
+    public ResponseEntity<Void> removerPreRequisito(@PathVariable Long id, @PathVariable Long prId) {
+        configuracaoService.removerPreRequisito(prId);
         return ResponseEntity.noContent().build();
     }
 }

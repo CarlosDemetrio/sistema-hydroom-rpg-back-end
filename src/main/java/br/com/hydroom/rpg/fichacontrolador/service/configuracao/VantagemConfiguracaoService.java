@@ -49,6 +49,12 @@ public class VantagemConfiguracaoService extends AbstractConfiguracaoService<Van
     }
 
     @Override
+    public VantagemConfig buscarPorId(Long id) {
+        return repository.findByIdWithPreRequisitos(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Vantagem", id));
+    }
+
+    @Override
     public List<VantagemConfig> listar(Long jogoId) {
         log.debug("Listando vantagens para jogo ID: {}", jogoId);
         return repository.findByJogoIdOrderByOrdemExibicao(jogoId);

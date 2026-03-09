@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository para configuração de vantagens.
@@ -34,6 +35,12 @@ public interface VantagemConfigRepository extends JpaRepository<VantagemConfig, 
      * Verifica se existe vantagem com a sigla no jogo.
      */
     boolean existsByJogoIdAndSiglaIgnoreCase(Long jogoId, String sigla);
+
+    /**
+     * Busca vantagem por ID com pré-requisitos carregados (evita N+1 no mapper).
+     */
+    @Query("SELECT v FROM VantagemConfig v LEFT JOIN FETCH v.preRequisitos pr LEFT JOIN FETCH pr.requisito WHERE v.id = :id AND v.deletedAt IS NULL")
+    Optional<VantagemConfig> findByIdWithPreRequisitos(@Param("id") Long id);
 
     /**
      * Retorna siglas de vantagens com info de entidade para listagem cross-entity.

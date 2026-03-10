@@ -1,0 +1,324 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > VantagemConfiguracaoService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.com.hydroom.rpg.fichacontrolador.service.configuracao</a>
+</div>
+
+<h1>Coverage Summary for Class: VantagemConfiguracaoService (br.com.hydroom.rpg.fichacontrolador.service.configuracao)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">VantagemConfiguracaoService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    61,8%
+  </span>
+  <span class="absValue">
+    (21/34)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    87,1%
+  </span>
+  <span class="absValue">
+    (61/70)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">VantagemConfiguracaoService$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    61,8%
+  </span>
+  <span class="absValue">
+    (21/34)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    87,1%
+  </span>
+  <span class="absValue">
+    (61/70)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package br.com.hydroom.rpg.fichacontrolador.service.configuracao;
+&nbsp;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.constants.ValidationMessages;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.FormulaValidationResult;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.exception.ConflictException;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.exception.ResourceNotFoundException;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.exception.ValidationException;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.model.VantagemConfig;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.model.VantagemPreRequisito;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.repository.VantagemConfigRepository;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.repository.VantagemPreRequisitoRepository;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.service.FormulaEvaluatorService;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.service.configuracao.SiglaValidationService.TipoSigla;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;import java.util.ArrayDeque;
+&nbsp;import java.util.Deque;
+&nbsp;import java.util.HashSet;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Set;
+&nbsp;
+&nbsp;/**
+&nbsp; * Service para gerenciamento de configurações de Vantagens.
+&nbsp; *
+&nbsp; * &lt;p&gt;Vantagens são habilidades especiais que personagens podem adquirir&lt;/p&gt;
+&nbsp; *
+&nbsp; * @author Ficha Controlador Team
+&nbsp; * @since 1.0
+&nbsp; */
+&nbsp;@Service
+&nbsp;@Transactional(readOnly = true)
+<b class="fc">&nbsp;@Slf4j</b>
+&nbsp;public class VantagemConfiguracaoService extends AbstractConfiguracaoService&lt;VantagemConfig, VantagemConfigRepository&gt; {
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private SiglaValidationService siglaValidationService;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private FormulaEvaluatorService formulaEvaluatorService;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private VantagemPreRequisitoRepository prerequisitoRepository;
+&nbsp;
+&nbsp;    public VantagemConfiguracaoService(VantagemConfigRepository repository) {
+<b class="fc">&nbsp;        super(repository, &quot;Vantagem&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public VantagemConfig buscarPorId(Long id) {
+<b class="fc">&nbsp;        return repository.findByIdWithPreRequisitos(id)</b>
+<b class="fc">&nbsp;            .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Vantagem&quot;, id));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;VantagemConfig&gt; listar(Long jogoId) {
+<b class="fc">&nbsp;        log.debug(&quot;Listando vantagens para jogo ID: {}&quot;, jogoId);</b>
+<b class="fc">&nbsp;        return repository.findByJogoIdOrderByOrdemExibicao(jogoId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    protected void validarAntesCriar(VantagemConfig configuracao) {
+<b class="fc">&nbsp;        if (repository.existsByJogoIdAndNomeIgnoreCase(configuracao.getJogo().getId(), configuracao.getNome())) {</b>
+<b class="fc">&nbsp;            throw new ConflictException(&quot;Já existe uma vantagem com o nome &#39;&quot; + configuracao.getNome() + &quot;&#39; neste jogo&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        siglaValidationService.validarSiglaDisponivel(</b>
+<b class="fc">&nbsp;            configuracao.getSigla(),</b>
+<b class="fc">&nbsp;            configuracao.getJogo().getId(),</b>
+&nbsp;            null,
+&nbsp;            TipoSigla.VANTAGEM
+&nbsp;        );
+<b class="fc">&nbsp;        validarFormulaCusto(configuracao.getFormulaCusto());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    protected void validarAntesAtualizar(VantagemConfig configuracaoExistente, VantagemConfig configuracaoAtualizada) {
+<b class="pc">&nbsp;        if (!configuracaoExistente.getNome().equalsIgnoreCase(configuracaoAtualizada.getNome())) {</b>
+<b class="nc">&nbsp;            if (repository.existsByJogoIdAndNomeIgnoreCase(configuracaoExistente.getJogo().getId(), configuracaoAtualizada.getNome())) {</b>
+<b class="nc">&nbsp;                throw new ConflictException(&quot;Já existe uma vantagem com o nome &#39;&quot; + configuracaoAtualizada.getNome() + &quot;&#39; neste jogo&quot;);</b>
+&nbsp;            }
+&nbsp;        }
+<b class="fc">&nbsp;        String siglaNova = configuracaoAtualizada.getSigla();</b>
+<b class="pc">&nbsp;        if (siglaNova != null &amp;&amp; !siglaNova.equalsIgnoreCase(configuracaoExistente.getSigla())) {</b>
+<b class="nc">&nbsp;            siglaValidationService.validarSiglaDisponivel(</b>
+&nbsp;                siglaNova,
+<b class="nc">&nbsp;                configuracaoExistente.getJogo().getId(),</b>
+<b class="nc">&nbsp;                configuracaoExistente.getId(),</b>
+&nbsp;                TipoSigla.VANTAGEM
+&nbsp;            );
+&nbsp;        }
+<b class="fc">&nbsp;        validarFormulaCusto(configuracaoAtualizada.getFormulaCusto());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Adiciona um pré-requisito a uma vantagem, validando auto-referência, duplicata, jogo e ciclos.
+&nbsp;     */
+&nbsp;    @Transactional
+&nbsp;    public VantagemPreRequisito adicionarPreRequisito(Long vantagemId, Long requisitoId, Integer nivelMinimo) {
+<b class="fc">&nbsp;        VantagemConfig vantagem = buscarPorId(vantagemId);</b>
+<b class="fc">&nbsp;        VantagemConfig requisito = buscarPorId(requisitoId);</b>
+&nbsp;
+<b class="fc">&nbsp;        if (!vantagem.getJogo().getId().equals(requisito.getJogo().getId())) {</b>
+<b class="fc">&nbsp;            throw new ValidationException(ValidationMessages.VantagemPreRequisito.JOGOS_DIFERENTES);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        if (prerequisitoRepository.existsByVantagemIdAndRequisitoId(vantagemId, requisitoId)) {</b>
+<b class="fc">&nbsp;            throw new ConflictException(ValidationMessages.VantagemPreRequisito.JA_EXISTE);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        verificarCiclo(vantagemId, requisitoId);</b>
+&nbsp;
+<b class="fc">&nbsp;        VantagemPreRequisito pr = VantagemPreRequisito.builder()</b>
+<b class="fc">&nbsp;            .vantagem(vantagem)</b>
+<b class="fc">&nbsp;            .requisito(requisito)</b>
+<b class="pc">&nbsp;            .nivelMinimo(nivelMinimo != null ? nivelMinimo : 1)</b>
+<b class="fc">&nbsp;            .build();</b>
+<b class="fc">&nbsp;        return prerequisitoRepository.save(pr);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Lista pré-requisitos de uma vantagem.
+&nbsp;     */
+&nbsp;    public List&lt;VantagemPreRequisito&gt; listarPreRequisitos(Long vantagemId) {
+<b class="fc">&nbsp;        return prerequisitoRepository.findByVantagemId(vantagemId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Remove um pré-requisito (hard delete).
+&nbsp;     */
+&nbsp;    @Transactional
+&nbsp;    public void removerPreRequisito(Long prId) {
+<b class="fc">&nbsp;        VantagemPreRequisito pr = prerequisitoRepository.findById(prId)</b>
+<b class="fc">&nbsp;            .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;VantagemPreRequisito&quot;, prId));</b>
+<b class="fc">&nbsp;        prerequisitoRepository.delete(pr);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void verificarCiclo(Long vantagemId, Long requisitoId) {
+<b class="fc">&nbsp;        if (vantagemId.equals(requisitoId)) {</b>
+<b class="fc">&nbsp;            throw new ConflictException(ValidationMessages.VantagemPreRequisito.AUTO_REFERENCIA);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // DFS: percorre transitivamente o que &#39;requisitoId&#39; exige
+<b class="fc">&nbsp;        Set&lt;Long&gt; visitados = new HashSet&lt;&gt;();</b>
+<b class="fc">&nbsp;        Deque&lt;Long&gt; fila = new ArrayDeque&lt;&gt;();</b>
+<b class="fc">&nbsp;        fila.push(requisitoId);</b>
+&nbsp;
+<b class="fc">&nbsp;        while (!fila.isEmpty()) {</b>
+<b class="fc">&nbsp;            Long atual = fila.pop();</b>
+<b class="pc">&nbsp;            if (!visitados.add(atual)) continue;</b>
+&nbsp;
+<b class="fc">&nbsp;            List&lt;Long&gt; requisitosDoAtual = prerequisitoRepository.findByVantagemId(atual)</b>
+<b class="fc">&nbsp;                .stream()</b>
+<b class="fc">&nbsp;                .map(p -&gt; p.getRequisito().getId())</b>
+<b class="fc">&nbsp;                .toList();</b>
+&nbsp;
+<b class="fc">&nbsp;            for (Long req : requisitosDoAtual) {</b>
+<b class="fc">&nbsp;                if (req.equals(vantagemId)) {</b>
+<b class="fc">&nbsp;                    throw new ConflictException(ValidationMessages.VantagemPreRequisito.CICLO_DETECTADO);</b>
+&nbsp;                }
+<b class="fc">&nbsp;                fila.push(req);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private void validarFormulaCusto(String formula) {
+<b class="pc">&nbsp;        if (formula == null || formula.isBlank()) return;</b>
+<b class="fc">&nbsp;        FormulaValidationResult result = formulaEvaluatorService.validarFormula(</b>
+<b class="fc">&nbsp;            formula, Set.of(&quot;custo_base&quot;, &quot;nivel_vantagem&quot;)</b>
+&nbsp;        );
+<b class="pc">&nbsp;        if (!result.valid()) {</b>
+<b class="nc">&nbsp;            String msg = result.erroSintaxe() != null</b>
+<b class="nc">&nbsp;                ? ValidationMessages.VantagemConfig.FORMULA_CUSTO_SINTAXE_INVALIDA + &quot;: &quot; + result.erroSintaxe()</b>
+&nbsp;                : ValidationMessages.VantagemConfig.FORMULA_CUSTO_VARIAVEIS_INVALIDAS
+<b class="nc">&nbsp;                    .formatted(String.join(&quot;, &quot;, result.variaveisInvalidas()));</b>
+<b class="nc">&nbsp;            throw new ValidationException(msg);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    protected void atualizarCampos(VantagemConfig existente, VantagemConfig atualizado) {
+<b class="fc">&nbsp;        existente.setNome(atualizado.getNome());</b>
+<b class="fc">&nbsp;        existente.setSigla(atualizado.getSigla());</b>
+<b class="fc">&nbsp;        existente.setDescricao(atualizado.getDescricao());</b>
+<b class="fc">&nbsp;        existente.setOrdemExibicao(atualizado.getOrdemExibicao());</b>
+<b class="fc">&nbsp;        existente.setNivelMaximo(atualizado.getNivelMaximo());</b>
+<b class="fc">&nbsp;        existente.setFormulaCusto(atualizado.getFormulaCusto());</b>
+<b class="fc">&nbsp;        existente.setDescricaoEfeito(atualizado.getDescricaoEfeito());</b>
+<b class="fc">&nbsp;        existente.setCategoriaVantagem(atualizado.getCategoriaVantagem());</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-03-09 20:13</div>
+</div>
+</body>
+</html>

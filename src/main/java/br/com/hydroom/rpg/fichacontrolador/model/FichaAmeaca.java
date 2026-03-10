@@ -9,16 +9,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 /**
  * Entidade que armazena os dados de ameaça de uma ficha.
  */
 @Entity
-@Table(name = "ficha_ameaca", indexes = {
-    @Index(name = "idx_ficha_ameaca_ficha", columnList = "ficha_id")
-}, uniqueConstraints = {
+@Table(name = "ficha_ameaca", uniqueConstraints = {
     @UniqueConstraint(name = "uk_ficha_ameaca", columnNames = {"ficha_id"})
 })
+@SQLRestriction("deleted_at IS NULL")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder
@@ -38,22 +38,42 @@ public class FichaAmeaca extends BaseEntity {
     @NotNull
     @Min(value = 0, message = ValidationMessages.FichaAmeaca.ITENS_MINIMO)
     @Builder.Default
-    @Column(name = "valor_itens", nullable = false)
-    private Integer valorItens = 0;
+    @Column(name = "itens", nullable = false)
+    private Integer itens = 0;
 
     @NotNull
     @Min(value = 0, message = ValidationMessages.FichaAmeaca.TITULOS_MINIMO)
     @Builder.Default
-    @Column(name = "valor_titulos", nullable = false)
-    private Integer valorTitulos = 0;
+    @Column(name = "titulos", nullable = false)
+    private Integer titulos = 0;
+
+    @NotNull
+    @Min(value = 0)
+    @Builder.Default
+    @Column(name = "renascimentos", nullable = false)
+    private Integer renascimentos = 0;
+
+    @NotNull
+    @Min(value = 0)
+    @Builder.Default
+    @Column(name = "outros", nullable = false)
+    private Integer outros = 0;
 
     /**
-     * Calcula a ameaça total.
-     * Total = Base (calculado pela fórmula) + Itens + Títulos
-     * Base = (Fórmula configurada em AmeacaConfig)
+     * Total calculado: itens + titulos + renascimentos + outros.
      */
-    public Integer getValorModificadores() {
-        return (valorItens != null ? valorItens : 0) +
-               (valorTitulos != null ? valorTitulos : 0);
+    @NotNull
+    @Builder.Default
+    @Column(name = "total", nullable = false)
+    private Integer total = 0;
+
+    /**
+     * Recalcula e persiste o total.
+     */
+    public void recalcularTotal() {
+        this.total = (itens != null ? itens : 0) +
+                     (titulos != null ? titulos : 0) +
+                     (renascimentos != null ? renascimentos : 0) +
+                     (outros != null ? outros : 0);
     }
 }

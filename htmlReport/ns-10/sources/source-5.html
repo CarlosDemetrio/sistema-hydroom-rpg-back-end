@@ -1,0 +1,192 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > CategoriaVantagemService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.com.hydroom.rpg.fichacontrolador.service.configuracao</a>
+</div>
+
+<h1>Coverage Summary for Class: CategoriaVantagemService (br.com.hydroom.rpg.fichacontrolador.service.configuracao)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CategoriaVantagemService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (3/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (12/16)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">CategoriaVantagemService$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (3/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (12/16)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package br.com.hydroom.rpg.fichacontrolador.service.configuracao;
+&nbsp;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.exception.ConflictException;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.model.CategoriaVantagem;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.repository.CategoriaVantagemRepository;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * Service para gerenciamento de categorias de vantagem.
+&nbsp; *
+&nbsp; * &lt;p&gt;Categorias agrupam vantagens (ex: Atributo, Combate, Magia, Social).&lt;/p&gt;
+&nbsp; */
+&nbsp;@Service
+&nbsp;@Transactional(readOnly = true)
+<b class="fc">&nbsp;@Slf4j</b>
+&nbsp;public class CategoriaVantagemService extends AbstractConfiguracaoService&lt;CategoriaVantagem, CategoriaVantagemRepository&gt; {
+&nbsp;
+&nbsp;    public CategoriaVantagemService(CategoriaVantagemRepository repository) {
+<b class="fc">&nbsp;        super(repository, &quot;Categoria de Vantagem&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;CategoriaVantagem&gt; listar(Long jogoId) {
+<b class="fc">&nbsp;        log.debug(&quot;Listando categorias de vantagem para jogo ID: {}&quot;, jogoId);</b>
+<b class="fc">&nbsp;        return repository.findByJogoIdOrderByOrdemExibicao(jogoId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    protected void validarAntesCriar(CategoriaVantagem configuracao) {
+<b class="fc">&nbsp;        if (repository.existsByJogoIdAndNomeIgnoreCase(configuracao.getJogo().getId(), configuracao.getNome())) {</b>
+<b class="fc">&nbsp;            throw new ConflictException(</b>
+<b class="fc">&nbsp;                &quot;Já existe uma categoria de vantagem com o nome &#39;&quot; + configuracao.getNome() + &quot;&#39; neste jogo&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    protected void validarAntesAtualizar(CategoriaVantagem existente, CategoriaVantagem atualizado) {
+<b class="pc">&nbsp;        if (!existente.getNome().equalsIgnoreCase(atualizado.getNome())) {</b>
+<b class="nc">&nbsp;            if (repository.existsByJogoIdAndNomeIgnoreCaseAndIdNot(</b>
+<b class="nc">&nbsp;                    existente.getJogo().getId(), atualizado.getNome(), existente.getId())) {</b>
+<b class="nc">&nbsp;                throw new ConflictException(</b>
+<b class="nc">&nbsp;                    &quot;Já existe uma categoria de vantagem com o nome &#39;&quot; + atualizado.getNome() + &quot;&#39; neste jogo&quot;);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    protected void atualizarCampos(CategoriaVantagem existente, CategoriaVantagem atualizado) {
+<b class="fc">&nbsp;        existente.setNome(atualizado.getNome());</b>
+<b class="fc">&nbsp;        existente.setDescricao(atualizado.getDescricao());</b>
+<b class="fc">&nbsp;        existente.setCor(atualizado.getCor());</b>
+<b class="fc">&nbsp;        existente.setOrdemExibicao(atualizado.getOrdemExibicao());</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-03-09 20:13</div>
+</div>
+</body>
+</html>

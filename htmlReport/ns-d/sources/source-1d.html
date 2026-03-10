@@ -1,0 +1,147 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Jogo</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.com.hydroom.rpg.fichacontrolador.model</a>
+</div>
+
+<h1>Coverage Summary for Class: Jogo (br.com.hydroom.rpg.fichacontrolador.model)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+</tr>
+  <tr>
+    <td class="name">Jogo$HibernateInstantiator</td>
+  </tr>
+  <tr>
+    <td class="name">Jogo$HibernateProxy</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package br.com.hydroom.rpg.fichacontrolador.model;
+&nbsp;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.constants.ValidationMessages;
+&nbsp;import jakarta.persistence.*;
+&nbsp;import jakarta.validation.constraints.NotBlank;
+&nbsp;import jakarta.validation.constraints.Size;
+&nbsp;import lombok.*;
+&nbsp;import org.hibernate.annotations.SQLRestriction;
+&nbsp;
+&nbsp;import java.time.LocalDate;
+&nbsp;import java.util.HashSet;
+&nbsp;import java.util.Set;
+&nbsp;
+&nbsp;/**
+&nbsp; * Representa um jogo/campanha de RPG.
+&nbsp; *
+&nbsp; * @author Carlos Demétrio
+&nbsp; */
+&nbsp;@Entity
+&nbsp;@Table(name = &quot;jogos&quot;)
+&nbsp;@SQLRestriction(&quot;deleted_at IS NULL&quot;)
+&nbsp;@Getter
+&nbsp;@Setter
+&nbsp;@NoArgsConstructor
+&nbsp;@AllArgsConstructor
+&nbsp;@Builder
+&nbsp;public class Jogo extends BaseEntity {
+&nbsp;
+&nbsp;    @Id
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    private Long id;
+&nbsp;
+&nbsp;    @NotBlank(message = ValidationMessages.Jogo.NOME_OBRIGATORIO)
+&nbsp;    @Size(min = ValidationMessages.Limites.JOGO_NOME_MIN,
+&nbsp;          max = ValidationMessages.Limites.JOGO_NOME_MAX,
+&nbsp;          message = ValidationMessages.Jogo.NOME_TAMANHO)
+&nbsp;    @Column(nullable = false, length = ValidationMessages.Limites.JOGO_NOME_MAX)
+&nbsp;    private String nome;
+&nbsp;
+&nbsp;    @Size(max = ValidationMessages.Limites.JOGO_DESCRICAO_MAX,
+&nbsp;          message = ValidationMessages.Jogo.DESCRICAO_TAMANHO)
+&nbsp;    @Column(columnDefinition = &quot;TEXT&quot;)
+&nbsp;    private String descricao;
+&nbsp;
+&nbsp;    @Size(max = ValidationMessages.Limites.JOGO_IMAGEM_URL_MAX,
+&nbsp;          message = ValidationMessages.Jogo.IMAGEM_URL_TAMANHO)
+&nbsp;    @Column(name = &quot;imagem_url&quot;, length = ValidationMessages.Limites.JOGO_IMAGEM_URL_MAX)
+&nbsp;    private String imagemUrl;
+&nbsp;
+&nbsp;    @Column(name = &quot;data_inicio&quot;)
+&nbsp;    private LocalDate dataInicio;
+&nbsp;
+&nbsp;    @Column(name = &quot;data_fim&quot;)
+&nbsp;    private LocalDate dataFim;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Indica se este é o jogo atualmente selecionado pelo mestre.
+&nbsp;     * REGRA: Apenas 1 jogo pode ter jogoAtivo=true por mestre por vez.
+&nbsp;     * Campo &#39;ativo&#39; da BaseEntity indica se o jogo está ativo (soft delete).
+&nbsp;     */
+&nbsp;    @Column(name = &quot;jogo_ativo&quot;, nullable = false)
+&nbsp;    @Builder.Default
+&nbsp;    private Boolean jogoAtivo = false;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Participantes do jogo (Mestre + Jogadores).
+&nbsp;     */
+&nbsp;    @OneToMany(mappedBy = &quot;jogo&quot;, cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+&nbsp;    @Builder.Default
+&nbsp;    private Set&lt;JogoParticipante&gt; participantes = new HashSet&lt;&gt;();
+&nbsp;
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-03-09 20:13</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,289 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ClasseConfiguracaoService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.com.hydroom.rpg.fichacontrolador.service.configuracao</a>
+</div>
+
+<h1>Coverage Summary for Class: ClasseConfiguracaoService (br.com.hydroom.rpg.fichacontrolador.service.configuracao)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ClasseConfiguracaoService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (14/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (16/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (44/44)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ClasseConfiguracaoService$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (14/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (16/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (44/44)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package br.com.hydroom.rpg.fichacontrolador.service.configuracao;
+&nbsp;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.constants.ValidationMessages;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.exception.ConflictException;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.exception.ResourceNotFoundException;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.exception.ValidationException;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.model.AptidaoConfig;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.model.BonusConfig;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.model.ClasseAptidaoBonus;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.model.ClasseBonus;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.model.ClassePersonagem;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.repository.ClasseAptidaoBonusRepository;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.repository.ClasseBonusRepository;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.repository.ConfiguracaoAptidaoRepository;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.repository.ConfiguracaoClasseRepository;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.repository.BonusConfigRepository;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;import java.math.BigDecimal;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * Service para gerenciamento de configurações de Classes de Personagem.
+&nbsp; *
+&nbsp; * &lt;p&gt;Classes definem o arquétipo do personagem (Guerreiro, Mago, Ladino, etc.)&lt;/p&gt;
+&nbsp; */
+&nbsp;@Service
+&nbsp;@Transactional(readOnly = true)
+<b class="fc">&nbsp;@Slf4j</b>
+&nbsp;public class ClasseConfiguracaoService extends AbstractConfiguracaoService&lt;ClassePersonagem, ConfiguracaoClasseRepository&gt; {
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private ClasseBonusRepository classeBonusRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private ClasseAptidaoBonusRepository classeAptidaoBonusRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private BonusConfigRepository bonusConfigRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private ConfiguracaoAptidaoRepository aptidaoRepository;
+&nbsp;
+&nbsp;    public ClasseConfiguracaoService(ConfiguracaoClasseRepository repository) {
+<b class="fc">&nbsp;        super(repository, &quot;Classe&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public ClassePersonagem buscarPorId(Long id) {
+<b class="fc">&nbsp;        return repository.findByIdWithBonuses(id)</b>
+<b class="fc">&nbsp;            .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Classe&quot;, id));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;ClassePersonagem&gt; listar(Long jogoId) {
+<b class="fc">&nbsp;        log.debug(&quot;Listando classes para jogo ID: {}&quot;, jogoId);</b>
+<b class="fc">&nbsp;        return repository.findByJogoIdOrderByOrdemExibicao(jogoId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    protected void validarAntesCriar(ClassePersonagem configuracao) {
+<b class="fc">&nbsp;        validateUniqueNome(configuracao.getNome(), configuracao.getJogo().getId());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    protected void validarAntesAtualizar(ClassePersonagem configuracaoExistente, ClassePersonagem configuracaoAtualizada) {
+<b class="fc">&nbsp;        if (!configuracaoExistente.getNome().equals(configuracaoAtualizada.getNome())) {</b>
+<b class="fc">&nbsp;            validateUniqueNome(configuracaoAtualizada.getNome(), configuracaoExistente.getJogo().getId());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    protected void atualizarCampos(ClassePersonagem existente, ClassePersonagem atualizado) {
+<b class="fc">&nbsp;        existente.setNome(atualizado.getNome());</b>
+<b class="fc">&nbsp;        existente.setDescricao(atualizado.getDescricao());</b>
+<b class="fc">&nbsp;        existente.setOrdemExibicao(atualizado.getOrdemExibicao());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== CLASSE BONUS =====
+&nbsp;
+&nbsp;    @Transactional
+&nbsp;    public ClasseBonus adicionarBonus(Long classeId, Long bonusId, BigDecimal valorPorNivel) {
+<b class="fc">&nbsp;        ClassePersonagem classe = buscarPorId(classeId);</b>
+<b class="fc">&nbsp;        BonusConfig bonus = bonusConfigRepository.findById(bonusId)</b>
+<b class="fc">&nbsp;            .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;BonusConfig&quot;, bonusId));</b>
+&nbsp;
+<b class="fc">&nbsp;        if (!bonus.getJogo().getId().equals(classe.getJogo().getId())) {</b>
+<b class="fc">&nbsp;            throw new ValidationException(ValidationMessages.ClasseBonus.JOGO_DIFERENTE);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        if (classeBonusRepository.existsByClasseIdAndBonusId(classeId, bonusId)) {</b>
+<b class="fc">&nbsp;            throw new ConflictException(ValidationMessages.ClasseBonus.JA_EXISTE);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        return classeBonusRepository.save(</b>
+<b class="fc">&nbsp;            ClasseBonus.builder().classe(classe).bonus(bonus).valorPorNivel(valorPorNivel).build()</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;ClasseBonus&gt; listarBonus(Long classeId) {
+<b class="fc">&nbsp;        return classeBonusRepository.findByClasseId(classeId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional
+&nbsp;    public void removerBonus(Long classeId, Long classeBonusId) {
+<b class="fc">&nbsp;        ClasseBonus cb = classeBonusRepository.findById(classeBonusId)</b>
+<b class="fc">&nbsp;            .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;ClasseBonus&quot;, classeBonusId));</b>
+<b class="fc">&nbsp;        if (!cb.getClasse().getId().equals(classeId)) {</b>
+<b class="fc">&nbsp;            throw new ValidationException(&quot;Bônus não pertence à classe informada.&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        classeBonusRepository.delete(cb);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== CLASSE APTIDAO BONUS =====
+&nbsp;
+&nbsp;    @Transactional
+&nbsp;    public ClasseAptidaoBonus adicionarAptidaoBonus(Long classeId, Long aptidaoId, Integer bonus) {
+<b class="fc">&nbsp;        ClassePersonagem classe = buscarPorId(classeId);</b>
+<b class="fc">&nbsp;        AptidaoConfig aptidao = aptidaoRepository.findById(aptidaoId)</b>
+<b class="fc">&nbsp;            .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;AptidaoConfig&quot;, aptidaoId));</b>
+&nbsp;
+<b class="fc">&nbsp;        if (!aptidao.getJogo().getId().equals(classe.getJogo().getId())) {</b>
+<b class="fc">&nbsp;            throw new ValidationException(ValidationMessages.ClasseAptidaoBonus.JOGO_DIFERENTE);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        if (classeAptidaoBonusRepository.existsByClasseIdAndAptidaoId(classeId, aptidaoId)) {</b>
+<b class="fc">&nbsp;            throw new ConflictException(ValidationMessages.ClasseAptidaoBonus.JA_EXISTE);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        return classeAptidaoBonusRepository.save(</b>
+<b class="fc">&nbsp;            ClasseAptidaoBonus.builder().classe(classe).aptidao(aptidao).bonus(bonus).build()</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;ClasseAptidaoBonus&gt; listarAptidaoBonus(Long classeId) {
+<b class="fc">&nbsp;        return classeAptidaoBonusRepository.findByClasseId(classeId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional
+&nbsp;    public void removerAptidaoBonus(Long classeId, Long classeAptidaoBonusId) {
+<b class="fc">&nbsp;        ClasseAptidaoBonus cab = classeAptidaoBonusRepository.findById(classeAptidaoBonusId)</b>
+<b class="fc">&nbsp;            .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;ClasseAptidaoBonus&quot;, classeAptidaoBonusId));</b>
+<b class="fc">&nbsp;        if (!cab.getClasse().getId().equals(classeId)) {</b>
+<b class="fc">&nbsp;            throw new ValidationException(&quot;Bônus de aptidão não pertence à classe informada.&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        classeAptidaoBonusRepository.delete(cab);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void validateUniqueNome(String nome, Long jogoId) {
+<b class="fc">&nbsp;        if (repository.existsByJogoIdAndNomeIgnoreCase(jogoId, nome)) {</b>
+<b class="fc">&nbsp;            throw new ConflictException(&quot;Já existe uma classe com o nome &#39;&quot; + nome + &quot;&#39; neste jogo&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-03-09 20:13</div>
+</div>
+</body>
+</html>

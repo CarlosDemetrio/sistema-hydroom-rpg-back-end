@@ -1,0 +1,163 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > JogoParticipanteRepository</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.com.hydroom.rpg.fichacontrolador.repository</a>
+</div>
+
+<h1>Coverage Summary for Class: JogoParticipanteRepository (br.com.hydroom.rpg.fichacontrolador.repository)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+</tr>
+  <tr>
+    <td class="name">JogoParticipanteRepository$MockitoMock$rzRQveZB</td>
+  </tr>
+  <tr>
+    <td class="name">JogoParticipanteRepository$MockitoMock$rzRQveZB$auxiliary$8dBevEm0</td>
+  </tr>
+  <tr>
+    <td class="name">JogoParticipanteRepository$MockitoMock$rzRQveZB$auxiliary$isaSe941</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package br.com.hydroom.rpg.fichacontrolador.repository;
+&nbsp;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.model.JogoParticipante;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.model.enums.RoleJogo;
+&nbsp;import org.springframework.data.jpa.repository.JpaRepository;
+&nbsp;import org.springframework.data.jpa.repository.Query;
+&nbsp;import org.springframework.data.repository.query.Param;
+&nbsp;import org.springframework.stereotype.Repository;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;/**
+&nbsp; * Repository para a entidade JogoParticipante.
+&nbsp; *
+&nbsp; * @author Carlos Demétrio
+&nbsp; */
+&nbsp;@Repository
+&nbsp;public interface JogoParticipanteRepository extends JpaRepository&lt;JogoParticipante, Long&gt; {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Busca todos os participantes ativos (não deletados) de um jogo.
+&nbsp;     */
+&nbsp;    @Query(&quot;SELECT p FROM JogoParticipante p WHERE p.jogo.id = :jogoId AND p.deletedAt IS NULL&quot;)
+&nbsp;    List&lt;JogoParticipante&gt; findByJogoId(@Param(&quot;jogoId&quot;) Long jogoId);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Busca todos os jogos em que um usuário participa.
+&nbsp;     */
+&nbsp;    List&lt;JogoParticipante&gt; findByUsuarioId(Long usuarioId);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Busca participação específica de um usuário em um jogo (apenas ativas).
+&nbsp;     */
+&nbsp;    @Query(&quot;SELECT p FROM JogoParticipante p WHERE p.jogo.id = :jogoId AND p.usuario.id = :usuarioId AND p.deletedAt IS NULL&quot;)
+&nbsp;    Optional&lt;JogoParticipante&gt; findByJogoIdAndUsuarioId(@Param(&quot;jogoId&quot;) Long jogoId, @Param(&quot;usuarioId&quot;) Long usuarioId);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Verifica se um usuário tem uma role específica em um jogo.
+&nbsp;     */
+&nbsp;    @Query(&quot;SELECT COUNT(p) &gt; 0 FROM JogoParticipante p WHERE p.jogo.id = :jogoId AND p.usuario.id = :usuarioId AND p.role = :role AND p.deletedAt IS NULL&quot;)
+&nbsp;    boolean existsByJogoIdAndUsuarioIdAndRole(@Param(&quot;jogoId&quot;) Long jogoId, @Param(&quot;usuarioId&quot;) Long usuarioId, @Param(&quot;role&quot;) RoleJogo role);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Busca participantes por jogo e role.
+&nbsp;     */
+&nbsp;    @Query(&quot;SELECT p FROM JogoParticipante p WHERE p.jogo.id = :jogoId AND p.role = :role AND p.deletedAt IS NULL&quot;)
+&nbsp;    List&lt;JogoParticipante&gt; findByJogoIdAndRole(@Param(&quot;jogoId&quot;) Long jogoId, @Param(&quot;role&quot;) RoleJogo role);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Verifica se usuário participa do jogo (qualquer role).
+&nbsp;     */
+&nbsp;    @Query(&quot;SELECT COUNT(p) &gt; 0 FROM JogoParticipante p WHERE p.usuario.id = :usuarioId AND p.jogo.id = :jogoId AND p.deletedAt IS NULL&quot;)
+&nbsp;    boolean existsByUsuarioIdAndJogoId(@Param(&quot;usuarioId&quot;) Long usuarioId, @Param(&quot;jogoId&quot;) Long jogoId);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Busca o role de um usuário em um jogo.
+&nbsp;     */
+&nbsp;    @Query(&quot;&quot;&quot;
+&nbsp;        SELECT p.role FROM JogoParticipante p
+&nbsp;        WHERE p.jogo.id = :jogoId
+&nbsp;        AND p.usuario.id = :usuarioId
+&nbsp;        AND p.deletedAt IS NULL
+&nbsp;    &quot;&quot;&quot;)
+&nbsp;    Optional&lt;RoleJogo&gt; findRoleByJogoIdAndUsuarioId(
+&nbsp;        @Param(&quot;jogoId&quot;) Long jogoId,
+&nbsp;        @Param(&quot;usuarioId&quot;) Long usuarioId
+&nbsp;    );
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Busca o mestre de um jogo.
+&nbsp;     */
+&nbsp;    @Query(&quot;&quot;&quot;
+&nbsp;        SELECT p FROM JogoParticipante p
+&nbsp;        WHERE p.jogo.id = :jogoId
+&nbsp;        AND p.role = &#39;MESTRE&#39;
+&nbsp;        AND p.deletedAt IS NULL
+&nbsp;    &quot;&quot;&quot;)
+&nbsp;    Optional&lt;JogoParticipante&gt; findMestreByJogoId(@Param(&quot;jogoId&quot;) Long jogoId);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Conta participantes ativos em um jogo.
+&nbsp;     */
+&nbsp;    @Query(&quot;SELECT COUNT(p) FROM JogoParticipante p WHERE p.jogo.id = :jogoId AND p.deletedAt IS NULL&quot;)
+&nbsp;    long countByJogoId(@Param(&quot;jogoId&quot;) Long jogoId);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-03-09 20:13</div>
+</div>
+</body>
+</html>

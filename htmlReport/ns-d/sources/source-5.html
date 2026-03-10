@@ -1,0 +1,217 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > FichaBonus</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.com.hydroom.rpg.fichacontrolador.model</a>
+</div>
+
+<h1>Coverage Summary for Class: FichaBonus (br.com.hydroom.rpg.fichacontrolador.model)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FichaBonus</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">FichaBonus$HibernateInstantiator</td>
+  </tr>
+  <tr>
+    <td class="name">FichaBonus$HibernateProxy</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package br.com.hydroom.rpg.fichacontrolador.model;
+&nbsp;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.constants.ValidationMessages;
+&nbsp;import jakarta.persistence.*;
+&nbsp;import jakarta.validation.constraints.NotNull;
+&nbsp;import lombok.AllArgsConstructor;
+&nbsp;import lombok.Builder;
+&nbsp;import lombok.Data;
+&nbsp;import lombok.EqualsAndHashCode;
+&nbsp;import lombok.NoArgsConstructor;
+&nbsp;
+&nbsp;/**
+&nbsp; * Entidade que armazena os valores dos bônus de uma ficha.
+&nbsp; */
+&nbsp;@Entity
+&nbsp;@Table(name = &quot;ficha_bonus&quot;, indexes = {
+&nbsp;    @Index(name = &quot;idx_ficha_bonus_ficha&quot;, columnList = &quot;ficha_id&quot;),
+&nbsp;    @Index(name = &quot;idx_ficha_bonus_config&quot;, columnList = &quot;bonus_config_id&quot;)
+&nbsp;}, uniqueConstraints = {
+&nbsp;    @UniqueConstraint(name = &quot;uk_ficha_bonus&quot;, columnNames = {&quot;ficha_id&quot;, &quot;bonus_config_id&quot;})
+&nbsp;})
+&nbsp;@Data
+&nbsp;@EqualsAndHashCode(callSuper = true)
+&nbsp;@Builder
+&nbsp;@NoArgsConstructor
+&nbsp;@AllArgsConstructor
+&nbsp;public class FichaBonus extends BaseEntity {
+&nbsp;
+&nbsp;    @Id
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    private Long id;
+&nbsp;
+&nbsp;    @NotNull(message = ValidationMessages.FichaBonus.FICHA_OBRIGATORIA)
+&nbsp;    @ManyToOne(fetch = FetchType.LAZY)
+&nbsp;    @JoinColumn(name = &quot;ficha_id&quot;, nullable = false)
+&nbsp;    private Ficha ficha;
+&nbsp;
+&nbsp;    @NotNull(message = ValidationMessages.FichaBonus.BONUS_CONFIG_OBRIGATORIO)
+&nbsp;    @ManyToOne(fetch = FetchType.LAZY)
+&nbsp;    @JoinColumn(name = &quot;bonus_config_id&quot;, nullable = false)
+&nbsp;    private BonusConfig bonusConfig;
+&nbsp;
+&nbsp;    @NotNull
+&nbsp;    @Builder.Default
+&nbsp;    @Column(name = &quot;valor_vantagens&quot;, nullable = false)
+&nbsp;    private Integer valorVantagens = 0;
+&nbsp;
+&nbsp;    @NotNull
+&nbsp;    @Builder.Default
+&nbsp;    @Column(name = &quot;valor_classe&quot;, nullable = false)
+&nbsp;    private Integer valorClasse = 0;
+&nbsp;
+&nbsp;    @NotNull
+&nbsp;    @Builder.Default
+&nbsp;    @Column(name = &quot;valor_itens&quot;, nullable = false)
+&nbsp;    private Integer valorItens = 0;
+&nbsp;
+&nbsp;    @NotNull
+&nbsp;    @Builder.Default
+&nbsp;    @Column(name = &quot;valor_gloria&quot;, nullable = false)
+&nbsp;    private Integer valorGloria = 0;
+&nbsp;
+&nbsp;    @NotNull
+&nbsp;    @Builder.Default
+&nbsp;    @Column(name = &quot;valor_outros&quot;, nullable = false)
+&nbsp;    private Integer valorOutros = 0;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Calcula o valor total do bônus.
+&nbsp;     * Total = Base (calculado pela fórmula) + Vantagens + Classe + Itens + Glória + Outros
+&nbsp;     * Nota: o valor base deve ser calculado pela fórmula definida em BonusConfig
+&nbsp;     */
+&nbsp;    public Integer getValorModificadores() {
+<b class="nc">&nbsp;        return (valorVantagens != null ? valorVantagens : 0) +</b>
+<b class="nc">&nbsp;               (valorClasse != null ? valorClasse : 0) +</b>
+<b class="nc">&nbsp;               (valorItens != null ? valorItens : 0) +</b>
+<b class="nc">&nbsp;               (valorGloria != null ? valorGloria : 0) +</b>
+<b class="nc">&nbsp;               (valorOutros != null ? valorOutros : 0);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-03-09 20:13</div>
+</div>
+</body>
+</html>

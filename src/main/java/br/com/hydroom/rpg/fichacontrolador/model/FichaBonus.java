@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 /**
  * Entidade que armazena os valores dos bônus de uma ficha.
@@ -19,6 +20,7 @@ import lombok.NoArgsConstructor;
 }, uniqueConstraints = {
     @UniqueConstraint(name = "uk_ficha_bonus", columnNames = {"ficha_id", "bonus_config_id"})
 })
+@SQLRestriction("deleted_at IS NULL")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder
@@ -40,41 +42,56 @@ public class FichaBonus extends BaseEntity {
     @JoinColumn(name = "bonus_config_id", nullable = false)
     private BonusConfig bonusConfig;
 
+    /**
+     * Valor base calculado via formulaBase do BonusConfig.
+     */
     @NotNull
     @Builder.Default
-    @Column(name = "valor_vantagens", nullable = false)
-    private Integer valorVantagens = 0;
+    @Column(name = "base", nullable = false)
+    private Integer base = 0;
 
     @NotNull
     @Builder.Default
-    @Column(name = "valor_classe", nullable = false)
-    private Integer valorClasse = 0;
+    @Column(name = "vantagens", nullable = false)
+    private Integer vantagens = 0;
 
     @NotNull
     @Builder.Default
-    @Column(name = "valor_itens", nullable = false)
-    private Integer valorItens = 0;
+    @Column(name = "classe", nullable = false)
+    private Integer classe = 0;
 
     @NotNull
     @Builder.Default
-    @Column(name = "valor_gloria", nullable = false)
-    private Integer valorGloria = 0;
+    @Column(name = "itens", nullable = false)
+    private Integer itens = 0;
 
     @NotNull
     @Builder.Default
-    @Column(name = "valor_outros", nullable = false)
-    private Integer valorOutros = 0;
+    @Column(name = "gloria", nullable = false)
+    private Integer gloria = 0;
+
+    @NotNull
+    @Builder.Default
+    @Column(name = "outros", nullable = false)
+    private Integer outros = 0;
 
     /**
-     * Calcula o valor total do bônus.
-     * Total = Base (calculado pela fórmula) + Vantagens + Classe + Itens + Glória + Outros
-     * Nota: o valor base deve ser calculado pela fórmula definida em BonusConfig
+     * Total calculado: base + vantagens + classe + itens + gloria + outros.
      */
-    public Integer getValorModificadores() {
-        return (valorVantagens != null ? valorVantagens : 0) +
-               (valorClasse != null ? valorClasse : 0) +
-               (valorItens != null ? valorItens : 0) +
-               (valorGloria != null ? valorGloria : 0) +
-               (valorOutros != null ? valorOutros : 0);
+    @NotNull
+    @Builder.Default
+    @Column(name = "total", nullable = false)
+    private Integer total = 0;
+
+    /**
+     * Recalcula e persiste o total.
+     */
+    public void recalcularTotal() {
+        this.total = (base != null ? base : 0) +
+                     (vantagens != null ? vantagens : 0) +
+                     (classe != null ? classe : 0) +
+                     (itens != null ? itens : 0) +
+                     (gloria != null ? gloria : 0) +
+                     (outros != null ? outros : 0);
     }
 }

@@ -1,0 +1,138 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ClassePersonagem</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.com.hydroom.rpg.fichacontrolador.model</a>
+</div>
+
+<h1>Coverage Summary for Class: ClassePersonagem (br.com.hydroom.rpg.fichacontrolador.model)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+</tr>
+  <tr>
+    <td class="name">ClassePersonagem$HibernateInstantiator</td>
+  </tr>
+  <tr>
+    <td class="name">ClassePersonagem$HibernateProxy</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package br.com.hydroom.rpg.fichacontrolador.model;
+&nbsp;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.constants.ValidationMessages;
+&nbsp;import jakarta.persistence.*;
+&nbsp;import java.util.HashSet;
+&nbsp;import java.util.Set;
+&nbsp;import jakarta.validation.constraints.NotBlank;
+&nbsp;import jakarta.validation.constraints.NotNull;
+&nbsp;import jakarta.validation.constraints.Size;
+&nbsp;import lombok.AllArgsConstructor;
+&nbsp;import lombok.Builder;
+&nbsp;import lombok.Data;
+&nbsp;import lombok.EqualsAndHashCode;
+&nbsp;import lombok.NoArgsConstructor;
+&nbsp;
+&nbsp;/**
+&nbsp; * Entidade que representa uma classe de personagem configurável pelo Mestre.
+&nbsp; * Exemplos: Guerreiro, Mago, Arqueiro, etc.
+&nbsp; */
+&nbsp;@Entity
+&nbsp;@Table(name = &quot;classes_personagem&quot;, uniqueConstraints = {
+&nbsp;    @UniqueConstraint(name = &quot;uk_classe_jogo_nome&quot;, columnNames = {&quot;jogo_id&quot;, &quot;nome&quot;})
+&nbsp;})
+&nbsp;@Data
+&nbsp;@EqualsAndHashCode(callSuper = true)
+&nbsp;@Builder
+&nbsp;@NoArgsConstructor
+&nbsp;@AllArgsConstructor
+&nbsp;public class ClassePersonagem extends BaseEntity implements ConfiguracaoEntity {
+&nbsp;
+&nbsp;    @Id
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    private Long id;
+&nbsp;
+&nbsp;    @NotNull(message = ValidationMessages.ClassePersonagem.JOGO_OBRIGATORIO)
+&nbsp;    @ManyToOne(fetch = FetchType.LAZY)
+&nbsp;    @JoinColumn(name = &quot;jogo_id&quot;, nullable = false)
+&nbsp;    private Jogo jogo;
+&nbsp;
+&nbsp;    @NotBlank(message = ValidationMessages.ClassePersonagem.NOME_OBRIGATORIO)
+&nbsp;    @Size(min = ValidationMessages.Limites.CLASSE_NOME_MIN,
+&nbsp;          max = ValidationMessages.Limites.CLASSE_NOME_MAX,
+&nbsp;          message = ValidationMessages.ClassePersonagem.NOME_TAMANHO)
+&nbsp;    @Column(nullable = false, length = ValidationMessages.Limites.CLASSE_NOME_MAX)
+&nbsp;    private String nome;
+&nbsp;
+&nbsp;    @Size(max = ValidationMessages.Limites.CLASSE_DESCRICAO_MAX,
+&nbsp;          message = ValidationMessages.ClassePersonagem.DESCRICAO_TAMANHO)
+&nbsp;    @Column(columnDefinition = &quot;TEXT&quot;)
+&nbsp;    private String descricao;
+&nbsp;
+&nbsp;
+&nbsp;    @OneToMany(mappedBy = &quot;classe&quot;, fetch = FetchType.LAZY)
+&nbsp;    @Builder.Default
+&nbsp;    private Set&lt;ClasseBonus&gt; bonusConfig = new HashSet&lt;&gt;();
+&nbsp;
+&nbsp;    @OneToMany(mappedBy = &quot;classe&quot;, fetch = FetchType.LAZY)
+&nbsp;    @Builder.Default
+&nbsp;    private Set&lt;ClasseAptidaoBonus&gt; aptidaoBonus = new HashSet&lt;&gt;();
+&nbsp;
+&nbsp;    @Builder.Default
+&nbsp;    @Column(name = &quot;ordem_exibicao&quot;, nullable = false)
+&nbsp;    private Integer ordemExibicao = 0;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-03-09 20:13</div>
+</div>
+</body>
+</html>

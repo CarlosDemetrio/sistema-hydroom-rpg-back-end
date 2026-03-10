@@ -8,16 +8,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 /**
  * Entidade que armazena os dados de vida de uma ficha.
  */
 @Entity
-@Table(name = "ficha_vida", indexes = {
-    @Index(name = "idx_ficha_vida_ficha", columnList = "ficha_id")
-}, uniqueConstraints = {
+@Table(name = "ficha_vida", uniqueConstraints = {
     @UniqueConstraint(name = "uk_ficha_vida", columnNames = {"ficha_id"})
 })
+@SQLRestriction("deleted_at IS NULL")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder
@@ -34,23 +34,32 @@ public class FichaVida extends BaseEntity {
     @JoinColumn(name = "ficha_id", nullable = false, unique = true)
     private Ficha ficha;
 
+    /**
+     * Vigor total (calculado via atributo VIG).
+     */
     @NotNull
     @Builder.Default
-    @Column(name = "valor_vantagens", nullable = false)
-    private Integer valorVantagens = 0;
+    @Column(name = "vt", nullable = false)
+    private Integer vt = 0;
 
     @NotNull
     @Builder.Default
-    @Column(name = "valor_outros", nullable = false)
-    private Integer valorOutros = 0;
+    @Column(name = "outros", nullable = false)
+    private Integer outros = 0;
 
     /**
-     * Calcula o valor total de vida.
-     * Total = Vigor + Nível + Vantagens + Renascimentos + Outros
-     * Nota: Vigor, Nível e Renascimentos vêm da ficha e atributos
+     * Vida total calculada: vt + outros.
      */
-    public Integer getValorModificadores() {
-        return (valorVantagens != null ? valorVantagens : 0) +
-               (valorOutros != null ? valorOutros : 0);
+    @NotNull
+    @Builder.Default
+    @Column(name = "vida_total", nullable = false)
+    private Integer vidaTotal = 0;
+
+    /**
+     * Recalcula e persiste a vida total.
+     */
+    public void recalcularTotal() {
+        this.vidaTotal = (vt != null ? vt : 0) +
+                         (outros != null ? outros : 0);
     }
 }

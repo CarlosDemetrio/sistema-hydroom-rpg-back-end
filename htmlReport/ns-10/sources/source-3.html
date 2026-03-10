@@ -1,0 +1,247 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AtributoConfiguracaoService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.com.hydroom.rpg.fichacontrolador.service.configuracao</a>
+</div>
+
+<h1>Coverage Summary for Class: AtributoConfiguracaoService (br.com.hydroom.rpg.fichacontrolador.service.configuracao)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AtributoConfiguracaoService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    56,2%
+  </span>
+  <span class="absValue">
+    (9/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    76,5%
+  </span>
+  <span class="absValue">
+    (26/34)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">AtributoConfiguracaoService$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    56,2%
+  </span>
+  <span class="absValue">
+    (9/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    76,5%
+  </span>
+  <span class="absValue">
+    (26/34)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package br.com.hydroom.rpg.fichacontrolador.service.configuracao;
+&nbsp;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.constants.ValidationMessages;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.FormulaValidationResult;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.exception.ConflictException;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.exception.ValidationException;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.model.AtributoConfig;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.repository.ConfiguracaoAtributoRepository;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.service.FormulaEvaluatorService;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.service.configuracao.SiglaValidationService.TipoSigla;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Set;
+&nbsp;
+&nbsp;/**
+&nbsp; * Service para gerenciamento de configurações de Atributos.
+&nbsp; *
+&nbsp; * &lt;p&gt;Atributos são características dos personagens (Força, Destreza, Constituição, etc.)&lt;/p&gt;
+&nbsp; *
+&nbsp; * @author Ficha Controlador Team
+&nbsp; * @since 1.0
+&nbsp; */
+&nbsp;@Service
+&nbsp;@Transactional(readOnly = true)
+<b class="fc">&nbsp;@Slf4j</b>
+&nbsp;public class AtributoConfiguracaoService extends AbstractConfiguracaoService&lt;AtributoConfig, ConfiguracaoAtributoRepository&gt; {
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private SiglaValidationService siglaValidationService;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private FormulaEvaluatorService formulaEvaluatorService;
+&nbsp;
+&nbsp;    public AtributoConfiguracaoService(ConfiguracaoAtributoRepository repository) {
+<b class="fc">&nbsp;        super(repository, &quot;Atributo&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;AtributoConfig&gt; listar(Long jogoId) {
+<b class="fc">&nbsp;        log.debug(&quot;Listando atributos para jogo ID: {}&quot;, jogoId);</b>
+<b class="fc">&nbsp;        return repository.findByJogoIdOrderByOrdemExibicao(jogoId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    protected void validarAntesCriar(AtributoConfig configuracao) {
+<b class="fc">&nbsp;        validateUniqueNome(configuracao.getNome(), configuracao.getJogo().getId());</b>
+<b class="fc">&nbsp;        siglaValidationService.validarSiglaDisponivel(</b>
+<b class="fc">&nbsp;            configuracao.getAbreviacao(),</b>
+<b class="fc">&nbsp;            configuracao.getJogo().getId(),</b>
+&nbsp;            null,
+&nbsp;            TipoSigla.ATRIBUTO
+&nbsp;        );
+<b class="fc">&nbsp;        validarFormulaImpeto(configuracao.getFormulaImpeto());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    protected void validarAntesAtualizar(AtributoConfig configuracaoExistente, AtributoConfig configuracaoAtualizada) {
+<b class="pc">&nbsp;        if (!configuracaoExistente.getNome().equalsIgnoreCase(configuracaoAtualizada.getNome())) {</b>
+<b class="nc">&nbsp;            validateUniqueNome(configuracaoAtualizada.getNome(), configuracaoExistente.getJogo().getId());</b>
+&nbsp;        }
+<b class="fc">&nbsp;        String abreviacaoNova = configuracaoAtualizada.getAbreviacao();</b>
+<b class="pc">&nbsp;        if (abreviacaoNova != null &amp;&amp; !abreviacaoNova.equalsIgnoreCase(configuracaoExistente.getAbreviacao())) {</b>
+<b class="nc">&nbsp;            siglaValidationService.validarSiglaDisponivel(</b>
+&nbsp;                abreviacaoNova,
+<b class="nc">&nbsp;                configuracaoExistente.getJogo().getId(),</b>
+<b class="nc">&nbsp;                configuracaoExistente.getId(),</b>
+&nbsp;                TipoSigla.ATRIBUTO
+&nbsp;            );
+&nbsp;        }
+<b class="fc">&nbsp;        validarFormulaImpeto(configuracaoAtualizada.getFormulaImpeto());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    protected void atualizarCampos(AtributoConfig existente, AtributoConfig atualizado) {
+<b class="fc">&nbsp;        existente.setNome(atualizado.getNome());</b>
+<b class="fc">&nbsp;        existente.setAbreviacao(atualizado.getAbreviacao());</b>
+<b class="fc">&nbsp;        existente.setDescricao(atualizado.getDescricao());</b>
+<b class="fc">&nbsp;        existente.setOrdemExibicao(atualizado.getOrdemExibicao());</b>
+<b class="fc">&nbsp;        existente.setFormulaImpeto(atualizado.getFormulaImpeto());</b>
+<b class="fc">&nbsp;        existente.setDescricaoImpeto(atualizado.getDescricaoImpeto());</b>
+<b class="fc">&nbsp;        existente.setValorMinimo(atualizado.getValorMinimo());</b>
+<b class="fc">&nbsp;        existente.setValorMaximo(atualizado.getValorMaximo());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void validarFormulaImpeto(String formula) {
+<b class="pc">&nbsp;        if (formula == null || formula.isBlank()) return;</b>
+<b class="fc">&nbsp;        FormulaValidationResult result = formulaEvaluatorService.validarFormula(formula, Set.of(&quot;total&quot;));</b>
+<b class="pc">&nbsp;        if (!result.valid()) {</b>
+<b class="nc">&nbsp;            String msg = result.erroSintaxe() != null</b>
+<b class="nc">&nbsp;                ? ValidationMessages.AtributoConfig.FORMULA_IMPETO_SINTAXE_INVALIDA + &quot;: &quot; + result.erroSintaxe()</b>
+&nbsp;                : ValidationMessages.AtributoConfig.FORMULA_IMPETO_VARIAVEIS_INVALIDAS
+<b class="nc">&nbsp;                    .formatted(String.join(&quot;, &quot;, result.variaveisInvalidas()));</b>
+<b class="nc">&nbsp;            throw new ValidationException(msg);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Valida se já existe um atributo com o mesmo nome no jogo.
+&nbsp;     *
+&nbsp;     * @param nome Nome do atributo
+&nbsp;     * @param jogoId ID do jogo
+&nbsp;     * @throws ConflictException se nome já existe
+&nbsp;     */
+&nbsp;    private void validateUniqueNome(String nome, Long jogoId) {
+<b class="fc">&nbsp;        if (repository.existsByJogoIdAndNomeIgnoreCase(jogoId, nome)) {</b>
+<b class="fc">&nbsp;            throw new ConflictException(&quot;Já existe um atributo com o nome &#39;&quot; + nome + &quot;&#39; neste jogo&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-03-09 20:13</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,243 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > BonusConfiguracaoService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.com.hydroom.rpg.fichacontrolador.service.configuracao</a>
+</div>
+
+<h1>Coverage Summary for Class: BonusConfiguracaoService (br.com.hydroom.rpg.fichacontrolador.service.configuracao)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BonusConfiguracaoService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    44,4%
+  </span>
+  <span class="absValue">
+    (8/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    73,5%
+  </span>
+  <span class="absValue">
+    (25/34)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">BonusConfiguracaoService$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    44,4%
+  </span>
+  <span class="absValue">
+    (8/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    73,5%
+  </span>
+  <span class="absValue">
+    (25/34)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package br.com.hydroom.rpg.fichacontrolador.service.configuracao;
+&nbsp;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.constants.ValidationMessages;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.FormulaValidationResult;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.exception.ConflictException;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.exception.ValidationException;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.model.BonusConfig;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.repository.BonusConfigRepository;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.repository.ConfiguracaoAtributoRepository;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.service.FormulaEvaluatorService;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.service.configuracao.SiglaValidationService.TipoSigla;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;import java.util.HashSet;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Set;
+&nbsp;
+&nbsp;/**
+&nbsp; * Service para gerenciamento de configurações de Bônus.
+&nbsp; *
+&nbsp; * &lt;p&gt;Bônus são modificadores aplicados aos atributos e cálculos do personagem&lt;/p&gt;
+&nbsp; *
+&nbsp; * @author Ficha Controlador Team
+&nbsp; * @since 1.0
+&nbsp; */
+&nbsp;@Service
+&nbsp;@Transactional(readOnly = true)
+<b class="fc">&nbsp;@Slf4j</b>
+&nbsp;public class BonusConfiguracaoService extends AbstractConfiguracaoService&lt;BonusConfig, BonusConfigRepository&gt; {
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private SiglaValidationService siglaValidationService;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private FormulaEvaluatorService formulaEvaluatorService;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private ConfiguracaoAtributoRepository atributoRepository;
+&nbsp;
+&nbsp;    public BonusConfiguracaoService(BonusConfigRepository repository) {
+<b class="fc">&nbsp;        super(repository, &quot;Bônus&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;BonusConfig&gt; listar(Long jogoId) {
+<b class="fc">&nbsp;        log.debug(&quot;Listando bônus para jogo ID: {}&quot;, jogoId);</b>
+<b class="fc">&nbsp;        return repository.findByJogoIdOrderByOrdemExibicao(jogoId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    protected void validarAntesCriar(BonusConfig configuracao) {
+<b class="fc">&nbsp;        if (repository.existsByJogoIdAndNomeIgnoreCase(configuracao.getJogo().getId(), configuracao.getNome())) {</b>
+<b class="fc">&nbsp;            throw new ConflictException(&quot;Já existe um bônus com o nome &#39;&quot; + configuracao.getNome() + &quot;&#39; neste jogo&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        siglaValidationService.validarSiglaDisponivel(</b>
+<b class="fc">&nbsp;            configuracao.getSigla(),</b>
+<b class="fc">&nbsp;            configuracao.getJogo().getId(),</b>
+&nbsp;            null,
+&nbsp;            TipoSigla.BONUS
+&nbsp;        );
+<b class="fc">&nbsp;        validarFormulaBase(configuracao.getFormulaBase(), configuracao.getJogo().getId());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    protected void validarAntesAtualizar(BonusConfig configuracaoExistente, BonusConfig configuracaoAtualizada) {
+<b class="pc">&nbsp;        if (!configuracaoExistente.getNome().equalsIgnoreCase(configuracaoAtualizada.getNome())) {</b>
+<b class="nc">&nbsp;            if (repository.existsByJogoIdAndNomeIgnoreCase(configuracaoExistente.getJogo().getId(), configuracaoAtualizada.getNome())) {</b>
+<b class="nc">&nbsp;                throw new ConflictException(&quot;Já existe um bônus com o nome &#39;&quot; + configuracaoAtualizada.getNome() + &quot;&#39; neste jogo&quot;);</b>
+&nbsp;            }
+&nbsp;        }
+<b class="fc">&nbsp;        String siglaNova = configuracaoAtualizada.getSigla();</b>
+<b class="pc">&nbsp;        if (siglaNova != null &amp;&amp; !siglaNova.equalsIgnoreCase(configuracaoExistente.getSigla())) {</b>
+<b class="nc">&nbsp;            siglaValidationService.validarSiglaDisponivel(</b>
+&nbsp;                siglaNova,
+<b class="nc">&nbsp;                configuracaoExistente.getJogo().getId(),</b>
+<b class="nc">&nbsp;                configuracaoExistente.getId(),</b>
+&nbsp;                TipoSigla.BONUS
+&nbsp;            );
+&nbsp;        }
+<b class="fc">&nbsp;        validarFormulaBase(configuracaoAtualizada.getFormulaBase(), configuracaoExistente.getJogo().getId());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void validarFormulaBase(String formula, Long jogoId) {
+<b class="pc">&nbsp;        if (formula == null || formula.isBlank()) return;</b>
+<b class="fc">&nbsp;        List&lt;String&gt; siglasAtributos = atributoRepository.findAbreviacoesByJogoId(jogoId);</b>
+<b class="fc">&nbsp;        Set&lt;String&gt; permitidas = new HashSet&lt;&gt;(siglasAtributos);</b>
+<b class="fc">&nbsp;        permitidas.addAll(Set.of(&quot;nivel&quot;, &quot;base&quot;));</b>
+<b class="fc">&nbsp;        FormulaValidationResult result = formulaEvaluatorService.validarFormula(formula, permitidas);</b>
+<b class="pc">&nbsp;        if (!result.valid()) {</b>
+<b class="nc">&nbsp;            String msg = result.erroSintaxe() != null</b>
+<b class="nc">&nbsp;                ? ValidationMessages.BonusConfig.FORMULA_BASE_SINTAXE_INVALIDA + &quot;: &quot; + result.erroSintaxe()</b>
+&nbsp;                : ValidationMessages.BonusConfig.FORMULA_BASE_VARIAVEIS_INVALIDAS
+<b class="nc">&nbsp;                    .formatted(String.join(&quot;, &quot;, result.variaveisInvalidas()));</b>
+<b class="nc">&nbsp;            throw new ValidationException(msg);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    protected void atualizarCampos(BonusConfig existente, BonusConfig atualizado) {
+<b class="fc">&nbsp;        existente.setNome(atualizado.getNome());</b>
+<b class="fc">&nbsp;        existente.setSigla(atualizado.getSigla());</b>
+<b class="fc">&nbsp;        existente.setDescricao(atualizado.getDescricao());</b>
+<b class="fc">&nbsp;        existente.setFormulaBase(atualizado.getFormulaBase());</b>
+<b class="fc">&nbsp;        existente.setOrdemExibicao(atualizado.getOrdemExibicao());</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-03-09 20:13</div>
+</div>
+</body>
+</html>

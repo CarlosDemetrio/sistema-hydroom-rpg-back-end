@@ -1,0 +1,120 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > JogoMapper</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.com.hydroom.rpg.fichacontrolador.mapper</a>
+</div>
+
+<h1>Coverage Summary for Class: JogoMapper (br.com.hydroom.rpg.fichacontrolador.mapper)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">JogoMapper</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package br.com.hydroom.rpg.fichacontrolador.mapper;
+&nbsp;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.request.CriarJogoRequest;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.response.JogoResponse;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.response.JogoResumoResponse;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.model.Jogo;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.model.JogoParticipante;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.model.enums.RoleJogo;
+&nbsp;import org.mapstruct.Mapper;
+&nbsp;import org.mapstruct.Mapping;
+&nbsp;import org.mapstruct.MappingConstants;
+&nbsp;
+&nbsp;/**
+&nbsp; * Mapper para conversão entre Jogo e seus DTOs.
+&nbsp; *
+&nbsp; * @author Carlos Demétrio
+&nbsp; */
+&nbsp;@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+&nbsp;public interface JogoMapper {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Converte CriarJogoRequest para Jogo.
+&nbsp;     */
+&nbsp;    @Mapping(target = &quot;id&quot;, ignore = true)
+&nbsp;    @Mapping(target = &quot;jogoAtivo&quot;, constant = &quot;false&quot;)
+&nbsp;    @Mapping(target = &quot;dataFim&quot;, ignore = true)
+&nbsp;    @Mapping(target = &quot;participantes&quot;, ignore = true)
+&nbsp;    @Mapping(target = &quot;imagemUrl&quot;, ignore = true)
+&nbsp;    Jogo toEntity(CriarJogoRequest request);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Converte Jogo para JogoResponse.
+&nbsp;     *
+&nbsp;     * @param jogo Entidade Jogo
+&nbsp;     * @return JogoResponse com dados completos
+&nbsp;     */
+&nbsp;    @Mapping(target = &quot;ativo&quot;, expression = &quot;java(jogo.isActive())&quot;)
+&nbsp;    @Mapping(target = &quot;meuRole&quot;, ignore = true)
+&nbsp;    @Mapping(target = &quot;totalParticipantes&quot;, expression = &quot;java((int) (jogo.getParticipantes() == null ? 0 : jogo.getParticipantes().stream().filter(p -&gt; p.isActive()).count()))&quot;)
+&nbsp;    JogoResponse toResponse(Jogo jogo);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Converte Jogo para JogoResumoResponse.
+&nbsp;     *
+&nbsp;     * @param jogo Entidade Jogo
+&nbsp;     * @return JogoResumoResponse para listagens
+&nbsp;     */
+&nbsp;    @Mapping(target = &quot;ativo&quot;, expression = &quot;java(jogo.isActive())&quot;)
+&nbsp;    @Mapping(target = &quot;meuRole&quot;, ignore = true)
+&nbsp;    @Mapping(target = &quot;totalParticipantes&quot;, expression = &quot;java((int) (jogo.getParticipantes() == null ? 0 : jogo.getParticipantes().stream().filter(p -&gt; p.isActive()).count()))&quot;)
+&nbsp;    JogoResumoResponse toResumoResponse(Jogo jogo);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-03-09 20:13</div>
+</div>
+</body>
+</html>

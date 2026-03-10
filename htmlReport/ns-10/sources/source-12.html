@@ -1,0 +1,128 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > BaseConfiguracaoService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.com.hydroom.rpg.fichacontrolador.service.configuracao</a>
+</div>
+
+<h1>Coverage Summary for Class: BaseConfiguracaoService (br.com.hydroom.rpg.fichacontrolador.service.configuracao)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">BaseConfiguracaoService</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package br.com.hydroom.rpg.fichacontrolador.service.configuracao;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * Interface base para serviços de configuração do sistema RPG.
+&nbsp; *
+&nbsp; * &lt;p&gt;Define operações CRUD padrão para todas as configurações do jogo.
+&nbsp; * Todas as configurações são POR JOGO - cada mestre pode ter suas próprias configs.&lt;/p&gt;
+&nbsp; *
+&nbsp; * @param &lt;T&gt; Tipo da entidade de configuração
+&nbsp; * @author Ficha Controlador Team
+&nbsp; * @since 1.0
+&nbsp; */
+&nbsp;public interface BaseConfiguracaoService&lt;T&gt; {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Lista todas as configurações de um jogo específico.
+&nbsp;     *
+&nbsp;     * @param jogoId ID do jogo
+&nbsp;     * @return Lista de configurações ordenadas
+&nbsp;     */
+&nbsp;    List&lt;T&gt; listar(Long jogoId);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Busca uma configuração específica por ID.
+&nbsp;     *
+&nbsp;     * @param id ID da configuração
+&nbsp;     * @return Configuração encontrada
+&nbsp;     * @throws br.com.hydroom.rpg.fichacontrolador.exception.ResourceNotFoundException se não encontrada
+&nbsp;     */
+&nbsp;    T buscarPorId(Long id);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Cria uma nova configuração.
+&nbsp;     *
+&nbsp;     * @param configuracao Configuração a ser criada
+&nbsp;     * @return Configuração criada
+&nbsp;     * @throws br.com.hydroom.rpg.fichacontrolador.exception.ConflictException se houver conflito
+&nbsp;     */
+&nbsp;    T criar(T configuracao);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Atualiza uma configuração existente.
+&nbsp;     *
+&nbsp;     * @param id ID da configuração a ser atualizada
+&nbsp;     * @param configuracao Dados atualizados
+&nbsp;     * @return Configuração atualizada
+&nbsp;     * @throws br.com.hydroom.rpg.fichacontrolador.exception.ResourceNotFoundException se não encontrada
+&nbsp;     */
+&nbsp;    T atualizar(Long id, T configuracao);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Deleta uma configuração (soft delete).
+&nbsp;     *
+&nbsp;     * @param id ID da configuração a ser deletada
+&nbsp;     * @throws br.com.hydroom.rpg.fichacontrolador.exception.ResourceNotFoundException se não encontrada
+&nbsp;     */
+&nbsp;    void deletar(Long id);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-03-09 20:13</div>
+</div>
+</body>
+</html>

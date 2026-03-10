@@ -1,0 +1,580 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ValidationMessages</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.com.hydroom.rpg.fichacontrolador.constants</a>
+</div>
+
+<h1>Coverage Summary for Class: ValidationMessages (br.com.hydroom.rpg.fichacontrolador.constants)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ValidationMessages</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ValidationMessages$AtributoConfig</td>
+  </tr>
+  <tr>
+    <td class="name">ValidationMessages$Atributos</td>
+  </tr>
+  <tr>
+    <td class="name">ValidationMessages$BonusConfig</td>
+  </tr>
+  <tr>
+    <td class="name">ValidationMessages$ClasseAptidaoBonus</td>
+  </tr>
+  <tr>
+    <td class="name">ValidationMessages$ClasseBonus</td>
+  </tr>
+  <tr>
+    <td class="name">ValidationMessages$ClassePersonagem</td>
+  </tr>
+  <tr>
+    <td class="name">ValidationMessages$Erro</td>
+  </tr>
+  <tr>
+    <td class="name">ValidationMessages$Ficha</td>
+  </tr>
+  <tr>
+    <td class="name">ValidationMessages$FichaAmeaca</td>
+  </tr>
+  <tr>
+    <td class="name">ValidationMessages$FichaAptidao</td>
+  </tr>
+  <tr>
+    <td class="name">ValidationMessages$FichaAtributo</td>
+  </tr>
+  <tr>
+    <td class="name">ValidationMessages$FichaBonus</td>
+  </tr>
+  <tr>
+    <td class="name">ValidationMessages$FichaEssencia</td>
+  </tr>
+  <tr>
+    <td class="name">ValidationMessages$FichaProspeccao</td>
+  </tr>
+  <tr>
+    <td class="name">ValidationMessages$FichaVantagem</td>
+  </tr>
+  <tr>
+    <td class="name">ValidationMessages$FichaVida</td>
+  </tr>
+  <tr>
+    <td class="name">ValidationMessages$FichaVidaMembro</td>
+  </tr>
+  <tr>
+    <td class="name">ValidationMessages$Formato</td>
+  </tr>
+  <tr>
+    <td class="name">ValidationMessages$Jogo</td>
+  </tr>
+  <tr>
+    <td class="name">ValidationMessages$Limites</td>
+  </tr>
+  <tr>
+    <td class="name">ValidationMessages$Raca</td>
+  </tr>
+  <tr>
+    <td class="name">ValidationMessages$RacaBonusAtributo</td>
+  </tr>
+  <tr>
+    <td class="name">ValidationMessages$RacaClassePermitida</td>
+  </tr>
+  <tr>
+    <td class="name">ValidationMessages$Seguranca</td>
+  </tr>
+  <tr>
+    <td class="name">ValidationMessages$Sigla</td>
+  </tr>
+  <tr>
+    <td class="name">ValidationMessages$Usuario</td>
+  </tr>
+  <tr>
+    <td class="name">ValidationMessages$VantagemConfig</td>
+  </tr>
+  <tr>
+    <td class="name">ValidationMessages$VantagemPreRequisito</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package br.com.hydroom.rpg.fichacontrolador.constants;
+&nbsp;
+&nbsp;/**
+&nbsp; * Mensagens de validação padronizadas para uso em todo o sistema.
+&nbsp; * Centralizadas para facilitar manutenção e internacionalização futura.
+&nbsp; */
+&nbsp;public final class ValidationMessages {
+&nbsp;
+<b class="nc">&nbsp;    private ValidationMessages() {</b>
+<b class="nc">&nbsp;        throw new UnsupportedOperationException(&quot;Classe de constantes não pode ser instanciada&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== MENSAGENS GENÉRICAS =====
+&nbsp;    public static final String CAMPO_OBRIGATORIO = &quot;Este campo é obrigatório&quot;;
+&nbsp;    public static final String CAMPO_INVALIDO = &quot;Campo inválido&quot;;
+&nbsp;
+&nbsp;    // ===== USUÁRIO =====
+&nbsp;    public static final class Usuario {
+&nbsp;        public static final String EMAIL_OBRIGATORIO = &quot;Email é obrigatório&quot;;
+&nbsp;        public static final String EMAIL_INVALIDO = &quot;Email deve ser válido&quot;;
+&nbsp;        public static final String EMAIL_TAMANHO = &quot;Email deve ter no máximo 255 caracteres&quot;;
+&nbsp;
+&nbsp;        public static final String NOME_OBRIGATORIO = &quot;Nome é obrigatório&quot;;
+&nbsp;        public static final String NOME_TAMANHO = &quot;Nome deve ter entre 2 e 100 caracteres&quot;;
+&nbsp;
+&nbsp;        public static final String IMAGEM_URL_TAMANHO = &quot;URL da imagem deve ter no máximo 500 caracteres&quot;;
+&nbsp;
+&nbsp;        public static final String PROVIDER_OBRIGATORIO = &quot;Provider é obrigatório&quot;;
+&nbsp;        public static final String PROVIDER_TAMANHO = &quot;Provider deve ter no máximo 50 caracteres&quot;;
+&nbsp;
+&nbsp;        public static final String PROVIDER_ID_OBRIGATORIO = &quot;Provider ID é obrigatório&quot;;
+&nbsp;        public static final String PROVIDER_ID_TAMANHO = &quot;Provider ID deve ter no máximo 255 caracteres&quot;;
+&nbsp;
+&nbsp;        private Usuario() {}
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== FICHA =====
+&nbsp;    public static final class Ficha {
+&nbsp;        public static final String JOGO_OBRIGATORIO = &quot;Jogo é obrigatório&quot;;
+&nbsp;        public static final String USUARIO_OBRIGATORIO = &quot;Usuário é obrigatório&quot;;
+&nbsp;
+&nbsp;        public static final String NOME_OBRIGATORIO = &quot;Nome do personagem é obrigatório&quot;;
+&nbsp;        public static final String NOME_TAMANHO = &quot;Nome deve ter entre 3 e 100 caracteres&quot;;
+&nbsp;
+&nbsp;        public static final String JOGADOR_NOME_TAMANHO = &quot;Nome do jogador deve ter no máximo 100 caracteres&quot;;
+&nbsp;        public static final String TITULO_TAMANHO = &quot;Título heroico deve ter no máximo 200 caracteres&quot;;
+&nbsp;        public static final String INSOLITUS_TAMANHO = &quot;Insolitus deve ter no máximo 200 caracteres&quot;;
+&nbsp;        public static final String ORIGEM_TAMANHO = &quot;Origem deve ter no máximo 200 caracteres&quot;;
+&nbsp;        public static final String GENERO_TAMANHO = &quot;Gênero deve ter no máximo 20 caracteres&quot;;
+&nbsp;        public static final String ARQUETIPO_TAMANHO = &quot;Arquétipo de referência deve ter no máximo 200 caracteres&quot;;
+&nbsp;
+&nbsp;        public static final String IDADE_MINIMA = &quot;Idade mínima é 0&quot;;
+&nbsp;        public static final String IDADE_MAXIMA = &quot;Idade máxima é 9999&quot;;
+&nbsp;        public static final String ALTURA_MINIMA = &quot;Altura mínima é 0 cm&quot;;
+&nbsp;        public static final String ALTURA_MAXIMA = &quot;Altura máxima é 999 cm&quot;;
+&nbsp;        public static final String PESO_MINIMO = &quot;Peso mínimo é 0 kg&quot;;
+&nbsp;        public static final String PESO_MAXIMO = &quot;Peso máximo é 999.99 kg&quot;;
+&nbsp;        public static final String COR_CABELO_TAMANHO = &quot;Cor do cabelo deve ter no máximo 50 caracteres&quot;;
+&nbsp;        public static final String TAMANHO_CABELO_TAMANHO = &quot;Tamanho do cabelo deve ter no máximo 50 caracteres&quot;;
+&nbsp;        public static final String COR_OLHOS_TAMANHO = &quot;Cor dos olhos deve ter no máximo 50 caracteres&quot;;
+&nbsp;
+&nbsp;        public static final String NIVEL_OBRIGATORIO = &quot;Nível é obrigatório&quot;;
+&nbsp;        public static final String NIVEL_MINIMO = &quot;Nível mínimo é 1&quot;;
+&nbsp;        public static final String NIVEL_MAXIMO = &quot;Nível máximo é 99&quot;;
+&nbsp;
+&nbsp;        public static final String EXPERIENCIA_OBRIGATORIA = &quot;Experiência é obrigatória&quot;;
+&nbsp;        public static final String EXPERIENCIA_MINIMA = &quot;Experiência mínima é 0&quot;;
+&nbsp;
+&nbsp;        public static final String RENASCIMENTOS_MINIMO = &quot;Renascimentos mínimo é 0&quot;;
+&nbsp;
+&nbsp;        private Ficha() {}
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== ATRIBUTOS RPG =====
+&nbsp;    public static final class Atributos {
+&nbsp;        public static final String FORCA_MINIMO = &quot;Força mínima é 1&quot;;
+&nbsp;        public static final String FORCA_MAXIMO = &quot;Força máxima é 20&quot;;
+&nbsp;
+&nbsp;        public static final String DESTREZA_MINIMO = &quot;Destreza mínima é 1&quot;;
+&nbsp;        public static final String DESTREZA_MAXIMO = &quot;Destreza máxima é 20&quot;;
+&nbsp;
+&nbsp;        public static final String CONSTITUICAO_MINIMO = &quot;Constituição mínima é 1&quot;;
+&nbsp;        public static final String CONSTITUICAO_MAXIMO = &quot;Constituição máxima é 20&quot;;
+&nbsp;
+&nbsp;        public static final String INTELIGENCIA_MINIMO = &quot;Inteligência mínima é 1&quot;;
+&nbsp;        public static final String INTELIGENCIA_MAXIMO = &quot;Inteligência máxima é 20&quot;;
+&nbsp;
+&nbsp;        public static final String SABEDORIA_MINIMO = &quot;Sabedoria mínima é 1&quot;;
+&nbsp;        public static final String SABEDORIA_MAXIMO = &quot;Sabedoria máxima é 20&quot;;
+&nbsp;
+&nbsp;        public static final String CARISMA_MINIMO = &quot;Carisma mínimo é 1&quot;;
+&nbsp;        public static final String CARISMA_MAXIMO = &quot;Carisma máximo é 20&quot;;
+&nbsp;
+&nbsp;        public static final String ATRIBUTO_FORA_RANGE = &quot;%s deve estar entre 1 e 20, valor recebido: %d&quot;;
+&nbsp;
+&nbsp;        private Atributos() {}
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== JOGO =====
+&nbsp;    public static final class Jogo {
+&nbsp;        public static final String NOME_OBRIGATORIO = &quot;Nome do jogo é obrigatório&quot;;
+&nbsp;        public static final String NOME_TAMANHO = &quot;Nome deve ter entre 3 e 200 caracteres&quot;;
+&nbsp;
+&nbsp;        public static final String DESCRICAO_TAMANHO = &quot;Descrição deve ter no máximo 5000 caracteres&quot;;
+&nbsp;
+&nbsp;        public static final String MESTRE_OBRIGATORIO = &quot;Mestre é obrigatório&quot;;
+&nbsp;
+&nbsp;        public static final String IMAGEM_URL_TAMANHO = &quot;URL da imagem deve ter no máximo 2000 caracteres&quot;;
+&nbsp;
+&nbsp;        private Jogo() {}
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== CLASSE PERSONAGEM =====
+&nbsp;    public static final class ClassePersonagem {
+&nbsp;        public static final String NOME_OBRIGATORIO = &quot;Nome da classe é obrigatório&quot;;
+&nbsp;        public static final String NOME_TAMANHO = &quot;Nome deve ter entre 2 e 100 caracteres&quot;;
+&nbsp;
+&nbsp;        public static final String DESCRICAO_TAMANHO = &quot;Descrição deve ter no máximo 2000 caracteres&quot;;
+&nbsp;
+&nbsp;        public static final String JOGO_OBRIGATORIO = &quot;Jogo é obrigatório&quot;;
+&nbsp;
+&nbsp;        private ClassePersonagem() {}
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== RAÇA =====
+&nbsp;    public static final class Raca {
+&nbsp;        public static final String NOME_OBRIGATORIO = &quot;Nome da raça é obrigatório&quot;;
+&nbsp;        public static final String NOME_TAMANHO = &quot;Nome deve ter entre 2 e 100 caracteres&quot;;
+&nbsp;
+&nbsp;        public static final String DESCRICAO_TAMANHO = &quot;Descrição deve ter no máximo 2000 caracteres&quot;;
+&nbsp;
+&nbsp;        public static final String JOGO_OBRIGATORIO = &quot;Jogo é obrigatório&quot;;
+&nbsp;
+&nbsp;        private Raca() {}
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== FICHA ATRIBUTO =====
+&nbsp;    public static final class FichaAtributo {
+&nbsp;        public static final String FICHA_OBRIGATORIA = &quot;Ficha é obrigatória&quot;;
+&nbsp;        public static final String ATRIBUTO_CONFIG_OBRIGATORIO = &quot;Configuração de atributo é obrigatória&quot;;
+&nbsp;
+&nbsp;        private FichaAtributo() {}
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== FICHA APTIDAO =====
+&nbsp;    public static final class FichaAptidao {
+&nbsp;        public static final String FICHA_OBRIGATORIA = &quot;Ficha é obrigatória&quot;;
+&nbsp;        public static final String APTIDAO_CONFIG_OBRIGATORIA = &quot;Configuração de aptidão é obrigatória&quot;;
+&nbsp;
+&nbsp;        private FichaAptidao() {}
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== FICHA BONUS =====
+&nbsp;    public static final class FichaBonus {
+&nbsp;        public static final String FICHA_OBRIGATORIA = &quot;Ficha é obrigatória&quot;;
+&nbsp;        public static final String BONUS_CONFIG_OBRIGATORIO = &quot;Configuração de bônus é obrigatória&quot;;
+&nbsp;
+&nbsp;        private FichaBonus() {}
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== FICHA VIDA =====
+&nbsp;    public static final class FichaVida {
+&nbsp;        public static final String FICHA_OBRIGATORIA = &quot;Ficha é obrigatória&quot;;
+&nbsp;
+&nbsp;        private FichaVida() {}
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== FICHA VIDA MEMBRO =====
+&nbsp;    public static final class FichaVidaMembro {
+&nbsp;        public static final String FICHA_OBRIGATORIA = &quot;Ficha é obrigatória&quot;;
+&nbsp;        public static final String MEMBRO_CONFIG_OBRIGATORIO = &quot;Configuração de membro do corpo é obrigatória&quot;;
+&nbsp;        public static final String DANO_MINIMO = &quot;Dano recebido não pode ser negativo&quot;;
+&nbsp;
+&nbsp;        private FichaVidaMembro() {}
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== FICHA ESSENCIA =====
+&nbsp;    public static final class FichaEssencia {
+&nbsp;        public static final String FICHA_OBRIGATORIA = &quot;Ficha é obrigatória&quot;;
+&nbsp;        public static final String GASTO_MINIMO = &quot;Gasto de essência não pode ser negativo&quot;;
+&nbsp;
+&nbsp;        private FichaEssencia() {}
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== FICHA AMEACA =====
+&nbsp;    public static final class FichaAmeaca {
+&nbsp;        public static final String FICHA_OBRIGATORIA = &quot;Ficha é obrigatória&quot;;
+&nbsp;        public static final String ITENS_MINIMO = &quot;Valor de itens não pode ser negativo&quot;;
+&nbsp;        public static final String TITULOS_MINIMO = &quot;Valor de títulos não pode ser negativo&quot;;
+&nbsp;
+&nbsp;        private FichaAmeaca() {}
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== FICHA VANTAGEM =====
+&nbsp;    public static final class FichaVantagem {
+&nbsp;        public static final String FICHA_OBRIGATORIA = &quot;Ficha é obrigatória&quot;;
+&nbsp;        public static final String VANTAGEM_CONFIG_OBRIGATORIA = &quot;Configuração de vantagem é obrigatória&quot;;
+&nbsp;        public static final String NIVEL_MINIMO = &quot;Nível da vantagem deve ser no mínimo 1&quot;;
+&nbsp;        public static final String CUSTO_MINIMO = &quot;Custo pago não pode ser negativo&quot;;
+&nbsp;
+&nbsp;        private FichaVantagem() {}
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== FICHA PROSPECCAO =====
+&nbsp;    public static final class FichaProspeccao {
+&nbsp;        public static final String FICHA_OBRIGATORIA = &quot;Ficha é obrigatória&quot;;
+&nbsp;        public static final String DADO_CONFIG_OBRIGATORIO = &quot;Configuração de dado de prospecção é obrigatória&quot;;
+&nbsp;        public static final String QUANTIDADE_MINIMA = &quot;Quantidade não pode ser negativa&quot;;
+&nbsp;
+&nbsp;        private FichaProspeccao() {}
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== AUTENTICAÇÃO E SEGURANÇA =====
+&nbsp;    public static final class Seguranca {
+&nbsp;        public static final String NAO_AUTENTICADO = &quot;Usuário não autenticado&quot;;
+&nbsp;        public static final String ACESSO_NEGADO = &quot;Acesso negado&quot;;
+&nbsp;        public static final String SESSAO_EXPIRADA = &quot;Sessão expirada&quot;;
+&nbsp;        public static final String TOKEN_INVALIDO = &quot;Token inválido&quot;;
+&nbsp;        public static final String PERMISSAO_INSUFICIENTE = &quot;Você não tem permissão para realizar esta ação&quot;;
+&nbsp;        public static final String APENAS_MESTRE = &quot;Apenas mestres podem realizar esta ação&quot;;
+&nbsp;
+&nbsp;        private Seguranca() {}
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== ATRIBUTO CONFIG =====
+&nbsp;    public static final class AtributoConfig {
+&nbsp;        public static final String FORMULA_IMPETO_SINTAXE_INVALIDA = &quot;Fórmula de ímpeto com sintaxe inválida&quot;;
+&nbsp;        public static final String FORMULA_IMPETO_VARIAVEIS_INVALIDAS =
+&nbsp;            &quot;Fórmula de ímpeto usa variáveis não permitidas: %s. Permitida: total&quot;;
+&nbsp;
+&nbsp;        private AtributoConfig() {}
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== BONUS CONFIG =====
+&nbsp;    public static final class BonusConfig {
+&nbsp;        public static final String FORMULA_BASE_SINTAXE_INVALIDA = &quot;Fórmula base com sintaxe inválida&quot;;
+&nbsp;        public static final String FORMULA_BASE_VARIAVEIS_INVALIDAS =
+&nbsp;            &quot;Fórmula base usa variáveis não registradas no jogo: %s&quot;;
+&nbsp;
+&nbsp;        private BonusConfig() {}
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== VANTAGEM CONFIG =====
+&nbsp;    public static final class VantagemConfig {
+&nbsp;        public static final String FORMULA_CUSTO_SINTAXE_INVALIDA = &quot;Fórmula de custo com sintaxe inválida&quot;;
+&nbsp;        public static final String FORMULA_CUSTO_VARIAVEIS_INVALIDAS =
+&nbsp;            &quot;Fórmula de custo usa variáveis inválidas: %s. Permitidas: custo_base, nivel_vantagem&quot;;
+&nbsp;
+&nbsp;        private VantagemConfig() {}
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== CLASSE BONUS =====
+&nbsp;    public static final class ClasseBonus {
+&nbsp;        public static final String JA_EXISTE =
+&nbsp;            &quot;Este bônus já está registrado para esta classe.&quot;;
+&nbsp;        public static final String JOGO_DIFERENTE =
+&nbsp;            &quot;O bônus deve pertencer ao mesmo jogo da classe.&quot;;
+&nbsp;
+&nbsp;        private ClasseBonus() {}
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== CLASSE APTIDAO BONUS =====
+&nbsp;    public static final class ClasseAptidaoBonus {
+&nbsp;        public static final String JA_EXISTE =
+&nbsp;            &quot;Este bônus de aptidão já está registrado para esta classe.&quot;;
+&nbsp;        public static final String JOGO_DIFERENTE =
+&nbsp;            &quot;A aptidão deve pertencer ao mesmo jogo da classe.&quot;;
+&nbsp;
+&nbsp;        private ClasseAptidaoBonus() {}
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== RACA CLASSE PERMITIDA =====
+&nbsp;    public static final class RacaClassePermitida {
+&nbsp;        public static final String JA_EXISTE =
+&nbsp;            &quot;Esta classe já é permitida para esta raça.&quot;;
+&nbsp;        public static final String JOGO_DIFERENTE =
+&nbsp;            &quot;A classe deve pertencer ao mesmo jogo da raça.&quot;;
+&nbsp;
+&nbsp;        private RacaClassePermitida() {}
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== RACA BONUS ATRIBUTO =====
+&nbsp;    public static final class RacaBonusAtributo {
+&nbsp;        public static final String JA_EXISTE =
+&nbsp;            &quot;Este bônus de atributo já está registrado para esta raça.&quot;;
+&nbsp;        public static final String JOGO_DIFERENTE =
+&nbsp;            &quot;O atributo deve pertencer ao mesmo jogo da raça.&quot;;
+&nbsp;
+&nbsp;        private RacaBonusAtributo() {}
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== VANTAGEM PRÉ-REQUISITO =====
+&nbsp;    public static final class VantagemPreRequisito {
+&nbsp;        public static final String AUTO_REFERENCIA =
+&nbsp;            &quot;Uma vantagem não pode ser pré-requisito de si mesma.&quot;;
+&nbsp;        public static final String CICLO_DETECTADO =
+&nbsp;            &quot;Adicionar este pré-requisito criaria uma dependência circular entre vantagens.&quot;;
+&nbsp;        public static final String JA_EXISTE =
+&nbsp;            &quot;Este pré-requisito já está registrado para esta vantagem.&quot;;
+&nbsp;        public static final String JOGOS_DIFERENTES =
+&nbsp;            &quot;O pré-requisito deve pertencer ao mesmo jogo da vantagem.&quot;;
+&nbsp;
+&nbsp;        private VantagemPreRequisito() {}
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== SIGLAS =====
+&nbsp;    public static final class Sigla {
+&nbsp;        public static final String SIGLA_JA_EM_USO =
+&nbsp;            &quot;Sigla &#39;%s&#39; já está em uso em %s neste jogo. Siglas devem ser únicas por jogo.&quot;;
+&nbsp;
+&nbsp;        private Sigla() {}
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== ERROS GERAIS =====
+&nbsp;    public static final class Erro {
+&nbsp;        public static final String INTERNO = &quot;Erro interno do servidor&quot;;
+&nbsp;        public static final String NAO_ENCONTRADO = &quot;Recurso não encontrado&quot;;
+&nbsp;        public static final String JA_EXISTE = &quot;Este recurso já existe&quot;;
+&nbsp;        public static final String OPERACAO_INVALIDA = &quot;Operação inválida&quot;;
+&nbsp;        public static final String DADOS_INVALIDOS = &quot;Dados inválidos&quot;;
+&nbsp;        public static final String CONFLITO = &quot;Conflito ao processar requisição&quot;;
+&nbsp;        public static final String INTEGRIDADE_DADOS = &quot;Violação de integridade dos dados&quot;;
+&nbsp;
+&nbsp;        private Erro() {}
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== VALIDAÇÕES DE FORMATO =====
+&nbsp;    public static final class Formato {
+&nbsp;        public static final String EMAIL_REGEX = &quot;^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$&quot;;
+&nbsp;        public static final String NOME_PERSONAGEM_REGEX = &quot;^[a-zA-ZÀ-ÿ0-9\\s&#39;-]+$&quot;;
+&nbsp;        public static final String TELEFONE_REGEX = &quot;^\\+?[1-9]\\d{1,14}$&quot;;
+&nbsp;        public static final String URL_REGEX = &quot;^(https?|ftp)://[^\\s/$.?#].[^\\s]*$&quot;;
+&nbsp;
+&nbsp;        private Formato() {}
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== LIMITES DE TAMANHO =====
+&nbsp;    public static final class Limites {
+&nbsp;        // Usuário
+&nbsp;        public static final int USUARIO_EMAIL_MAX = 255;
+&nbsp;        public static final int USUARIO_NOME_MIN = 2;
+&nbsp;        public static final int USUARIO_NOME_MAX = 100;
+&nbsp;        public static final int USUARIO_IMAGEM_URL_MAX = 500;
+&nbsp;        public static final int USUARIO_PROVIDER_MAX = 50;
+&nbsp;        public static final int USUARIO_PROVIDER_ID_MAX = 255;
+&nbsp;
+&nbsp;        // Ficha
+&nbsp;        public static final int FICHA_NOME_MIN = 3;
+&nbsp;        public static final int FICHA_NOME_MAX = 100;
+&nbsp;        public static final int FICHA_TITULO_MAX = 200;
+&nbsp;        public static final int FICHA_INSOLITUS_MAX = 200;
+&nbsp;        public static final int FICHA_ORIGEM_MAX = 200;
+&nbsp;        public static final int FICHA_GENERO_MAX = 20;
+&nbsp;        public static final int FICHA_ARQUETIPO_MAX = 200;
+&nbsp;        public static final int FICHA_COR_MAX = 50;
+&nbsp;        public static final int FICHA_JOGADOR_NOME_MAX = 100;
+&nbsp;        public static final int FICHA_CLASSE_MAX = 50;
+&nbsp;        public static final int FICHA_RACA_MAX = 50;
+&nbsp;        public static final int FICHA_HISTORIA_MAX = 2000;
+&nbsp;        public static final int FICHA_NIVEL_MIN = 1;
+&nbsp;        public static final int FICHA_NIVEL_MAX = 20;
+&nbsp;
+&nbsp;        // Atributos RPG
+&nbsp;        public static final int ATRIBUTO_MIN = 1;
+&nbsp;        public static final int ATRIBUTO_MAX = 20;
+&nbsp;
+&nbsp;        // Jogo
+&nbsp;        public static final int JOGO_NOME_MIN = 3;
+&nbsp;        public static final int JOGO_NOME_MAX = 200;
+&nbsp;        public static final int JOGO_DESCRICAO_MAX = 5000;
+&nbsp;        public static final int JOGO_IMAGEM_URL_MAX = 2000;
+&nbsp;
+&nbsp;        // Classe Personagem
+&nbsp;        public static final int CLASSE_NOME_MIN = 2;
+&nbsp;        public static final int CLASSE_NOME_MAX = 100;
+&nbsp;        public static final int CLASSE_DESCRICAO_MAX = 2000;
+&nbsp;
+&nbsp;        // Raça
+&nbsp;        public static final int RACA_NOME_MIN = 2;
+&nbsp;        public static final int RACA_NOME_MAX = 100;
+&nbsp;        public static final int RACA_DESCRICAO_MAX = 2000;
+&nbsp;
+&nbsp;        private Limites() {}
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-03-09 20:13</div>
+</div>
+</body>
+</html>

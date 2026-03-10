@@ -1,0 +1,321 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > JogoService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.com.hydroom.rpg.fichacontrolador.service</a>
+</div>
+
+<h1>Coverage Summary for Class: JogoService (br.com.hydroom.rpg.fichacontrolador.service)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">JogoService</td>
+<td class="coverageStat">
+  <span class="percent">
+    85,7%
+  </span>
+  <span class="absValue">
+    (12/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    55,6%
+  </span>
+  <span class="absValue">
+    (10/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    90%
+  </span>
+  <span class="absValue">
+    (63/70)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">JogoService$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    85,7%
+  </span>
+  <span class="absValue">
+    (12/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    55,6%
+  </span>
+  <span class="absValue">
+    (10/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    90%
+  </span>
+  <span class="absValue">
+    (63/70)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package br.com.hydroom.rpg.fichacontrolador.service;
+&nbsp;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.request.CriarJogoRequest;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.request.EditarJogoRequest;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.model.Jogo;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.model.JogoParticipante;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.model.Usuario;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.model.enums.RoleJogo;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.repository.JogoParticipanteRepository;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.repository.JogoRepository;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.repository.UsuarioRepository;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import org.springframework.security.access.AccessDeniedException;
+&nbsp;import org.springframework.security.core.Authentication;
+&nbsp;import org.springframework.security.core.context.SecurityContextHolder;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * Service para gerenciar Jogos/Campanhas.
+&nbsp; * Apenas o Mestre do jogo pode criar/editar/deletar.
+&nbsp; */
+<b class="fc">&nbsp;@Service</b>
+&nbsp;@Transactional(readOnly = true)
+&nbsp;@RequiredArgsConstructor
+&nbsp;public class JogoService {
+&nbsp;
+&nbsp;    private final JogoRepository jogoRepository;
+&nbsp;    private final JogoParticipanteRepository jogoParticipanteRepository;
+&nbsp;    private final UsuarioRepository usuarioRepository;
+&nbsp;    private final GameConfigInitializerService configInitializerService;
+&nbsp;
+&nbsp;    public List&lt;Jogo&gt; listarJogosDoUsuario() {
+<b class="fc">&nbsp;        Usuario usuarioAtual = getUsuarioAtual();</b>
+<b class="fc">&nbsp;        return jogoRepository.findByParticipantesUsuarioId(usuarioAtual.getId());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Jogo buscarJogo(Long id) {
+<b class="fc">&nbsp;        return buscarJogoEntity(id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private Jogo buscarJogoEntity(Long id) {
+<b class="fc">&nbsp;        Jogo jogo = jogoRepository.findById(id)</b>
+<b class="fc">&nbsp;                .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Jogo não encontrado: &quot; + id));</b>
+&nbsp;
+<b class="fc">&nbsp;        Usuario usuarioAtual = getUsuarioAtual();</b>
+<b class="fc">&nbsp;        if (!usuarioPertenceAoJogo(usuarioAtual.getId(), id)) {</b>
+<b class="fc">&nbsp;            throw new AccessDeniedException(&quot;Você não tem acesso a este jogo&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        return jogo;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional
+&nbsp;    public Jogo criarJogo(CriarJogoRequest request) {
+<b class="fc">&nbsp;        Usuario usuarioAtual = getUsuarioAtual();</b>
+&nbsp;
+&nbsp;        // Verificar se já existe algum jogo ativo para este mestre
+<b class="fc">&nbsp;        boolean temJogoAtivo = jogoRepository.findByMestreIdAndJogoAtivoTrue(usuarioAtual.getId()).isPresent();</b>
+&nbsp;
+<b class="fc">&nbsp;        Jogo novoJogo = new Jogo();</b>
+<b class="fc">&nbsp;        novoJogo.setNome(request.getNome());</b>
+<b class="fc">&nbsp;        novoJogo.setDescricao(request.getDescricao());</b>
+<b class="fc">&nbsp;        novoJogo.setDataInicio(request.getDataInicio());</b>
+&nbsp;
+&nbsp;        // Se não houver nenhum jogo ativo, este será o jogo ativo automaticamente
+<b class="fc">&nbsp;        if (!temJogoAtivo) {</b>
+<b class="fc">&nbsp;            novoJogo.setJogoAtivo(true);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        Jogo jogoSalvo = jogoRepository.save(novoJogo);</b>
+&nbsp;
+&nbsp;        // Adicionar mestre como participante
+<b class="fc">&nbsp;        JogoParticipante participacao = JogoParticipante.builder()</b>
+<b class="fc">&nbsp;                .jogo(jogoSalvo)</b>
+<b class="fc">&nbsp;                .usuario(usuarioAtual)</b>
+<b class="fc">&nbsp;                .role(RoleJogo.MESTRE)</b>
+<b class="fc">&nbsp;                .build();</b>
+&nbsp;
+<b class="fc">&nbsp;        jogoParticipanteRepository.save(participacao);</b>
+&nbsp;
+&nbsp;        // Inicializar configurações padrão do jogo
+<b class="fc">&nbsp;        configInitializerService.initializeGameConfigs(jogoSalvo.getId());</b>
+&nbsp;
+<b class="fc">&nbsp;        return jogoSalvo;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional
+&nbsp;    public Jogo atualizarJogo(Long id, EditarJogoRequest request) {
+<b class="fc">&nbsp;        Jogo jogo = jogoRepository.findById(id)</b>
+<b class="fc">&nbsp;                .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Jogo não encontrado: &quot; + id));</b>
+&nbsp;
+<b class="fc">&nbsp;        Usuario usuarioAtual = getUsuarioAtual();</b>
+<b class="fc">&nbsp;        if (!usuarioEhMestreDoJogo(usuarioAtual.getId(), id)) {</b>
+<b class="fc">&nbsp;            throw new AccessDeniedException(&quot;Apenas o Mestre do jogo pode editá-lo&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        jogo.setNome(request.getNome());</b>
+<b class="fc">&nbsp;        jogo.setDescricao(request.getDescricao());</b>
+<b class="fc">&nbsp;        jogo.setImagemUrl(request.getImagemUrl());</b>
+<b class="fc">&nbsp;        jogo.setDataInicio(request.getDataInicio());</b>
+<b class="fc">&nbsp;        jogo.setDataFim(request.getDataFim());</b>
+&nbsp;
+<b class="fc">&nbsp;        return jogoRepository.save(jogo);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional
+&nbsp;    public void deletarJogo(Long id) {
+<b class="fc">&nbsp;        Jogo jogo = jogoRepository.findById(id)</b>
+<b class="fc">&nbsp;                .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Jogo não encontrado: &quot; + id));</b>
+&nbsp;
+<b class="fc">&nbsp;        Usuario usuarioAtual = getUsuarioAtual();</b>
+<b class="pc">&nbsp;        if (!usuarioEhMestreDoJogo(usuarioAtual.getId(), id)) {</b>
+<b class="nc">&nbsp;            throw new AccessDeniedException(&quot;Apenas o Mestre do jogo pode deletá-lo&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Soft delete (seta deleted_at)
+<b class="fc">&nbsp;        jogo.delete();</b>
+<b class="fc">&nbsp;        jogoRepository.save(jogo);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional
+&nbsp;    public Jogo ativarJogo(Long id) {
+<b class="fc">&nbsp;        Jogo jogo = jogoRepository.findById(id)</b>
+<b class="fc">&nbsp;                .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Jogo não encontrado: &quot; + id));</b>
+&nbsp;
+<b class="fc">&nbsp;        Usuario usuarioAtual = getUsuarioAtual();</b>
+<b class="pc">&nbsp;        if (!usuarioEhMestreDoJogo(usuarioAtual.getId(), id)) {</b>
+<b class="nc">&nbsp;            throw new AccessDeniedException(&quot;Apenas o Mestre do jogo pode ativá-lo&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // REGRA: Apenas 1 jogo pode estar ativo por mestre
+&nbsp;        // Desativa todos os outros jogos do mestre
+<b class="fc">&nbsp;        List&lt;Jogo&gt; jogosDoMestre = jogoRepository.findByMestreId(usuarioAtual.getId());</b>
+<b class="pc">&nbsp;        for (Jogo j : jogosDoMestre) {</b>
+<b class="nc">&nbsp;            if (j.getJogoAtivo() &amp;&amp; !j.getId().equals(id)) {</b>
+<b class="nc">&nbsp;                j.setJogoAtivo(false);</b>
+<b class="nc">&nbsp;                jogoRepository.save(j);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;        // Ativa o jogo selecionado
+<b class="fc">&nbsp;        jogo.restore(); // Remove soft delete se houver</b>
+<b class="fc">&nbsp;        jogo.setJogoAtivo(true);</b>
+<b class="fc">&nbsp;        return jogoRepository.save(jogo);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Busca o jogo ativo do mestre logado.
+&nbsp;     * Jogo ativo = jogo selecionado atualmente (jogoAtivo=true).
+&nbsp;     *
+&nbsp;     * @return Jogo ativo
+&nbsp;     * @throws IllegalStateException se não houver jogo ativo
+&nbsp;     */
+&nbsp;    public Jogo buscarJogoAtivo() {
+<b class="fc">&nbsp;        Usuario usuarioAtual = getUsuarioAtual();</b>
+<b class="fc">&nbsp;        return jogoRepository.findByMestreIdAndJogoAtivoTrue(usuarioAtual.getId())</b>
+<b class="fc">&nbsp;                .orElseThrow(() -&gt; new IllegalStateException(&quot;Nenhum jogo ativo encontrado&quot;));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean usuarioEhMestreDoJogo(Long usuarioId, Long jogoId) {
+<b class="fc">&nbsp;        return jogoParticipanteRepository.existsByJogoIdAndUsuarioIdAndRole(</b>
+&nbsp;                jogoId, usuarioId, RoleJogo.MESTRE);
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean usuarioPertenceAoJogo(Long usuarioId, Long jogoId) {
+<b class="fc">&nbsp;        return jogoParticipanteRepository.existsByUsuarioIdAndJogoId(usuarioId, jogoId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Long getUsuarioAtualId() {
+<b class="nc">&nbsp;        return getUsuarioAtual().getId();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public RoleJogo getMeuRole(Long usuarioId, Long jogoId) {
+<b class="nc">&nbsp;        return jogoParticipanteRepository.findRoleByJogoIdAndUsuarioId(jogoId, usuarioId).orElse(null);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private Usuario getUsuarioAtual() {
+<b class="fc">&nbsp;        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();</b>
+<b class="pc">&nbsp;        assert authentication != null;</b>
+<b class="fc">&nbsp;        String email = authentication.getName();</b>
+<b class="fc">&nbsp;        return usuarioRepository.findByEmail(email)</b>
+<b class="fc">&nbsp;                .orElseThrow(() -&gt; new IllegalStateException(&quot;Usuário não encontrado&quot;));</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-03-09 20:13</div>
+</div>
+</body>
+</html>

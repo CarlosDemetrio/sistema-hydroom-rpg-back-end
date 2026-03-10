@@ -1,0 +1,178 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > TipoAptidaoController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.com.hydroom.rpg.fichacontrolador.controller.configuracao</a>
+</div>
+
+<h1>Coverage Summary for Class: TipoAptidaoController (br.com.hydroom.rpg.fichacontrolador.controller.configuracao)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TipoAptidaoController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    16,7%
+  </span>
+  <span class="absValue">
+    (1/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    9,1%
+  </span>
+  <span class="absValue">
+    (1/11)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package br.com.hydroom.rpg.fichacontrolador.controller.configuracao;
+&nbsp;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.CreateTipoAptidaoRequest;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.UpdateTipoAptidaoRequest;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.TipoAptidaoResponse;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.mapper.configuracao.TipoAptidaoMapper;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.model.TipoAptidao;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.service.configuracao.TipoAptidaoConfiguracaoService;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.service.JogoService;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+&nbsp;import io.swagger.v3.oas.annotations.tags.Tag;
+&nbsp;import jakarta.validation.Valid;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.security.access.prepost.PreAuthorize;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+<b class="fc">&nbsp;@Slf4j</b>
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/v1/configuracoes/tipos-aptidao&quot;)
+&nbsp;@RequiredArgsConstructor
+&nbsp;@SecurityRequirement(name = &quot;bearer-jwt&quot;)
+&nbsp;@Tag(name = &quot;Configurações - Tipos de Aptidão&quot;, description = &quot;Gerenciamento de tipos de aptidão&quot;)
+&nbsp;public class TipoAptidaoController {
+&nbsp;
+&nbsp;    private final TipoAptidaoConfiguracaoService configuracaoService;
+&nbsp;    private final JogoService jogoService;
+&nbsp;    private final TipoAptidaoMapper mapper;
+&nbsp;
+&nbsp;    @GetMapping
+&nbsp;    @PreAuthorize(&quot;hasAnyRole(&#39;MESTRE&#39;, &#39;JOGADOR&#39;)&quot;)
+&nbsp;    @Operation(summary = &quot;Listar tipos de aptidão de um jogo&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;TipoAptidaoResponse&gt;&gt; listar(@RequestParam Long jogoId) {
+<b class="nc">&nbsp;        return ResponseEntity.ok(configuracaoService.listar(jogoId).stream().map(mapper::toResponse).toList());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/{id}&quot;)
+&nbsp;    @PreAuthorize(&quot;hasAnyRole(&#39;MESTRE&#39;, &#39;JOGADOR&#39;)&quot;)
+&nbsp;    @Operation(summary = &quot;Buscar tipo de aptidão por ID&quot;)
+&nbsp;    public ResponseEntity&lt;TipoAptidaoResponse&gt; buscar(@PathVariable Long id) {
+<b class="nc">&nbsp;        return ResponseEntity.ok(mapper.toResponse(configuracaoService.buscarPorId(id)));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping
+&nbsp;    @PreAuthorize(&quot;hasRole(&#39;MESTRE&#39;)&quot;)
+&nbsp;    @Operation(summary = &quot;Criar tipo de aptidão (Apenas MESTRE)&quot;)
+&nbsp;    public ResponseEntity&lt;TipoAptidaoResponse&gt; criar(@Valid @RequestBody CreateTipoAptidaoRequest request) {
+<b class="nc">&nbsp;        TipoAptidao tipo = mapper.toEntity(request);</b>
+<b class="nc">&nbsp;        tipo.setJogo(jogoService.buscarJogo(request.jogoId()));</b>
+<b class="nc">&nbsp;        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toResponse(configuracaoService.criar(tipo)));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PutMapping(&quot;/{id}&quot;)
+&nbsp;    @PreAuthorize(&quot;hasRole(&#39;MESTRE&#39;)&quot;)
+&nbsp;    @Operation(summary = &quot;Atualizar tipo de aptidão (Apenas MESTRE)&quot;)
+&nbsp;    public ResponseEntity&lt;TipoAptidaoResponse&gt; atualizar(@PathVariable Long id, @Valid @RequestBody UpdateTipoAptidaoRequest request) {
+<b class="nc">&nbsp;        TipoAptidao tipo = configuracaoService.buscarPorId(id);</b>
+<b class="nc">&nbsp;        mapper.updateEntity(request, tipo);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(mapper.toResponse(configuracaoService.atualizar(id, tipo)));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @DeleteMapping(&quot;/{id}&quot;)
+&nbsp;    @PreAuthorize(&quot;hasRole(&#39;MESTRE&#39;)&quot;)
+&nbsp;    @Operation(summary = &quot;Deletar tipo de aptidão (Apenas MESTRE)&quot;)
+&nbsp;    public ResponseEntity&lt;Void&gt; deletar(@PathVariable Long id) {
+<b class="nc">&nbsp;        configuracaoService.deletar(id);</b>
+<b class="nc">&nbsp;        return ResponseEntity.noContent().build();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-03-09 20:13</div>
+</div>
+</body>
+</html>

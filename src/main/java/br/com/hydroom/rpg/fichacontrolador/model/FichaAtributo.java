@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 /**
  * Entidade que armazena os valores dos atributos de uma ficha.
@@ -19,6 +20,7 @@ import lombok.NoArgsConstructor;
 }, uniqueConstraints = {
     @UniqueConstraint(name = "uk_ficha_atributo", columnNames = {"ficha_id", "atributo_config_id"})
 })
+@SQLRestriction("deleted_at IS NULL")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder
@@ -42,26 +44,40 @@ public class FichaAtributo extends BaseEntity {
 
     @NotNull
     @Builder.Default
-    @Column(name = "valor_base", nullable = false)
-    private Integer valorBase = 0;
+    @Column(name = "base", nullable = false)
+    private Integer base = 0;
 
     @NotNull
     @Builder.Default
-    @Column(name = "valor_nivel", nullable = false)
-    private Integer valorNivel = 0;
+    @Column(name = "nivel", nullable = false)
+    private Integer nivel = 0;
 
     @NotNull
     @Builder.Default
-    @Column(name = "valor_outros", nullable = false)
-    private Integer valorOutros = 0;
+    @Column(name = "outros", nullable = false)
+    private Integer outros = 0;
 
     /**
-     * Calcula o valor total do atributo.
-     * Total = Base + Nível + Outros
+     * Total calculado: base + nivel + outros.
      */
-    public Integer getValorTotal() {
-        return (valorBase != null ? valorBase : 0) +
-               (valorNivel != null ? valorNivel : 0) +
-               (valorOutros != null ? valorOutros : 0);
+    @NotNull
+    @Builder.Default
+    @Column(name = "total", nullable = false)
+    private Integer total = 0;
+
+    /**
+     * Ímpeto calculado via formulaImpeto do AtributoConfig.
+     */
+    @Builder.Default
+    @Column(name = "impeto")
+    private Double impeto = 0.0;
+
+    /**
+     * Recalcula e persiste o total.
+     */
+    public void recalcularTotal() {
+        this.total = (base != null ? base : 0) +
+                     (nivel != null ? nivel : 0) +
+                     (outros != null ? outros : 0);
     }
 }

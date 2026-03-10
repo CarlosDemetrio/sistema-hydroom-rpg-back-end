@@ -1,0 +1,236 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Ficha</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.com.hydroom.rpg.fichacontrolador.model</a>
+</div>
+
+<h1>Coverage Summary for Class: Ficha (br.com.hydroom.rpg.fichacontrolador.model)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+</tr>
+  <tr>
+    <td class="name">Ficha$HibernateInstantiator</td>
+  </tr>
+  <tr>
+    <td class="name">Ficha$HibernateProxy</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package br.com.hydroom.rpg.fichacontrolador.model;
+&nbsp;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.constants.ValidationMessages;
+&nbsp;import jakarta.persistence.*;
+&nbsp;import jakarta.validation.constraints.*;
+&nbsp;import lombok.AllArgsConstructor;
+&nbsp;import lombok.Builder;
+&nbsp;import lombok.Data;
+&nbsp;import lombok.EqualsAndHashCode;
+&nbsp;import lombok.NoArgsConstructor;
+&nbsp;
+&nbsp;import java.math.BigDecimal;
+&nbsp;
+&nbsp;/**
+&nbsp; * Entidade que representa uma ficha de personagem de RPG.
+&nbsp; * Totalmente normalizada - dados configuráveis armazenados em tabelas relacionadas.
+&nbsp; */
+&nbsp;@Entity
+&nbsp;@Table(name = &quot;fichas&quot;, indexes = {
+&nbsp;    @Index(name = &quot;idx_ficha_jogo_usuario&quot;, columnList = &quot;jogo_id, usuario_id&quot;),
+&nbsp;    @Index(name = &quot;idx_ficha_nome_personagem&quot;, columnList = &quot;nome_personagem&quot;)
+&nbsp;})
+&nbsp;@Data
+&nbsp;@EqualsAndHashCode(callSuper = true)
+&nbsp;@Builder
+&nbsp;@NoArgsConstructor
+&nbsp;@AllArgsConstructor
+&nbsp;public class Ficha extends BaseEntity {
+&nbsp;
+&nbsp;    @Id
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    private Long id;
+&nbsp;
+&nbsp;    @NotNull(message = ValidationMessages.Ficha.JOGO_OBRIGATORIO)
+&nbsp;    @ManyToOne(fetch = FetchType.LAZY)
+&nbsp;    @JoinColumn(name = &quot;jogo_id&quot;, nullable = false)
+&nbsp;    private Jogo jogo;
+&nbsp;
+&nbsp;    @NotNull(message = ValidationMessages.Ficha.USUARIO_OBRIGATORIO)
+&nbsp;    @ManyToOne(fetch = FetchType.LAZY)
+&nbsp;    @JoinColumn(name = &quot;usuario_id&quot;, nullable = false)
+&nbsp;    private Usuario usuario;
+&nbsp;
+&nbsp;    @ManyToOne(fetch = FetchType.LAZY)
+&nbsp;    @JoinColumn(name = &quot;classe_personagem_id&quot;)
+&nbsp;    private ClassePersonagem classePersonagem;
+&nbsp;
+&nbsp;    @ManyToOne(fetch = FetchType.LAZY)
+&nbsp;    @JoinColumn(name = &quot;raca_id&quot;)
+&nbsp;    private Raca raca;
+&nbsp;
+&nbsp;    // ===== DADOS BÁSICOS DO PERSONAGEM =====
+&nbsp;
+&nbsp;    @NotBlank(message = ValidationMessages.Ficha.NOME_OBRIGATORIO)
+&nbsp;    @Size(min = ValidationMessages.Limites.FICHA_NOME_MIN,
+&nbsp;          max = ValidationMessages.Limites.FICHA_NOME_MAX,
+&nbsp;          message = ValidationMessages.Ficha.NOME_TAMANHO)
+&nbsp;    @Column(name = &quot;nome_personagem&quot;, nullable = false, length = ValidationMessages.Limites.FICHA_NOME_MAX)
+&nbsp;    private String nomePersonagem;
+&nbsp;
+&nbsp;    @Size(max = ValidationMessages.Limites.FICHA_JOGADOR_NOME_MAX,
+&nbsp;          message = ValidationMessages.Ficha.JOGADOR_NOME_TAMANHO)
+&nbsp;    @Column(name = &quot;jogador_nome&quot;, length = ValidationMessages.Limites.FICHA_JOGADOR_NOME_MAX)
+&nbsp;    private String jogadorNome;
+&nbsp;
+&nbsp;    @Size(max = ValidationMessages.Limites.FICHA_TITULO_MAX,
+&nbsp;          message = ValidationMessages.Ficha.TITULO_TAMANHO)
+&nbsp;    @Column(name = &quot;titulo_heroico&quot;, length = ValidationMessages.Limites.FICHA_TITULO_MAX)
+&nbsp;    private String tituloHeroico;
+&nbsp;
+&nbsp;    @Size(max = ValidationMessages.Limites.FICHA_INSOLITUS_MAX,
+&nbsp;          message = ValidationMessages.Ficha.INSOLITUS_TAMANHO)
+&nbsp;    @Column(length = ValidationMessages.Limites.FICHA_INSOLITUS_MAX)
+&nbsp;    private String insolitus;
+&nbsp;
+&nbsp;    @Size(max = ValidationMessages.Limites.FICHA_ORIGEM_MAX,
+&nbsp;          message = ValidationMessages.Ficha.ORIGEM_TAMANHO)
+&nbsp;    @Column(length = ValidationMessages.Limites.FICHA_ORIGEM_MAX)
+&nbsp;    private String origem;
+&nbsp;
+&nbsp;    @ManyToOne(fetch = FetchType.LAZY)
+&nbsp;    @JoinColumn(name = &quot;genero_id&quot;)
+&nbsp;    private GeneroConfig genero;
+&nbsp;
+&nbsp;    @Size(max = ValidationMessages.Limites.FICHA_ARQUETIPO_MAX,
+&nbsp;          message = ValidationMessages.Ficha.ARQUETIPO_TAMANHO)
+&nbsp;    @Column(name = &quot;arquetipo_referencia&quot;, length = ValidationMessages.Limites.FICHA_ARQUETIPO_MAX)
+&nbsp;    private String arquetipoReferencia;
+&nbsp;
+&nbsp;    // ===== APARÊNCIA FÍSICA =====
+&nbsp;
+&nbsp;    @Min(value = 0, message = ValidationMessages.Ficha.IDADE_MINIMA)
+&nbsp;    @Max(value = 9999, message = ValidationMessages.Ficha.IDADE_MAXIMA)
+&nbsp;    private Integer idade;
+&nbsp;
+&nbsp;    @Min(value = 0, message = ValidationMessages.Ficha.ALTURA_MINIMA)
+&nbsp;    @Max(value = 999, message = ValidationMessages.Ficha.ALTURA_MAXIMA)
+&nbsp;    @Column(name = &quot;altura_cm&quot;)
+&nbsp;    private Integer alturaCm;
+&nbsp;
+&nbsp;    @DecimalMin(value = &quot;0.0&quot;, message = ValidationMessages.Ficha.PESO_MINIMO)
+&nbsp;    @DecimalMax(value = &quot;999.99&quot;, message = ValidationMessages.Ficha.PESO_MAXIMO)
+&nbsp;    @Column(name = &quot;peso_kg&quot;, precision = 5, scale = 2)
+&nbsp;    private BigDecimal pesoKg;
+&nbsp;
+&nbsp;    @Size(max = ValidationMessages.Limites.FICHA_COR_MAX,
+&nbsp;          message = ValidationMessages.Ficha.COR_CABELO_TAMANHO)
+&nbsp;    @Column(name = &quot;cor_cabelo&quot;, length = ValidationMessages.Limites.FICHA_COR_MAX)
+&nbsp;    private String corCabelo;
+&nbsp;
+&nbsp;    @Size(max = ValidationMessages.Limites.FICHA_COR_MAX,
+&nbsp;          message = ValidationMessages.Ficha.TAMANHO_CABELO_TAMANHO)
+&nbsp;    @Column(name = &quot;tamanho_cabelo&quot;, length = ValidationMessages.Limites.FICHA_COR_MAX)
+&nbsp;    private String tamanhoCabelo;
+&nbsp;
+&nbsp;    @Size(max = ValidationMessages.Limites.FICHA_COR_MAX,
+&nbsp;          message = ValidationMessages.Ficha.COR_OLHOS_TAMANHO)
+&nbsp;    @Column(name = &quot;cor_olhos&quot;, length = ValidationMessages.Limites.FICHA_COR_MAX)
+&nbsp;    private String corOlhos;
+&nbsp;
+&nbsp;    // ===== PERSONALIDADE =====
+&nbsp;
+&nbsp;    @ManyToOne(fetch = FetchType.LAZY)
+&nbsp;    @JoinColumn(name = &quot;indole_id&quot;)
+&nbsp;    private IndoleConfig indole;
+&nbsp;
+&nbsp;    @ManyToOne(fetch = FetchType.LAZY)
+&nbsp;    @JoinColumn(name = &quot;presenca_id&quot;)
+&nbsp;    private PresencaConfig presenca;
+&nbsp;
+&nbsp;    // ===== PROGRESSÃO =====
+&nbsp;
+&nbsp;    @NotNull(message = ValidationMessages.Ficha.NIVEL_OBRIGATORIO)
+&nbsp;    @Min(value = ValidationMessages.Limites.FICHA_NIVEL_MIN,
+&nbsp;         message = ValidationMessages.Ficha.NIVEL_MINIMO)
+&nbsp;    @Max(value = 99, message = ValidationMessages.Ficha.NIVEL_MAXIMO)
+&nbsp;    @Builder.Default
+&nbsp;    @Column(nullable = false)
+&nbsp;    private Integer nivel = 1;
+&nbsp;
+&nbsp;    @NotNull(message = ValidationMessages.Ficha.EXPERIENCIA_OBRIGATORIA)
+&nbsp;    @Min(value = 0, message = ValidationMessages.Ficha.EXPERIENCIA_MINIMA)
+&nbsp;    @Builder.Default
+&nbsp;    @Column(nullable = false)
+&nbsp;    private Long experiencia = 0L;
+&nbsp;
+&nbsp;    @NotNull
+&nbsp;    @Min(value = 0, message = ValidationMessages.Ficha.RENASCIMENTOS_MINIMO)
+&nbsp;    @Builder.Default
+&nbsp;    @Column(nullable = false)
+&nbsp;    private Integer renascimentos = 0;
+&nbsp;
+&nbsp;    @Size(max = 2000)
+&nbsp;    @Column(name = &quot;imagem_url&quot;, length = 2000)
+&nbsp;    private String imagemUrl;
+&nbsp;
+&nbsp;    // ===== CONTROLE =====
+&nbsp;
+&nbsp;    @Builder.Default
+&nbsp;    @Column(name = &quot;compartilhada_com_jogadores&quot;, nullable = false)
+&nbsp;    private Boolean compartilhadaComJogadores = false;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-03-09 20:13</div>
+</div>
+</body>
+</html>

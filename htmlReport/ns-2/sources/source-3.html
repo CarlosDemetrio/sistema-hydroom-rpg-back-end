@@ -1,0 +1,530 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > DefaultGameConfigProviderImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.com.hydroom.rpg.fichacontrolador.config</a>
+</div>
+
+<h1>Coverage Summary for Class: DefaultGameConfigProviderImpl (br.com.hydroom.rpg.fichacontrolador.config)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DefaultGameConfigProviderImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    92,9%
+  </span>
+  <span class="absValue">
+    (13/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    97,8%
+  </span>
+  <span class="absValue">
+    (265/271)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package br.com.hydroom.rpg.fichacontrolador.config;
+&nbsp;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.defaults.*;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;
+&nbsp;import java.math.BigDecimal;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;/**
+&nbsp; * Implementação padrão do {@link GameDefaultConfigProvider}.
+&nbsp; *
+&nbsp; * &lt;p&gt;Fornece todos os dados default para inicialização de um jogo novo.&lt;/p&gt;
+&nbsp; * &lt;p&gt;Valores são baseados nas seeds SQL originais, mas agora gerenciados via código.&lt;/p&gt;
+&nbsp; *
+&nbsp; * &lt;p&gt;&lt;strong&gt;Para customizar&lt;/strong&gt;: Crie sua própria implementação de GameDefaultConfigProvider
+&nbsp; * e registre como @Primary no Spring Context.&lt;/p&gt;
+&nbsp; *
+&nbsp; * @author Carlos Demétrio
+&nbsp; * @since 2026-02-05
+&nbsp; */
+&nbsp;@Component
+<b class="fc">&nbsp;public class DefaultGameConfigProviderImpl implements GameDefaultConfigProvider {</b>
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;AtributoConfigDTO&gt; getDefaultAtributos() {
+<b class="fc">&nbsp;        return List.of(</b>
+<b class="fc">&nbsp;            AtributoConfigDTO.of(</b>
+&nbsp;                &quot;Força&quot;,
+&nbsp;                &quot;FOR&quot;,
+&nbsp;                &quot;Capacidade física bruta, determina capacidade de carga&quot;,
+&nbsp;                &quot;total * 3&quot;,
+&nbsp;                &quot;kg&quot;,
+<b class="fc">&nbsp;                1</b>
+&nbsp;            ),
+<b class="fc">&nbsp;            AtributoConfigDTO.of(</b>
+&nbsp;                &quot;Agilidade&quot;,
+&nbsp;                &quot;AGI&quot;,
+&nbsp;                &quot;Velocidade e reflexos, determina deslocamento&quot;,
+&nbsp;                &quot;total / 3&quot;,
+&nbsp;                &quot;metros&quot;,
+<b class="fc">&nbsp;                2</b>
+&nbsp;            ),
+<b class="fc">&nbsp;            AtributoConfigDTO.of(</b>
+&nbsp;                &quot;Vigor&quot;,
+&nbsp;                &quot;VIG&quot;,
+&nbsp;                &quot;Resistência física, redução de dano físico&quot;,
+&nbsp;                &quot;total / 10&quot;,
+&nbsp;                &quot;RD&quot;,
+<b class="fc">&nbsp;                3</b>
+&nbsp;            ),
+<b class="fc">&nbsp;            AtributoConfigDTO.of(</b>
+&nbsp;                &quot;Sabedoria&quot;,
+&nbsp;                &quot;SAB&quot;,
+&nbsp;                &quot;Resistência mágica, redução de dano mágico&quot;,
+&nbsp;                &quot;total / 10&quot;,
+&nbsp;                &quot;RDM&quot;,
+<b class="fc">&nbsp;                4</b>
+&nbsp;            ),
+<b class="fc">&nbsp;            AtributoConfigDTO.of(</b>
+&nbsp;                &quot;Intuição&quot;,
+&nbsp;                &quot;INTU&quot;,
+&nbsp;                &quot;Sorte e percepção instintiva, pontos de sorte&quot;,
+&nbsp;                &quot;min(total / 20, 3)&quot;,  // exp4j formato (lowercase)
+&nbsp;                &quot;pontos&quot;,
+<b class="fc">&nbsp;                5</b>
+&nbsp;            ),
+<b class="fc">&nbsp;            AtributoConfigDTO.of(</b>
+&nbsp;                &quot;Inteligência&quot;,
+&nbsp;                &quot;INT&quot;,
+&nbsp;                &quot;Capacidade de comando e raciocínio&quot;,
+&nbsp;                &quot;total / 20&quot;,
+&nbsp;                &quot;comando&quot;,
+<b class="fc">&nbsp;                6</b>
+&nbsp;            ),
+<b class="fc">&nbsp;            AtributoConfigDTO.of(</b>
+&nbsp;                &quot;Astúcia&quot;,
+&nbsp;                &quot;AST&quot;,
+&nbsp;                &quot;Pensamento estratégico e tático&quot;,
+&nbsp;                &quot;total / 10&quot;,
+&nbsp;                &quot;estratégia&quot;,
+<b class="fc">&nbsp;                7</b>
+&nbsp;            )
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;AptidaoConfigDTO&gt; getDefaultAptidoes() {
+<b class="fc">&nbsp;        return List.of(</b>
+&nbsp;            // === Aptidões Físicas (12) ===
+<b class="fc">&nbsp;            AptidaoConfigDTO.of(&quot;Acrobacia&quot;, &quot;FISICA&quot;, &quot;Habilidade de realizar manobras acrobáticas&quot;, 1),</b>
+<b class="fc">&nbsp;            AptidaoConfigDTO.of(&quot;Guarda&quot;, &quot;FISICA&quot;, &quot;Capacidade de defesa e bloqueio&quot;, 2),</b>
+<b class="fc">&nbsp;            AptidaoConfigDTO.of(&quot;Aparar&quot;, &quot;FISICA&quot;, &quot;Habilidade de desviar ataques&quot;, 3),</b>
+<b class="fc">&nbsp;            AptidaoConfigDTO.of(&quot;Atletismo&quot;, &quot;FISICA&quot;, &quot;Força física e condicionamento&quot;, 4),</b>
+<b class="fc">&nbsp;            AptidaoConfigDTO.of(&quot;Resvalar&quot;, &quot;FISICA&quot;, &quot;Capacidade de esquiva e movimento ágil&quot;, 5),</b>
+<b class="fc">&nbsp;            AptidaoConfigDTO.of(&quot;Resistência&quot;, &quot;FISICA&quot;, &quot;Capacidade de resistir a condições adversas&quot;, 6),</b>
+<b class="fc">&nbsp;            AptidaoConfigDTO.of(&quot;Perseguição&quot;, &quot;FISICA&quot;, &quot;Habilidade de perseguir ou fugir&quot;, 7),</b>
+<b class="fc">&nbsp;            AptidaoConfigDTO.of(&quot;Natação&quot;, &quot;FISICA&quot;, &quot;Capacidade de nadar e manobras aquáticas&quot;, 8),</b>
+<b class="fc">&nbsp;            AptidaoConfigDTO.of(&quot;Furtividade&quot;, &quot;FISICA&quot;, &quot;Capacidade de se mover sem ser detectado&quot;, 9),</b>
+<b class="fc">&nbsp;            AptidaoConfigDTO.of(&quot;Prestidigitação&quot;, &quot;FISICA&quot;, &quot;Destreza manual e truques&quot;, 10),</b>
+<b class="fc">&nbsp;            AptidaoConfigDTO.of(&quot;Conduzir&quot;, &quot;FISICA&quot;, &quot;Habilidade de pilotar veículos e montarias&quot;, 11),</b>
+<b class="fc">&nbsp;            AptidaoConfigDTO.of(&quot;Arte da Fuga&quot;, &quot;FISICA&quot;, &quot;Capacidade de escapar de restrições&quot;, 12),</b>
+&nbsp;
+&nbsp;            // === Aptidões Mentais (12) ===
+<b class="fc">&nbsp;            AptidaoConfigDTO.of(&quot;Idiomas&quot;, &quot;MENTAL&quot;, &quot;Conhecimento de línguas&quot;, 13),</b>
+<b class="fc">&nbsp;            AptidaoConfigDTO.of(&quot;Observação&quot;, &quot;MENTAL&quot;, &quot;Capacidade de notar detalhes&quot;, 14),</b>
+<b class="fc">&nbsp;            AptidaoConfigDTO.of(&quot;Falsificar&quot;, &quot;MENTAL&quot;, &quot;Habilidade de criar falsificações&quot;, 15),</b>
+<b class="fc">&nbsp;            AptidaoConfigDTO.of(&quot;Prontidão&quot;, &quot;MENTAL&quot;, &quot;Capacidade de reagir rapidamente&quot;, 16),</b>
+<b class="fc">&nbsp;            AptidaoConfigDTO.of(&quot;Auto Controle&quot;, &quot;MENTAL&quot;, &quot;Controle emocional e mental&quot;, 17),</b>
+<b class="fc">&nbsp;            AptidaoConfigDTO.of(&quot;Sentir Motivação&quot;, &quot;MENTAL&quot;, &quot;Capacidade de ler intenções&quot;, 18),</b>
+<b class="fc">&nbsp;            AptidaoConfigDTO.of(&quot;Sobrevivência&quot;, &quot;MENTAL&quot;, &quot;Conhecimento de técnicas de sobrevivência&quot;, 19),</b>
+<b class="fc">&nbsp;            AptidaoConfigDTO.of(&quot;Investigar&quot;, &quot;MENTAL&quot;, &quot;Habilidade de coletar e analisar informações&quot;, 20),</b>
+<b class="fc">&nbsp;            AptidaoConfigDTO.of(&quot;Blefar&quot;, &quot;MENTAL&quot;, &quot;Capacidade de enganar e mentir&quot;, 21),</b>
+<b class="fc">&nbsp;            AptidaoConfigDTO.of(&quot;Atuação&quot;, &quot;MENTAL&quot;, &quot;Habilidade de interpretar personagens&quot;, 22),</b>
+<b class="fc">&nbsp;            AptidaoConfigDTO.of(&quot;Diplomacia&quot;, &quot;MENTAL&quot;, &quot;Capacidade de negociação e persuasão&quot;, 23),</b>
+<b class="fc">&nbsp;            AptidaoConfigDTO.of(&quot;Operação de Mecanismos&quot;, &quot;MENTAL&quot;, &quot;Conhecimento de dispositivos mecânicos&quot;, 24)</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;NivelConfigDTO&gt; getDefaultNiveis() {
+&nbsp;        // Nível 0 até 35 (36 níveis total)
+<b class="fc">&nbsp;        return List.of(</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(0, 0L, 0, 0, 0),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(1, 1000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(2, 3000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(3, 6000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(4, 10000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(5, 15000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(6, 21000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(7, 28000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(8, 36000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(9, 45000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(10, 55000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(11, 66000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(12, 78000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(13, 91000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(14, 105000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(15, 120000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(16, 136000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(17, 153000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(18, 171000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(19, 190000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(20, 210000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(21, 231000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(22, 253000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(23, 276000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(24, 300000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(25, 325000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(26, 351000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(27, 378000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(28, 406000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(29, 435000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(30, 465000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(31, 496000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(32, 528000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(33, 561000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(34, 595000L, 3, 1, 3),</b>
+<b class="fc">&nbsp;            NivelConfigDTO.of(35, 595000L, 3, 1, 3)</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;LimitadorConfigDTO&gt; getDefaultLimitadores() {
+<b class="nc">&nbsp;        return List.of(</b>
+<b class="nc">&nbsp;            LimitadorConfigDTO.of(0, 1, 10),</b>
+<b class="nc">&nbsp;            LimitadorConfigDTO.of(2, 20, 50),</b>
+<b class="nc">&nbsp;            LimitadorConfigDTO.of(21, 25, 75),</b>
+<b class="nc">&nbsp;            LimitadorConfigDTO.of(26, 30, 100),</b>
+<b class="nc">&nbsp;            LimitadorConfigDTO.of(31, 35, 120)</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;ClasseConfigDTO&gt; getDefaultClasses() {
+<b class="fc">&nbsp;        return List.of(</b>
+<b class="fc">&nbsp;            ClasseConfigDTO.of(&quot;Guerreiro&quot;, &quot;Especialista em combate corpo a corpo&quot;, 1),</b>
+<b class="fc">&nbsp;            ClasseConfigDTO.of(&quot;Arqueiro&quot;, &quot;Mestre em combate à distância&quot;, 2),</b>
+<b class="fc">&nbsp;            ClasseConfigDTO.of(&quot;Monge&quot;, &quot;Lutador desarmado com disciplina espiritual&quot;, 3),</b>
+<b class="fc">&nbsp;            ClasseConfigDTO.of(&quot;Berserker&quot;, &quot;Guerreiro selvagem de fúria incontrolável&quot;, 4),</b>
+<b class="fc">&nbsp;            ClasseConfigDTO.of(&quot;Assassino&quot;, &quot;Especialista em ataques furtivos e letais&quot;, 5),</b>
+<b class="fc">&nbsp;            ClasseConfigDTO.of(&quot;Fauno (Herdeiro)&quot;, &quot;Herdeiro com poderes especiais&quot;, 6),</b>
+<b class="fc">&nbsp;            ClasseConfigDTO.of(&quot;Mago&quot;, &quot;Conjurador de magias arcanas&quot;, 7),</b>
+<b class="fc">&nbsp;            ClasseConfigDTO.of(&quot;Feiticeiro&quot;, &quot;Usuário de magia inata&quot;, 8),</b>
+<b class="fc">&nbsp;            ClasseConfigDTO.of(&quot;Necromance&quot;, &quot;Manipulador de forças da morte&quot;, 9),</b>
+<b class="fc">&nbsp;            ClasseConfigDTO.of(&quot;Sacerdote&quot;, &quot;Servo divino com poderes sagrados&quot;, 10),</b>
+<b class="fc">&nbsp;            ClasseConfigDTO.of(&quot;Ladrão&quot;, &quot;Especialista em subterfúgio e furto&quot;, 11),</b>
+<b class="fc">&nbsp;            ClasseConfigDTO.of(&quot;Negociante&quot;, &quot;Mestre em comércio e persuasão&quot;, 12)</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;RacaConfigDTO&gt; getDefaultRacas() {
+<b class="fc">&nbsp;        return List.of(</b>
+<b class="fc">&nbsp;            RacaConfigDTO.of(&quot;Humano&quot;, &quot;Raça versátil e adaptável&quot;, 1),</b>
+<b class="fc">&nbsp;            RacaConfigDTO.of(&quot;Elfo&quot;, &quot;Seres longevos com afinidade mágica&quot;, 2),</b>
+<b class="fc">&nbsp;            RacaConfigDTO.of(&quot;Anão&quot;, &quot;Raça resistente e trabalhadora&quot;, 3),</b>
+<b class="fc">&nbsp;            RacaConfigDTO.of(&quot;Meio-Elfo&quot;, &quot;Híbrido entre humano e elfo&quot;, 4)</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Map&lt;String, List&lt;BonusAtributoDTO&gt;&gt; getDefaultBonusRaciais() {
+<b class="fc">&nbsp;        return Map.of(</b>
+<b class="fc">&nbsp;            &quot;Humano&quot;, List.of(),  // Sem bônus (versatilidade)</b>
+&nbsp;
+<b class="fc">&nbsp;            &quot;Elfo&quot;, List.of(</b>
+<b class="fc">&nbsp;                BonusAtributoDTO.of(&quot;AGI&quot;, 2),</b>
+<b class="fc">&nbsp;                BonusAtributoDTO.of(&quot;VIG&quot;, -1)</b>
+&nbsp;            ),
+&nbsp;
+<b class="fc">&nbsp;            &quot;Anão&quot;, List.of(</b>
+<b class="fc">&nbsp;                BonusAtributoDTO.of(&quot;VIG&quot;, 2),</b>
+<b class="fc">&nbsp;                BonusAtributoDTO.of(&quot;AGI&quot;, -1)</b>
+&nbsp;            ),
+&nbsp;
+<b class="fc">&nbsp;            &quot;Meio-Elfo&quot;, List.of(</b>
+<b class="fc">&nbsp;                BonusAtributoDTO.of(&quot;AGI&quot;, 1),</b>
+<b class="fc">&nbsp;                BonusAtributoDTO.of(&quot;INT&quot;, 1)</b>
+&nbsp;            )
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;ProspeccaoConfigDTO&gt; getDefaultProspeccoes() {
+<b class="fc">&nbsp;        return List.of(</b>
+<b class="fc">&nbsp;            ProspeccaoConfigDTO.of(&quot;d3&quot;, 3, 1),</b>
+<b class="fc">&nbsp;            ProspeccaoConfigDTO.of(&quot;d4&quot;, 4, 2),</b>
+<b class="fc">&nbsp;            ProspeccaoConfigDTO.of(&quot;d6&quot;, 6, 3),</b>
+<b class="fc">&nbsp;            ProspeccaoConfigDTO.of(&quot;d8&quot;, 8, 4),</b>
+<b class="fc">&nbsp;            ProspeccaoConfigDTO.of(&quot;d10&quot;, 10, 5),</b>
+<b class="fc">&nbsp;            ProspeccaoConfigDTO.of(&quot;d12&quot;, 12, 6)</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;GeneroConfigDTO&gt; getDefaultGeneros() {
+<b class="fc">&nbsp;        return List.of(</b>
+<b class="fc">&nbsp;            GeneroConfigDTO.of(&quot;Masculino&quot;, 1),</b>
+<b class="fc">&nbsp;            GeneroConfigDTO.of(&quot;Feminino&quot;, 2),</b>
+<b class="fc">&nbsp;            GeneroConfigDTO.of(&quot;Não-Binário&quot;, 3),</b>
+<b class="fc">&nbsp;            GeneroConfigDTO.of(&quot;Prefiro não informar&quot;, 4)</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;IndoleConfigDTO&gt; getDefaultIndoles() {
+<b class="fc">&nbsp;        return List.of(</b>
+<b class="fc">&nbsp;            IndoleConfigDTO.of(&quot;Ordeiro Bondoso&quot;, 1),</b>
+<b class="fc">&nbsp;            IndoleConfigDTO.of(&quot;Neutro Bondoso&quot;, 2),</b>
+<b class="fc">&nbsp;            IndoleConfigDTO.of(&quot;Caótico Bondoso&quot;, 3),</b>
+<b class="fc">&nbsp;            IndoleConfigDTO.of(&quot;Ordeiro Neutro&quot;, 4),</b>
+<b class="fc">&nbsp;            IndoleConfigDTO.of(&quot;Neutro&quot;, 5),</b>
+<b class="fc">&nbsp;            IndoleConfigDTO.of(&quot;Caótico Neutro&quot;, 6),</b>
+<b class="fc">&nbsp;            IndoleConfigDTO.of(&quot;Ordeiro Maligno&quot;, 7),</b>
+<b class="fc">&nbsp;            IndoleConfigDTO.of(&quot;Neutro Maligno&quot;, 8),</b>
+<b class="fc">&nbsp;            IndoleConfigDTO.of(&quot;Caótico Maligno&quot;, 9)</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;PresencaConfigDTO&gt; getDefaultPresencas() {
+<b class="fc">&nbsp;        return List.of(</b>
+<b class="fc">&nbsp;            PresencaConfigDTO.of(&quot;Insignificante&quot;, 1),</b>
+<b class="fc">&nbsp;            PresencaConfigDTO.of(&quot;Fraco&quot;, 2),</b>
+<b class="fc">&nbsp;            PresencaConfigDTO.of(&quot;Normal&quot;, 3),</b>
+<b class="fc">&nbsp;            PresencaConfigDTO.of(&quot;Notável&quot;, 4),</b>
+<b class="fc">&nbsp;            PresencaConfigDTO.of(&quot;Impressionante&quot;, 5),</b>
+<b class="fc">&nbsp;            PresencaConfigDTO.of(&quot;Dominante&quot;, 6)</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;MembroCorpoConfigDTO&gt; getDefaultMembrosCorpo() {
+&nbsp;        // Distribuição padrão de vida por membro (total = 100%)
+<b class="fc">&nbsp;        return List.of(</b>
+<b class="fc">&nbsp;            MembroCorpoConfigDTO.of(&quot;Cabeça&quot;, new BigDecimal(&quot;0.25&quot;), 1),           // 25% da vida</b>
+<b class="fc">&nbsp;            MembroCorpoConfigDTO.of(&quot;Tronco&quot;, new BigDecimal(&quot;0.35&quot;), 2),           // 35% da vida</b>
+<b class="fc">&nbsp;            MembroCorpoConfigDTO.of(&quot;Braço Direito&quot;, new BigDecimal(&quot;0.10&quot;), 3),    // 10% da vida</b>
+<b class="fc">&nbsp;            MembroCorpoConfigDTO.of(&quot;Braço Esquerdo&quot;, new BigDecimal(&quot;0.10&quot;), 4),   // 10% da vida</b>
+<b class="fc">&nbsp;            MembroCorpoConfigDTO.of(&quot;Perna Direita&quot;, new BigDecimal(&quot;0.10&quot;), 5),    // 10% da vida</b>
+<b class="fc">&nbsp;            MembroCorpoConfigDTO.of(&quot;Perna Esquerda&quot;, new BigDecimal(&quot;0.10&quot;), 6)    // 10% da vida</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;VantagemConfigDTO&gt; getDefaultVantagens() {
+<b class="fc">&nbsp;        return List.of(</b>
+&nbsp;            // === Vantagens de Atributos ===
+<b class="fc">&nbsp;            VantagemConfigDTO.builder()</b>
+<b class="fc">&nbsp;                .nome(&quot;Fortitude&quot;)</b>
+<b class="fc">&nbsp;                .descricao(&quot;Aumenta o atributo Vigor permanentemente&quot;)</b>
+<b class="fc">&nbsp;                .tipoBonus(&quot;ATRIBUTO_VIGOR&quot;)</b>
+<b class="fc">&nbsp;                .valorBonusFormula(&quot;nivel_vantagem * 2&quot;)</b>
+<b class="fc">&nbsp;                .custoBase(3)</b>
+<b class="fc">&nbsp;                .formulaCusto(&quot;custo_base * nivel_vantagem&quot;)</b>
+<b class="fc">&nbsp;                .nivelMinimoPersonagem(1)</b>
+<b class="fc">&nbsp;                .podeEvoluir(true)</b>
+<b class="fc">&nbsp;                .nivelMaximoVantagem(10)</b>
+<b class="fc">&nbsp;                .build(),</b>
+&nbsp;
+<b class="fc">&nbsp;            VantagemConfigDTO.builder()</b>
+<b class="fc">&nbsp;                .nome(&quot;Força Aprimorada&quot;)</b>
+<b class="fc">&nbsp;                .descricao(&quot;Aumenta o atributo Força permanentemente&quot;)</b>
+<b class="fc">&nbsp;                .tipoBonus(&quot;ATRIBUTO_FORCA&quot;)</b>
+<b class="fc">&nbsp;                .valorBonusFormula(&quot;nivel_vantagem * 2&quot;)</b>
+<b class="fc">&nbsp;                .custoBase(3)</b>
+<b class="fc">&nbsp;                .formulaCusto(&quot;custo_base * nivel_vantagem&quot;)</b>
+<b class="fc">&nbsp;                .nivelMinimoPersonagem(1)</b>
+<b class="fc">&nbsp;                .podeEvoluir(true)</b>
+<b class="fc">&nbsp;                .nivelMaximoVantagem(10)</b>
+<b class="fc">&nbsp;                .build(),</b>
+&nbsp;
+<b class="fc">&nbsp;            VantagemConfigDTO.builder()</b>
+<b class="fc">&nbsp;                .nome(&quot;Agilidade Aprimorada&quot;)</b>
+<b class="fc">&nbsp;                .descricao(&quot;Aumenta o atributo Agilidade permanentemente&quot;)</b>
+<b class="fc">&nbsp;                .tipoBonus(&quot;ATRIBUTO_AGILIDADE&quot;)</b>
+<b class="fc">&nbsp;                .valorBonusFormula(&quot;nivel_vantagem * 2&quot;)</b>
+<b class="fc">&nbsp;                .custoBase(3)</b>
+<b class="fc">&nbsp;                .formulaCusto(&quot;custo_base * nivel_vantagem&quot;)</b>
+<b class="fc">&nbsp;                .nivelMinimoPersonagem(1)</b>
+<b class="fc">&nbsp;                .podeEvoluir(true)</b>
+<b class="fc">&nbsp;                .nivelMaximoVantagem(10)</b>
+<b class="fc">&nbsp;                .build(),</b>
+&nbsp;
+&nbsp;            // === Vantagens de Combate ===
+<b class="fc">&nbsp;            VantagemConfigDTO.builder()</b>
+<b class="fc">&nbsp;                .nome(&quot;Ataque Aprimorado&quot;)</b>
+<b class="fc">&nbsp;                .descricao(&quot;Aumenta BBA (Bônus Base de Ataque) em +1 por nível da vantagem&quot;)</b>
+<b class="fc">&nbsp;                .tipoBonus(&quot;BBA&quot;)</b>
+<b class="fc">&nbsp;                .valorBonusFormula(&quot;nivel_vantagem * 1&quot;)</b>
+<b class="fc">&nbsp;                .custoBase(2)</b>
+<b class="fc">&nbsp;                .formulaCusto(&quot;custo_base * nivel_vantagem&quot;)</b>
+<b class="fc">&nbsp;                .nivelMinimoPersonagem(1)</b>
+<b class="fc">&nbsp;                .podeEvoluir(true)</b>
+<b class="fc">&nbsp;                .nivelMaximoVantagem(null)</b>
+<b class="fc">&nbsp;                .build(),</b>
+&nbsp;
+<b class="fc">&nbsp;            VantagemConfigDTO.builder()</b>
+<b class="fc">&nbsp;                .nome(&quot;Defesa Mágica&quot;)</b>
+<b class="fc">&nbsp;                .descricao(&quot;Aumenta BBM (Bônus Base Mágico) em +1 por nível da vantagem&quot;)</b>
+<b class="fc">&nbsp;                .tipoBonus(&quot;BBM&quot;)</b>
+<b class="fc">&nbsp;                .valorBonusFormula(&quot;nivel_vantagem * 1&quot;)</b>
+<b class="fc">&nbsp;                .custoBase(2)</b>
+<b class="fc">&nbsp;                .formulaCusto(&quot;custo_base * nivel_vantagem&quot;)</b>
+<b class="fc">&nbsp;                .nivelMinimoPersonagem(3)</b>
+<b class="fc">&nbsp;                .podeEvoluir(true)</b>
+<b class="fc">&nbsp;                .nivelMaximoVantagem(null)</b>
+<b class="fc">&nbsp;                .build(),</b>
+&nbsp;
+<b class="fc">&nbsp;            VantagemConfigDTO.builder()</b>
+<b class="fc">&nbsp;                .nome(&quot;Golpe Crítico&quot;)</b>
+<b class="fc">&nbsp;                .descricao(&quot;Aumenta chance de crítico em combate&quot;)</b>
+<b class="fc">&nbsp;                .tipoBonus(&quot;CRITICO&quot;)</b>
+<b class="fc">&nbsp;                .valorBonusFormula(&quot;nivel_vantagem * 5&quot;)</b>
+<b class="fc">&nbsp;                .custoBase(4)</b>
+<b class="fc">&nbsp;                .formulaCusto(&quot;custo_base * nivel_vantagem&quot;)</b>
+<b class="fc">&nbsp;                .nivelMinimoPersonagem(5)</b>
+<b class="fc">&nbsp;                .podeEvoluir(true)</b>
+<b class="fc">&nbsp;                .nivelMaximoVantagem(5)</b>
+<b class="fc">&nbsp;                .build(),</b>
+&nbsp;
+&nbsp;            // === Vantagens de Vida/Essência ===
+<b class="fc">&nbsp;            VantagemConfigDTO.builder()</b>
+<b class="fc">&nbsp;                .nome(&quot;Vida Extra&quot;)</b>
+<b class="fc">&nbsp;                .descricao(&quot;Aumenta pontos de vida em +5 por nível da vantagem&quot;)</b>
+<b class="fc">&nbsp;                .tipoBonus(&quot;VIDA&quot;)</b>
+<b class="fc">&nbsp;                .valorBonusFormula(&quot;nivel_vantagem * 5&quot;)</b>
+<b class="fc">&nbsp;                .custoBase(1)</b>
+<b class="fc">&nbsp;                .formulaCusto(&quot;custo_base * nivel_vantagem&quot;)</b>
+<b class="fc">&nbsp;                .nivelMinimoPersonagem(1)</b>
+<b class="fc">&nbsp;                .podeEvoluir(true)</b>
+<b class="fc">&nbsp;                .nivelMaximoVantagem(null)</b>
+<b class="fc">&nbsp;                .build(),</b>
+&nbsp;
+<b class="fc">&nbsp;            VantagemConfigDTO.builder()</b>
+<b class="fc">&nbsp;                .nome(&quot;Essência Ampliada&quot;)</b>
+<b class="fc">&nbsp;                .descricao(&quot;Aumenta pontos de essência/mana em +10 por nível da vantagem&quot;)</b>
+<b class="fc">&nbsp;                .tipoBonus(&quot;ESSENCIA&quot;)</b>
+<b class="fc">&nbsp;                .valorBonusFormula(&quot;nivel_vantagem * 10&quot;)</b>
+<b class="fc">&nbsp;                .custoBase(2)</b>
+<b class="fc">&nbsp;                .formulaCusto(&quot;custo_base * nivel_vantagem&quot;)</b>
+<b class="fc">&nbsp;                .nivelMinimoPersonagem(1)</b>
+<b class="fc">&nbsp;                .podeEvoluir(true)</b>
+<b class="fc">&nbsp;                .nivelMaximoVantagem(null)</b>
+<b class="fc">&nbsp;                .build(),</b>
+&nbsp;
+&nbsp;            // === Vantagens Especiais (não evoluem) ===
+<b class="fc">&nbsp;            VantagemConfigDTO.builder()</b>
+<b class="fc">&nbsp;                .nome(&quot;Visão no Escuro&quot;)</b>
+<b class="fc">&nbsp;                .descricao(&quot;Permite enxergar no escuro até 18 metros&quot;)</b>
+<b class="fc">&nbsp;                .tipoBonus(&quot;ESPECIAL&quot;)</b>
+<b class="fc">&nbsp;                .valorBonusFormula(null)</b>
+<b class="fc">&nbsp;                .custoBase(2)</b>
+<b class="fc">&nbsp;                .formulaCusto(&quot;custo_base&quot;)</b>
+<b class="fc">&nbsp;                .nivelMinimoPersonagem(1)</b>
+<b class="fc">&nbsp;                .podeEvoluir(false)</b>
+<b class="fc">&nbsp;                .nivelMaximoVantagem(1)</b>
+<b class="fc">&nbsp;                .build(),</b>
+&nbsp;
+<b class="fc">&nbsp;            VantagemConfigDTO.builder()</b>
+<b class="fc">&nbsp;                .nome(&quot;Resistência a Veneno&quot;)</b>
+<b class="fc">&nbsp;                .descricao(&quot;Adiciona +4 em testes contra venenos&quot;)</b>
+<b class="fc">&nbsp;                .tipoBonus(&quot;ESPECIAL&quot;)</b>
+<b class="fc">&nbsp;                .valorBonusFormula(null)</b>
+<b class="fc">&nbsp;                .custoBase(3)</b>
+<b class="fc">&nbsp;                .formulaCusto(&quot;custo_base&quot;)</b>
+<b class="fc">&nbsp;                .nivelMinimoPersonagem(3)</b>
+<b class="fc">&nbsp;                .podeEvoluir(false)</b>
+<b class="fc">&nbsp;                .nivelMaximoVantagem(1)</b>
+<b class="fc">&nbsp;                .build(),</b>
+&nbsp;
+<b class="fc">&nbsp;            VantagemConfigDTO.builder()</b>
+<b class="fc">&nbsp;                .nome(&quot;Ambidestria&quot;)</b>
+<b class="fc">&nbsp;                .descricao(&quot;Remove penalidades de usar armas com a mão inábil&quot;)</b>
+<b class="fc">&nbsp;                .tipoBonus(&quot;ESPECIAL&quot;)</b>
+<b class="fc">&nbsp;                .valorBonusFormula(null)</b>
+<b class="fc">&nbsp;                .custoBase(4)</b>
+<b class="fc">&nbsp;                .formulaCusto(&quot;custo_base&quot;)</b>
+<b class="fc">&nbsp;                .nivelMinimoPersonagem(5)</b>
+<b class="fc">&nbsp;                .podeEvoluir(false)</b>
+<b class="fc">&nbsp;                .nivelMaximoVantagem(1)</b>
+<b class="fc">&nbsp;                .build()</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-03-09 20:13</div>
+</div>
+</body>
+</html>

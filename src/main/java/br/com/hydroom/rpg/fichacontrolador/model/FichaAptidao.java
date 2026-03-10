@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 /**
  * Entidade que armazena os valores das aptidões de uma ficha.
@@ -19,6 +20,7 @@ import lombok.NoArgsConstructor;
 }, uniqueConstraints = {
     @UniqueConstraint(name = "uk_ficha_aptidao", columnNames = {"ficha_id", "aptidao_config_id"})
 })
+@SQLRestriction("deleted_at IS NULL")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder
@@ -42,26 +44,33 @@ public class FichaAptidao extends BaseEntity {
 
     @NotNull
     @Builder.Default
-    @Column(name = "valor_base", nullable = false)
-    private Integer valorBase = 0;
+    @Column(name = "base", nullable = false)
+    private Integer base = 0;
 
     @NotNull
     @Builder.Default
-    @Column(name = "valor_sorte", nullable = false)
-    private Integer valorSorte = 0;
+    @Column(name = "sorte", nullable = false)
+    private Integer sorte = 0;
 
     @NotNull
     @Builder.Default
-    @Column(name = "valor_classe", nullable = false)
-    private Integer valorClasse = 0;
+    @Column(name = "classe", nullable = false)
+    private Integer classe = 0;
 
     /**
-     * Calcula o valor total da aptidão.
-     * Total = Base + Sorte + Classe
+     * Total calculado: base + sorte + classe.
      */
-    public Integer getValorTotal() {
-        return (valorBase != null ? valorBase : 0) +
-               (valorSorte != null ? valorSorte : 0) +
-               (valorClasse != null ? valorClasse : 0);
+    @NotNull
+    @Builder.Default
+    @Column(name = "total", nullable = false)
+    private Integer total = 0;
+
+    /**
+     * Recalcula e persiste o total.
+     */
+    public void recalcularTotal() {
+        this.total = (base != null ? base : 0) +
+                     (sorte != null ? sorte : 0) +
+                     (classe != null ? classe : 0);
     }
 }

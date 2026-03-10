@@ -1,0 +1,108 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ConfiguracaoAptidaoRepository</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.com.hydroom.rpg.fichacontrolador.repository</a>
+</div>
+
+<h1>Coverage Summary for Class: ConfiguracaoAptidaoRepository (br.com.hydroom.rpg.fichacontrolador.repository)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">ConfiguracaoAptidaoRepository</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package br.com.hydroom.rpg.fichacontrolador.repository;
+&nbsp;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.model.AptidaoConfig;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.model.TipoAptidao;
+&nbsp;import org.springframework.data.jpa.repository.JpaRepository;
+&nbsp;import org.springframework.data.jpa.repository.Query;
+&nbsp;import org.springframework.stereotype.Repository;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * Repository para gerenciar configurações de aptidões.
+&nbsp; */
+&nbsp;@Repository
+&nbsp;public interface ConfiguracaoAptidaoRepository extends JpaRepository&lt;AptidaoConfig, Long&gt; {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Busca todas as aptidões ativas de um jogo, ordenadas por ordem de exibição.
+&nbsp;     */
+&nbsp;    @Query(&quot;SELECT a FROM AptidaoConfig a WHERE a.jogo.id = :jogoId AND a.deletedAt IS NULL ORDER BY a.ordemExibicao&quot;)
+&nbsp;    List&lt;AptidaoConfig&gt; findByJogoIdOrderByOrdemExibicao(Long jogoId);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Busca aptidões por tipo em um jogo.
+&nbsp;     */
+&nbsp;    @Query(&quot;SELECT a FROM AptidaoConfig a WHERE a.jogo.id = :jogoId AND a.tipoAptidao = :tipoAptidao AND a.deletedAt IS NULL ORDER BY a.ordemExibicao&quot;)
+&nbsp;    List&lt;AptidaoConfig&gt; findByJogoIdAndTipoAptidaoOrderByOrdemExibicao(Long jogoId, TipoAptidao tipoAptidao);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Busca aptidão por nome em um jogo (case-insensitive).
+&nbsp;     */
+&nbsp;    @Query(&quot;SELECT a FROM AptidaoConfig a WHERE a.jogo.id = :jogoId AND LOWER(a.nome) = LOWER(:nome)&quot;)
+&nbsp;    AptidaoConfig findByJogoIdAndNomeIgnoreCase(Long jogoId, String nome);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Verifica se existe aptidão com o nome em um jogo (case-insensitive).
+&nbsp;     */
+&nbsp;    @Query(&quot;SELECT COUNT(a) &gt; 0 FROM AptidaoConfig a WHERE a.jogo.id = :jogoId AND LOWER(a.nome) = LOWER(:nome)&quot;)
+&nbsp;    boolean existsByJogoIdAndNomeIgnoreCase(Long jogoId, String nome);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-03-09 20:13</div>
+</div>
+</body>
+</html>

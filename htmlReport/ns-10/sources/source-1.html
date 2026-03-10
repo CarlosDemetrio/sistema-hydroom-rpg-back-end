@@ -1,0 +1,239 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AbstractConfiguracaoService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.com.hydroom.rpg.fichacontrolador.service.configuracao</a>
+</div>
+
+<h1>Coverage Summary for Class: AbstractConfiguracaoService (br.com.hydroom.rpg.fichacontrolador.service.configuracao)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AbstractConfiguracaoService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (9/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (1/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (28/28)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package br.com.hydroom.rpg.fichacontrolador.service.configuracao;
+&nbsp;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.exception.ConflictException;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.exception.ResourceNotFoundException;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.model.BaseEntity;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.model.ConfiguracaoEntity;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.springframework.data.jpa.repository.JpaRepository;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;/**
+&nbsp; * Classe abstrata base para serviços de configuração.
+&nbsp; *
+&nbsp; * &lt;p&gt;Implementa a lógica comum de CRUD para todas as configurações do sistema.
+&nbsp; * Services específicas devem estender esta classe e implementar validações customizadas.&lt;/p&gt;
+&nbsp; *
+&nbsp; * @param &lt;T&gt; Tipo da entidade de configuração
+&nbsp; * @param &lt;R&gt; Tipo do repositório
+&nbsp; * @author Ficha Controlador Team
+&nbsp; * @since 1.0
+&nbsp; */
+<b class="fc">&nbsp;@Slf4j</b>
+&nbsp;@Transactional(readOnly = true)
+&nbsp;public abstract class AbstractConfiguracaoService&lt;T extends BaseEntity &amp; ConfiguracaoEntity, R extends JpaRepository&lt;T, Long&gt;&gt;
+&nbsp;        implements BaseConfiguracaoService&lt;T&gt; {
+&nbsp;
+&nbsp;    protected final R repository;
+&nbsp;    protected final String entityName;
+&nbsp;
+<b class="fc">&nbsp;    protected AbstractConfiguracaoService(R repository, String entityName) {</b>
+<b class="fc">&nbsp;        this.repository = repository;</b>
+<b class="fc">&nbsp;        this.entityName = entityName;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public T buscarPorId(Long id) {
+<b class="fc">&nbsp;        log.debug(&quot;Buscando {} ID: {}&quot;, entityName, id);</b>
+<b class="fc">&nbsp;        return repository.findById(id)</b>
+<b class="fc">&nbsp;                .orElseThrow(() -&gt; new ResourceNotFoundException(entityName, id));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    @Transactional
+&nbsp;    public T criar(T configuracao) {
+<b class="fc">&nbsp;        log.info(&quot;Criando {} &#39;{}&#39;&quot;, entityName, getEntityIdentifier(configuracao));</b>
+&nbsp;
+<b class="fc">&nbsp;        validarAntesCriar(configuracao);</b>
+<b class="fc">&nbsp;        configuracao.restore();</b>
+&nbsp;
+<b class="fc">&nbsp;        T saved = repository.save(configuracao);</b>
+<b class="fc">&nbsp;        log.info(&quot;{} criado com sucesso: ID {}&quot;, entityName, saved.getId());</b>
+<b class="fc">&nbsp;        return saved;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    @Transactional
+&nbsp;    public T atualizar(Long id, T configuracaoAtualizada) {
+<b class="fc">&nbsp;        log.info(&quot;Atualizando {} ID: {}&quot;, entityName, id);</b>
+&nbsp;
+<b class="fc">&nbsp;        T configuracao = buscarPorId(id);</b>
+<b class="fc">&nbsp;        validarAntesAtualizar(configuracao, configuracaoAtualizada);</b>
+<b class="fc">&nbsp;        atualizarCampos(configuracao, configuracaoAtualizada);</b>
+&nbsp;
+<b class="fc">&nbsp;        T saved = repository.save(configuracao);</b>
+<b class="fc">&nbsp;        log.info(&quot;{} atualizado com sucesso: ID {}&quot;, entityName, saved.getId());</b>
+<b class="fc">&nbsp;        return saved;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    @Transactional
+&nbsp;    public void deletar(Long id) {
+<b class="fc">&nbsp;        log.info(&quot;Deletando {} ID: {}&quot;, entityName, id);</b>
+&nbsp;
+<b class="fc">&nbsp;        T configuracao = buscarPorId(id);</b>
+<b class="fc">&nbsp;        configuracao.delete();</b>
+<b class="fc">&nbsp;        repository.save(configuracao);</b>
+&nbsp;
+<b class="fc">&nbsp;        log.info(&quot;{} deletado com sucesso: ID {}&quot;, entityName, id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Obtém identificador da entidade para logs.
+&nbsp;     * Subclasses podem sobrescrever para retornar informação mais específica.
+&nbsp;     *
+&nbsp;     * @param configuracao Configuração
+&nbsp;     * @return String identificadora
+&nbsp;     */
+&nbsp;    protected String getEntityIdentifier(T configuracao) {
+<b class="pc">&nbsp;        return configuracao.getId() != null ? configuracao.getId().toString() : &quot;nova&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Valida a configuração antes de criar.
+&nbsp;     * Subclasses devem sobrescrever para adicionar validações específicas.
+&nbsp;     *
+&nbsp;     * @param configuracao Configuração a ser validada
+&nbsp;     * @throws ConflictException se houver conflito
+&nbsp;     */
+&nbsp;    protected void validarAntesCriar(T configuracao) {
+&nbsp;        // Default: sem validação adicional
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Valida a configuração antes de atualizar.
+&nbsp;     * Subclasses devem sobrescrever para adicionar validações específicas.
+&nbsp;     *
+&nbsp;     * @param configuracaoExistente Configuração existente no banco
+&nbsp;     * @param configuracaoAtualizada Configuração com novos dados
+&nbsp;     * @throws ConflictException se houver conflito
+&nbsp;     */
+&nbsp;    protected void validarAntesAtualizar(T configuracaoExistente, T configuracaoAtualizada) {
+&nbsp;        // Default: sem validação adicional
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Atualiza os campos da entidade existente com os valores da entidade atualizada.
+&nbsp;     * Subclasses DEVEM implementar este método.
+&nbsp;     *
+&nbsp;     * @param configuracaoExistente Configuração existente no banco
+&nbsp;     * @param configuracaoAtualizada Configuração com novos dados
+&nbsp;     */
+&nbsp;    protected abstract void atualizarCampos(T configuracaoExistente, T configuracaoAtualizada);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-03-09 20:13</div>
+</div>
+</body>
+</html>

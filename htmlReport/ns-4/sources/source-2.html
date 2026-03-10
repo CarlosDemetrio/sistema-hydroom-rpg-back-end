@@ -1,0 +1,200 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > JogoController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.com.hydroom.rpg.fichacontrolador.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: JogoController (br.com.hydroom.rpg.fichacontrolador.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">JogoController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/20)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package br.com.hydroom.rpg.fichacontrolador.controller;
+&nbsp;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.request.CriarJogoRequest;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.request.EditarJogoRequest;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.response.JogoResponse;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.response.JogoResumoResponse;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.mapper.JogoMapper;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.service.JogoService;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+&nbsp;import io.swagger.v3.oas.annotations.tags.Tag;
+&nbsp;import jakarta.validation.Valid;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.security.access.prepost.PreAuthorize;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * Controller para gerenciamento de Jogos/Campanhas.
+&nbsp; * CRUD completo - Apenas MESTREs podem criar, editar e deletar jogos.
+&nbsp; */
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/v1/jogos&quot;)
+&nbsp;@RequiredArgsConstructor
+&nbsp;@SecurityRequirement(name = &quot;bearer-jwt&quot;)
+&nbsp;@Tag(name = &quot;Jogos&quot;, description = &quot;Gerenciamento de jogos/campanhas de RPG&quot;)
+&nbsp;public class JogoController {
+&nbsp;
+&nbsp;    private final JogoService jogoService;
+&nbsp;    private final JogoMapper mapper;
+&nbsp;
+&nbsp;    @GetMapping
+&nbsp;    @PreAuthorize(&quot;hasAnyRole(&#39;MESTRE&#39;, &#39;JOGADOR&#39;)&quot;)
+&nbsp;    @Operation(summary = &quot;Listar jogos do usuário&quot;, description = &quot;Retorna todos os jogos onde o usuário é Mestre ou Jogador&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;JogoResumoResponse&gt;&gt; listar() {
+<b class="nc">&nbsp;        var jogos = jogoService.listarJogosDoUsuario();</b>
+<b class="nc">&nbsp;        var response = jogos.stream().map(mapper::toResumoResponse).toList();</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(response);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/{id}&quot;)
+&nbsp;    @PreAuthorize(&quot;hasAnyRole(&#39;MESTRE&#39;, &#39;JOGADOR&#39;)&quot;)
+&nbsp;    @Operation(summary = &quot;Buscar jogo por ID&quot;, description = &quot;Retorna os detalhes de um jogo específico se o usuário tiver acesso&quot;)
+&nbsp;    public ResponseEntity&lt;JogoResponse&gt; buscarPorId(@PathVariable Long id) {
+<b class="nc">&nbsp;        var jogo = jogoService.buscarJogo(id);</b>
+<b class="nc">&nbsp;        var response = mapper.toResponse(jogo);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(response);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/ativo&quot;)
+&nbsp;    @PreAuthorize(&quot;hasAnyRole(&#39;MESTRE&#39;, &#39;JOGADOR&#39;)&quot;)
+&nbsp;    @Operation(summary = &quot;Buscar jogo ativo&quot;, description = &quot;Retorna o jogo atualmente ativo onde o usuário é mestre (404 se não houver)&quot;)
+&nbsp;    public ResponseEntity&lt;JogoResponse&gt; buscarAtivo() {
+<b class="nc">&nbsp;        var jogo = jogoService.buscarJogoAtivo();</b>
+<b class="nc">&nbsp;        var response = mapper.toResponse(jogo);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(response);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping
+&nbsp;//    @PreAuthorize(&quot;hasRole(&#39;MESTRE&#39;)&quot;)
+&nbsp;    @Operation(summary = &quot;Criar novo jogo (Apenas MESTRE)&quot;, description = &quot;Cria um novo jogo/campanha com o usuário como Mestre&quot;)
+&nbsp;    public ResponseEntity&lt;JogoResponse&gt; criar(@Valid @RequestBody CriarJogoRequest request) {
+<b class="nc">&nbsp;        var jogo = jogoService.criarJogo(request);</b>
+<b class="nc">&nbsp;        var response = mapper.toResponse(jogo);</b>
+<b class="nc">&nbsp;        return ResponseEntity.status(HttpStatus.CREATED).body(response);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PutMapping(&quot;/{id}&quot;)
+&nbsp;    @PreAuthorize(&quot;hasRole(&#39;MESTRE&#39;)&quot;)
+&nbsp;    @Operation(summary = &quot;Atualizar jogo (Apenas MESTRE)&quot;, description = &quot;Atualiza informações do jogo - apenas o Mestre do jogo pode fazer isso&quot;)
+&nbsp;    public ResponseEntity&lt;JogoResponse&gt; atualizar(@PathVariable Long id, @Valid @RequestBody EditarJogoRequest request) {
+<b class="nc">&nbsp;        var jogo = jogoService.atualizarJogo(id, request);</b>
+<b class="nc">&nbsp;        var response = mapper.toResponse(jogo);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(response);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @DeleteMapping(&quot;/{id}&quot;)
+&nbsp;    @PreAuthorize(&quot;hasRole(&#39;MESTRE&#39;)&quot;)
+&nbsp;    @Operation(summary = &quot;Deletar jogo (Apenas MESTRE)&quot;, description = &quot;Soft delete - marca o jogo como inativo - apenas o Mestre do jogo pode fazer isso&quot;)
+&nbsp;    public ResponseEntity&lt;Void&gt; deletar(@PathVariable Long id) {
+<b class="nc">&nbsp;        jogoService.deletarJogo(id);</b>
+<b class="nc">&nbsp;        return ResponseEntity.noContent().build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/{id}/ativar&quot;)
+&nbsp;    @PreAuthorize(&quot;hasRole(&#39;MESTRE&#39;)&quot;)
+&nbsp;    @Operation(summary = &quot;Reativar jogo (Apenas MESTRE)&quot;, description = &quot;Reativa um jogo marcado como inativo&quot;)
+&nbsp;    public ResponseEntity&lt;JogoResponse&gt; ativar(@PathVariable Long id) {
+<b class="nc">&nbsp;        var jogo = jogoService.ativarJogo(id);</b>
+<b class="nc">&nbsp;        var response = mapper.toResponse(jogo);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(response);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-03-09 20:13</div>
+</div>
+</body>
+</html>

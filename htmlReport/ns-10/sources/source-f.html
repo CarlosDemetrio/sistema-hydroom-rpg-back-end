@@ -1,0 +1,263 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > SiglaValidationService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.com.hydroom.rpg.fichacontrolador.service.configuracao</a>
+</div>
+
+<h1>Coverage Summary for Class: SiglaValidationService (br.com.hydroom.rpg.fichacontrolador.service.configuracao)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SiglaValidationService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    71,4%
+  </span>
+  <span class="absValue">
+    (20/28)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    82,1%
+  </span>
+  <span class="absValue">
+    (23/28)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">SiglaValidationService$$SpringCGLIB$$0</td>
+  </tr>
+  <tr>
+    <td class="name">SiglaValidationService$TipoSigla</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    71,4%
+  </span>
+  <span class="absValue">
+    (20/28)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    83,3%
+  </span>
+  <span class="absValue">
+    (25/30)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package br.com.hydroom.rpg.fichacontrolador.service.configuracao;
+&nbsp;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.constants.ValidationMessages;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.SiglaEmUsoResponse;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.exception.ConflictException;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.repository.BonusConfigRepository;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.repository.ConfiguracaoAtributoRepository;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.repository.VantagemConfigRepository;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Comparator;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * Serviço responsável pela validação de unicidade de siglas cross-entity por jogo.
+&nbsp; *
+&nbsp; * &lt;p&gt;Regra crítica: siglas devem ser únicas por jogo, independentemente do tipo de entidade.
+&nbsp; * Se &quot;FOR&quot; existe como abreviação de atributo, nenhum bônus ou vantagem do mesmo jogo pode usar &quot;FOR&quot;.&lt;/p&gt;
+&nbsp; */
+&nbsp;@Service
+&nbsp;@RequiredArgsConstructor
+<b class="fc">&nbsp;@Slf4j</b>
+&nbsp;@Transactional(readOnly = true)
+&nbsp;public class SiglaValidationService {
+&nbsp;
+<b class="fc">&nbsp;    public enum TipoSigla {</b>
+<b class="fc">&nbsp;        ATRIBUTO, BONUS, VANTAGEM</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private final ConfiguracaoAtributoRepository atributoRepository;
+&nbsp;    private final BonusConfigRepository bonusRepository;
+&nbsp;    private final VantagemConfigRepository vantagemRepository;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Valida que a sigla não está em uso em nenhuma entidade do jogo,
+&nbsp;     * exceto a entidade sendo editada (identificada por excludeId + tipo).
+&nbsp;     *
+&nbsp;     * @param sigla     sigla a validar (case-insensitive); null ou blank é aceito sem validação
+&nbsp;     * @param jogoId    ID do jogo
+&nbsp;     * @param excludeId ID da entidade atual para exclusão da busca (null se create)
+&nbsp;     * @param tipo      tipo da entidade chamadora (para excluir ela mesma corretamente)
+&nbsp;     * @throws ConflictException se a sigla já estiver em uso em qualquer entidade do jogo
+&nbsp;     */
+&nbsp;    public void validarSiglaDisponivel(String sigla, Long jogoId, Long excludeId, TipoSigla tipo) {
+<b class="fc">&nbsp;        if (sigla == null || sigla.isBlank()) return;</b>
+&nbsp;
+<b class="fc">&nbsp;        String siglaUpper = sigla.toUpperCase();</b>
+<b class="fc">&nbsp;        log.debug(&quot;Validando sigla &#39;{}&#39; para jogo {} (excludeId={}, tipo={})&quot;, siglaUpper, jogoId, excludeId, tipo);</b>
+&nbsp;
+&nbsp;        // Verificar atributos
+<b class="fc">&nbsp;        if (tipo == TipoSigla.ATRIBUTO &amp;&amp; excludeId != null) {</b>
+<b class="pc">&nbsp;            if (atributoRepository.existsByJogoIdAndAbreviacaoIgnoreCaseAndIdNot(jogoId, sigla, excludeId)) {</b>
+<b class="nc">&nbsp;                lançarConflito(siglaUpper, &quot;atributo&quot;);</b>
+&nbsp;            }
+&nbsp;        } else {
+<b class="fc">&nbsp;            if (atributoRepository.existsByJogoIdAndAbreviacaoIgnoreCase(jogoId, sigla)) {</b>
+<b class="fc">&nbsp;                lançarConflito(siglaUpper, &quot;atributo&quot;);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;        // Verificar bônus
+<b class="fc">&nbsp;        if (tipo == TipoSigla.BONUS &amp;&amp; excludeId != null) {</b>
+<b class="pc">&nbsp;            if (bonusRepository.existsByJogoIdAndSiglaIgnoreCaseAndIdNot(jogoId, sigla, excludeId)) {</b>
+<b class="nc">&nbsp;                lançarConflito(siglaUpper, &quot;bônus&quot;);</b>
+&nbsp;            }
+&nbsp;        } else {
+<b class="fc">&nbsp;            if (bonusRepository.existsByJogoIdAndSiglaIgnoreCase(jogoId, sigla)) {</b>
+<b class="fc">&nbsp;                lançarConflito(siglaUpper, &quot;bônus&quot;);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;        // Verificar vantagens
+<b class="pc">&nbsp;        if (tipo == TipoSigla.VANTAGEM &amp;&amp; excludeId != null) {</b>
+<b class="nc">&nbsp;            if (vantagemRepository.existsByJogoIdAndSiglaIgnoreCaseAndIdNot(jogoId, sigla, excludeId)) {</b>
+<b class="nc">&nbsp;                lançarConflito(siglaUpper, &quot;vantagem&quot;);</b>
+&nbsp;            }
+&nbsp;        } else {
+<b class="pc">&nbsp;            if (vantagemRepository.existsByJogoIdAndSiglaIgnoreCase(jogoId, sigla)) {</b>
+<b class="nc">&nbsp;                lançarConflito(siglaUpper, &quot;vantagem&quot;);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Lista todas as siglas em uso no jogo, combinando atributos, bônus e vantagens,
+&nbsp;     * ordenadas alfabeticamente pela sigla.
+&nbsp;     *
+&nbsp;     * @param jogoId ID do jogo
+&nbsp;     * @return lista ordenada de siglas em uso
+&nbsp;     */
+&nbsp;    public List&lt;SiglaEmUsoResponse&gt; listarSiglasDoJogo(Long jogoId) {
+<b class="fc">&nbsp;        List&lt;SiglaEmUsoResponse&gt; todas = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        todas.addAll(atributoRepository.findSiglasComInfoByJogoId(jogoId));</b>
+<b class="fc">&nbsp;        todas.addAll(bonusRepository.findSiglasComInfoByJogoId(jogoId));</b>
+<b class="fc">&nbsp;        todas.addAll(vantagemRepository.findSiglasComInfoByJogoId(jogoId));</b>
+<b class="fc">&nbsp;        return todas.stream()</b>
+<b class="fc">&nbsp;                .sorted(Comparator.comparing(SiglaEmUsoResponse::sigla))</b>
+<b class="fc">&nbsp;                .toList();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void lançarConflito(String sigla, String entidade) {
+<b class="fc">&nbsp;        throw new ConflictException(</b>
+<b class="fc">&nbsp;            ValidationMessages.Sigla.SIGLA_JA_EM_USO.formatted(sigla, entidade)</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-03-09 20:13</div>
+</div>
+</body>
+</html>

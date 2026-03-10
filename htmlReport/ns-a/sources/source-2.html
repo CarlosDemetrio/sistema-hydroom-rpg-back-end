@@ -1,0 +1,206 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > RefreshAuthoritiesFilter</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.com.hydroom.rpg.fichacontrolador.filter</a>
+</div>
+
+<h1>Coverage Summary for Class: RefreshAuthoritiesFilter (br.com.hydroom.rpg.fichacontrolador.filter)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RefreshAuthoritiesFilter</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    33,3%
+  </span>
+  <span class="absValue">
+    (1/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    4,8%
+  </span>
+  <span class="absValue">
+    (1/21)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package br.com.hydroom.rpg.fichacontrolador.filter;
+&nbsp;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.repository.UsuarioRepository;
+&nbsp;import jakarta.servlet.FilterChain;
+&nbsp;import jakarta.servlet.ServletException;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import jakarta.servlet.http.HttpServletResponse;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.springframework.security.core.Authentication;
+&nbsp;import org.springframework.security.core.GrantedAuthority;
+&nbsp;import org.springframework.security.core.authority.SimpleGrantedAuthority;
+&nbsp;import org.springframework.security.core.context.SecurityContextHolder;
+&nbsp;import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+&nbsp;import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+&nbsp;import org.springframework.security.oauth2.core.user.OAuth2User;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;import org.springframework.web.filter.OncePerRequestFilter;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.HashSet;
+&nbsp;import java.util.Set;
+&nbsp;
+&nbsp;/**
+&nbsp; * Filtro que recarrega as authorities do usuário do banco de dados a cada requisição.
+&nbsp; * Isso garante que mudanças na role do usuário sejam refletidas imediatamente,
+&nbsp; * sem necessidade de fazer logout/login.
+&nbsp; */
+<b class="fc">&nbsp;@Slf4j</b>
+&nbsp;@Component
+&nbsp;@RequiredArgsConstructor
+&nbsp;public class RefreshAuthoritiesFilter extends OncePerRequestFilter {
+&nbsp;
+&nbsp;    private final UsuarioRepository usuarioRepository;
+&nbsp;
+&nbsp;    @Override
+&nbsp;    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+&nbsp;            throws ServletException, IOException {
+&nbsp;
+<b class="nc">&nbsp;        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();</b>
+&nbsp;
+&nbsp;        // Apenas processar se for OAuth2 e estiver autenticado
+<b class="nc">&nbsp;        if (authentication instanceof OAuth2AuthenticationToken oauth2Token &amp;&amp; authentication.isAuthenticated()) {</b>
+<b class="nc">&nbsp;            OAuth2User oauth2User = oauth2Token.getPrincipal();</b>
+<b class="nc">&nbsp;            String email = oauth2User.getAttribute(&quot;email&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;            if (email != null) {</b>
+&nbsp;                // Buscar usuário no banco
+<b class="nc">&nbsp;                usuarioRepository.findByEmail(email).ifPresent(usuario -&gt; {</b>
+&nbsp;                    // Verificar se as authorities precisam ser atualizadas
+<b class="nc">&nbsp;                    String expectedAuthority = &quot;ROLE_&quot; + usuario.getRole();</b>
+<b class="nc">&nbsp;                    boolean hasCorrectAuthority = authentication.getAuthorities().stream()</b>
+<b class="nc">&nbsp;                            .anyMatch(auth -&gt; auth.getAuthority().equals(expectedAuthority));</b>
+&nbsp;
+<b class="nc">&nbsp;                    if (!hasCorrectAuthority) {</b>
+&nbsp;                        // Recriar authorities com a role atualizada do banco
+<b class="nc">&nbsp;                        Set&lt;GrantedAuthority&gt; updatedAuthorities = new HashSet&lt;&gt;(oauth2User.getAuthorities());</b>
+&nbsp;
+&nbsp;                        // Remover authorities antigas de ROLE_*
+<b class="nc">&nbsp;                        updatedAuthorities.removeIf(auth -&gt; auth.getAuthority().startsWith(&quot;ROLE_&quot;));</b>
+&nbsp;
+&nbsp;                        // Adicionar authority correta do banco
+<b class="nc">&nbsp;                        updatedAuthorities.add(new SimpleGrantedAuthority(&quot;ROLE_&quot; + usuario.getRole()));</b>
+&nbsp;
+&nbsp;                        // Criar novo OAuth2User com authorities atualizadas
+<b class="nc">&nbsp;                        OAuth2User updatedUser = new DefaultOAuth2User(</b>
+&nbsp;                                updatedAuthorities,
+<b class="nc">&nbsp;                                oauth2User.getAttributes(),</b>
+&nbsp;                                &quot;email&quot;
+&nbsp;                        );
+&nbsp;
+&nbsp;                        // Criar novo token com authorities atualizadas
+<b class="nc">&nbsp;                        OAuth2AuthenticationToken updatedToken = new OAuth2AuthenticationToken(</b>
+&nbsp;                                updatedUser,
+&nbsp;                                updatedAuthorities,
+<b class="nc">&nbsp;                                oauth2Token.getAuthorizedClientRegistrationId()</b>
+&nbsp;                        );
+&nbsp;
+&nbsp;                        // Atualizar o SecurityContext
+<b class="nc">&nbsp;                        SecurityContextHolder.getContext().setAuthentication(updatedToken);</b>
+&nbsp;
+<b class="nc">&nbsp;                        log.debug(&quot;Authorities atualizadas para usuário {}: {}&quot;, email, updatedAuthorities);</b>
+&nbsp;                    }
+&nbsp;                });
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        filterChain.doFilter(request, response);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-03-09 20:13</div>
+</div>
+</body>
+</html>

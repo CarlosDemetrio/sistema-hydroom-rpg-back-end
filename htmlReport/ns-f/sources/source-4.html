@@ -1,0 +1,573 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > GameConfigInitializerService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.com.hydroom.rpg.fichacontrolador.service</a>
+</div>
+
+<h1>Coverage Summary for Class: GameConfigInitializerService (br.com.hydroom.rpg.fichacontrolador.service)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GameConfigInitializerService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (27/27)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (15/20)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    98%
+  </span>
+  <span class="absValue">
+    (199/203)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">GameConfigInitializerService$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (27/27)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (15/20)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    98%
+  </span>
+  <span class="absValue">
+    (199/203)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package br.com.hydroom.rpg.fichacontrolador.service;
+&nbsp;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.config.GameDefaultConfigProvider;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.defaults.*;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.model.*;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.repository.*;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;/**
+&nbsp; * Service responsável por inicializar configurações padrão de um jogo.
+&nbsp; *
+&nbsp; * &lt;p&gt;Responsabilidades:&lt;/p&gt;
+&nbsp; * &lt;ul&gt;
+&nbsp; *   &lt;li&gt;Criar todas as configurações default ao criar um jogo&lt;/li&gt;
+&nbsp; *   &lt;li&gt;Verificar se configs já existem (evitar duplicação)&lt;/li&gt;
+&nbsp; *   &lt;li&gt;Relacionar configs entre si (ex: bônus raciais com atributos)&lt;/li&gt;
+&nbsp; * &lt;/ul&gt;
+&nbsp; *
+&nbsp; * &lt;p&gt;&lt;strong&gt;Chamado por&lt;/strong&gt;: {@code JogoService.criarJogo()}&lt;/p&gt;
+&nbsp; *
+&nbsp; * @author Carlos Demétrio
+&nbsp; * @since 2026-02-05
+&nbsp; */
+<b class="fc">&nbsp;@Slf4j</b>
+&nbsp;@Service
+&nbsp;@RequiredArgsConstructor
+&nbsp;public class GameConfigInitializerService {
+&nbsp;
+&nbsp;    // Repositories
+&nbsp;    private final JogoRepository jogoRepository;
+&nbsp;    private final ConfiguracaoAtributoRepository atributoRepository;
+&nbsp;    private final ConfiguracaoAptidaoRepository aptidaoRepository;
+&nbsp;    private final TipoAptidaoRepository tipoAptidaoRepository;
+&nbsp;    private final ConfiguracaoNivelRepository nivelRepository;
+&nbsp;    private final ConfiguracaoClasseRepository classeRepository;
+&nbsp;    private final ConfiguracaoRacaRepository racaRepository;
+&nbsp;    private final RacaBonusAtributoRepository racaBonusAtributoRepository;
+&nbsp;    private final DadoProspeccaoConfigRepository prospeccaoRepository;
+&nbsp;    private final GeneroConfigRepository generoRepository;
+&nbsp;    private final IndoleConfigRepository indoleRepository;
+&nbsp;    private final PresencaConfigRepository presencaRepository;
+&nbsp;    private final MembroCorpoConfigRepository membroCorpoRepository;
+&nbsp;    private final VantagemConfigRepository vantagemRepository;
+&nbsp;
+&nbsp;    // Provider de dados default
+&nbsp;    private final GameDefaultConfigProvider defaultProvider;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Inicializa todas as configurações padrão para um jogo.
+&nbsp;     *
+&nbsp;     * &lt;p&gt;&lt;strong&gt;⚠️ IMPORTANTE&lt;/strong&gt;: Este método é transacional.
+&nbsp;     * Se qualquer erro ocorrer, todas as mudanças serão revertidas.&lt;/p&gt;
+&nbsp;     *
+&nbsp;     * @param jogoId ID do jogo a ser inicializado
+&nbsp;     * @throws IllegalArgumentException se jogo não existe
+&nbsp;     * @throws IllegalStateException se configs já foram inicializadas
+&nbsp;     */
+&nbsp;    @Transactional
+&nbsp;    public void initializeGameConfigs(Long jogoId) {
+<b class="fc">&nbsp;        log.info(&quot;Inicializando configurações padrão para jogo ID: {}&quot;, jogoId);</b>
+&nbsp;
+&nbsp;        // 1. Buscar jogo
+<b class="fc">&nbsp;        Jogo jogo = jogoRepository.findById(jogoId)</b>
+<b class="fc">&nbsp;                .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Jogo não encontrado: &quot; + jogoId));</b>
+&nbsp;
+&nbsp;        // 2. Verificar se já tem configs (evitar duplicação)
+<b class="pc">&nbsp;        if (hasExistingConfigs(jogoId)) {</b>
+<b class="nc">&nbsp;            log.warn(&quot;Jogo {} já possui configurações. Pulando inicialização.&quot;, jogoId);</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        log.info(&quot;Criando configurações padrão para jogo &#39;{}&#39;...&quot;, jogo.getNome());</b>
+&nbsp;
+&nbsp;        // 3. Criar atributos
+<b class="fc">&nbsp;        log.debug(&quot;Criando atributos...&quot;);</b>
+<b class="fc">&nbsp;        List&lt;AtributoConfig&gt; atributos = createAtributos(jogo, defaultProvider.getDefaultAtributos());</b>
+&nbsp;
+&nbsp;        // 4. Criar tipos de aptidão (FISICA e MENTAL)
+<b class="fc">&nbsp;        log.debug(&quot;Criando tipos de aptidão...&quot;);</b>
+<b class="fc">&nbsp;        Map&lt;String, TipoAptidao&gt; tiposAptidao = createTiposAptidao(jogo);</b>
+&nbsp;
+&nbsp;        // 5. Criar aptidões
+<b class="fc">&nbsp;        log.debug(&quot;Criando aptidões...&quot;);</b>
+<b class="fc">&nbsp;        createAptidoes(jogo, tiposAptidao, defaultProvider.getDefaultAptidoes());</b>
+&nbsp;
+&nbsp;        // 6. Criar níveis
+<b class="fc">&nbsp;        log.debug(&quot;Criando níveis...&quot;);</b>
+<b class="fc">&nbsp;        List&lt;NivelConfig&gt; niveis = createNiveis(jogo, defaultProvider.getDefaultNiveis());</b>
+&nbsp;
+&nbsp;        // 6. Criar limitadores (se houver repository - verificar se existe)
+&nbsp;        // log.debug(&quot;Criando limitadores...&quot;);
+&nbsp;        // List&lt;LimitadorConfig&gt; limitadores = createLimitadores(jogo, defaultProvider.getDefaultLimitadores());
+&nbsp;
+&nbsp;        // 7. Criar classes
+<b class="fc">&nbsp;        log.debug(&quot;Criando classes...&quot;);</b>
+<b class="fc">&nbsp;        List&lt;ClassePersonagem&gt; classes = createClasses(jogo, defaultProvider.getDefaultClasses());</b>
+&nbsp;
+&nbsp;        // 8. Criar raças
+<b class="fc">&nbsp;        log.debug(&quot;Criando raças...&quot;);</b>
+<b class="fc">&nbsp;        List&lt;Raca&gt; racas = createRacas(jogo, defaultProvider.getDefaultRacas());</b>
+&nbsp;
+&nbsp;        // 9. Criar bônus raciais
+<b class="fc">&nbsp;        log.debug(&quot;Criando bônus raciais...&quot;);</b>
+<b class="fc">&nbsp;        createBonusRaciais(racas, atributos, defaultProvider.getDefaultBonusRaciais());</b>
+&nbsp;
+&nbsp;        // 10. Criar prospecções
+<b class="fc">&nbsp;        log.debug(&quot;Criando dados de prospecção...&quot;);</b>
+<b class="fc">&nbsp;        createProspeccoes(jogo, defaultProvider.getDefaultProspeccoes());</b>
+&nbsp;
+&nbsp;        // 11. Criar gêneros
+<b class="fc">&nbsp;        log.debug(&quot;Criando gêneros...&quot;);</b>
+<b class="fc">&nbsp;        createGeneros(jogo, defaultProvider.getDefaultGeneros());</b>
+&nbsp;
+&nbsp;        // 12. Criar índoles
+<b class="fc">&nbsp;        log.debug(&quot;Criando índoles...&quot;);</b>
+<b class="fc">&nbsp;        createIndoles(jogo, defaultProvider.getDefaultIndoles());</b>
+&nbsp;
+&nbsp;        // 13. Criar presenças
+<b class="fc">&nbsp;        log.debug(&quot;Criando presenças...&quot;);</b>
+<b class="fc">&nbsp;        createPresencas(jogo, defaultProvider.getDefaultPresencas());</b>
+&nbsp;
+&nbsp;        // 14. Criar membros do corpo
+<b class="fc">&nbsp;        log.debug(&quot;Criando membros do corpo...&quot;);</b>
+<b class="fc">&nbsp;        createMembrosCorpo(jogo, defaultProvider.getDefaultMembrosCorpo());</b>
+&nbsp;
+&nbsp;        // 15. Criar vantagens
+<b class="fc">&nbsp;        log.debug(&quot;Criando vantagens...&quot;);</b>
+<b class="fc">&nbsp;        createVantagens(jogo, defaultProvider.getDefaultVantagens());</b>
+&nbsp;
+<b class="fc">&nbsp;        log.info(&quot;✅ Configurações padrão criadas com sucesso para jogo &#39;{}&#39;&quot;, jogo.getNome());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Verifica se o jogo já possui configurações.
+&nbsp;     * Checa apenas atributos - se tiver pelo menos 1, considera que já foi inicializado.
+&nbsp;     *
+&nbsp;     * @param jogoId ID do jogo
+&nbsp;     * @return true se já possui configs, false caso contrário
+&nbsp;     */
+&nbsp;    private boolean hasExistingConfigs(Long jogoId) {
+<b class="fc">&nbsp;        long count = atributoRepository.countByJogoId(jogoId);</b>
+<b class="pc">&nbsp;        return count &gt; 0;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Cria atributos padrão para o jogo.
+&nbsp;     */
+&nbsp;    private List&lt;AtributoConfig&gt; createAtributos(Jogo jogo, List&lt;AtributoConfigDTO&gt; dtos) {
+<b class="fc">&nbsp;        List&lt;AtributoConfig&gt; entities = dtos.stream()</b>
+<b class="fc">&nbsp;                .map(dto -&gt; AtributoConfig.builder()</b>
+<b class="fc">&nbsp;                        .jogo(jogo)</b>
+<b class="fc">&nbsp;                        .nome(dto.getNome())</b>
+<b class="fc">&nbsp;                        .abreviacao(dto.getAbreviacao())</b>
+<b class="fc">&nbsp;                        .descricao(dto.getDescricao())</b>
+<b class="fc">&nbsp;                        .formulaImpeto(dto.getFormulaImpeto())</b>
+<b class="fc">&nbsp;                        .descricaoImpeto(dto.getUnidadeImpeto())</b>
+<b class="fc">&nbsp;                        .ordemExibicao(dto.getOrdemExibicao())</b>
+<b class="fc">&nbsp;                        .build())</b>
+<b class="fc">&nbsp;                .toList();</b>
+&nbsp;
+<b class="fc">&nbsp;        List&lt;AtributoConfig&gt; saved = atributoRepository.saveAll(entities);</b>
+<b class="fc">&nbsp;        log.debug(&quot;✅ {} atributos criados&quot;, saved.size());</b>
+<b class="fc">&nbsp;        return saved;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Cria tipos de aptidão (FISICA e MENTAL).
+&nbsp;     * Deve ser chamado ANTES de criar aptidões.
+&nbsp;     */
+&nbsp;    private Map&lt;String, TipoAptidao&gt; createTiposAptidao(Jogo jogo) {
+<b class="fc">&nbsp;        TipoAptidao fisica = TipoAptidao.builder()</b>
+<b class="fc">&nbsp;                .jogo(jogo)</b>
+<b class="fc">&nbsp;                .nome(&quot;FISICA&quot;)</b>
+<b class="fc">&nbsp;                .descricao(&quot;Aptidões físicas e corporais&quot;)</b>
+<b class="fc">&nbsp;                .ordemExibicao(1)</b>
+<b class="fc">&nbsp;                .build();</b>
+&nbsp;
+<b class="fc">&nbsp;        TipoAptidao mental = TipoAptidao.builder()</b>
+<b class="fc">&nbsp;                .jogo(jogo)</b>
+<b class="fc">&nbsp;                .nome(&quot;MENTAL&quot;)</b>
+<b class="fc">&nbsp;                .descricao(&quot;Aptidões mentais e sociais&quot;)</b>
+<b class="fc">&nbsp;                .ordemExibicao(2)</b>
+<b class="fc">&nbsp;                .build();</b>
+&nbsp;
+<b class="fc">&nbsp;        List&lt;TipoAptidao&gt; saved = tipoAptidaoRepository.saveAll(List.of(fisica, mental));</b>
+<b class="fc">&nbsp;        log.debug(&quot;✅ {} tipos de aptidão criados&quot;, saved.size());</b>
+&nbsp;
+<b class="fc">&nbsp;        Map&lt;String, TipoAptidao&gt; map = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        map.put(&quot;FISICA&quot;, saved.get(0));</b>
+<b class="fc">&nbsp;        map.put(&quot;MENTAL&quot;, saved.get(1));</b>
+<b class="fc">&nbsp;        return map;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Cria aptidões padrão para o jogo.
+&nbsp;     */
+&nbsp;    private void createAptidoes(Jogo jogo, Map&lt;String, TipoAptidao&gt; tiposAptidao, List&lt;AptidaoConfigDTO&gt; dtos) {
+<b class="fc">&nbsp;        List&lt;AptidaoConfig&gt; entities = dtos.stream()</b>
+<b class="fc">&nbsp;                .map(dto -&gt; {</b>
+<b class="fc">&nbsp;                    TipoAptidao tipo = tiposAptidao.get(dto.getTipo());</b>
+<b class="fc">&nbsp;                    return AptidaoConfig.builder()</b>
+<b class="fc">&nbsp;                            .jogo(jogo)</b>
+<b class="fc">&nbsp;                            .tipoAptidao(tipo)</b>
+<b class="fc">&nbsp;                            .nome(dto.getNome())</b>
+<b class="fc">&nbsp;                            .descricao(dto.getDescricao())</b>
+<b class="fc">&nbsp;                            .ordemExibicao(dto.getOrdemExibicao())</b>
+<b class="fc">&nbsp;                            .build();</b>
+&nbsp;                })
+<b class="fc">&nbsp;                .toList();</b>
+&nbsp;
+<b class="fc">&nbsp;        List&lt;AptidaoConfig&gt; saved = aptidaoRepository.saveAll(entities);</b>
+<b class="fc">&nbsp;        log.debug(&quot;✅ {} aptidões criadas&quot;, saved.size());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Cria níveis padrão para o jogo (0-35).
+&nbsp;     */
+&nbsp;    private List&lt;NivelConfig&gt; createNiveis(Jogo jogo, List&lt;NivelConfigDTO&gt; dtos) {
+<b class="fc">&nbsp;        List&lt;NivelConfig&gt; entities = dtos.stream()</b>
+<b class="fc">&nbsp;                .map(dto -&gt; {</b>
+<b class="fc">&nbsp;                    NivelConfig nivel = new NivelConfig();</b>
+<b class="fc">&nbsp;                    nivel.setJogo(jogo);</b>
+<b class="fc">&nbsp;                    nivel.setNivel(dto.getNivel());</b>
+<b class="fc">&nbsp;                    nivel.setXpNecessaria(dto.getExperienciaNecessaria());</b>
+<b class="fc">&nbsp;                    nivel.setPontosAtributo(dto.getPontosAtributo());</b>
+<b class="fc">&nbsp;                    nivel.setPontosAptidao(dto.getPontosAptidao());</b>
+<b class="fc">&nbsp;                    nivel.setLimitadorAtributo(50); // Default limitador (will be configurable later)</b>
+<b class="fc">&nbsp;                    return nivel;</b>
+&nbsp;                })
+<b class="fc">&nbsp;                .toList();</b>
+&nbsp;
+<b class="fc">&nbsp;        List&lt;NivelConfig&gt; saved = nivelRepository.saveAll(entities);</b>
+<b class="fc">&nbsp;        log.debug(&quot;✅ {} níveis criados&quot;, saved.size());</b>
+<b class="fc">&nbsp;        return saved;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Cria classes padrão para o jogo.
+&nbsp;     */
+&nbsp;    private List&lt;ClassePersonagem&gt; createClasses(Jogo jogo, List&lt;ClasseConfigDTO&gt; dtos) {
+<b class="fc">&nbsp;        List&lt;ClassePersonagem&gt; entities = dtos.stream()</b>
+<b class="fc">&nbsp;                .map(dto -&gt; ClassePersonagem.builder()</b>
+<b class="fc">&nbsp;                        .jogo(jogo)</b>
+<b class="fc">&nbsp;                        .nome(dto.getNome())</b>
+<b class="fc">&nbsp;                        .descricao(dto.getDescricao())</b>
+<b class="fc">&nbsp;                        .ordemExibicao(dto.getOrdemExibicao())</b>
+<b class="fc">&nbsp;                        .build())</b>
+<b class="fc">&nbsp;                .toList();</b>
+&nbsp;
+<b class="fc">&nbsp;        List&lt;ClassePersonagem&gt; saved = classeRepository.saveAll(entities);</b>
+<b class="fc">&nbsp;        log.debug(&quot;✅ {} classes criadas&quot;, saved.size());</b>
+<b class="fc">&nbsp;        return saved;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Cria raças padrão para o jogo.
+&nbsp;     */
+&nbsp;    private List&lt;Raca&gt; createRacas(Jogo jogo, List&lt;RacaConfigDTO&gt; dtos) {
+<b class="fc">&nbsp;        List&lt;Raca&gt; entities = dtos.stream()</b>
+<b class="fc">&nbsp;                .map(dto -&gt; Raca.builder()</b>
+<b class="fc">&nbsp;                        .jogo(jogo)</b>
+<b class="fc">&nbsp;                        .nome(dto.getNome())</b>
+<b class="fc">&nbsp;                        .descricao(dto.getDescricao())</b>
+<b class="fc">&nbsp;                        .ordemExibicao(dto.getOrdemExibicao())</b>
+<b class="fc">&nbsp;                        .build())</b>
+<b class="fc">&nbsp;                .toList();</b>
+&nbsp;
+<b class="fc">&nbsp;        List&lt;Raca&gt; saved = racaRepository.saveAll(entities);</b>
+<b class="fc">&nbsp;        log.debug(&quot;✅ {} raças criadas&quot;, saved.size());</b>
+<b class="fc">&nbsp;        return saved;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Cria bônus raciais (relacionamento N:N entre raças e atributos).
+&nbsp;     *
+&nbsp;     * @param racas Raças já criadas
+&nbsp;     * @param atributos Atributos já criados
+&nbsp;     * @param bonusMap Mapa de bônus (key: nome da raça, value: lista de bônus)
+&nbsp;     */
+&nbsp;    private void createBonusRaciais(List&lt;Raca&gt; racas, List&lt;AtributoConfig&gt; atributos,
+&nbsp;                                     Map&lt;String, List&lt;BonusAtributoDTO&gt;&gt; bonusMap) {
+&nbsp;        // Criar mapas para lookup rápido
+<b class="fc">&nbsp;        Map&lt;String, Raca&gt; racaMap = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (Raca raca : racas) {</b>
+<b class="fc">&nbsp;            racaMap.put(raca.getNome(), raca);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Map por abreviação para encontrar atributos rapidamente
+<b class="fc">&nbsp;        Map&lt;String, AtributoConfig&gt; atributoMap = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (AtributoConfig attr : atributos) {</b>
+<b class="fc">&nbsp;            atributoMap.put(attr.getAbreviacao(), attr);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Criar bônus
+<b class="fc">&nbsp;        List&lt;RacaBonusAtributo&gt; bonusList = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (Map.Entry&lt;String, List&lt;BonusAtributoDTO&gt;&gt; entry : bonusMap.entrySet()) {</b>
+<b class="fc">&nbsp;            String nomeRaca = entry.getKey();</b>
+<b class="fc">&nbsp;            List&lt;BonusAtributoDTO&gt; bonusDTOs = entry.getValue();</b>
+&nbsp;
+<b class="fc">&nbsp;            Raca raca = racaMap.get(nomeRaca);</b>
+<b class="pc">&nbsp;            if (raca == null) {</b>
+<b class="nc">&nbsp;                log.warn(&quot;Raça &#39;{}&#39; não encontrada. Pulando bônus.&quot;, nomeRaca);</b>
+&nbsp;                continue;
+&nbsp;            }
+&nbsp;
+<b class="fc">&nbsp;            for (BonusAtributoDTO bonusDTO : bonusDTOs) {</b>
+<b class="fc">&nbsp;                AtributoConfig atributo = atributoMap.get(bonusDTO.getAbreviacaoAtributo());</b>
+&nbsp;
+<b class="pc">&nbsp;                if (atributo == null) {</b>
+<b class="nc">&nbsp;                    log.warn(&quot;Atributo &#39;{}&#39; não encontrado para bônus racial. Pulando.&quot;,</b>
+<b class="nc">&nbsp;                             bonusDTO.getAbreviacaoAtributo());</b>
+&nbsp;                    continue;
+&nbsp;                }
+&nbsp;
+&nbsp;                // Criar RacaBonusAtributo
+<b class="fc">&nbsp;                RacaBonusAtributo bonus = RacaBonusAtributo.builder()</b>
+<b class="fc">&nbsp;                        .raca(raca)</b>
+<b class="fc">&nbsp;                        .atributo(atributo)</b>
+<b class="fc">&nbsp;                        .bonus(bonusDTO.getBonus())</b>
+<b class="fc">&nbsp;                        .build();</b>
+&nbsp;
+<b class="fc">&nbsp;                bonusList.add(bonus);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        racaBonusAtributoRepository.saveAll(bonusList);</b>
+<b class="fc">&nbsp;        log.debug(&quot;✅ {} bônus raciais criados&quot;, bonusList.size());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Cria dados de prospecção padrão para o jogo.
+&nbsp;     */
+&nbsp;    private void createProspeccoes(Jogo jogo, List&lt;ProspeccaoConfigDTO&gt; dtos) {
+<b class="fc">&nbsp;        List&lt;DadoProspeccaoConfig&gt; entities = dtos.stream()</b>
+<b class="fc">&nbsp;                .map(dto -&gt; DadoProspeccaoConfig.builder()</b>
+<b class="fc">&nbsp;                        .jogo(jogo)</b>
+<b class="fc">&nbsp;                        .nome(dto.getNome())</b>
+<b class="fc">&nbsp;                        .numeroFaces(dto.getNumLados())</b>
+<b class="fc">&nbsp;                        .ordemExibicao(dto.getOrdemExibicao())</b>
+<b class="fc">&nbsp;                        .build())</b>
+<b class="fc">&nbsp;                .toList();</b>
+&nbsp;
+<b class="fc">&nbsp;        prospeccaoRepository.saveAll(entities);</b>
+<b class="fc">&nbsp;        log.debug(&quot;✅ {} dados de prospecção criados&quot;, entities.size());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Cria gêneros padrão para o jogo.
+&nbsp;     */
+&nbsp;    private void createGeneros(Jogo jogo, List&lt;GeneroConfigDTO&gt; dtos) {
+<b class="fc">&nbsp;        List&lt;GeneroConfig&gt; entities = dtos.stream()</b>
+<b class="fc">&nbsp;                .map(dto -&gt; GeneroConfig.builder()</b>
+<b class="fc">&nbsp;                        .jogo(jogo)</b>
+<b class="fc">&nbsp;                        .nome(dto.getNome())</b>
+<b class="fc">&nbsp;                        .ordemExibicao(dto.getOrdemExibicao())</b>
+<b class="fc">&nbsp;                        .build())</b>
+<b class="fc">&nbsp;                .toList();</b>
+&nbsp;
+<b class="fc">&nbsp;        generoRepository.saveAll(entities);</b>
+<b class="fc">&nbsp;        log.debug(&quot;✅ {} gêneros criados&quot;, entities.size());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Cria índoles padrão para o jogo.
+&nbsp;     */
+&nbsp;    private void createIndoles(Jogo jogo, List&lt;IndoleConfigDTO&gt; dtos) {
+<b class="fc">&nbsp;        List&lt;IndoleConfig&gt; entities = dtos.stream()</b>
+<b class="fc">&nbsp;                .map(dto -&gt; IndoleConfig.builder()</b>
+<b class="fc">&nbsp;                        .jogo(jogo)</b>
+<b class="fc">&nbsp;                        .nome(dto.getNome())</b>
+<b class="fc">&nbsp;                        .ordemExibicao(dto.getOrdemExibicao())</b>
+<b class="fc">&nbsp;                        .build())</b>
+<b class="fc">&nbsp;                .toList();</b>
+&nbsp;
+<b class="fc">&nbsp;        indoleRepository.saveAll(entities);</b>
+<b class="fc">&nbsp;        log.debug(&quot;✅ {} índoles criadas&quot;, entities.size());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Cria níveis de presença padrão para o jogo.
+&nbsp;     */
+&nbsp;    private void createPresencas(Jogo jogo, List&lt;PresencaConfigDTO&gt; dtos) {
+<b class="fc">&nbsp;        List&lt;PresencaConfig&gt; entities = dtos.stream()</b>
+<b class="fc">&nbsp;                .map(dto -&gt; PresencaConfig.builder()</b>
+<b class="fc">&nbsp;                        .jogo(jogo)</b>
+<b class="fc">&nbsp;                        .nome(dto.getNome())</b>
+<b class="fc">&nbsp;                        .ordemExibicao(dto.getOrdemExibicao())</b>
+<b class="fc">&nbsp;                        .build())</b>
+<b class="fc">&nbsp;                .toList();</b>
+&nbsp;
+<b class="fc">&nbsp;        presencaRepository.saveAll(entities);</b>
+<b class="fc">&nbsp;        log.debug(&quot;✅ {} presenças criadas&quot;, entities.size());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Cria membros do corpo padrão para o jogo.
+&nbsp;     */
+&nbsp;    private void createMembrosCorpo(Jogo jogo, List&lt;MembroCorpoConfigDTO&gt; dtos) {
+<b class="fc">&nbsp;        List&lt;MembroCorpoConfig&gt; entities = dtos.stream()</b>
+<b class="fc">&nbsp;                .map(dto -&gt; MembroCorpoConfig.builder()</b>
+<b class="fc">&nbsp;                        .jogo(jogo)</b>
+<b class="fc">&nbsp;                        .nome(dto.getNome())</b>
+<b class="fc">&nbsp;                        .porcentagemVida(dto.getPorcentagemVida())</b>
+<b class="fc">&nbsp;                        .ordemExibicao(dto.getOrdemExibicao())</b>
+<b class="fc">&nbsp;                        .build())</b>
+<b class="fc">&nbsp;                .toList();</b>
+&nbsp;
+<b class="fc">&nbsp;        membroCorpoRepository.saveAll(entities);</b>
+<b class="fc">&nbsp;        log.debug(&quot;✅ {} membros do corpo criados&quot;, entities.size());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Cria vantagens padrão para o jogo.
+&nbsp;     */
+&nbsp;    private void createVantagens(Jogo jogo, List&lt;VantagemConfigDTO&gt; dtos) {
+<b class="fc">&nbsp;        List&lt;VantagemConfig&gt; entities = dtos.stream()</b>
+<b class="fc">&nbsp;                .map(dto -&gt; VantagemConfig.builder()</b>
+<b class="fc">&nbsp;                        .jogo(jogo)</b>
+<b class="fc">&nbsp;                        .nome(dto.getNome())</b>
+<b class="fc">&nbsp;                        .descricao(dto.getDescricao())</b>
+<b class="fc">&nbsp;                        .nivelMaximo(dto.getNivelMaximoVantagem() != null ? dto.getNivelMaximoVantagem() : 10)</b>
+<b class="fc">&nbsp;                        .formulaCusto(dto.getFormulaCusto())</b>
+<b class="fc">&nbsp;                        .descricaoEfeito(dto.getTipoBonus()) // Map tipoBonus to descricaoEfeito</b>
+<b class="pc">&nbsp;                        .ordemExibicao(dto.getOrdemExibicao() != null ? dto.getOrdemExibicao() : 0)</b>
+<b class="fc">&nbsp;                        .build())</b>
+<b class="fc">&nbsp;                .toList();</b>
+&nbsp;
+<b class="fc">&nbsp;        vantagemRepository.saveAll(entities);</b>
+<b class="fc">&nbsp;        log.debug(&quot;✅ {} vantagens criadas&quot;, entities.size());</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-03-09 20:13</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,246 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > RacaController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.com.hydroom.rpg.fichacontrolador.controller.configuracao</a>
+</div>
+
+<h1>Coverage Summary for Class: RacaController (br.com.hydroom.rpg.fichacontrolador.controller.configuracao)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RacaController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    8,3%
+  </span>
+  <span class="absValue">
+    (1/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    4%
+  </span>
+  <span class="absValue">
+    (1/25)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package br.com.hydroom.rpg.fichacontrolador.controller.configuracao;
+&nbsp;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.CreateRacaRequest;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.RacaBonusAtributoRequest;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.RacaClassePermitidaRequest;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.UpdateRacaRequest;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.RacaBonusAtributoResponse;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.RacaClassePermitidaResponse;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.RacaResponse;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.mapper.configuracao.RacaMapper;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.model.Raca;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.service.JogoService;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.service.configuracao.RacaConfiguracaoService;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+&nbsp;import io.swagger.v3.oas.annotations.tags.Tag;
+&nbsp;import jakarta.validation.Valid;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.security.access.prepost.PreAuthorize;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+<b class="fc">&nbsp;@Slf4j</b>
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/v1/configuracoes/racas&quot;)
+&nbsp;@RequiredArgsConstructor
+&nbsp;@SecurityRequirement(name = &quot;bearer-jwt&quot;)
+&nbsp;@Tag(name = &quot;Configurações - Raças&quot;, description = &quot;Gerenciamento de raças do jogo&quot;)
+&nbsp;public class RacaController {
+&nbsp;
+&nbsp;    private final RacaConfiguracaoService configuracaoService;
+&nbsp;    private final JogoService jogoService;
+&nbsp;    private final RacaMapper mapper;
+&nbsp;
+&nbsp;    @GetMapping
+&nbsp;    @PreAuthorize(&quot;hasAnyRole(&#39;MESTRE&#39;, &#39;JOGADOR&#39;)&quot;)
+&nbsp;    @Operation(summary = &quot;Listar raças de um jogo&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;RacaResponse&gt;&gt; listar(@RequestParam Long jogoId) {
+<b class="nc">&nbsp;        return ResponseEntity.ok(configuracaoService.listar(jogoId).stream().map(mapper::toResponse).toList());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/{id}&quot;)
+&nbsp;    @PreAuthorize(&quot;hasAnyRole(&#39;MESTRE&#39;, &#39;JOGADOR&#39;)&quot;)
+&nbsp;    @Operation(summary = &quot;Buscar raça por ID&quot;)
+&nbsp;    public ResponseEntity&lt;RacaResponse&gt; buscar(@PathVariable Long id) {
+<b class="nc">&nbsp;        return ResponseEntity.ok(mapper.toResponse(configuracaoService.buscarPorId(id)));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping
+&nbsp;    @PreAuthorize(&quot;hasRole(&#39;MESTRE&#39;)&quot;)
+&nbsp;    @Operation(summary = &quot;Criar raça (Apenas MESTRE)&quot;)
+&nbsp;    public ResponseEntity&lt;RacaResponse&gt; criar(@Valid @RequestBody CreateRacaRequest request) {
+<b class="nc">&nbsp;        Raca raca = mapper.toEntity(request);</b>
+<b class="nc">&nbsp;        raca.setJogo(jogoService.buscarJogo(request.jogoId()));</b>
+<b class="nc">&nbsp;        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toResponse(configuracaoService.criar(raca)));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PutMapping(&quot;/{id}&quot;)
+&nbsp;    @PreAuthorize(&quot;hasRole(&#39;MESTRE&#39;)&quot;)
+&nbsp;    @Operation(summary = &quot;Atualizar raça (Apenas MESTRE)&quot;)
+&nbsp;    public ResponseEntity&lt;RacaResponse&gt; atualizar(@PathVariable Long id, @Valid @RequestBody UpdateRacaRequest request) {
+<b class="nc">&nbsp;        Raca raca = configuracaoService.buscarPorId(id);</b>
+<b class="nc">&nbsp;        mapper.updateEntity(request, raca);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(mapper.toResponse(configuracaoService.atualizar(id, raca)));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @DeleteMapping(&quot;/{id}&quot;)
+&nbsp;    @PreAuthorize(&quot;hasRole(&#39;MESTRE&#39;)&quot;)
+&nbsp;    @Operation(summary = &quot;Deletar raça (Apenas MESTRE)&quot;)
+&nbsp;    public ResponseEntity&lt;Void&gt; deletar(@PathVariable Long id) {
+<b class="nc">&nbsp;        configuracaoService.deletar(id);</b>
+<b class="nc">&nbsp;        return ResponseEntity.noContent().build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== ENDPOINTS DE BÔNUS DE ATRIBUTO =====
+&nbsp;
+&nbsp;    @GetMapping(&quot;/{id}/bonus-atributos&quot;)
+&nbsp;    @PreAuthorize(&quot;hasAnyRole(&#39;MESTRE&#39;, &#39;JOGADOR&#39;)&quot;)
+&nbsp;    @Operation(summary = &quot;Listar bônus de atributo de uma raça&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;RacaBonusAtributoResponse&gt;&gt; listarBonusAtributo(@PathVariable Long id) {
+<b class="nc">&nbsp;        return ResponseEntity.ok(</b>
+<b class="nc">&nbsp;            configuracaoService.listarBonusAtributo(id).stream().map(mapper::toBonusAtributoResponse).toList()</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/{id}/bonus-atributos&quot;)
+&nbsp;    @PreAuthorize(&quot;hasRole(&#39;MESTRE&#39;)&quot;)
+&nbsp;    @Operation(summary = &quot;Adicionar bônus de atributo a uma raça (Apenas MESTRE)&quot;)
+&nbsp;    public ResponseEntity&lt;RacaBonusAtributoResponse&gt; adicionarBonusAtributo(
+&nbsp;            @PathVariable Long id,
+&nbsp;            @Valid @RequestBody RacaBonusAtributoRequest request) {
+<b class="nc">&nbsp;        return ResponseEntity.status(HttpStatus.CREATED).body(</b>
+<b class="nc">&nbsp;            mapper.toBonusAtributoResponse(</b>
+<b class="nc">&nbsp;                configuracaoService.adicionarBonusAtributo(id, request.atributoId(), request.bonus())</b>
+&nbsp;            )
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    @DeleteMapping(&quot;/{id}/bonus-atributos/{bonusAtributoId}&quot;)
+&nbsp;    @PreAuthorize(&quot;hasRole(&#39;MESTRE&#39;)&quot;)
+&nbsp;    @Operation(summary = &quot;Remover bônus de atributo de uma raça (Apenas MESTRE)&quot;)
+&nbsp;    public ResponseEntity&lt;Void&gt; removerBonusAtributo(@PathVariable Long id, @PathVariable Long bonusAtributoId) {
+<b class="nc">&nbsp;        configuracaoService.removerBonusAtributo(id, bonusAtributoId);</b>
+<b class="nc">&nbsp;        return ResponseEntity.noContent().build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // ===== ENDPOINTS DE CLASSES PERMITIDAS =====
+&nbsp;
+&nbsp;    @GetMapping(&quot;/{id}/classes-permitidas&quot;)
+&nbsp;    @PreAuthorize(&quot;hasAnyRole(&#39;MESTRE&#39;, &#39;JOGADOR&#39;)&quot;)
+&nbsp;    @Operation(summary = &quot;Listar classes permitidas para uma raça&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;RacaClassePermitidaResponse&gt;&gt; listarClassesPermitidas(@PathVariable Long id) {
+<b class="nc">&nbsp;        return ResponseEntity.ok(</b>
+<b class="nc">&nbsp;            configuracaoService.listarClassesPermitidas(id).stream().map(mapper::toClassePermitidaResponse).toList()</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/{id}/classes-permitidas&quot;)
+&nbsp;    @PreAuthorize(&quot;hasRole(&#39;MESTRE&#39;)&quot;)
+&nbsp;    @Operation(summary = &quot;Permitir classe para uma raça (Apenas MESTRE)&quot;)
+&nbsp;    public ResponseEntity&lt;RacaClassePermitidaResponse&gt; permitirClasse(
+&nbsp;            @PathVariable Long id,
+&nbsp;            @Valid @RequestBody RacaClassePermitidaRequest request) {
+<b class="nc">&nbsp;        return ResponseEntity.status(HttpStatus.CREATED).body(</b>
+<b class="nc">&nbsp;            mapper.toClassePermitidaResponse(</b>
+<b class="nc">&nbsp;                configuracaoService.permitirClasse(id, request.classeId())</b>
+&nbsp;            )
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    @DeleteMapping(&quot;/{id}/classes-permitidas/{classePermitidaId}&quot;)
+&nbsp;    @PreAuthorize(&quot;hasRole(&#39;MESTRE&#39;)&quot;)
+&nbsp;    @Operation(summary = &quot;Remover classe permitida de uma raça (Apenas MESTRE)&quot;)
+&nbsp;    public ResponseEntity&lt;Void&gt; removerClassePermitida(@PathVariable Long id, @PathVariable Long classePermitidaId) {
+<b class="nc">&nbsp;        configuracaoService.removerClassePermitida(id, classePermitidaId);</b>
+<b class="nc">&nbsp;        return ResponseEntity.noContent().build();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-03-09 20:13</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,96 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > PontosVantagemMapper</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.com.hydroom.rpg.fichacontrolador.mapper.configuracao</a>
+</div>
+
+<h1>Coverage Summary for Class: PontosVantagemMapper (br.com.hydroom.rpg.fichacontrolador.mapper.configuracao)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">PontosVantagemMapper</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package br.com.hydroom.rpg.fichacontrolador.mapper.configuracao;
+&nbsp;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.CreatePontosVantagemRequest;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.UpdatePontosVantagemRequest;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.PontosVantagemResponse;
+&nbsp;import br.com.hydroom.rpg.fichacontrolador.model.PontosVantagemConfig;
+&nbsp;import org.mapstruct.*;
+&nbsp;
+&nbsp;/**
+&nbsp; * Mapper para conversão entre PontosVantagemConfig e seus DTOs.
+&nbsp; */
+&nbsp;@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+&nbsp;public interface PontosVantagemMapper {
+&nbsp;
+&nbsp;    @Mapping(target = &quot;jogoId&quot;, source = &quot;jogo.id&quot;)
+&nbsp;    @Mapping(target = &quot;dataCriacao&quot;, source = &quot;createdAt&quot;)
+&nbsp;    @Mapping(target = &quot;dataUltimaAtualizacao&quot;, source = &quot;updatedAt&quot;)
+&nbsp;    PontosVantagemResponse toResponse(PontosVantagemConfig entity);
+&nbsp;
+&nbsp;    @Mapping(target = &quot;id&quot;, ignore = true)
+&nbsp;    @Mapping(target = &quot;jogo&quot;, ignore = true)
+&nbsp;    PontosVantagemConfig toEntity(CreatePontosVantagemRequest request);
+&nbsp;
+&nbsp;    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+&nbsp;    @Mapping(target = &quot;id&quot;, ignore = true)
+&nbsp;    @Mapping(target = &quot;jogo&quot;, ignore = true)
+&nbsp;    void updateEntity(UpdatePontosVantagemRequest request, @MappingTarget PontosVantagemConfig entity);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-03-09 20:13</div>
+</div>
+</body>
+</html>

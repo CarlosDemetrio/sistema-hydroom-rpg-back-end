@@ -6,10 +6,12 @@ import br.com.hydroom.rpg.fichacontrolador.dto.request.FichaPreviewRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.UpdateFichaRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaPreviewResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaResponse;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaResumoResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaVantagemResponse;
 import br.com.hydroom.rpg.fichacontrolador.mapper.FichaMapper;
 import br.com.hydroom.rpg.fichacontrolador.mapper.FichaVantagemMapper;
 import br.com.hydroom.rpg.fichacontrolador.service.FichaPreviewService;
+import br.com.hydroom.rpg.fichacontrolador.service.FichaResumoService;
 import br.com.hydroom.rpg.fichacontrolador.service.FichaService;
 import br.com.hydroom.rpg.fichacontrolador.service.FichaVantagemService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,12 +40,27 @@ public class FichaController {
     private final FichaVantagemService fichaVantagemService;
     private final FichaVantagemMapper fichaVantagemMapper;
     private final FichaPreviewService fichaPreviewService;
+    private final FichaResumoService fichaResumoService;
 
     @GetMapping("/api/v1/jogos/{jogoId}/fichas")
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
-    @Operation(summary = "Listar fichas do jogo", description = "Mestre vê todas as fichas; Jogador vê apenas as suas")
-    public ResponseEntity<List<FichaResponse>> listar(@PathVariable Long jogoId) {
-        var fichas = fichaService.listar(jogoId);
+    @Operation(summary = "Listar fichas do jogo", description = "Mestre vê todas as fichas; Jogador vê apenas as suas. Suporta filtros opcionais.")
+    public ResponseEntity<List<FichaResponse>> listar(
+            @PathVariable Long jogoId,
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) Long classeId,
+            @RequestParam(required = false) Long racaId,
+            @RequestParam(required = false) Integer nivel) {
+        var fichas = fichaService.listarComFiltros(jogoId, nome, classeId, racaId, nivel);
+        var response = fichas.stream().map(fichaMapper::toResponse).toList();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/api/v1/jogos/{jogoId}/fichas/minhas")
+    @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
+    @Operation(summary = "Listar minhas fichas", description = "Retorna apenas as fichas do usuário atual no jogo")
+    public ResponseEntity<List<FichaResponse>> listarMinhas(@PathVariable Long jogoId) {
+        var fichas = fichaService.listarMinhas(jogoId);
         var response = fichas.stream().map(fichaMapper::toResponse).toList();
         return ResponseEntity.ok(response);
     }
@@ -106,6 +123,16 @@ public class FichaController {
         var fichas = fichaService.listarNpcs(jogoId);
         var response = fichas.stream().map(fichaMapper::toResponse).toList();
         return ResponseEntity.ok(response);
+    }
+
+    // ==================== RESUMO ====================
+
+    @GetMapping("/api/v1/fichas/{id}/resumo")
+    @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
+    @Operation(summary = "Resumo calculado da ficha", description = "Retorna valores calculados agregados da ficha: atributos, bônus, vida, essência e ameaça")
+    public ResponseEntity<FichaResumoResponse> getResumo(@PathVariable Long id) {
+        var resumo = fichaResumoService.getResumo(id);
+        return ResponseEntity.ok(resumo);
     }
 
     // ==================== PREVIEW ====================

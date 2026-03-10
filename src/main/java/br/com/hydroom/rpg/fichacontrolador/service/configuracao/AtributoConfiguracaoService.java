@@ -45,6 +45,13 @@ public class AtributoConfiguracaoService extends AbstractConfiguracaoService<Atr
         return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
+    public List<AtributoConfig> listar(Long jogoId, String nome) {
+        if (nome != null && !nome.isBlank()) {
+            return repository.findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(jogoId, nome);
+        }
+        return listar(jogoId);
+    }
+
     @Override
     protected void validarAntesCriar(AtributoConfig configuracao) {
         validateUniqueNome(configuracao.getNome(), configuracao.getJogo().getId());

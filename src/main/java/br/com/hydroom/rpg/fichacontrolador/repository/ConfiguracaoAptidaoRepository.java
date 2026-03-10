@@ -37,4 +37,10 @@ public interface ConfiguracaoAptidaoRepository extends JpaRepository<AptidaoConf
      */
     @Query("SELECT COUNT(a) > 0 FROM AptidaoConfig a WHERE a.jogo.id = :jogoId AND LOWER(a.nome) = LOWER(:nome)")
     boolean existsByJogoIdAndNomeIgnoreCase(Long jogoId, String nome);
+
+    /**
+     * Busca aptidões por nome parcial (case-insensitive), ordenadas por ordem de exibição.
+     */
+    @Query("SELECT a FROM AptidaoConfig a WHERE a.jogo.id = :jogoId AND LOWER(a.nome) LIKE LOWER(CONCAT('%', :nome, '%')) AND a.deletedAt IS NULL ORDER BY a.ordemExibicao")
+    List<AptidaoConfig> findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(Long jogoId, String nome);
 }

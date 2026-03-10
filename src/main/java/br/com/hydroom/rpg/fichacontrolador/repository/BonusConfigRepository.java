@@ -39,4 +39,7 @@ public interface BonusConfigRepository extends JpaRepository<BonusConfig, Long> 
            "'BONUS', b.sigla, b.id, b.nome) " +
            "FROM BonusConfig b WHERE b.jogo.id = :jogoId AND b.sigla IS NOT NULL AND b.deletedAt IS NULL")
     List<SiglaEmUsoResponse> findSiglasComInfoByJogoId(@Param("jogoId") Long jogoId);
+
+    @Query("SELECT b FROM BonusConfig b WHERE b.jogo.id = :jogoId AND LOWER(b.nome) LIKE LOWER(CONCAT('%', :nome, '%')) AND b.deletedAt IS NULL ORDER BY b.ordemExibicao")
+    List<BonusConfig> findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(@Param("jogoId") Long jogoId, @Param("nome") String nome);
 }

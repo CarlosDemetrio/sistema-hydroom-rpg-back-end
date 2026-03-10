@@ -18,4 +18,6 @@ public interface MembroCorpoConfigRepository extends JpaRepository<MembroCorpoCo
     List<MembroCorpoConfig> findByJogoIdOrderByOrdemExibicao(Long jogoId);
 
     boolean existsByJogoIdAndNomeIgnoreCase(Long jogoId, String nome);
+
+    List<MembroCorpoConfig> findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(Long jogoId, String nome);
 }

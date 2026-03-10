@@ -62,4 +62,10 @@ public interface ConfiguracaoAtributoRepository extends JpaRepository<AtributoCo
            "'ATRIBUTO', a.abreviacao, a.id, a.nome) " +
            "FROM AtributoConfig a WHERE a.jogo.id = :jogoId AND a.abreviacao IS NOT NULL AND a.deletedAt IS NULL")
     List<SiglaEmUsoResponse> findSiglasComInfoByJogoId(@Param("jogoId") Long jogoId);
+
+    /**
+     * Busca atributos por nome parcial (case-insensitive), ordenados por ordem de exibição.
+     */
+    @Query("SELECT a FROM AtributoConfig a WHERE a.jogo.id = :jogoId AND LOWER(a.nome) LIKE LOWER(CONCAT('%', :nome, '%')) AND a.deletedAt IS NULL ORDER BY a.ordemExibicao")
+    List<AtributoConfig> findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(@Param("jogoId") Long jogoId, @Param("nome") String nome);
 }

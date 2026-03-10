@@ -205,6 +205,37 @@ public class FichaService {
     }
 
     /**
+     * Lista fichas de um jogo com filtros opcionais.
+     * Mestre vê todas (isNpc=false); Jogador vê apenas as suas.
+     */
+    public List<Ficha> listarComFiltros(Long jogoId, String nome, Long classeId, Long racaId, Integer nivel) {
+        jogoRepository.findById(jogoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Jogo não encontrado: " + jogoId));
+
+        Usuario usuarioAtual = getUsuarioAtual();
+        boolean isMestre = jogoParticipanteRepository.existsByJogoIdAndUsuarioIdAndRole(
+                jogoId, usuarioAtual.getId(), RoleJogo.MESTRE);
+
+        if (isMestre) {
+            return fichaRepository.findByJogoIdWithFilters(jogoId, nome, classeId, racaId, nivel);
+        } else {
+            return fichaRepository.findByJogoIdAndJogadorIdWithFilters(
+                    jogoId, usuarioAtual.getId(), nome, classeId, racaId, nivel);
+        }
+    }
+
+    /**
+     * Lista fichas do usuário atual em um jogo (apenas jogador, isNpc=false).
+     */
+    public List<Ficha> listarMinhas(Long jogoId) {
+        jogoRepository.findById(jogoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Jogo não encontrado: " + jogoId));
+
+        Usuario usuarioAtual = getUsuarioAtual();
+        return fichaRepository.findByJogoIdAndJogadorIdAndIsNpcFalse(jogoId, usuarioAtual.getId());
+    }
+
+    /**
      * Lista apenas NPCs de um jogo (apenas Mestre).
      */
     public List<Ficha> listarNpcs(Long jogoId) {

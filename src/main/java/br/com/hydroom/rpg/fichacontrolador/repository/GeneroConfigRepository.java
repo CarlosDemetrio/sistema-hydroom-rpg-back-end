@@ -18,4 +18,6 @@ public interface GeneroConfigRepository extends JpaRepository<GeneroConfig, Long
     List<GeneroConfig> findByJogoIdOrderByOrdemExibicao(Long jogoId);
 
     boolean existsByJogoIdAndNomeIgnoreCase(Long jogoId, String nome);
+
+    List<GeneroConfig> findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(Long jogoId, String nome);
 }

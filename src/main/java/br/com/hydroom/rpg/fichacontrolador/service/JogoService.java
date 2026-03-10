@@ -2,10 +2,12 @@ package br.com.hydroom.rpg.fichacontrolador.service;
 
 import br.com.hydroom.rpg.fichacontrolador.dto.request.CriarJogoRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.EditarJogoRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.MeuJogoResponse;
 import br.com.hydroom.rpg.fichacontrolador.model.Jogo;
 import br.com.hydroom.rpg.fichacontrolador.model.JogoParticipante;
 import br.com.hydroom.rpg.fichacontrolador.model.Usuario;
 import br.com.hydroom.rpg.fichacontrolador.model.enums.RoleJogo;
+import br.com.hydroom.rpg.fichacontrolador.repository.FichaRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.JogoParticipanteRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.JogoRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.UsuarioRepository;
@@ -31,10 +33,29 @@ public class JogoService {
     private final JogoParticipanteRepository jogoParticipanteRepository;
     private final UsuarioRepository usuarioRepository;
     private final GameConfigInitializerService configInitializerService;
+    private final FichaRepository fichaRepository;
 
     public List<Jogo> listarJogosDoUsuario() {
         Usuario usuarioAtual = getUsuarioAtual();
         return jogoRepository.findByParticipantesUsuarioId(usuarioAtual.getId());
+    }
+
+    /**
+     * Lista os jogos do usuário atual com informações de role e quantidade de personagens.
+     */
+    public List<MeuJogoResponse> listarMeus() {
+        Usuario usuarioAtual = getUsuarioAtual();
+        List<JogoParticipante> participacoes = jogoParticipanteRepository.findByUsuarioIdNotDeleted(usuarioAtual.getId());
+
+        return participacoes.stream()
+                .map(p -> {
+                    Jogo jogo = p.getJogo();
+                    boolean isMestre = RoleJogo.MESTRE.equals(p.getRole());
+                    int meusPersonagens = (int) fichaRepository.countByJogoIdAndJogadorIdAndIsNpcFalse(
+                            jogo.getId(), usuarioAtual.getId());
+                    return new MeuJogoResponse(jogo.getId(), jogo.getNome(), isMestre, meusPersonagens);
+                })
+                .toList();
     }
 
     public Jogo buscarJogo(Long id) {

@@ -1,10 +1,18 @@
 package br.com.hydroom.rpg.fichacontrolador.controller;
 
 import br.com.hydroom.rpg.fichacontrolador.dto.request.CriarJogoRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.DuplicarJogoRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.EditarJogoRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.ConfigImportRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.ConfigExportResponse;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.DuplicarJogoResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.JogoResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.JogoResumoResponse;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.MeuJogoResponse;
 import br.com.hydroom.rpg.fichacontrolador.mapper.JogoMapper;
+import br.com.hydroom.rpg.fichacontrolador.model.Jogo;
+import br.com.hydroom.rpg.fichacontrolador.service.ConfigExportImportService;
+import br.com.hydroom.rpg.fichacontrolador.service.JogoDuplicacaoService;
 import br.com.hydroom.rpg.fichacontrolador.service.JogoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -31,6 +39,8 @@ public class JogoController {
 
     private final JogoService jogoService;
     private final JogoMapper mapper;
+    private final JogoDuplicacaoService jogoDuplicacaoService;
+    private final ConfigExportImportService configExportImportService;
 
     @GetMapping
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
@@ -38,6 +48,14 @@ public class JogoController {
     public ResponseEntity<List<JogoResumoResponse>> listar() {
         var jogos = jogoService.listarJogosDoUsuario();
         var response = jogos.stream().map(mapper::toResumoResponse).toList();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/meus")
+    @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
+    @Operation(summary = "Listar meus jogos", description = "Retorna todos os jogos do usuário com informações de role e quantidade de personagens")
+    public ResponseEntity<List<MeuJogoResponse>> listarMeus() {
+        var response = jogoService.listarMeus();
         return ResponseEntity.ok(response);
     }
 
@@ -92,5 +110,33 @@ public class JogoController {
         var jogo = jogoService.ativarJogo(id);
         var response = mapper.toResponse(jogo);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{id}/duplicar")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Duplicar jogo (Apenas MESTRE)", description = "Cria uma cópia do jogo com todas as configurações, sem fichas nem participantes")
+    public ResponseEntity<DuplicarJogoResponse> duplicar(
+            @PathVariable Long id,
+            @Valid @RequestBody DuplicarJogoRequest request) {
+        Jogo novoJogo = jogoDuplicacaoService.duplicar(id, request.novoNome());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new DuplicarJogoResponse(novoJogo.getId(), novoJogo.getNome()));
+    }
+
+    @GetMapping("/{id}/config/export")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Exportar configurações (Apenas MESTRE)", description = "Exporta todas as 13 configurações do jogo em formato portável")
+    public ResponseEntity<ConfigExportResponse> exportarConfig(@PathVariable Long id) {
+        return ResponseEntity.ok(configExportImportService.exportar(id));
+    }
+
+    @PostMapping("/{id}/config/import")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Importar configurações (Apenas MESTRE)", description = "Importa configurações para o jogo. Itens com nomes já existentes são ignorados.")
+    public ResponseEntity<Void> importarConfig(
+            @PathVariable Long id,
+            @Valid @RequestBody ConfigImportRequest request) {
+        configExportImportService.importar(id, request);
+        return ResponseEntity.noContent().build();
     }
 }

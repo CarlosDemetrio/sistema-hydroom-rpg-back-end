@@ -18,4 +18,6 @@ public interface IndoleConfigRepository extends JpaRepository<IndoleConfig, Long
     List<IndoleConfig> findByJogoIdOrderByOrdemExibicao(Long jogoId);
 
     boolean existsByJogoIdAndNomeIgnoreCase(Long jogoId, String nome);
+
+    List<IndoleConfig> findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(Long jogoId, String nome);
 }

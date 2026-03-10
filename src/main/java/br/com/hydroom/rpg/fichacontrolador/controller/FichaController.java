@@ -1,10 +1,14 @@
 package br.com.hydroom.rpg.fichacontrolador.controller;
 
+import br.com.hydroom.rpg.fichacontrolador.dto.request.ComprarVantagemRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.CreateFichaRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.UpdateFichaRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaResponse;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaVantagemResponse;
 import br.com.hydroom.rpg.fichacontrolador.mapper.FichaMapper;
+import br.com.hydroom.rpg.fichacontrolador.mapper.FichaVantagemMapper;
 import br.com.hydroom.rpg.fichacontrolador.service.FichaService;
+import br.com.hydroom.rpg.fichacontrolador.service.FichaVantagemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,6 +32,8 @@ public class FichaController {
 
     private final FichaService fichaService;
     private final FichaMapper fichaMapper;
+    private final FichaVantagemService fichaVantagemService;
+    private final FichaVantagemMapper fichaVantagemMapper;
 
     @GetMapping("/api/v1/jogos/{jogoId}/fichas")
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
@@ -95,6 +101,39 @@ public class FichaController {
     public ResponseEntity<List<FichaResponse>> listarNpcs(@PathVariable Long jogoId) {
         var fichas = fichaService.listarNpcs(jogoId);
         var response = fichas.stream().map(fichaMapper::toResponse).toList();
+        return ResponseEntity.ok(response);
+    }
+
+    // ==================== VANTAGENS ====================
+
+    @GetMapping("/api/v1/fichas/{id}/vantagens")
+    @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
+    @Operation(summary = "Listar vantagens da ficha")
+    public ResponseEntity<List<FichaVantagemResponse>> listarVantagens(@PathVariable Long id) {
+        var vantagens = fichaVantagemService.listar(id);
+        var response = vantagens.stream().map(fichaVantagemMapper::toResponse).toList();
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/api/v1/fichas/{id}/vantagens")
+    @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
+    @Operation(summary = "Comprar vantagem para a ficha", description = "Verifica pré-requisitos e compra a vantagem no nível 1")
+    public ResponseEntity<FichaVantagemResponse> comprarVantagem(
+            @PathVariable Long id,
+            @Valid @RequestBody ComprarVantagemRequest request) {
+        var fichaVantagem = fichaVantagemService.comprar(id, request.vantagemConfigId());
+        var response = fichaVantagemMapper.toResponse(fichaVantagem);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PutMapping("/api/v1/fichas/{id}/vantagens/{vid}")
+    @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
+    @Operation(summary = "Aumentar nível de vantagem", description = "Incrementa o nível da vantagem (não pode exceder nivelMaximo)")
+    public ResponseEntity<FichaVantagemResponse> aumentarNivelVantagem(
+            @PathVariable Long id,
+            @PathVariable Long vid) {
+        var fichaVantagem = fichaVantagemService.aumentarNivel(id, vid);
+        var response = fichaVantagemMapper.toResponse(fichaVantagem);
         return ResponseEntity.ok(response);
     }
 }

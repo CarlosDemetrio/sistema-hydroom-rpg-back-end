@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service para gerenciamento de Fichas de personagem.
@@ -43,6 +44,7 @@ public class FichaService {
     private final FichaAmeacaRepository fichaAmeacaRepository;
     private final FichaProspeccaoRepository fichaProspeccaoRepository;
     private final FichaDescricaoFisicaRepository fichaDescricaoFisicaRepository;
+    private final FichaVantagemRepository fichaVantagemRepository;
 
     // Repositories de configuração
     private final ConfiguracaoAtributoRepository atributoConfigRepository;
@@ -56,10 +58,17 @@ public class FichaService {
     private final IndoleConfigRepository indoleConfigRepository;
     private final PresencaConfigRepository presencaConfigRepository;
 
+    // Repositories de configuração de nível
+    private final ConfiguracaoNivelRepository nivelConfigRepository;
+
     // Outros
     private final JogoRepository jogoRepository;
     private final JogoParticipanteRepository jogoParticipanteRepository;
     private final UsuarioRepository usuarioRepository;
+
+    // Services de cálculo e validação
+    private final FichaCalculationService fichaCalculationService;
+    private final FichaValidationService fichaValidationService;
 
     /**
      * Cria uma nova ficha e inicializa todos os sub-registros automaticamente.
@@ -158,6 +167,9 @@ public class FichaService {
         // 6. Inicializar sub-registros
         inicializarSubRegistros(ficha, jogo);
 
+        // 7. Recalcular valores derivados
+        recalcular(ficha);
+
         log.info("Ficha '{}' criada com sucesso (ID: {})", ficha.getNome(), ficha.getId());
         return ficha;
     }
@@ -225,6 +237,12 @@ public class FichaService {
         }
         if (request.xp() != null) {
             ficha.setXp(request.xp());
+            // Auto-nível: encontrar nível baseado na XP (mínimo nível 1)
+            Optional<NivelConfig> nivelConfig = nivelConfigRepository.findNivelPorExperiencia(jogoId, request.xp());
+            if (nivelConfig.isPresent() && nivelConfig.get().getNivel() >= 1) {
+                ficha.setNivel(nivelConfig.get().getNivel());
+            }
+            // Se não encontrou NivelConfig ou nivel é 0, mantém o nível atual (não rebaixa abaixo de 1)
         }
         if (request.renascimentos() != null) {
             ficha.setRenascimentos(request.renascimentos());
@@ -276,7 +294,12 @@ public class FichaService {
             ficha.setPresenca(presenca);
         }
 
-        return fichaRepository.save(ficha);
+        Ficha fichaAtualizada = fichaRepository.save(ficha);
+
+        // Validar e recalcular após salvar campos básicos
+        validarERecalcular(fichaAtualizada);
+
+        return fichaAtualizada;
     }
 
     /**
@@ -436,5 +459,61 @@ public class FichaService {
         String email = authentication.getName();
         return usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("Usuário não encontrado: " + email));
+    }
+
+    /**
+     * Valida as regras de negócio e recalcula os valores derivados da ficha.
+     * Tolerante a configurações ausentes (nível, atributos etc.).
+     */
+    private void validarERecalcular(Ficha ficha) {
+        Long fichaId = ficha.getId();
+        Long jogoId = ficha.getJogo().getId();
+
+        // Carregar sub-registros
+        List<FichaAtributo> atributos = fichaAtributoRepository.findByFichaId(fichaId);
+        List<FichaAptidao> aptidoes = fichaAptidaoRepository.findByFichaId(fichaId);
+        List<FichaVantagem> vantagens = fichaVantagemRepository.findByFichaId(fichaId);
+        List<FichaBonus> bonus = fichaBonusRepository.findByFichaId(fichaId);
+
+        // NivelConfig atual (null se não configurado)
+        NivelConfig nivelConfig = nivelConfigRepository
+                .findNivelPorExperiencia(jogoId, ficha.getXp() != null ? ficha.getXp() : 0L)
+                .orElse(null);
+
+        // Validações de negócio (null-safe)
+        fichaValidationService.validarTudo(ficha, atributos, aptidoes, vantagens, nivelConfig);
+
+        // Recalcular valores derivados
+        recalcular(ficha);
+    }
+
+    /**
+     * Carrega todos os sub-registros da ficha, recalcula e persiste.
+     */
+    private void recalcular(Ficha ficha) {
+        Long fichaId = ficha.getId();
+
+        List<FichaAtributo> atributos = fichaAtributoRepository.findByFichaId(fichaId);
+        List<FichaBonus> bonus = fichaBonusRepository.findByFichaId(fichaId);
+
+        FichaVida vida = fichaVidaRepository.findByFichaId(fichaId).orElse(null);
+        if (vida == null) return;
+
+        List<FichaVidaMembro> membros = fichaVidaMembroRepository.findByFichaId(fichaId);
+        FichaEssencia essencia = fichaEssenciaRepository.findByFichaId(fichaId).orElse(null);
+        FichaAmeaca ameaca = fichaAmeacaRepository.findByFichaId(fichaId).orElse(null);
+
+        if (essencia == null || ameaca == null) return;
+
+        // Recalcular tudo
+        fichaCalculationService.recalcular(ficha, atributos, bonus, vida, membros, essencia, ameaca);
+
+        // Persistir sub-registros recalculados
+        fichaAtributoRepository.saveAll(atributos);
+        fichaBonusRepository.saveAll(bonus);
+        fichaVidaRepository.save(vida);
+        fichaVidaMembroRepository.saveAll(membros);
+        fichaEssenciaRepository.save(essencia);
+        fichaAmeacaRepository.save(ameaca);
     }
 }

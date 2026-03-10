@@ -2,11 +2,14 @@ package br.com.hydroom.rpg.fichacontrolador.controller;
 
 import br.com.hydroom.rpg.fichacontrolador.dto.request.ComprarVantagemRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.CreateFichaRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.FichaPreviewRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.UpdateFichaRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaPreviewResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaVantagemResponse;
 import br.com.hydroom.rpg.fichacontrolador.mapper.FichaMapper;
 import br.com.hydroom.rpg.fichacontrolador.mapper.FichaVantagemMapper;
+import br.com.hydroom.rpg.fichacontrolador.service.FichaPreviewService;
 import br.com.hydroom.rpg.fichacontrolador.service.FichaService;
 import br.com.hydroom.rpg.fichacontrolador.service.FichaVantagemService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,6 +37,7 @@ public class FichaController {
     private final FichaMapper fichaMapper;
     private final FichaVantagemService fichaVantagemService;
     private final FichaVantagemMapper fichaVantagemMapper;
+    private final FichaPreviewService fichaPreviewService;
 
     @GetMapping("/api/v1/jogos/{jogoId}/fichas")
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
@@ -102,6 +106,19 @@ public class FichaController {
         var fichas = fichaService.listarNpcs(jogoId);
         var response = fichas.stream().map(fichaMapper::toResponse).toList();
         return ResponseEntity.ok(response);
+    }
+
+    // ==================== PREVIEW ====================
+
+    @PostMapping("/api/v1/fichas/{id}/preview")
+    @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
+    @Operation(summary = "Preview de cálculos sem persistir",
+            description = "Simula mudanças de atributos/XP e retorna valores recalculados sem salvar")
+    public ResponseEntity<FichaPreviewResponse> preview(
+            @PathVariable Long id,
+            @Valid @RequestBody FichaPreviewRequest request) {
+        var result = fichaPreviewService.simular(id, request);
+        return ResponseEntity.ok(result);
     }
 
     // ==================== VANTAGENS ====================

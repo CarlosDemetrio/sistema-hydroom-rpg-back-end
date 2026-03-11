@@ -50,6 +50,13 @@ public class BonusConfiguracaoService extends AbstractConfiguracaoService<BonusC
         return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
+    public List<BonusConfig> listar(Long jogoId, String nome) {
+        if (nome != null && !nome.isBlank()) {
+            return repository.findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(jogoId, nome);
+        }
+        return listar(jogoId);
+    }
+
     @Override
     protected void validarAntesCriar(BonusConfig configuracao) {
         if (repository.existsByJogoIdAndNomeIgnoreCase(configuracao.getJogo().getId(), configuracao.getNome())) {

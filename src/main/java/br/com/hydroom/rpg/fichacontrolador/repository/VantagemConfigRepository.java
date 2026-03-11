@@ -49,4 +49,6 @@ public interface VantagemConfigRepository extends JpaRepository<VantagemConfig, 
            "'VANTAGEM', v.sigla, v.id, v.nome) " +
            "FROM VantagemConfig v WHERE v.jogo.id = :jogoId AND v.sigla IS NOT NULL AND v.deletedAt IS NULL")
     List<SiglaEmUsoResponse> findSiglasComInfoByJogoId(@Param("jogoId") Long jogoId);
+
+    List<VantagemConfig> findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(Long jogoId, String nome);
 }

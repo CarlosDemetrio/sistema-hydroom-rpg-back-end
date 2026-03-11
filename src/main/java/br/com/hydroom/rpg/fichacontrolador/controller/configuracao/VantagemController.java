@@ -8,9 +8,11 @@ import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.VantagemRes
 import br.com.hydroom.rpg.fichacontrolador.model.VantagemPreRequisito;
 import br.com.hydroom.rpg.fichacontrolador.mapper.configuracao.VantagemConfigMapper;
 import br.com.hydroom.rpg.fichacontrolador.model.VantagemConfig;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.ReordenarRequest;
 import br.com.hydroom.rpg.fichacontrolador.service.configuracao.CategoriaVantagemService;
 import br.com.hydroom.rpg.fichacontrolador.service.configuracao.VantagemConfiguracaoService;
 import br.com.hydroom.rpg.fichacontrolador.service.JogoService;
+import br.com.hydroom.rpg.fichacontrolador.service.ReordenacaoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,12 +38,25 @@ public class VantagemController {
     private final JogoService jogoService;
     private final CategoriaVantagemService categoriaVantagemService;
     private final VantagemConfigMapper mapper;
+    private final ReordenacaoService reordenacaoService;
+
+    @PutMapping("/reordenar")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Reordenar vantagens (Apenas MESTRE)", description = "Atualiza a ordem de exibição de múltiplos itens em batch")
+    public ResponseEntity<Void> reordenar(
+            @RequestParam Long jogoId,
+            @Valid @RequestBody ReordenarRequest request) {
+        reordenacaoService.reordenarVantagens(jogoId, request.itens());
+        return ResponseEntity.noContent().build();
+    }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
     @Operation(summary = "Listar vantagens de um jogo")
-    public ResponseEntity<List<VantagemResponse>> listar(@RequestParam Long jogoId) {
-        return ResponseEntity.ok(configuracaoService.listar(jogoId).stream().map(mapper::toResponse).toList());
+    public ResponseEntity<List<VantagemResponse>> listar(
+            @RequestParam Long jogoId,
+            @RequestParam(required = false) String nome) {
+        return ResponseEntity.ok(configuracaoService.listar(jogoId, nome).stream().map(mapper::toResponse).toList());
     }
 
     @GetMapping("/{id}")

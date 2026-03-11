@@ -6,7 +6,9 @@ import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.BonusRespon
 import br.com.hydroom.rpg.fichacontrolador.mapper.configuracao.BonusConfigMapper;
 import br.com.hydroom.rpg.fichacontrolador.model.BonusConfig;
 import br.com.hydroom.rpg.fichacontrolador.model.Jogo;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.ReordenarRequest;
 import br.com.hydroom.rpg.fichacontrolador.service.JogoService;
+import br.com.hydroom.rpg.fichacontrolador.service.ReordenacaoService;
 import br.com.hydroom.rpg.fichacontrolador.service.configuracao.BonusConfiguracaoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -45,6 +47,17 @@ public class BonusController {
     private final BonusConfiguracaoService configuracaoService;
     private final JogoService jogoService;
     private final BonusConfigMapper mapper;
+    private final ReordenacaoService reordenacaoService;
+
+    @PutMapping("/reordenar")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Reordenar bônus (Apenas MESTRE)", description = "Atualiza a ordem de exibição de múltiplos itens em batch")
+    public ResponseEntity<Void> reordenar(
+            @RequestParam Long jogoId,
+            @Valid @RequestBody ReordenarRequest request) {
+        reordenacaoService.reordenarBonus(jogoId, request.itens());
+        return ResponseEntity.noContent().build();
+    }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
@@ -56,10 +69,11 @@ public class BonusController {
     })
     public ResponseEntity<List<BonusResponse>> listar(
             @Parameter(description = "ID do jogo", required = true, example = "1")
-            @RequestParam Long jogoId) {
+            @RequestParam Long jogoId,
+            @RequestParam(required = false) String nome) {
 
         log.info("Listando bônus do jogo: {}", jogoId);
-        List<BonusConfig> bonus = configuracaoService.listar(jogoId);
+        List<BonusConfig> bonus = configuracaoService.listar(jogoId, nome);
         List<BonusResponse> response = bonus.stream().map(mapper::toResponse).toList();
         log.info("Total de bônus encontrados: {}", response.size());
         return ResponseEntity.ok(response);

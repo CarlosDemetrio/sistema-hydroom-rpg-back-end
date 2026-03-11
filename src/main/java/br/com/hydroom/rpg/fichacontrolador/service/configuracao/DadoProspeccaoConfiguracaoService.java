@@ -33,6 +33,13 @@ public class DadoProspeccaoConfiguracaoService extends AbstractConfiguracaoServi
         return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
+    public List<DadoProspeccaoConfig> listar(Long jogoId, String nome) {
+        if (nome != null && !nome.isBlank()) {
+            return repository.findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(jogoId, nome);
+        }
+        return listar(jogoId);
+    }
+
     @Override
     protected void validarAntesCriar(DadoProspeccaoConfig configuracao) {
         if (repository.existsByJogoIdAndNomeIgnoreCase(configuracao.getJogo().getId(), configuracao.getNome())) {

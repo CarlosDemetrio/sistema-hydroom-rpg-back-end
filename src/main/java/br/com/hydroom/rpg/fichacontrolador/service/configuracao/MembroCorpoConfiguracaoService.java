@@ -32,6 +32,13 @@ public class MembroCorpoConfiguracaoService extends AbstractConfiguracaoService<
         return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
+    public List<MembroCorpoConfig> listar(Long jogoId, String nome) {
+        if (nome != null && !nome.isBlank()) {
+            return repository.findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(jogoId, nome);
+        }
+        return listar(jogoId);
+    }
+
     @Override
     protected void atualizarCampos(MembroCorpoConfig existente, MembroCorpoConfig atualizado) {
         existente.setNome(atualizado.getNome());

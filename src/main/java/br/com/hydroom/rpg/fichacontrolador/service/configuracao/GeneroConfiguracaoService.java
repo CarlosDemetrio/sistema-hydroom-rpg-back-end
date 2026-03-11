@@ -32,6 +32,13 @@ public class GeneroConfiguracaoService extends AbstractConfiguracaoService<Gener
         return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
+    public List<GeneroConfig> listar(Long jogoId, String nome) {
+        if (nome != null && !nome.isBlank()) {
+            return repository.findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(jogoId, nome);
+        }
+        return listar(jogoId);
+    }
+
     @Override
     protected void validarAntesCriar(GeneroConfig configuracao) {
         if (repository.existsByJogoIdAndNomeIgnoreCase(configuracao.getJogo().getId(), configuracao.getNome())) {

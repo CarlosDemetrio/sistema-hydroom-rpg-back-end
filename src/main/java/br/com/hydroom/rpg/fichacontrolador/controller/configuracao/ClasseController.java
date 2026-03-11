@@ -12,7 +12,9 @@ import br.com.hydroom.rpg.fichacontrolador.model.ClasseAptidaoBonus;
 import br.com.hydroom.rpg.fichacontrolador.model.ClasseBonus;
 import br.com.hydroom.rpg.fichacontrolador.model.ClassePersonagem;
 import br.com.hydroom.rpg.fichacontrolador.model.Jogo;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.ReordenarRequest;
 import br.com.hydroom.rpg.fichacontrolador.service.JogoService;
+import br.com.hydroom.rpg.fichacontrolador.service.ReordenacaoService;
 import br.com.hydroom.rpg.fichacontrolador.service.configuracao.ClasseConfiguracaoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -52,6 +54,17 @@ public class ClasseController {
     private final ClasseConfiguracaoService configuracaoService;
     private final JogoService jogoService;
     private final ClassePersonagemMapper mapper;
+    private final ReordenacaoService reordenacaoService;
+
+    @PutMapping("/reordenar")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Reordenar classes (Apenas MESTRE)", description = "Atualiza a ordem de exibição de múltiplos itens em batch")
+    public ResponseEntity<Void> reordenar(
+            @RequestParam Long jogoId,
+            @Valid @RequestBody ReordenarRequest request) {
+        reordenacaoService.reordenarClasses(jogoId, request.itens());
+        return ResponseEntity.noContent().build();
+    }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
@@ -66,10 +79,11 @@ public class ClasseController {
     })
     public ResponseEntity<List<ClasseResponse>> listar(
             @Parameter(description = "ID do jogo", required = true, example = "1")
-            @RequestParam Long jogoId) {
+            @RequestParam Long jogoId,
+            @RequestParam(required = false) String nome) {
 
         log.info("Listando classes do jogo: {}", jogoId);
-        List<ClassePersonagem> classes = configuracaoService.listar(jogoId);
+        List<ClassePersonagem> classes = configuracaoService.listar(jogoId, nome);
         List<ClasseResponse> response = classes.stream()
             .map(mapper::toResponse)
             .toList();

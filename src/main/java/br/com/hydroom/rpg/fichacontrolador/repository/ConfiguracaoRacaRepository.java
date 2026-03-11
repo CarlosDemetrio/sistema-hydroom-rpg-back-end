@@ -40,4 +40,6 @@ public interface ConfiguracaoRacaRepository extends JpaRepository<Raca, Long> {
            "LEFT JOIN FETCH r.classesPermitidas cp LEFT JOIN FETCH cp.classe " +
            "WHERE r.id = :id AND r.deletedAt IS NULL")
     Optional<Raca> findByIdWithRelationships(@Param("id") Long id);
+
+    List<Raca> findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(Long jogoId, String nome);
 }

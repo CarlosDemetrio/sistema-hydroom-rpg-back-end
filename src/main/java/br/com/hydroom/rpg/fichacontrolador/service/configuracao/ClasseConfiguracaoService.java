@@ -60,6 +60,13 @@ public class ClasseConfiguracaoService extends AbstractConfiguracaoService<Class
         return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
+    public List<ClassePersonagem> listar(Long jogoId, String nome) {
+        if (nome != null && !nome.isBlank()) {
+            return repository.findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(jogoId, nome);
+        }
+        return listar(jogoId);
+    }
+
     @Override
     protected void validarAntesCriar(ClassePersonagem configuracao) {
         validateUniqueNome(configuracao.getNome(), configuracao.getJogo().getId());

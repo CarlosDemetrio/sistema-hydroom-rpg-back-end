@@ -40,4 +40,6 @@ public interface ConfiguracaoClasseRepository extends JpaRepository<ClassePerson
            "LEFT JOIN FETCH c.aptidaoBonus ab LEFT JOIN FETCH ab.aptidao " +
            "WHERE c.id = :id AND c.deletedAt IS NULL")
     Optional<ClassePersonagem> findByIdWithBonuses(@Param("id") Long id);
+
+    List<ClassePersonagem> findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(Long jogoId, String nome);
 }

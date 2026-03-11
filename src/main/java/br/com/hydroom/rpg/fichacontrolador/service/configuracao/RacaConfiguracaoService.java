@@ -59,6 +59,13 @@ public class RacaConfiguracaoService extends AbstractConfiguracaoService<Raca, C
         return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
+    public List<Raca> listar(Long jogoId, String nome) {
+        if (nome != null && !nome.isBlank()) {
+            return repository.findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(jogoId, nome);
+        }
+        return listar(jogoId);
+    }
+
     @Override
     protected void validarAntesCriar(Raca configuracao) {
         validateUniqueNome(configuracao.getNome(), configuracao.getJogo().getId());

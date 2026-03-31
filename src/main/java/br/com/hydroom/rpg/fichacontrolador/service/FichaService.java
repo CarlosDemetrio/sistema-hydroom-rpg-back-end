@@ -1,9 +1,12 @@
 package br.com.hydroom.rpg.fichacontrolador.service;
 
+import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarAptidaoRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarAtributoRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.CreateFichaRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.UpdateFichaRequest;
 import br.com.hydroom.rpg.fichacontrolador.exception.ForbiddenException;
 import br.com.hydroom.rpg.fichacontrolador.exception.ResourceNotFoundException;
+import br.com.hydroom.rpg.fichacontrolador.exception.ValidationException;
 import br.com.hydroom.rpg.fichacontrolador.model.*;
 import br.com.hydroom.rpg.fichacontrolador.model.enums.RoleJogo;
 import br.com.hydroom.rpg.fichacontrolador.repository.*;
@@ -354,6 +357,149 @@ public class FichaService {
         log.info("Ficha '{}' (ID: {}) deletada por {}", ficha.getNome(), ficha.getId(), usuarioAtual.getEmail());
     }
 
+    /**
+     * Duplica uma ficha existente com um novo nome.
+     * Mestre pode duplicar qualquer ficha; Jogador só pode duplicar as próprias.
+     * Copia todos os sub-registros com os mesmos valores da ficha original.
+     */
+    @Transactional
+    public Ficha duplicar(Long fichaId, String novoNome, boolean manterJogador) {
+        Ficha original = fichaRepository.findById(fichaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ficha não encontrada: " + fichaId));
+
+        Usuario usuarioAtual = getUsuarioAtual();
+        Long jogoId = original.getJogo().getId();
+
+        boolean isMestre = jogoParticipanteRepository.existsByJogoIdAndUsuarioIdAndRole(
+                jogoId, usuarioAtual.getId(), RoleJogo.MESTRE);
+
+        if (!isMestre && !usuarioAtual.getId().equals(original.getJogadorId())) {
+            throw new ForbiddenException("Acesso negado: você não tem permissão para duplicar esta ficha.");
+        }
+
+        Long jogadorId = manterJogador ? original.getJogadorId() : null;
+        if (!isMestre) {
+            // Jogador duplica para si mesmo
+            jogadorId = usuarioAtual.getId();
+        }
+
+        Ficha copia = Ficha.builder()
+                .jogo(original.getJogo())
+                .nome(novoNome)
+                .jogadorId(original.isNpc() ? null : jogadorId)
+                .raca(original.getRaca())
+                .classe(original.getClasse())
+                .genero(original.getGenero())
+                .indole(original.getIndole())
+                .presenca(original.getPresenca())
+                .nivel(original.getNivel())
+                .xp(original.getXp())
+                .renascimentos(original.getRenascimentos())
+                .isNpc(original.isNpc())
+                .build();
+
+        copia = fichaRepository.save(copia);
+        log.info("Duplicando ficha '{}' (ID: {}) como '{}' (ID: {})", original.getNome(), fichaId, novoNome, copia.getId());
+
+        copiarSubRegistros(fichaId, copia);
+        recalcular(copia);
+
+        return copia;
+    }
+
+    /**
+     * Atualiza os valores de atributos de uma ficha em lote.
+     *
+     * <p>Valida que nenhum atributo (base) excede o limitador do nível atual.
+     * Recalcula todos os valores derivados após salvar.</p>
+     *
+     * @param fichaId  ID da ficha
+     * @param requests lista de atualizações de atributos
+     * @return lista de FichaAtributo atualizada
+     */
+    @Transactional
+    public List<FichaAtributo> atualizarAtributos(Long fichaId, List<AtualizarAtributoRequest> requests) {
+        Ficha ficha = fichaRepository.findById(fichaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ficha não encontrada: " + fichaId));
+
+        verificarAcessoEscrita(ficha);
+
+        Long jogoId = ficha.getJogo().getId();
+
+        // Buscar NivelConfig atual para validar limitador
+        NivelConfig nivelConfig = nivelConfigRepository
+                .findByJogoIdAndNivel(jogoId, ficha.getNivel())
+                .orElse(null);
+
+        for (AtualizarAtributoRequest req : requests) {
+            FichaAtributo fichaAtributo = fichaAtributoRepository
+                    .findByFichaIdAndAtributoConfigId(fichaId, req.atributoConfigId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Atributo de ficha não encontrado para atributoConfigId: " + req.atributoConfigId()));
+
+            // Validar limitador de atributo (campo base não pode exceder limitador)
+            if (req.base() != null && nivelConfig != null && nivelConfig.getLimitadorAtributo() != null) {
+                if (req.base() > nivelConfig.getLimitadorAtributo()) {
+                    String nomeAtributo = fichaAtributo.getAtributoConfig() != null
+                            ? fichaAtributo.getAtributoConfig().getNome()
+                            : String.valueOf(req.atributoConfigId());
+                    throw new ValidationException(
+                            "Atributo '" + nomeAtributo + "': valor base " + req.base()
+                            + " excede o limitador do nível " + ficha.getNivel()
+                            + " (" + nivelConfig.getLimitadorAtributo() + ")");
+                }
+            }
+
+            if (req.base() != null) fichaAtributo.setBase(req.base());
+            if (req.nivel() != null) fichaAtributo.setNivel(req.nivel());
+            if (req.outros() != null) fichaAtributo.setOutros(req.outros());
+        }
+
+        List<FichaAtributo> todosAtributos = fichaAtributoRepository.findByFichaId(fichaId);
+        fichaAtributoRepository.saveAll(todosAtributos);
+
+        recalcular(ficha);
+
+        log.info("Atributos da ficha {} atualizados em lote ({} itens)", fichaId, requests.size());
+        return fichaAtributoRepository.findByFichaId(fichaId);
+    }
+
+    /**
+     * Atualiza os valores de aptidões de uma ficha em lote.
+     *
+     * <p>Recalcula todos os valores derivados após salvar.</p>
+     *
+     * @param fichaId  ID da ficha
+     * @param requests lista de atualizações de aptidões
+     * @return lista de FichaAptidao atualizada
+     */
+    @Transactional
+    public List<FichaAptidao> atualizarAptidoes(Long fichaId, List<AtualizarAptidaoRequest> requests) {
+        Ficha ficha = fichaRepository.findById(fichaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ficha não encontrada: " + fichaId));
+
+        verificarAcessoEscrita(ficha);
+
+        for (AtualizarAptidaoRequest req : requests) {
+            FichaAptidao fichaAptidao = fichaAptidaoRepository
+                    .findByFichaIdAndAptidaoConfigId(fichaId, req.aptidaoConfigId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Aptidão de ficha não encontrada para aptidaoConfigId: " + req.aptidaoConfigId()));
+
+            if (req.base() != null) fichaAptidao.setBase(req.base());
+            if (req.sorte() != null) fichaAptidao.setSorte(req.sorte());
+            if (req.classe() != null) fichaAptidao.setClasse(req.classe());
+        }
+
+        List<FichaAptidao> todasAptidoes = fichaAptidaoRepository.findByFichaId(fichaId);
+        fichaAptidaoRepository.saveAll(todasAptidoes);
+
+        recalcular(ficha);
+
+        log.info("Aptidões da ficha {} atualizadas em lote ({} itens)", fichaId, requests.size());
+        return fichaAptidaoRepository.findByFichaId(fichaId);
+    }
+
     // ==================== PRIVADOS ====================
 
     /**
@@ -440,6 +586,139 @@ public class FichaService {
                 ficha.getNome(), ficha.getId(),
                 fichaAtributos.size(), fichaAptidoes.size(), fichaBonus.size(),
                 fichaVidaMembros.size(), fichaProspeccoes.size());
+    }
+
+    /**
+     * Copia todos os sub-registros da ficha original para a nova ficha com os mesmos valores.
+     */
+    private void copiarSubRegistros(Long fichaOrigemId, Ficha novaFicha) {
+        // FichaAtributo
+        List<FichaAtributo> atributos = fichaAtributoRepository.findByFichaId(fichaOrigemId);
+        List<FichaAtributo> copiaAtributos = atributos.stream()
+                .map(a -> FichaAtributo.builder()
+                        .ficha(novaFicha)
+                        .atributoConfig(a.getAtributoConfig())
+                        .base(a.getBase())
+                        .nivel(a.getNivel())
+                        .outros(a.getOutros())
+                        .total(a.getTotal())
+                        .impeto(a.getImpeto())
+                        .build())
+                .toList();
+        fichaAtributoRepository.saveAll(copiaAtributos);
+
+        // FichaAptidao
+        List<FichaAptidao> aptidoes = fichaAptidaoRepository.findByFichaId(fichaOrigemId);
+        List<FichaAptidao> copiaAptidoes = aptidoes.stream()
+                .map(a -> FichaAptidao.builder()
+                        .ficha(novaFicha)
+                        .aptidaoConfig(a.getAptidaoConfig())
+                        .base(a.getBase())
+                        .sorte(a.getSorte())
+                        .classe(a.getClasse())
+                        .total(a.getTotal())
+                        .build())
+                .toList();
+        fichaAptidaoRepository.saveAll(copiaAptidoes);
+
+        // FichaBonus
+        List<FichaBonus> bonus = fichaBonusRepository.findByFichaId(fichaOrigemId);
+        List<FichaBonus> copiaBonus = bonus.stream()
+                .map(b -> FichaBonus.builder()
+                        .ficha(novaFicha)
+                        .bonusConfig(b.getBonusConfig())
+                        .base(b.getBase())
+                        .vantagens(b.getVantagens())
+                        .classe(b.getClasse())
+                        .itens(b.getItens())
+                        .gloria(b.getGloria())
+                        .outros(b.getOutros())
+                        .total(b.getTotal())
+                        .build())
+                .toList();
+        fichaBonusRepository.saveAll(copiaBonus);
+
+        // FichaVida
+        fichaVidaRepository.findByFichaId(fichaOrigemId).ifPresent(v -> {
+            FichaVida copiaVida = FichaVida.builder()
+                    .ficha(novaFicha)
+                    .vt(v.getVt())
+                    .outros(v.getOutros())
+                    .vidaTotal(v.getVidaTotal())
+                    .build();
+            fichaVidaRepository.save(copiaVida);
+        });
+
+        // FichaVidaMembro
+        List<FichaVidaMembro> membros = fichaVidaMembroRepository.findByFichaId(fichaOrigemId);
+        List<FichaVidaMembro> copiaMembros = membros.stream()
+                .map(m -> FichaVidaMembro.builder()
+                        .ficha(novaFicha)
+                        .membroCorpoConfig(m.getMembroCorpoConfig())
+                        .vida(m.getVida())
+                        .danoRecebido(0)
+                        .build())
+                .toList();
+        fichaVidaMembroRepository.saveAll(copiaMembros);
+
+        // FichaEssencia
+        fichaEssenciaRepository.findByFichaId(fichaOrigemId).ifPresent(e -> {
+            FichaEssencia copiaEssencia = FichaEssencia.builder()
+                    .ficha(novaFicha)
+                    .renascimentos(e.getRenascimentos())
+                    .vantagens(e.getVantagens())
+                    .outros(e.getOutros())
+                    .total(e.getTotal())
+                    .build();
+            fichaEssenciaRepository.save(copiaEssencia);
+        });
+
+        // FichaAmeaca
+        fichaAmeacaRepository.findByFichaId(fichaOrigemId).ifPresent(a -> {
+            FichaAmeaca copiaAmeaca = FichaAmeaca.builder()
+                    .ficha(novaFicha)
+                    .itens(a.getItens())
+                    .titulos(a.getTitulos())
+                    .renascimentos(a.getRenascimentos())
+                    .outros(a.getOutros())
+                    .total(a.getTotal())
+                    .build();
+            fichaAmeacaRepository.save(copiaAmeaca);
+        });
+
+        // FichaProspeccao
+        List<FichaProspeccao> prospeccoes = fichaProspeccaoRepository.findByFichaId(fichaOrigemId);
+        List<FichaProspeccao> copiaProspeccoes = prospeccoes.stream()
+                .map(p -> FichaProspeccao.builder()
+                        .ficha(novaFicha)
+                        .dadoProspeccaoConfig(p.getDadoProspeccaoConfig())
+                        .quantidade(p.getQuantidade())
+                        .build())
+                .toList();
+        fichaProspeccaoRepository.saveAll(copiaProspeccoes);
+
+        // FichaVantagem — copia vantagens com os mesmos níveis e custos
+        List<FichaVantagem> vantagens = fichaVantagemRepository.findByFichaId(fichaOrigemId);
+        List<FichaVantagem> copiaVantagens = vantagens.stream()
+                .map(fv -> FichaVantagem.builder()
+                        .ficha(novaFicha)
+                        .vantagemConfig(fv.getVantagemConfig())
+                        .nivelAtual(fv.getNivelAtual())
+                        .custoPago(fv.getCustoPago())
+                        .build())
+                .toList();
+        fichaVantagemRepository.saveAll(copiaVantagens);
+
+        // FichaDescricaoFisica — nova ficha começa com descrição em branco
+        FichaDescricaoFisica descricaoFisica = FichaDescricaoFisica.builder()
+                .ficha(novaFicha)
+                .build();
+        fichaDescricaoFisicaRepository.save(descricaoFisica);
+
+        log.debug("Sub-registros copiados para ficha '{}' (ID: {}): {} atributos, {} aptidões, {} bônus, {} membros, {} prospecções, {} vantagens",
+                novaFicha.getNome(), novaFicha.getId(),
+                copiaAtributos.size(), copiaAptidoes.size(), copiaBonus.size(),
+                copiaMembros.size(), copiaProspeccoes.size(), copiaVantagens.size());
     }
 
     /**

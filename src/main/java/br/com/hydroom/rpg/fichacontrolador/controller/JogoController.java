@@ -78,7 +78,7 @@ public class JogoController {
     }
 
     @PostMapping
-//    @PreAuthorize("hasRole('MESTRE')")
+    @PreAuthorize("hasRole('MESTRE')")
     @Operation(summary = "Criar novo jogo (Apenas MESTRE)", description = "Cria um novo jogo/campanha com o usuário como Mestre")
     public ResponseEntity<JogoResponse> criar(@Valid @RequestBody CriarJogoRequest request) {
         var jogo = jogoService.criarJogo(request);

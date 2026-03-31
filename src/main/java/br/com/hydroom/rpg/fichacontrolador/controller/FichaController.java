@@ -1,13 +1,22 @@
 package br.com.hydroom.rpg.fichacontrolador.controller;
 
+import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarAptidaoRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarAtributoRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.ComprarVantagemRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.CreateFichaRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.DuplicarFichaRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.FichaPreviewRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.NpcCreateRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.UpdateFichaRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.DuplicarFichaResponse;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaAptidaoResponse;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaAtributoResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaPreviewResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaResumoResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaVantagemResponse;
+import br.com.hydroom.rpg.fichacontrolador.mapper.FichaAptidaoMapper;
+import br.com.hydroom.rpg.fichacontrolador.mapper.FichaAtributoMapper;
 import br.com.hydroom.rpg.fichacontrolador.mapper.FichaMapper;
 import br.com.hydroom.rpg.fichacontrolador.mapper.FichaVantagemMapper;
 import br.com.hydroom.rpg.fichacontrolador.service.FichaPreviewService;
@@ -41,6 +50,8 @@ public class FichaController {
     private final FichaVantagemMapper fichaVantagemMapper;
     private final FichaPreviewService fichaPreviewService;
     private final FichaResumoService fichaResumoService;
+    private final FichaAtributoMapper fichaAtributoMapper;
+    private final FichaAptidaoMapper fichaAptidaoMapper;
 
     @GetMapping("/api/v1/jogos/{jogoId}/fichas")
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
@@ -125,6 +136,38 @@ public class FichaController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/api/v1/jogos/{jogoId}/npcs")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Criar NPC (Apenas MESTRE)", description = "Cria uma ficha de NPC com isNpc=true e sem jogadorId")
+    public FichaResponse criarNpc(
+            @PathVariable Long jogoId,
+            @Valid @RequestBody NpcCreateRequest request) {
+        CreateFichaRequest createRequest = new CreateFichaRequest(
+                jogoId,
+                request.nome(),
+                null,
+                request.racaId(),
+                request.classeId(),
+                request.generoId(),
+                request.indoleId(),
+                request.presencaId(),
+                true
+        );
+        var ficha = fichaService.criar(createRequest);
+        return fichaMapper.toResponse(ficha);
+    }
+
+    @PostMapping("/api/v1/fichas/{id}/duplicar")
+    @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
+    @Operation(summary = "Duplicar ficha", description = "Cria uma cópia da ficha com novo nome. Mestre pode duplicar qualquer ficha; Jogador só as próprias.")
+    public DuplicarFichaResponse duplicar(
+            @PathVariable Long id,
+            @Valid @RequestBody DuplicarFichaRequest request) {
+        var ficha = fichaService.duplicar(id, request.novoNome(), request.manterJogador());
+        return new DuplicarFichaResponse(ficha.getId(), ficha.getNome(), ficha.isNpc());
+    }
+
     // ==================== RESUMO ====================
 
     @GetMapping("/api/v1/fichas/{id}/resumo")
@@ -178,6 +221,34 @@ public class FichaController {
             @PathVariable Long vid) {
         var fichaVantagem = fichaVantagemService.aumentarNivel(id, vid);
         var response = fichaVantagemMapper.toResponse(fichaVantagem);
+        return ResponseEntity.ok(response);
+    }
+
+    // ==================== ATRIBUTOS ====================
+
+    @PutMapping("/api/v1/fichas/{id}/atributos")
+    @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
+    @Operation(summary = "Atualizar atributos da ficha em lote",
+               description = "Mestre pode editar qualquer ficha; Jogador só as próprias. Valida que base não excede o limitador do nível.")
+    public ResponseEntity<List<FichaAtributoResponse>> atualizarAtributos(
+            @PathVariable Long id,
+            @Valid @RequestBody List<AtualizarAtributoRequest> requests) {
+        var atributos = fichaService.atualizarAtributos(id, requests);
+        var response = atributos.stream().map(fichaAtributoMapper::toResponse).toList();
+        return ResponseEntity.ok(response);
+    }
+
+    // ==================== APTIDOES ====================
+
+    @PutMapping("/api/v1/fichas/{id}/aptidoes")
+    @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
+    @Operation(summary = "Atualizar aptidões da ficha em lote",
+               description = "Mestre pode editar qualquer ficha; Jogador só as próprias. Recalcula valores derivados após salvar.")
+    public ResponseEntity<List<FichaAptidaoResponse>> atualizarAptidoes(
+            @PathVariable Long id,
+            @Valid @RequestBody List<AtualizarAptidaoRequest> requests) {
+        var aptidoes = fichaService.atualizarAptidoes(id, requests);
+        var response = aptidoes.stream().map(fichaAptidaoMapper::toResponse).toList();
         return ResponseEntity.ok(response);
     }
 }

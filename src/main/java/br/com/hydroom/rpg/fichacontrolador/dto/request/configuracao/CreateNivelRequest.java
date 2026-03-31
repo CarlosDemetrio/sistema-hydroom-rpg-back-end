@@ -34,5 +34,7 @@ public record CreateNivelRequest(
 
     @NotNull(message = "Limitador de atributo é obrigatório")
     @Min(value = 1, message = "Limitador de atributo deve ser maior que zero")
-    Integer limitadorAtributo
+    Integer limitadorAtributo,
+
+    Boolean permitirRenascimento
 ) {}

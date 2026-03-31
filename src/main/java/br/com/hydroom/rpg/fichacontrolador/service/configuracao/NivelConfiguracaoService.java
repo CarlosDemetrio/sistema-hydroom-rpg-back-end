@@ -55,5 +55,8 @@ public class NivelConfiguracaoService extends AbstractConfiguracaoService<NivelC
         existente.setPontosAtributo(atualizado.getPontosAtributo());
         existente.setPontosAptidao(atualizado.getPontosAptidao());
         existente.setLimitadorAtributo(atualizado.getLimitadorAtributo());
+        if (atualizado.getPermitirRenascimento() != null) {
+            existente.setPermitirRenascimento(atualizado.getPermitirRenascimento());
+        }
     }
 }

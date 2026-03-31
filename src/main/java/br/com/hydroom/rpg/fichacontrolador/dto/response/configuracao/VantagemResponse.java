@@ -19,6 +19,7 @@ public record VantagemResponse(
     String descricaoEfeito,
     Integer ordemExibicao,
     List<VantagemPreRequisitoResponse> preRequisitos,
+    List<VantagemEfeitoResponse> efeitos,
     LocalDateTime dataCriacao,
     LocalDateTime dataUltimaAtualizacao
 ) {}

@@ -37,10 +37,17 @@ public interface VantagemConfigRepository extends JpaRepository<VantagemConfig, 
     boolean existsByJogoIdAndSiglaIgnoreCase(Long jogoId, String sigla);
 
     /**
-     * Busca vantagem por ID com pré-requisitos carregados (evita N+1 no mapper).
+     * Busca vantagem por ID com pré-requisitos e efeitos carregados (evita N+1 no mapper).
+     * Usa duas queries separadas para evitar MultipleBagFetchException com duas coleções.
      */
     @Query("SELECT v FROM VantagemConfig v LEFT JOIN FETCH v.preRequisitos pr LEFT JOIN FETCH pr.requisito WHERE v.id = :id AND v.deletedAt IS NULL")
     Optional<VantagemConfig> findByIdWithPreRequisitos(@Param("id") Long id);
+
+    /**
+     * Busca vantagem por ID com efeitos carregados.
+     */
+    @Query("SELECT v FROM VantagemConfig v LEFT JOIN FETCH v.efeitos e WHERE v.id = :id AND v.deletedAt IS NULL")
+    Optional<VantagemConfig> findByIdWithEfeitos(@Param("id") Long id);
 
     /**
      * Retorna siglas de vantagens com info de entidade para listagem cross-entity.

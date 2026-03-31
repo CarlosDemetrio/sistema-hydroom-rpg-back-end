@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * Configuração de vantagem do jogo.
@@ -72,6 +73,11 @@ public class VantagemConfig extends BaseEntity implements ConfiguracaoEntity {
     @OneToMany(mappedBy = "vantagem", fetch = FetchType.LAZY)
     @Builder.Default
     private List<VantagemPreRequisito> preRequisitos = new ArrayList<>();
+
+    @OneToMany(mappedBy = "vantagemConfig", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    @ToString.Exclude
+    private List<VantagemEfeito> efeitos = new ArrayList<>();
 
     @Builder.Default
     @Column(name = "ordem_exibicao")

@@ -233,6 +233,7 @@ public class GameConfigInitializerService {
                     nivel.setPontosAtributo(dto.getPontosAtributo());
                     nivel.setPontosAptidao(dto.getPontosAptidao());
                     nivel.setLimitadorAtributo(50); // Default limitador (will be configurable later)
+                    nivel.setPermitirRenascimento(dto.getNivel() >= 31);
                     return nivel;
                 })
                 .toList();

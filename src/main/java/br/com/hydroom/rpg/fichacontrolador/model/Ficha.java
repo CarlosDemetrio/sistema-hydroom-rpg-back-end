@@ -86,4 +86,12 @@ public class Ficha extends BaseEntity {
     @Builder.Default
     @Column(name = "is_npc", nullable = false)
     private boolean isNpc = false;
+
+    /**
+     * Descrição textual livre do personagem/NPC.
+     * Opcional — especialmente útil para descrever NPCs.
+     */
+    @Size(max = 2000, message = "Descrição deve ter no máximo 2000 caracteres")
+    @Column(name = "descricao", columnDefinition = "TEXT")
+    private String descricao;
 }

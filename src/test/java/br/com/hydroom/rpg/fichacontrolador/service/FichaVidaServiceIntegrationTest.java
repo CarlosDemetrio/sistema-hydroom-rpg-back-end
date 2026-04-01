@@ -378,6 +378,86 @@ class FichaVidaServiceIntegrationTest {
     }
 
     // =========================================================
+    // TESTES: LISTAR PROSPECÇÕES
+    // =========================================================
+
+    @Test
+    @DisplayName("Mestre deve listar prospecções de qualquer ficha")
+    void mestreDeveListarProspeccoesDeQualquerFicha() {
+        // Arrange
+        autenticarComo(mestre);
+
+        // Act
+        List<FichaProspeccao> prospeccoes = fichaVidaService.listarProspeccoes(fichaMestre.getId());
+
+        // Assert — deve retornar lista (pode estar vazia se não há dados de prospecção configurados)
+        assertThat(prospeccoes).isNotNull();
+    }
+
+    @Test
+    @DisplayName("Jogador deve listar prospecções de sua própria ficha")
+    void jogadorDeveListarProspeccoesDeSuaFicha() {
+        // Arrange
+        autenticarComo(jogador);
+
+        // Act
+        List<FichaProspeccao> prospeccoes = fichaVidaService.listarProspeccoes(fichaJogador.getId());
+
+        // Assert
+        assertThat(prospeccoes).isNotNull();
+    }
+
+    @Test
+    @DisplayName("Jogador não autorizado deve receber ForbiddenException ao listar prospecções de ficha de outro")
+    void jogadorNaoAutorizadoDeveReceberForbiddenAoListarProspeccoes() {
+        // Arrange
+        autenticarComo(outroJogador);
+
+        // Act & Assert
+        assertThrows(ForbiddenException.class,
+                () -> fichaVidaService.listarProspeccoes(fichaJogador.getId()));
+    }
+
+    @Test
+    @DisplayName("Deve lançar ResourceNotFoundException ao listar prospecções de ficha inexistente")
+    void deveLancarNotFoundAoListarProspeccoesParaFichaInexistente() {
+        // Arrange
+        autenticarComo(mestre);
+
+        // Act & Assert
+        assertThrows(ResourceNotFoundException.class,
+                () -> fichaVidaService.listarProspeccoes(999999L));
+    }
+
+    // =========================================================
+    // TESTES: ATUALIZAR VIDA COM FICHA INEXISTENTE
+    // =========================================================
+
+    @Test
+    @DisplayName("Deve lançar ResourceNotFoundException ao atualizar vida de ficha inexistente")
+    void deveLancarNotFoundAoAtualizarVidaDeFichaInexistente() {
+        // Arrange
+        autenticarComo(mestre);
+        var request = new AtualizarVidaRequest(50, 30, List.of());
+
+        // Act & Assert
+        assertThrows(ResourceNotFoundException.class,
+                () -> fichaVidaService.atualizarVida(999999L, request));
+    }
+
+    @Test
+    @DisplayName("Deve lançar ResourceNotFoundException ao atualizar prospecção de ficha inexistente")
+    void deveLancarNotFoundAoAtualizarProspeccaoDeFichaInexistente() {
+        // Arrange
+        autenticarComo(mestre);
+        var request = new AtualizarProspeccaoRequest(1L, 5);
+
+        // Act & Assert
+        assertThrows(ResourceNotFoundException.class,
+                () -> fichaVidaService.atualizarProspeccao(999999L, request));
+    }
+
+    // =========================================================
     // HELPERS
     // =========================================================
 

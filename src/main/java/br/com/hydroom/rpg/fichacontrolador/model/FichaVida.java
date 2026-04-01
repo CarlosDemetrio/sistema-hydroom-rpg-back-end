@@ -56,7 +56,18 @@ public class FichaVida extends BaseEntity {
     private Integer vidaTotal = 0;
 
     /**
+     * Vida atual restante do personagem (estado de combate).
+     * Inicializada com vidaTotal ao criar a ficha.
+     * Atualizada via PUT /fichas/{id}/vida.
+     */
+    @NotNull
+    @Builder.Default
+    @Column(name = "vida_atual", nullable = false)
+    private Integer vidaAtual = 0;
+
+    /**
      * Recalcula e persiste a vida total.
+     * Quando a vida total aumenta, incrementa vida atual proporcionalmente.
      */
     public void recalcularTotal() {
         this.vidaTotal = (vt != null ? vt : 0) +

@@ -62,6 +62,16 @@ public class FichaEssencia extends BaseEntity {
     private Integer total = 0;
 
     /**
+     * Essência atual restante do personagem (estado de combate/uso de magias).
+     * Inicializada com total ao criar a ficha.
+     * Atualizada via PUT /fichas/{id}/vida.
+     */
+    @NotNull
+    @Builder.Default
+    @Column(name = "essencia_atual", nullable = false)
+    private Integer essenciaAtual = 0;
+
+    /**
      * Recalcula e persiste o total.
      */
     public void recalcularTotal() {

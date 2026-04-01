@@ -16,5 +16,7 @@ public interface UsuarioMapper {
     @Mapping(target = "fotoPerfil", source = "imagemUrl")
     @Mapping(target = "dataCriacao", source = "createdAt")
     @Mapping(target = "dataUltimaAtualizacao", source = "updatedAt")
+    @Mapping(target = "ativo", expression = "java(usuario.isActive())")
+    @Mapping(target = "jogoAtivo", ignore = true)
     UsuarioResponse toResponse(Usuario usuario);
 }

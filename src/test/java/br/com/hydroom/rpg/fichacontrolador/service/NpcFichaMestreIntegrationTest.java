@@ -194,18 +194,23 @@ class NpcFichaMestreIntegrationTest {
     }
 
     @Test
-    @DisplayName("Jogador não pode criar NPC (ForbiddenException esperada)")
-    void deveRejeitarCriacaoDeNpcSemRoleMestre() {
+    @DisplayName("Jogador não pode criar NPC — service lança ForbiddenException (SP1-T18)")
+    void deveRejeitarCriacaoDeNpcPorJogador() {
         // Arrange
         autenticarComo(jogador);
-        // Jogador tenta criar uma ficha com isNpc=true
-        // No controller, o endpoint /npcs tem @PreAuthorize("hasRole('MESTRE')")
-        // A nível de service, mesmo sem a anotação PreAuthorize, o comportamento via service
-        // permite criar se o jogador for participante. Testamos o comportamento do service aqui:
-        // mas o jogador aprovado consegue criar fichas (para si mesmo), então criar com isNpc=true
-        // pelo service não lança ForbiddenException.
-        // A proteção real é no controller via @PreAuthorize("hasRole('MESTRE')").
-        // Este teste verifica que JOGADOR não pode LISTAR NPCs (pois o service lança ForbiddenException).
+        var request = new CreateFichaRequest(jogo.getId(), "NPC Tentativa", null, null, null, null, null, null, true);
+
+        // Act & Assert — proteção no service garantida independentemente do @PreAuthorize do controller
+        assertThrows(ForbiddenException.class, () -> fichaService.criar(request));
+    }
+
+    @Test
+    @DisplayName("Jogador não pode listar NPCs (ForbiddenException esperada)")
+    void deveRejeitarListagemDeNpcsPorJogador() {
+        // Arrange
+        autenticarComo(jogador);
+
+        // Assert
         assertThrows(ForbiddenException.class,
                 () -> fichaService.listarNpcs(jogo.getId()));
     }
@@ -272,6 +277,22 @@ class NpcFichaMestreIntegrationTest {
         // Assert - NPC não tem jogadorId mesmo com jogadorId no request
         assertThat(npc.isNpc()).isTrue();
         assertThat(npc.getJogadorId()).isNull();
+    }
+
+    @Test
+    @DisplayName("Deve atualizar descrição do NPC com sucesso")
+    void deveAtualizarDescricaoDoNpc() {
+        // Arrange
+        autenticarComo(mestre);
+        Ficha npc = fichaService.criar(new CreateFichaRequest(
+                jogo.getId(), "Lich Mago", null, null, null, null, null, null, true));
+        String descricao = "Um antigo mago que buscou a imortalidade através da necromancia.";
+
+        // Act
+        Ficha npcAtualizado = fichaService.atualizarDescricao(npc.getId(), descricao);
+
+        // Assert
+        assertThat(npcAtualizado.getDescricao()).isEqualTo(descricao);
     }
 
     // =========================================================

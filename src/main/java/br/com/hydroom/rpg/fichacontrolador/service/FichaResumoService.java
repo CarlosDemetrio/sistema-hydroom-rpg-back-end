@@ -47,13 +47,13 @@ public class FichaResumoService {
     private final UsuarioRepository usuarioRepository;
 
     public FichaResumoResponse getResumo(Long fichaId) {
-        Ficha ficha = fichaRepository.findById(fichaId)
+        Ficha ficha = fichaRepository.findByIdWithRelationships(fichaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ficha não encontrada: " + fichaId));
 
         verificarAcessoLeitura(ficha);
 
-        // Atributos: abreviação → total
-        List<FichaAtributo> fichaAtributos = fichaAtributoRepository.findByFichaId(fichaId);
+        // Atributos: abreviação → total (JOIN FETCH evita N+1 ao acessar atributoConfig.abreviacao)
+        List<FichaAtributo> fichaAtributos = fichaAtributoRepository.findByFichaIdWithConfig(fichaId);
         Map<String, Integer> atributosTotais = new LinkedHashMap<>();
         for (FichaAtributo fa : fichaAtributos) {
             String abreviacao = fa.getAtributoConfig() != null ? fa.getAtributoConfig().getAbreviacao() : null;
@@ -62,8 +62,8 @@ public class FichaResumoService {
             }
         }
 
-        // Bônus: nome → total
-        List<FichaBonus> fichaBonus = fichaBonusRepository.findByFichaId(fichaId);
+        // Bônus: nome → total (JOIN FETCH evita N+1 ao acessar bonusConfig.nome)
+        List<FichaBonus> fichaBonus = fichaBonusRepository.findByFichaIdWithConfig(fichaId);
         Map<String, Integer> bonusTotais = new LinkedHashMap<>();
         for (FichaBonus fb : fichaBonus) {
             String nome = fb.getBonusConfig() != null ? fb.getBonusConfig().getNome() : null;

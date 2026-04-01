@@ -24,6 +24,7 @@ public record FichaResponse(
     Long xp,
     Integer renascimentos,
     boolean isNpc,
+    String descricao,
     LocalDateTime dataCriacao,
     LocalDateTime dataUltimaAtualizacao
 ) {}

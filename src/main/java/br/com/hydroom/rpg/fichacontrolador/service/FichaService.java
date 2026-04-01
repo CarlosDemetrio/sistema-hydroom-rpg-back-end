@@ -98,14 +98,19 @@ public class FichaService {
             }
         }
 
-        // 3. Determinar jogadorId
+        // 3. Jogador não pode criar NPC
+        if (!isMestre && Boolean.TRUE.equals(request.isNpc())) {
+            throw new ForbiddenException("Apenas o Mestre pode criar NPCs.");
+        }
+
+        // 4. Determinar jogadorId
         Long jogadorId = request.jogadorId();
         if (!isMestre) {
             // Jogador só pode criar ficha para si mesmo
             jogadorId = usuarioAtual.getId();
         }
 
-        // 4. Validar FK do mesmo jogo (se fornecidos)
+        // 5. Validar FK do mesmo jogo (se fornecidos)
         Raca raca = null;
         if (request.racaId() != null) {
             raca = racaRepository.findById(request.racaId())
@@ -151,7 +156,7 @@ public class FichaService {
             }
         }
 
-        // 5. Criar e salvar a Ficha
+        // 6. Criar e salvar a Ficha
         boolean isNpc = Boolean.TRUE.equals(request.isNpc());
         Ficha ficha = Ficha.builder()
                 .jogo(jogo)
@@ -167,10 +172,10 @@ public class FichaService {
 
         ficha = fichaRepository.save(ficha);
 
-        // 6. Inicializar sub-registros
+        // 7. Inicializar sub-registros
         inicializarSubRegistros(ficha, jogo);
 
-        // 7. Recalcular valores derivados
+        // 8. Recalcular valores derivados
         recalcular(ficha);
 
         log.info("Ficha '{}' criada com sucesso (ID: {})", ficha.getNome(), ficha.getId());
@@ -179,9 +184,10 @@ public class FichaService {
 
     /**
      * Busca uma ficha por ID, verificando acesso.
+     * Usa JOIN FETCH para carregar relacionamentos ManyToOne e evitar N+1 no mapper.
      */
     public Ficha buscarPorId(Long id) {
-        Ficha ficha = fichaRepository.findById(id)
+        Ficha ficha = fichaRepository.findByIdWithRelationships(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ficha não encontrada: " + id));
 
         verificarAcessoLeitura(ficha);
@@ -210,6 +216,7 @@ public class FichaService {
     /**
      * Lista fichas de um jogo com filtros opcionais.
      * Mestre vê todas (isNpc=false); Jogador vê apenas as suas.
+     * Usa JOIN FETCH para carregar relacionamentos ManyToOne e evitar N+1 no mapper.
      */
     public List<Ficha> listarComFiltros(Long jogoId, String nome, Long classeId, Long racaId, Integer nivel) {
         jogoRepository.findById(jogoId)
@@ -220,26 +227,28 @@ public class FichaService {
                 jogoId, usuarioAtual.getId(), RoleJogo.MESTRE);
 
         if (isMestre) {
-            return fichaRepository.findByJogoIdWithFilters(jogoId, nome, classeId, racaId, nivel);
+            return fichaRepository.findByJogoIdWithFiltersAndRelationships(jogoId, nome, classeId, racaId, nivel);
         } else {
-            return fichaRepository.findByJogoIdAndJogadorIdWithFilters(
+            return fichaRepository.findByJogoIdAndJogadorIdWithFiltersAndRelationships(
                     jogoId, usuarioAtual.getId(), nome, classeId, racaId, nivel);
         }
     }
 
     /**
      * Lista fichas do usuário atual em um jogo (apenas jogador, isNpc=false).
+     * Usa JOIN FETCH para carregar relacionamentos ManyToOne e evitar N+1 no mapper.
      */
     public List<Ficha> listarMinhas(Long jogoId) {
         jogoRepository.findById(jogoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Jogo não encontrado: " + jogoId));
 
         Usuario usuarioAtual = getUsuarioAtual();
-        return fichaRepository.findByJogoIdAndJogadorIdAndIsNpcFalse(jogoId, usuarioAtual.getId());
+        return fichaRepository.findByJogoIdAndJogadorIdAndIsNpcFalseWithRelationships(jogoId, usuarioAtual.getId());
     }
 
     /**
      * Lista apenas NPCs de um jogo (apenas Mestre).
+     * Usa JOIN FETCH para carregar relacionamentos ManyToOne e evitar N+1 no mapper.
      */
     public List<Ficha> listarNpcs(Long jogoId) {
         Usuario usuarioAtual = getUsuarioAtual();
@@ -250,7 +259,7 @@ public class FichaService {
             throw new ForbiddenException("Apenas o Mestre pode visualizar NPCs.");
         }
 
-        return fichaRepository.findByJogoIdAndIsNpcTrue(jogoId);
+        return fichaRepository.findByJogoIdAndIsNpcTrueWithRelationships(jogoId);
     }
 
     /**
@@ -408,6 +417,18 @@ public class FichaService {
     }
 
     /**
+     * Atualiza a descrição textual de uma ficha (útil para NPCs).
+     */
+    @Transactional
+    public Ficha atualizarDescricao(Long fichaId, String descricao) {
+        Ficha ficha = fichaRepository.findById(fichaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ficha não encontrada: " + fichaId));
+        verificarAcessoEscrita(ficha);
+        ficha.setDescricao(descricao);
+        return fichaRepository.save(ficha);
+    }
+
+    /**
      * Atualiza os valores de atributos de uma ficha em lote.
      *
      * <p>Valida que nenhum atributo (base) excede o limitador do nível atual.
@@ -455,13 +476,13 @@ public class FichaService {
             if (req.outros() != null) fichaAtributo.setOutros(req.outros());
         }
 
-        List<FichaAtributo> todosAtributos = fichaAtributoRepository.findByFichaId(fichaId);
+        List<FichaAtributo> todosAtributos = fichaAtributoRepository.findByFichaIdWithConfig(fichaId);
         fichaAtributoRepository.saveAll(todosAtributos);
 
         recalcular(ficha);
 
         log.info("Atributos da ficha {} atualizados em lote ({} itens)", fichaId, requests.size());
-        return fichaAtributoRepository.findByFichaId(fichaId);
+        return fichaAtributoRepository.findByFichaIdWithConfig(fichaId);
     }
 
     /**
@@ -590,10 +611,11 @@ public class FichaService {
 
     /**
      * Copia todos os sub-registros da ficha original para a nova ficha com os mesmos valores.
+     * Usa queries com JOIN FETCH para evitar N+1 ao acessar configs durante cópia.
      */
     private void copiarSubRegistros(Long fichaOrigemId, Ficha novaFicha) {
         // FichaAtributo
-        List<FichaAtributo> atributos = fichaAtributoRepository.findByFichaId(fichaOrigemId);
+        List<FichaAtributo> atributos = fichaAtributoRepository.findByFichaIdWithConfig(fichaOrigemId);
         List<FichaAtributo> copiaAtributos = atributos.stream()
                 .map(a -> FichaAtributo.builder()
                         .ficha(novaFicha)
@@ -622,7 +644,7 @@ public class FichaService {
         fichaAptidaoRepository.saveAll(copiaAptidoes);
 
         // FichaBonus
-        List<FichaBonus> bonus = fichaBonusRepository.findByFichaId(fichaOrigemId);
+        List<FichaBonus> bonus = fichaBonusRepository.findByFichaIdWithConfig(fichaOrigemId);
         List<FichaBonus> copiaBonus = bonus.stream()
                 .map(b -> FichaBonus.builder()
                         .ficha(novaFicha)
@@ -650,7 +672,7 @@ public class FichaService {
         });
 
         // FichaVidaMembro
-        List<FichaVidaMembro> membros = fichaVidaMembroRepository.findByFichaId(fichaOrigemId);
+        List<FichaVidaMembro> membros = fichaVidaMembroRepository.findByFichaIdWithConfig(fichaOrigemId);
         List<FichaVidaMembro> copiaMembros = membros.stream()
                 .map(m -> FichaVidaMembro.builder()
                         .ficha(novaFicha)
@@ -687,7 +709,7 @@ public class FichaService {
         });
 
         // FichaProspeccao
-        List<FichaProspeccao> prospeccoes = fichaProspeccaoRepository.findByFichaId(fichaOrigemId);
+        List<FichaProspeccao> prospeccoes = fichaProspeccaoRepository.findByFichaIdWithConfig(fichaOrigemId);
         List<FichaProspeccao> copiaProspeccoes = prospeccoes.stream()
                 .map(p -> FichaProspeccao.builder()
                         .ficha(novaFicha)
@@ -698,7 +720,7 @@ public class FichaService {
         fichaProspeccaoRepository.saveAll(copiaProspeccoes);
 
         // FichaVantagem — copia vantagens com os mesmos níveis e custos
-        List<FichaVantagem> vantagens = fichaVantagemRepository.findByFichaId(fichaOrigemId);
+        List<FichaVantagem> vantagens = fichaVantagemRepository.findByFichaIdWithConfig(fichaOrigemId);
         List<FichaVantagem> copiaVantagens = vantagens.stream()
                 .map(fv -> FichaVantagem.builder()
                         .ficha(novaFicha)
@@ -774,16 +796,17 @@ public class FichaService {
     /**
      * Valida as regras de negócio e recalcula os valores derivados da ficha.
      * Tolerante a configurações ausentes (nível, atributos etc.).
+     * Usa queries com JOIN FETCH para evitar N+1 ao acessar configs durante validação.
      */
     private void validarERecalcular(Ficha ficha) {
         Long fichaId = ficha.getId();
         Long jogoId = ficha.getJogo().getId();
 
-        // Carregar sub-registros
-        List<FichaAtributo> atributos = fichaAtributoRepository.findByFichaId(fichaId);
+        // Carregar sub-registros (JOIN FETCH para evitar N+1)
+        List<FichaAtributo> atributos = fichaAtributoRepository.findByFichaIdWithConfig(fichaId);
         List<FichaAptidao> aptidoes = fichaAptidaoRepository.findByFichaId(fichaId);
-        List<FichaVantagem> vantagens = fichaVantagemRepository.findByFichaId(fichaId);
-        List<FichaBonus> bonus = fichaBonusRepository.findByFichaId(fichaId);
+        List<FichaVantagem> vantagens = fichaVantagemRepository.findByFichaIdWithConfig(fichaId);
+        List<FichaBonus> bonus = fichaBonusRepository.findByFichaIdWithConfig(fichaId);
 
         // NivelConfig atual (null se não configurado)
         NivelConfig nivelConfig = nivelConfigRepository
@@ -799,17 +822,18 @@ public class FichaService {
 
     /**
      * Carrega todos os sub-registros da ficha, recalcula e persiste.
+     * Usa queries com JOIN FETCH para evitar N+1 ao acessar configs durante recálculo.
      */
     private void recalcular(Ficha ficha) {
         Long fichaId = ficha.getId();
 
-        List<FichaAtributo> atributos = fichaAtributoRepository.findByFichaId(fichaId);
-        List<FichaBonus> bonus = fichaBonusRepository.findByFichaId(fichaId);
+        List<FichaAtributo> atributos = fichaAtributoRepository.findByFichaIdWithConfig(fichaId);
+        List<FichaBonus> bonus = fichaBonusRepository.findByFichaIdWithConfig(fichaId);
 
         FichaVida vida = fichaVidaRepository.findByFichaId(fichaId).orElse(null);
         if (vida == null) return;
 
-        List<FichaVidaMembro> membros = fichaVidaMembroRepository.findByFichaId(fichaId);
+        List<FichaVidaMembro> membros = fichaVidaMembroRepository.findByFichaIdWithConfig(fichaId);
         FichaEssencia essencia = fichaEssenciaRepository.findByFichaId(fichaId).orElse(null);
         FichaAmeaca ameaca = fichaAmeacaRepository.findByFichaId(fichaId).orElse(null);
 

@@ -177,7 +177,7 @@ public class FichaVantagemService {
 
         verificarAcessoLeitura(ficha);
 
-        return fichaVantagemRepository.findByFichaId(fichaId);
+        return fichaVantagemRepository.findByFichaIdWithConfig(fichaId);
     }
 
     // ==================== PRIVADOS ====================

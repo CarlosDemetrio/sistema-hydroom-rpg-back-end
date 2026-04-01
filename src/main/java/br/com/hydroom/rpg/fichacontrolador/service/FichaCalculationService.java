@@ -147,6 +147,12 @@ public class FichaCalculationService {
 
         int vidaTotal = vigorTotal + nivelFicha + vt + renascimentos + outros;
         vida.setVidaTotal(vidaTotal);
+
+        // Inicializa vidaAtual com vidaTotal se ainda estiver zerada (nova ficha)
+        if (vida.getVidaAtual() == null || vida.getVidaAtual() == 0) {
+            vida.setVidaAtual(vidaTotal);
+        }
+
         return vidaTotal;
     }
 
@@ -178,6 +184,12 @@ public class FichaCalculationService {
         int baseEssencia = (int) Math.floor((vigorTotal + sabedoriaTotal) / 2.0);
         int total = baseEssencia + nivelFicha + renascimentos + vantagens + outros;
         essencia.setTotal(total);
+
+        // Inicializa essenciaAtual com total se ainda estiver zerada (nova ficha)
+        if (essencia.getEssenciaAtual() == null || essencia.getEssenciaAtual() == 0) {
+            essencia.setEssenciaAtual(total);
+        }
+
         return total;
     }
 

@@ -2,6 +2,8 @@ package br.com.hydroom.rpg.fichacontrolador.controller;
 
 import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarAptidaoRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarAtributoRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarProspeccaoRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarVidaRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.ComprarVantagemRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.CreateFichaRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.DuplicarFichaRequest;
@@ -23,6 +25,7 @@ import br.com.hydroom.rpg.fichacontrolador.service.FichaPreviewService;
 import br.com.hydroom.rpg.fichacontrolador.service.FichaResumoService;
 import br.com.hydroom.rpg.fichacontrolador.service.FichaService;
 import br.com.hydroom.rpg.fichacontrolador.service.FichaVantagemService;
+import br.com.hydroom.rpg.fichacontrolador.service.FichaVidaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -52,6 +55,7 @@ public class FichaController {
     private final FichaResumoService fichaResumoService;
     private final FichaAtributoMapper fichaAtributoMapper;
     private final FichaAptidaoMapper fichaAptidaoMapper;
+    private final FichaVidaService fichaVidaService;
 
     @GetMapping("/api/v1/jogos/{jogoId}/fichas")
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
@@ -155,6 +159,9 @@ public class FichaController {
                 true
         );
         var ficha = fichaService.criar(createRequest);
+        if (request.descricao() != null) {
+            ficha = fichaService.atualizarDescricao(ficha.getId(), request.descricao());
+        }
         return fichaMapper.toResponse(ficha);
     }
 
@@ -250,5 +257,33 @@ public class FichaController {
         var aptidoes = fichaService.atualizarAptidoes(id, requests);
         var response = aptidoes.stream().map(fichaAptidaoMapper::toResponse).toList();
         return ResponseEntity.ok(response);
+    }
+
+    // ==================== VIDA (ESTADO DE COMBATE) ====================
+
+    @PutMapping("/api/v1/fichas/{id}/vida")
+    @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
+    @Operation(summary = "Atualizar estado de vida da ficha",
+               description = "Atualiza vida atual, essência atual e dano nos membros. Mestre pode editar qualquer ficha; Jogador só as próprias. Não recalcula atributos derivados.")
+    public ResponseEntity<FichaResumoResponse> atualizarVida(
+            @PathVariable Long id,
+            @Valid @RequestBody AtualizarVidaRequest request) {
+        fichaVidaService.atualizarVida(id, request);
+        var resumo = fichaResumoService.getResumo(id);
+        return ResponseEntity.ok(resumo);
+    }
+
+    // ==================== PROSPECÇÃO ====================
+
+    @PutMapping("/api/v1/fichas/{id}/prospeccao")
+    @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
+    @Operation(summary = "Atualizar dado de prospecção da ficha",
+               description = "Atualiza a quantidade de um dado de prospecção específico. Mestre pode editar qualquer ficha; Jogador só as próprias.")
+    public ResponseEntity<FichaResumoResponse> atualizarProspeccao(
+            @PathVariable Long id,
+            @Valid @RequestBody AtualizarProspeccaoRequest request) {
+        fichaVidaService.atualizarProspeccao(id, request);
+        var resumo = fichaResumoService.getResumo(id);
+        return ResponseEntity.ok(resumo);
     }
 }

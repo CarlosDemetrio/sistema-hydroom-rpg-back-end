@@ -389,6 +389,77 @@ class FichaServiceIntegrationTest {
     }
 
     // =========================================================
+    // TESTES DE LISTAGEM COM FILTROS
+    // =========================================================
+
+    @Test
+    @DisplayName("Mestre deve listar fichas com filtro de nome")
+    void mestreDeveListarFichasComFiltroDeNome() {
+        // Arrange
+        autenticarComo(mestre);
+        fichaService.criar(new CreateFichaRequest(jogo.getId(), "Aragorn Elessar", jogador.getId(), null, null, null, null, null, false));
+        fichaService.criar(new CreateFichaRequest(jogo.getId(), "Boromir", null, null, null, null, null, null, false));
+
+        // Act
+        List<Ficha> fichas = fichaService.listarComFiltros(jogo.getId(), "Aragorn", null, null, null);
+
+        // Assert
+        assertThat(fichas).hasSize(1);
+        assertThat(fichas.get(0).getNome()).contains("Aragorn");
+    }
+
+    @Test
+    @DisplayName("Mestre deve listar fichas sem filtros (retorna todas não-NPC)")
+    void mestreDeveListarFichasSemFiltros() {
+        // Arrange
+        autenticarComo(mestre);
+        fichaService.criar(new CreateFichaRequest(jogo.getId(), "Ficha A", null, null, null, null, null, null, false));
+        fichaService.criar(new CreateFichaRequest(jogo.getId(), "Ficha B", jogador.getId(), null, null, null, null, null, false));
+        fichaService.criar(new CreateFichaRequest(jogo.getId(), "NPC Goblin", null, null, null, null, null, null, true));
+
+        // Act
+        List<Ficha> fichas = fichaService.listarComFiltros(jogo.getId(), null, null, null, null);
+
+        // Assert — NPC não deve aparecer
+        assertThat(fichas).hasSize(2);
+        assertThat(fichas).noneMatch(Ficha::isNpc);
+    }
+
+    @Test
+    @DisplayName("Jogador deve listar apenas suas fichas via listarMinhas")
+    void jogadorDeveListarMinhasFichas() {
+        // Arrange
+        autenticarComo(mestre);
+        fichaService.criar(new CreateFichaRequest(jogo.getId(), "Ficha do Jogador", jogador.getId(), null, null, null, null, null, false));
+        fichaService.criar(new CreateFichaRequest(jogo.getId(), "Ficha do Mestre", null, null, null, null, null, null, false));
+
+        // Act
+        autenticarComo(jogador);
+        List<Ficha> minhas = fichaService.listarMinhas(jogo.getId());
+
+        // Assert
+        assertThat(minhas).hasSize(1);
+        assertThat(minhas.get(0).getJogadorId()).isEqualTo(jogador.getId());
+    }
+
+    @Test
+    @DisplayName("Jogador vê apenas suas fichas via listarComFiltros")
+    void jogadorDeveVerApenasSuasFichasViaFiltros() {
+        // Arrange
+        autenticarComo(mestre);
+        fichaService.criar(new CreateFichaRequest(jogo.getId(), "Ficha do Jogador", jogador.getId(), null, null, null, null, null, false));
+        fichaService.criar(new CreateFichaRequest(jogo.getId(), "Ficha Alheia", null, null, null, null, null, null, false));
+
+        // Act
+        autenticarComo(jogador);
+        List<Ficha> fichas = fichaService.listarComFiltros(jogo.getId(), null, null, null, null);
+
+        // Assert
+        assertThat(fichas).hasSize(1);
+        assertThat(fichas.get(0).getJogadorId()).isEqualTo(jogador.getId());
+    }
+
+    // =========================================================
     // TESTES DE BUSCA POR ID
     // =========================================================
 
@@ -590,6 +661,144 @@ class FichaServiceIntegrationTest {
 
         // Assert
         assertThrows(ForbiddenException.class, () -> fichaService.deletar(ficha.getId()));
+    }
+
+    // =========================================================
+    // TESTES DE NPC
+    // =========================================================
+
+    @Test
+    @DisplayName("Deve criar NPC com jogadorId null e isNpc true")
+    void deveCriarNpcComJogadorIdNullEIsNpcTrue() {
+        // Arrange
+        autenticarComo(mestre);
+        var request = new CreateFichaRequest(jogo.getId(), "Dragão Ancião", null, null, null, null, null, null, true);
+
+        // Act
+        Ficha npc = fichaService.criar(request);
+
+        // Assert
+        assertThat(npc.isNpc()).isTrue();
+        assertThat(npc.getJogadorId()).isNull();
+        assertThat(npc.getNome()).isEqualTo("Dragão Ancião");
+    }
+
+    @Test
+    @DisplayName("Deve atualizar descrição de NPC")
+    void deveAtualizarDescricaoDeNpc() {
+        // Arrange
+        autenticarComo(mestre);
+        Ficha npc = fichaService.criar(new CreateFichaRequest(jogo.getId(), "NPC Vendedor", null, null, null, null, null, null, true));
+
+        // Act
+        Ficha npcAtualizado = fichaService.atualizarDescricao(npc.getId(), "Um vendedor misterioso da cidade de Arland.");
+
+        // Assert
+        assertThat(npcAtualizado.getDescricao()).isEqualTo("Um vendedor misterioso da cidade de Arland.");
+    }
+
+    @Test
+    @DisplayName("Listar NPCs não deve incluir fichas de jogadores")
+    void listarNpcsNaoDeveIncluirFichasDeJogadores() {
+        // Arrange
+        autenticarComo(mestre);
+        fichaService.criar(new CreateFichaRequest(jogo.getId(), "Ficha Normal", jogador.getId(), null, null, null, null, null, false));
+        fichaService.criar(new CreateFichaRequest(jogo.getId(), "NPC Guarda", null, null, null, null, null, null, true));
+        fichaService.criar(new CreateFichaRequest(jogo.getId(), "NPC Mago", null, null, null, null, null, null, true));
+
+        // Act
+        List<Ficha> npcs = fichaService.listarNpcs(jogo.getId());
+
+        // Assert
+        assertThat(npcs).hasSize(2);
+        assertThat(npcs).allMatch(Ficha::isNpc);
+        assertThat(npcs).noneMatch(f -> f.getJogadorId() != null);
+    }
+
+    // =========================================================
+    // TESTES DE SEGURANÇA — AUDITORIA SP1-T18
+    // =========================================================
+
+    @Test
+    @DisplayName("Jogador não pode criar NPC (isNpc=true deve ser rejeitado)")
+    void jogadorNaoPodeCriarNpc() {
+        // Arrange
+        autenticarComo(jogador);
+        var request = new CreateFichaRequest(jogo.getId(), "NPC Tentativa", null, null, null, null, null, null, true);
+
+        // Act & Assert — CVE: jogador poderia criar NPC antes da correção
+        assertThrows(ForbiddenException.class, () -> fichaService.criar(request));
+    }
+
+    @Test
+    @DisplayName("Jogador não pode acessar ficha de NPC via buscarPorId")
+    void jogadorNaoPodeAcessarFichaDeNpc() {
+        // Arrange — Mestre cria NPC
+        autenticarComo(mestre);
+        Ficha npc = fichaService.criar(
+                new CreateFichaRequest(jogo.getId(), "NPC Secreto", null, null, null, null, null, null, true));
+
+        // Act — Jogador tenta acessar o NPC
+        autenticarComo(jogador);
+
+        // Assert — NPC não pertence ao jogador (jogadorId=null), deve ser bloqueado
+        assertThrows(ForbiddenException.class, () -> fichaService.buscarPorId(npc.getId()));
+    }
+
+    @Test
+    @DisplayName("Jogador não pode editar ficha de NPC")
+    void jogadorNaoPodeEditarNpc() {
+        // Arrange
+        autenticarComo(mestre);
+        Ficha npc = fichaService.criar(
+                new CreateFichaRequest(jogo.getId(), "NPC Para Editar", null, null, null, null, null, null, true));
+
+        // Act & Assert
+        autenticarComo(jogador);
+        var update = new UpdateFichaRequest("Tentativa", null, null, null, null, null, null, null);
+        assertThrows(ForbiddenException.class, () -> fichaService.atualizar(npc.getId(), update));
+    }
+
+    @Test
+    @DisplayName("Jogador não pode acessar ficha de outro jogador via buscarPorId")
+    void jogadorNaoPodeAcessarFichaDeOutroJogador() {
+        // Arrange — Mestre cria ficha atribuída a outroUsuario
+        autenticarComo(mestre);
+        Ficha fichaDeOutro = fichaService.criar(
+                new CreateFichaRequest(jogo.getId(), "Ficha de Outro", outroUsuario.getId(), null, null, null, null, null, false));
+
+        // Act — jogador tenta acessar ficha que não é sua
+        autenticarComo(jogador);
+
+        // Assert
+        assertThrows(ForbiddenException.class, () -> fichaService.buscarPorId(fichaDeOutro.getId()));
+    }
+
+    @Test
+    @DisplayName("Jogador não pode atualizar ficha de outro jogador")
+    void jogadorNaoPodeAtualizarFichaDeOutroJogador() {
+        // Arrange
+        autenticarComo(mestre);
+        Ficha fichaDeOutro = fichaService.criar(
+                new CreateFichaRequest(jogo.getId(), "Ficha do Outro", outroUsuario.getId(), null, null, null, null, null, false));
+
+        // Act & Assert
+        autenticarComo(jogador);
+        var update = new UpdateFichaRequest("Hack", null, null, null, null, null, null, null);
+        assertThrows(ForbiddenException.class, () -> fichaService.atualizar(fichaDeOutro.getId(), update));
+    }
+
+    @Test
+    @DisplayName("Jogador não pode duplicar NPC")
+    void jogadorNaoPodeDuplicarNpc() {
+        // Arrange
+        autenticarComo(mestre);
+        Ficha npc = fichaService.criar(
+                new CreateFichaRequest(jogo.getId(), "NPC Original", null, null, null, null, null, null, true));
+
+        // Act & Assert
+        autenticarComo(jogador);
+        assertThrows(ForbiddenException.class, () -> fichaService.duplicar(npc.getId(), "NPC Cópia", false));
     }
 
     // =========================================================

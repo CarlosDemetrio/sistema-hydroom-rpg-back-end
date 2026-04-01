@@ -38,6 +38,7 @@ public interface FichaMapper {
     @Mapping(target = "nivel", constant = "1")
     @Mapping(target = "xp", constant = "0L")
     @Mapping(target = "renascimentos", constant = "0")
+    @Mapping(target = "descricao", ignore = true)
     Ficha toEntity(CreateFichaRequest request);
 
     @Mapping(target = "id", ignore = true)
@@ -50,5 +51,6 @@ public interface FichaMapper {
     @Mapping(target = "presenca", ignore = true)
     @Mapping(target = "nivel", ignore = true)
     @Mapping(target = "npc", ignore = true)
+    @Mapping(target = "descricao", ignore = true)
     void updateEntity(UpdateFichaRequest request, @MappingTarget Ficha ficha);
 }

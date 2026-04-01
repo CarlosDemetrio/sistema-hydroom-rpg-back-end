@@ -2,11 +2,15 @@ package br.com.hydroom.rpg.fichacontrolador.service;
 
 import br.com.hydroom.rpg.fichacontrolador.dto.request.FichaPreviewRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaPreviewResponse;
+import br.com.hydroom.rpg.fichacontrolador.exception.ForbiddenException;
 import br.com.hydroom.rpg.fichacontrolador.exception.ResourceNotFoundException;
 import br.com.hydroom.rpg.fichacontrolador.model.*;
+import br.com.hydroom.rpg.fichacontrolador.model.enums.RoleJogo;
 import br.com.hydroom.rpg.fichacontrolador.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +39,8 @@ public class FichaPreviewService {
     private final FichaEssenciaRepository fichaEssenciaRepository;
     private final FichaAmeacaRepository fichaAmeacaRepository;
     private final ConfiguracaoNivelRepository nivelConfigRepository;
+    private final JogoParticipanteRepository jogoParticipanteRepository;
+    private final UsuarioRepository usuarioRepository;
 
     private final FichaCalculationService calculationService;
 
@@ -50,18 +56,21 @@ public class FichaPreviewService {
         Ficha ficha = fichaRepository.findById(fichaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ficha não encontrada: " + fichaId));
 
-        // 2. Carregar sub-registros
-        List<FichaAtributo> atributos = fichaAtributoRepository.findByFichaId(fichaId);
-        List<FichaBonus> bonus = fichaBonusRepository.findByFichaId(fichaId);
+        // 2. Verificar acesso de leitura
+        verificarAcessoLeitura(ficha);
+
+        // 3. Carregar sub-registros (JOIN FETCH para evitar N+1 ao acessar configs)
+        List<FichaAtributo> atributos = fichaAtributoRepository.findByFichaIdWithConfig(fichaId);
+        List<FichaBonus> bonus = fichaBonusRepository.findByFichaIdWithConfig(fichaId);
         FichaVida vida = fichaVidaRepository.findByFichaId(fichaId)
                 .orElseThrow(() -> new ResourceNotFoundException("FichaVida não encontrada para ficha: " + fichaId));
-        List<FichaVidaMembro> membros = fichaVidaMembroRepository.findByFichaId(fichaId);
+        List<FichaVidaMembro> membros = fichaVidaMembroRepository.findByFichaIdWithConfig(fichaId);
         FichaEssencia essencia = fichaEssenciaRepository.findByFichaId(fichaId)
                 .orElseThrow(() -> new ResourceNotFoundException("FichaEssencia não encontrada para ficha: " + fichaId));
         FichaAmeaca ameaca = fichaAmeacaRepository.findByFichaId(fichaId)
                 .orElseThrow(() -> new ResourceNotFoundException("FichaAmeaca não encontrada para ficha: " + fichaId));
 
-        // 3. Criar cópias em memória para não contaminar o contexto JPA
+        // 4. Criar cópias em memória para não contaminar o contexto JPA
         Ficha fichaSimulada = clonarFicha(ficha);
         List<FichaAtributo> atributosSimulados = atributos.stream().map(this::clonarAtributo).toList();
         List<FichaBonus> bonusSimulados = bonus.stream().map(this::clonarBonus).toList();
@@ -70,7 +79,7 @@ public class FichaPreviewService {
         FichaEssencia essenciaSimulada = clonarEssencia(essencia);
         FichaAmeaca ameacaSimulada = clonarAmeaca(ameaca);
 
-        // 4. Aplicar mudanças da request em memória
+        // 5. Aplicar mudanças da request em memória
         if (request != null) {
             // Atualizar bases de atributos
             Map<Long, Integer> atributoBase = request.atributoBase();
@@ -96,12 +105,12 @@ public class FichaPreviewService {
             }
         }
 
-        // 5. Recalcular tudo em memória
+        // 6. Recalcular tudo em memória
         calculationService.recalcular(
                 fichaSimulada, atributosSimulados, bonusSimulados,
                 vidaSimulada, membrosSimulados, essenciaSimulada, ameacaSimulada);
 
-        // 6. Montar resposta
+        // 7. Montar resposta
         return montarResposta(fichaSimulada, atributosSimulados, bonusSimulados,
                 vidaSimulada, membrosSimulados, essenciaSimulada, ameacaSimulada);
     }
@@ -278,5 +287,33 @@ public class FichaPreviewService {
                 essenciaPrev,
                 ameacaPrev
         );
+    }
+
+    // ==================== CONTROLE DE ACESSO ====================
+
+    private void verificarAcessoLeitura(Ficha ficha) {
+        Usuario usuarioAtual = getUsuarioAtual();
+        Long jogoId = ficha.getJogo().getId();
+
+        boolean isMestre = jogoParticipanteRepository.existsByJogoIdAndUsuarioIdAndRole(
+                jogoId, usuarioAtual.getId(), RoleJogo.MESTRE);
+
+        if (isMestre) {
+            return;
+        }
+
+        if (!usuarioAtual.getId().equals(ficha.getJogadorId())) {
+            throw new ForbiddenException("Acesso negado: você não tem permissão para acessar esta ficha.");
+        }
+    }
+
+    private Usuario getUsuarioAtual() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            throw new ForbiddenException("Usuário não autenticado.");
+        }
+        String email = authentication.getName();
+        return usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("Usuário não encontrado: " + email));
     }
 }

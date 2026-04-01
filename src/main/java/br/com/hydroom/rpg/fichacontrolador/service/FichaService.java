@@ -382,6 +382,11 @@ public class FichaService {
         boolean isMestre = jogoParticipanteRepository.existsByJogoIdAndUsuarioIdAndRole(
                 jogoId, usuarioAtual.getId(), RoleJogo.MESTRE);
 
+        // Jogador não pode duplicar fichas de NPC
+        if (!isMestre && original.isNpc()) {
+            throw new ForbiddenException("Acesso negado: Jogadores não podem duplicar fichas de NPC.");
+        }
+
         if (!isMestre && !usuarioAtual.getId().equals(original.getJogadorId())) {
             throw new ForbiddenException("Acesso negado: você não tem permissão para duplicar esta ficha.");
         }
@@ -745,6 +750,7 @@ public class FichaService {
 
     /**
      * Verifica se o usuário atual pode LER a ficha.
+     * NPCs só podem ser lidos pelo Mestre.
      */
     private void verificarAcessoLeitura(Ficha ficha) {
         Usuario usuarioAtual = getUsuarioAtual();
@@ -757,6 +763,11 @@ public class FichaService {
             return; // Mestre vê tudo
         }
 
+        // NPCs só são visíveis para o Mestre
+        if (ficha.isNpc()) {
+            throw new ForbiddenException("Acesso negado: NPCs só são acessíveis pelo Mestre.");
+        }
+
         // Jogador só vê suas próprias fichas
         if (!usuarioAtual.getId().equals(ficha.getJogadorId())) {
             throw new ForbiddenException("Acesso negado: você não tem permissão para acessar esta ficha.");
@@ -765,6 +776,7 @@ public class FichaService {
 
     /**
      * Verifica se o usuário atual pode ESCREVER na ficha.
+     * NPCs só podem ser editados pelo Mestre.
      */
     private void verificarAcessoEscrita(Ficha ficha) {
         Usuario usuarioAtual = getUsuarioAtual();
@@ -775,6 +787,11 @@ public class FichaService {
 
         if (isMestre) {
             return; // Mestre pode editar qualquer ficha
+        }
+
+        // NPCs só podem ser editados pelo Mestre
+        if (ficha.isNpc()) {
+            throw new ForbiddenException("Acesso negado: NPCs só podem ser editados pelo Mestre.");
         }
 
         // Jogador só edita suas próprias fichas

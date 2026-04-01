@@ -302,6 +302,11 @@ public class FichaPreviewService {
             return;
         }
 
+        // NPCs só são visíveis para o Mestre
+        if (ficha.isNpc()) {
+            throw new ForbiddenException("Acesso negado: NPCs só são acessíveis pelo Mestre.");
+        }
+
         if (!usuarioAtual.getId().equals(ficha.getJogadorId())) {
             throw new ForbiddenException("Acesso negado: você não tem permissão para acessar esta ficha.");
         }

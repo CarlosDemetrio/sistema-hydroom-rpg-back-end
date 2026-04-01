@@ -64,6 +64,11 @@ public class FichaAnotacaoService {
             return fichaAnotacaoRepository.findByFichaIdOrderByCreatedAtDesc(fichaId);
         }
 
+        // NPCs só são acessíveis pelo Mestre
+        if (ficha.isNpc()) {
+            throw new ForbiddenException("Acesso negado: NPCs só são acessíveis pelo Mestre.");
+        }
+
         // Jogador: verificar acesso à ficha
         if (!usuarioAtual.getId().equals(ficha.getJogadorId())) {
             throw new ForbiddenException("Acesso negado: você não tem permissão para acessar esta ficha.");
@@ -107,6 +112,10 @@ public class FichaAnotacaoService {
                 jogoId, autor.getId(), RoleJogo.MESTRE);
 
         if (!isMestre) {
+            // Jogador não pode criar anotações em fichas de NPC
+            if (ficha.isNpc()) {
+                throw new ForbiddenException("Acesso negado: Jogadores não podem criar anotações em fichas de NPC.");
+            }
             // Jogador só pode criar anotação para suas próprias fichas
             if (!autor.getId().equals(ficha.getJogadorId())) {
                 throw new ForbiddenException("Acesso negado: você só pode criar anotações nas suas próprias fichas.");
@@ -157,6 +166,10 @@ public class FichaAnotacaoService {
                 jogoId, usuarioAtual.getId(), RoleJogo.MESTRE);
 
         if (!isMestre) {
+            // Jogador não pode deletar anotações em fichas de NPC
+            if (anotacao.getFicha().isNpc()) {
+                throw new ForbiddenException("Acesso negado: Jogadores não podem deletar anotações em fichas de NPC.");
+            }
             // Jogador só pode deletar suas próprias anotações
             if (anotacao.getAutor() == null || !usuarioAtual.getId().equals(anotacao.getAutor().getId())) {
                 throw new ForbiddenException("Acesso negado: você só pode deletar suas próprias anotações.");

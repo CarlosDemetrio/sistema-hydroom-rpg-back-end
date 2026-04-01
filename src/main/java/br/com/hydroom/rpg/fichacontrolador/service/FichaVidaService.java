@@ -153,6 +153,11 @@ public class FichaVidaService {
             return;
         }
 
+        // NPCs só podem ser editados pelo Mestre
+        if (ficha.isNpc()) {
+            throw new ForbiddenException("Acesso negado: NPCs só podem ser editados pelo Mestre.");
+        }
+
         if (!usuarioAtual.getId().equals(ficha.getJogadorId())) {
             throw new ForbiddenException("Acesso negado: você só pode editar suas próprias fichas.");
         }
@@ -167,6 +172,11 @@ public class FichaVidaService {
 
         if (isMestre) {
             return;
+        }
+
+        // NPCs só são visíveis para o Mestre
+        if (ficha.isNpc()) {
+            throw new ForbiddenException("Acesso negado: NPCs só são acessíveis pelo Mestre.");
         }
 
         if (!usuarioAtual.getId().equals(ficha.getJogadorId())) {

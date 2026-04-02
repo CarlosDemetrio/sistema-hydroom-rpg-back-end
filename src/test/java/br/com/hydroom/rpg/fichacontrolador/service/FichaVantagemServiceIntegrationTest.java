@@ -2,8 +2,10 @@ package br.com.hydroom.rpg.fichacontrolador.service;
 
 import br.com.hydroom.rpg.fichacontrolador.dto.request.CreateFichaRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.CriarJogoRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaVantagemResponse;
 import br.com.hydroom.rpg.fichacontrolador.exception.ConflictException;
 import br.com.hydroom.rpg.fichacontrolador.exception.ValidationException;
+import br.com.hydroom.rpg.fichacontrolador.mapper.FichaVantagemMapper;
 import br.com.hydroom.rpg.fichacontrolador.model.*;
 import br.com.hydroom.rpg.fichacontrolador.model.enums.RoleJogo;
 import br.com.hydroom.rpg.fichacontrolador.model.enums.StatusParticipante;
@@ -101,6 +103,12 @@ class FichaVantagemServiceIntegrationTest {
     @Autowired
     private FichaAtributoRepository fichaAtributoRepository;
 
+    @Autowired
+    private CategoriaVantagemRepository categoriaVantagemRepository;
+
+    @Autowired
+    private FichaVantagemMapper fichaVantagemMapper;
+
     private static final AtomicInteger counter = new AtomicInteger(1);
 
     private Usuario mestre;
@@ -124,6 +132,7 @@ class FichaVantagemServiceIntegrationTest {
         fichaAtributoRepository.deleteAll();
         fichaRepository.deleteAll();
         vantagemConfigRepository.deleteAll();
+        categoriaVantagemRepository.deleteAll();
         jogoParticipanteRepository.deleteAll();
         jogoRepository.deleteAll();
         usuarioRepository.deleteAll();
@@ -334,6 +343,59 @@ class FichaVantagemServiceIntegrationTest {
                         || m.getName().toLowerCase().contains("remove"));
 
         assertThat(temMetodoDeletar).isFalse();
+    }
+
+    // =========================================================
+    // TESTES DE categoriaNome (Tarefa 3)
+    // =========================================================
+
+    @Test
+    @DisplayName("Listar vantagens retorna categoriaNome quando vantagem tem categoria")
+    void listarVantagnensRetornaCategoriaNomeQuandoTemCategoria() {
+        // Arrange
+        CategoriaVantagem categoria = categoriaVantagemRepository.save(
+                CategoriaVantagem.builder()
+                        .jogo(jogo)
+                        .nome("Combate")
+                        .ordemExibicao(1)
+                        .build());
+
+        VantagemConfig vantagem = VantagemConfig.builder()
+                .jogo(jogo)
+                .nome("Golpe Preciso")
+                .formulaCusto("1")
+                .nivelMaximo(3)
+                .categoriaVantagem(categoria)
+                .ordemExibicao(0)
+                .build();
+        vantagemConfigRepository.save(vantagem);
+
+        autenticarComo(mestre);
+        fichaVantagemService.comprar(ficha.getId(), vantagem.getId());
+
+        // Act
+        List<FichaVantagem> vantagens = fichaVantagemService.listar(ficha.getId());
+        FichaVantagemResponse response = fichaVantagemMapper.toResponse(vantagens.get(0));
+
+        // Assert
+        assertThat(response.categoriaNome()).isEqualTo("Combate");
+    }
+
+    @Test
+    @DisplayName("Listar vantagens retorna categoriaNome null quando vantagem não tem categoria")
+    void listarVantagnensRetornaCategoriaNomeNullQuandoSemCategoria() {
+        // Arrange — vantagem sem categoriaVantagem
+        VantagemConfig vantagem = criarVantagem("Vantagem Sem Categoria", "1", 5);
+
+        autenticarComo(mestre);
+        fichaVantagemService.comprar(ficha.getId(), vantagem.getId());
+
+        // Act
+        List<FichaVantagem> vantagens = fichaVantagemService.listar(ficha.getId());
+        FichaVantagemResponse response = fichaVantagemMapper.toResponse(vantagens.get(0));
+
+        // Assert
+        assertThat(response.categoriaNome()).isNull();
     }
 
     // =========================================================

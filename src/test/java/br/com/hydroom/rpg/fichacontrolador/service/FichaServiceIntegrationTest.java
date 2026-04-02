@@ -802,6 +802,128 @@ class FichaServiceIntegrationTest {
     }
 
     // =========================================================
+    // TESTES DE LISTAR ATRIBUTOS (GET /fichas/{id}/atributos)
+    // =========================================================
+
+    @Test
+    @DisplayName("Mestre pode listar atributos de qualquer ficha")
+    void mestrePodeListarAtributosDeQualquerFicha() {
+        // Arrange
+        autenticarComo(mestre);
+        Ficha ficha = fichaService.criar(new CreateFichaRequest(
+                jogo.getId(), "Ficha Atributos", jogador.getId(), null, null, null, null, null, false));
+
+        // Act
+        List<FichaAtributo> atributos = fichaService.listarAtributos(ficha.getId());
+
+        // Assert — jogo criado via jogoService inicializa configs padrão (ao menos 1 atributo)
+        assertThat(atributos).isNotNull();
+        assertThat(atributos).isNotEmpty();
+        assertThat(atributos).allMatch(a -> a.getFicha().getId().equals(ficha.getId()));
+    }
+
+    @Test
+    @DisplayName("Jogador pode listar atributos de sua própria ficha")
+    void jogadorPodeListarAtributosDaSuaPropriaFicha() {
+        // Arrange
+        autenticarComo(mestre);
+        Ficha ficha = fichaService.criar(new CreateFichaRequest(
+                jogo.getId(), "Ficha do Jogador", jogador.getId(), null, null, null, null, null, false));
+
+        // Act
+        autenticarComo(jogador);
+        List<FichaAtributo> atributos = fichaService.listarAtributos(ficha.getId());
+
+        // Assert
+        assertThat(atributos).isNotNull();
+        assertThat(atributos).allMatch(a -> a.getFicha().getId().equals(ficha.getId()));
+    }
+
+    @Test
+    @DisplayName("Jogador não pode listar atributos de ficha de outro jogador")
+    void jogadorNaoPodeListarAtributosDeOutroJogador() {
+        // Arrange
+        autenticarComo(mestre);
+        Ficha fichaDeOutro = fichaService.criar(new CreateFichaRequest(
+                jogo.getId(), "Ficha do Outro", outroUsuario.getId(), null, null, null, null, null, false));
+
+        // Act & Assert
+        autenticarComo(jogador);
+        assertThrows(ForbiddenException.class, () -> fichaService.listarAtributos(fichaDeOutro.getId()));
+    }
+
+    @Test
+    @DisplayName("Listar atributos de ficha inexistente lança ResourceNotFoundException")
+    void listarAtributosDeInexistenteLancaException() {
+        // Arrange
+        autenticarComo(mestre);
+
+        // Act & Assert
+        assertThrows(ResourceNotFoundException.class, () -> fichaService.listarAtributos(99999L));
+    }
+
+    // =========================================================
+    // TESTES DE LISTAR APTIDOES (GET /fichas/{id}/aptidoes)
+    // =========================================================
+
+    @Test
+    @DisplayName("Mestre pode listar aptidões de qualquer ficha")
+    void mestrePodeListarAptidoesDeQualquerFicha() {
+        // Arrange
+        autenticarComo(mestre);
+        Ficha ficha = fichaService.criar(new CreateFichaRequest(
+                jogo.getId(), "Ficha Aptidoes", jogador.getId(), null, null, null, null, null, false));
+
+        // Act
+        List<FichaAptidao> aptidoes = fichaService.listarAptidoes(ficha.getId());
+
+        // Assert — jogo criado via jogoService inicializa configs padrão (ao menos 1 aptidão)
+        assertThat(aptidoes).isNotNull();
+        assertThat(aptidoes).isNotEmpty();
+        assertThat(aptidoes).allMatch(a -> a.getFicha().getId().equals(ficha.getId()));
+    }
+
+    @Test
+    @DisplayName("Jogador pode listar aptidões de sua própria ficha")
+    void jogadorPodeListarAptidoesDaSuaPropriaFicha() {
+        // Arrange
+        autenticarComo(mestre);
+        Ficha ficha = fichaService.criar(new CreateFichaRequest(
+                jogo.getId(), "Ficha Aptidoes Jogador", jogador.getId(), null, null, null, null, null, false));
+
+        // Act
+        autenticarComo(jogador);
+        List<FichaAptidao> aptidoes = fichaService.listarAptidoes(ficha.getId());
+
+        // Assert
+        assertThat(aptidoes).isNotNull();
+        assertThat(aptidoes).allMatch(a -> a.getFicha().getId().equals(ficha.getId()));
+    }
+
+    @Test
+    @DisplayName("Jogador não pode listar aptidões de ficha de outro jogador")
+    void jogadorNaoPodeListarAptidoesDeOutroJogador() {
+        // Arrange
+        autenticarComo(mestre);
+        Ficha fichaDeOutro = fichaService.criar(new CreateFichaRequest(
+                jogo.getId(), "Ficha Outro Aptidoes", outroUsuario.getId(), null, null, null, null, null, false));
+
+        // Act & Assert
+        autenticarComo(jogador);
+        assertThrows(ForbiddenException.class, () -> fichaService.listarAptidoes(fichaDeOutro.getId()));
+    }
+
+    @Test
+    @DisplayName("Listar aptidões de ficha inexistente lança ResourceNotFoundException")
+    void listarAptidoesDeInexistenteLancaException() {
+        // Arrange
+        autenticarComo(mestre);
+
+        // Act & Assert
+        assertThrows(ResourceNotFoundException.class, () -> fichaService.listarAptidoes(99999L));
+    }
+
+    // =========================================================
     // HELPERS
     // =========================================================
 

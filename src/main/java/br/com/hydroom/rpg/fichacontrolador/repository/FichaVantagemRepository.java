@@ -17,8 +17,9 @@ public interface FichaVantagemRepository extends JpaRepository<FichaVantagem, Lo
     Optional<FichaVantagem> findByFichaIdAndVantagemConfigId(Long fichaId, Long vantagemConfigId);
 
     /**
-     * Busca vantagens da ficha com JOIN FETCH no VantagemConfig para evitar N+1.
+     * Busca vantagens da ficha com JOIN FETCH no VantagemConfig e LEFT JOIN FETCH na CategoriaVantagem para evitar N+1.
+     * LEFT JOIN porque categoriaVantagem é nullable.
      */
-    @Query("SELECT fv FROM FichaVantagem fv JOIN FETCH fv.vantagemConfig WHERE fv.ficha.id = :fichaId AND fv.deletedAt IS NULL")
+    @Query("SELECT fv FROM FichaVantagem fv JOIN FETCH fv.vantagemConfig vc LEFT JOIN FETCH vc.categoriaVantagem WHERE fv.ficha.id = :fichaId AND fv.deletedAt IS NULL")
     List<FichaVantagem> findByFichaIdWithConfig(@Param("fichaId") Long fichaId);
 }

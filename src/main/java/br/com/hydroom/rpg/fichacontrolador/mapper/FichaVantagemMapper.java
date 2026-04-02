@@ -15,5 +15,6 @@ public interface FichaVantagemMapper {
     @Mapping(target = "vantagemConfigId", source = "vantagemConfig.id")
     @Mapping(target = "nomeVantagem", source = "vantagemConfig.nome")
     @Mapping(target = "nivelMaximo", source = "vantagemConfig.nivelMaximo")
+    @Mapping(target = "categoriaNome", source = "vantagemConfig.categoriaVantagem.nome")
     FichaVantagemResponse toResponse(FichaVantagem fichaVantagem);
 }

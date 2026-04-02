@@ -22,4 +22,11 @@ public interface FichaAtributoRepository extends JpaRepository<FichaAtributo, Lo
      */
     @Query("SELECT fa FROM FichaAtributo fa JOIN FETCH fa.atributoConfig WHERE fa.ficha.id = :fichaId AND fa.deletedAt IS NULL")
     List<FichaAtributo> findByFichaIdWithConfig(@Param("fichaId") Long fichaId);
+
+    /**
+     * Busca atributos da ficha ordenados por ordemExibicao do AtributoConfig, com JOIN FETCH para evitar N+1.
+     * Usar no endpoint GET /fichas/{id}/atributos.
+     */
+    @Query("SELECT fa FROM FichaAtributo fa JOIN FETCH fa.atributoConfig ac WHERE fa.ficha.id = :fichaId AND fa.deletedAt IS NULL ORDER BY ac.ordemExibicao ASC")
+    List<FichaAtributo> findByFichaIdWithConfigOrdenado(@Param("fichaId") Long fichaId);
 }

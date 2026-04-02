@@ -7,6 +7,7 @@ public record FichaVantagemResponse(
     Long id,
     Long vantagemConfigId,
     String nomeVantagem,
+    String categoriaNome,
     Integer nivelAtual,
     Integer nivelMaximo,
     Integer custoPago

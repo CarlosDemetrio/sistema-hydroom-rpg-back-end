@@ -233,6 +233,16 @@ public class FichaController {
 
     // ==================== ATRIBUTOS ====================
 
+    @GetMapping("/api/v1/fichas/{id}/atributos")
+    @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
+    @Operation(summary = "Listar atributos da ficha",
+               description = "Retorna todos os atributos da ficha ordenados por ordemExibicao. Mestre acessa qualquer ficha; Jogador acessa apenas as próprias.")
+    public ResponseEntity<List<FichaAtributoResponse>> listarAtributos(@PathVariable Long id) {
+        var atributos = fichaService.listarAtributos(id);
+        var response = atributos.stream().map(fichaAtributoMapper::toResponse).toList();
+        return ResponseEntity.ok(response);
+    }
+
     @PutMapping("/api/v1/fichas/{id}/atributos")
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
     @Operation(summary = "Atualizar atributos da ficha em lote",
@@ -246,6 +256,16 @@ public class FichaController {
     }
 
     // ==================== APTIDOES ====================
+
+    @GetMapping("/api/v1/fichas/{id}/aptidoes")
+    @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
+    @Operation(summary = "Listar aptidões da ficha",
+               description = "Retorna todas as aptidões da ficha ordenadas por ordemExibicao. Mestre acessa qualquer ficha; Jogador acessa apenas as próprias.")
+    public ResponseEntity<List<FichaAptidaoResponse>> listarAptidoes(@PathVariable Long id) {
+        var aptidoes = fichaService.listarAptidoes(id);
+        var response = aptidoes.stream().map(fichaAptidaoMapper::toResponse).toList();
+        return ResponseEntity.ok(response);
+    }
 
     @PutMapping("/api/v1/fichas/{id}/aptidoes")
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")

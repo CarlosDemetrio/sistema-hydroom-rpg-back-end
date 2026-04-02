@@ -526,6 +526,36 @@ public class FichaService {
         return fichaAptidaoRepository.findByFichaId(fichaId);
     }
 
+    /**
+     * Lista os atributos de uma ficha, ordenados por ordemExibicao do AtributoConfig.
+     *
+     * @param fichaId ID da ficha
+     * @return lista de FichaAtributo ordenada
+     */
+    public List<FichaAtributo> listarAtributos(Long fichaId) {
+        Ficha ficha = fichaRepository.findById(fichaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ficha não encontrada: " + fichaId));
+
+        verificarAcessoLeitura(ficha);
+
+        return fichaAtributoRepository.findByFichaIdWithConfigOrdenado(fichaId);
+    }
+
+    /**
+     * Lista as aptidões de uma ficha, ordenadas por ordemExibicao do AptidaoConfig.
+     *
+     * @param fichaId ID da ficha
+     * @return lista de FichaAptidao ordenada
+     */
+    public List<FichaAptidao> listarAptidoes(Long fichaId) {
+        Ficha ficha = fichaRepository.findById(fichaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ficha não encontrada: " + fichaId));
+
+        verificarAcessoLeitura(ficha);
+
+        return fichaAptidaoRepository.findByFichaIdWithConfigOrdenado(fichaId);
+    }
+
     // ==================== PRIVADOS ====================
 
     /**

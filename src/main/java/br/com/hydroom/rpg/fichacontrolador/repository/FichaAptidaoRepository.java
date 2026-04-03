@@ -22,4 +22,11 @@ public interface FichaAptidaoRepository extends JpaRepository<FichaAptidao, Long
      */
     @Query("SELECT fa FROM FichaAptidao fa JOIN FETCH fa.aptidaoConfig ac WHERE fa.ficha.id = :fichaId AND fa.deletedAt IS NULL ORDER BY ac.ordemExibicao ASC")
     List<FichaAptidao> findByFichaIdWithConfigOrdenado(@Param("fichaId") Long fichaId);
+
+    /**
+     * Busca aptidões da ficha com JOIN FETCH para evitar N+1 ao acessar aptidaoConfig.
+     * Usar na duplicação de fichas (copiarSubRegistros).
+     */
+    @Query("SELECT fa FROM FichaAptidao fa JOIN FETCH fa.aptidaoConfig WHERE fa.ficha.id = :fichaId AND fa.deletedAt IS NULL")
+    List<FichaAptidao> findByFichaIdWithConfig(@Param("fichaId") Long fichaId);
 }

@@ -166,6 +166,7 @@ public class FichaController {
     }
 
     @PostMapping("/api/v1/fichas/{id}/duplicar")
+    @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
     @Operation(summary = "Duplicar ficha", description = "Cria uma cópia da ficha com novo nome. Mestre pode duplicar qualquer ficha; Jogador só as próprias.")
     public DuplicarFichaResponse duplicar(

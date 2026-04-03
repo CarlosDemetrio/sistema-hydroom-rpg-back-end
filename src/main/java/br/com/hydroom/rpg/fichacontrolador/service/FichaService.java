@@ -251,6 +251,9 @@ public class FichaService {
      * Usa JOIN FETCH para carregar relacionamentos ManyToOne e evitar N+1 no mapper.
      */
     public List<Ficha> listarNpcs(Long jogoId) {
+        jogoRepository.findById(jogoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Jogo não encontrado: " + jogoId));
+
         Usuario usuarioAtual = getUsuarioAtual();
         boolean isMestre = jogoParticipanteRepository.existsByJogoIdAndUsuarioIdAndRole(
                 jogoId, usuarioAtual.getId(), RoleJogo.MESTRE);
@@ -665,7 +668,7 @@ public class FichaService {
         fichaAtributoRepository.saveAll(copiaAtributos);
 
         // FichaAptidao
-        List<FichaAptidao> aptidoes = fichaAptidaoRepository.findByFichaId(fichaOrigemId);
+        List<FichaAptidao> aptidoes = fichaAptidaoRepository.findByFichaIdWithConfig(fichaOrigemId);
         List<FichaAptidao> copiaAptidoes = aptidoes.stream()
                 .map(a -> FichaAptidao.builder()
                         .ficha(novaFicha)

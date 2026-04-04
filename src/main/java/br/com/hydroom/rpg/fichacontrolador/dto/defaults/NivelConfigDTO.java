@@ -19,19 +19,33 @@ public class NivelConfigDTO {
     private Long experienciaNecessaria;
     private Integer pontosAtributo;
     private Integer pontosVantagem;
-    private Integer pontosAptidao;      // ⭐ NOVO: pontos de aptidão por nível
+    private Integer pontosAptidao;
+    private Integer limitadorAtributo;
 
     /**
-     * Cria um NivelConfigDTO com valores básicos.
+     * Cria um NivelConfigDTO com todos os campos.
      */
     public static NivelConfigDTO of(Integer nivel, Long experienciaNecessaria,
-                                   Integer pontosAtributo, Integer pontosVantagem, Integer pontosAptidao) {
+                                   Integer pontosAtributo, Integer pontosVantagem,
+                                   Integer pontosAptidao, Integer limitadorAtributo) {
         return NivelConfigDTO.builder()
                 .nivel(nivel)
                 .experienciaNecessaria(experienciaNecessaria)
                 .pontosAtributo(pontosAtributo)
                 .pontosVantagem(pontosVantagem)
                 .pontosAptidao(pontosAptidao)
+                .limitadorAtributo(limitadorAtributo)
                 .build();
+    }
+
+    /**
+     * Cria um NivelConfigDTO sem limitadorAtributo (default null).
+     * Usado pelo DefaultGameConfigProvider quando o limitador é definido
+     * separadamente via LimitadorConfigDTO.
+     */
+    public static NivelConfigDTO of(Integer nivel, Long experienciaNecessaria,
+                                   Integer pontosAtributo, Integer pontosVantagem,
+                                   Integer pontosAptidao) {
+        return of(nivel, experienciaNecessaria, pontosAtributo, pontosVantagem, pontosAptidao, null);
     }
 }

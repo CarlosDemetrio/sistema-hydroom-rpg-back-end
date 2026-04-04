@@ -143,14 +143,17 @@ class FichaCalculationServiceBugsIntegrationTest {
         ClassePersonagem guerreiro = classeRepository.findByJogoIdAndNomeIgnoreCase(jogo.getId(), "Guerreiro");
         assertThat(guerreiro).as("Classe Guerreiro deve existir após inicialização do jogo").isNotNull();
 
-        // Criar BonusConfig manualmente (GameConfigInitializerService não cria BonusConfig por padrão)
-        BonusConfig bba = bonusConfigRepository.save(BonusConfig.builder()
-                .jogo(jogo)
-                .nome("B.B.A.")
-                .sigla("BBA")
-                .formulaBase("")
-                .ordemExibicao(1)
-                .build());
+        // Buscar BonusConfig 'BBA' criado pelo GameConfigInitializerService
+        BonusConfig bba = bonusConfigRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).stream()
+                .filter(b -> "BBA".equals(b.getSigla()))
+                .findFirst()
+                .orElseGet(() -> bonusConfigRepository.save(BonusConfig.builder()
+                        .jogo(jogo)
+                        .nome("B.B.A.")
+                        .sigla("BBA")
+                        .formulaBase("")
+                        .ordemExibicao(1)
+                        .build()));
 
         // Criar FichaBonus manualmente para o guerreiro ter esse bonus na ficha
         // e criar ClasseBonus: Guerreiro +2 por nível em B.B.A.

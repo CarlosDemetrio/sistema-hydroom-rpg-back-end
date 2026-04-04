@@ -387,20 +387,20 @@ class JogoServiceIntegrationTest {
             .hasSize(6);
 
         assertThat(generoRepository.findByJogoIdOrderByOrdemExibicao(jogoId))
-            .as("Deve criar 4 gêneros")
-            .hasSize(4);
+            .as("Deve criar 3 gêneros (Masculino, Feminino, Outro)")
+            .hasSize(3);
 
         assertThat(indoleRepository.findByJogoIdOrderByOrdemExibicao(jogoId))
-            .as("Deve criar 9 índoles")
-            .hasSize(9);
+            .as("Deve criar 3 índoles Klayrah (Bom, Mau, Neutro)")
+            .hasSize(3);
 
         assertThat(presencaRepository.findByJogoIdOrderByOrdemExibicao(jogoId))
-            .as("Deve criar 6 presenças")
-            .hasSize(6);
+            .as("Deve criar 4 presenças (Bom, Leal, Caótico, Neutro)")
+            .hasSize(4);
 
         assertThat(membroCorpoRepository.findByJogoIdOrderByOrdemExibicao(jogoId))
-            .as("Deve criar 6 membros do corpo")
-            .hasSize(6);
+            .as("Deve criar 7 membros do corpo (incluindo Sangue)")
+            .hasSize(7);
 
         // Vantagens são opcionais, apenas verificar que não falhou
         var vantagens = vantagemRepository.findByJogoIdOrderByOrdemExibicao(jogoId);
@@ -548,30 +548,39 @@ class JogoServiceIntegrationTest {
         var membros = membroCorpoRepository.findByJogoIdOrderByOrdemExibicao(result.getId());
 
         assertThat(membros)
-            .hasSize(6)
+            .hasSize(7)
             .extracting("nome")
             .containsExactlyInAnyOrder(
                 "Cabeça", "Tronco",
                 "Braço Direito", "Braço Esquerdo",
-                "Perna Direita", "Perna Esquerda"
+                "Perna Direita", "Perna Esquerda",
+                "Sangue"
             );
 
-        // Assert - Verificar que todos têm porcentagem de vida
+        // Assert - Verificar que todos têm porcentagem de vida positiva
         membros.forEach(membro -> {
             assertThat(membro.getPorcentagemVida())
-                .as("Membro %s deve ter porcentagem de vida", membro.getNome())
+                .as("Membro %s deve ter porcentagem de vida positiva", membro.getNome())
                 .isNotNull()
-                .isGreaterThan(java.math.BigDecimal.ZERO)
-                .isLessThanOrEqualTo(java.math.BigDecimal.ONE);
+                .isGreaterThan(java.math.BigDecimal.ZERO);
         });
 
-        // Assert - Soma das porcentagens deve ser 100% (1.00)
-        var somaPortcentagens = membros.stream()
-            .map(m -> m.getPorcentagemVida())
-            .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
+        // Assert - Cabeça deve ter 75% (corrigido BUG-DC-06)
+        var cabeca = membros.stream()
+            .filter(m -> m.getNome().equals("Cabeça"))
+            .findFirst()
+            .orElseThrow();
+        assertThat(cabeca.getPorcentagemVida())
+            .as("Cabeça deve ter 75% da vida (BUG-DC-06 corrigido)")
+            .isEqualByComparingTo(new java.math.BigDecimal("0.75"));
 
-        assertThat(somaPortcentagens)
-            .as("Soma das porcentagens deve ser 100% (1.00)")
+        // Assert - Sangue deve ter 100% (representa vida total)
+        var sangue = membros.stream()
+            .filter(m -> m.getNome().equals("Sangue"))
+            .findFirst()
+            .orElseThrow();
+        assertThat(sangue.getPorcentagemVida())
+            .as("Sangue deve ter 100% da vida total (DIV-05)")
             .isEqualByComparingTo(java.math.BigDecimal.ONE);
     }
 

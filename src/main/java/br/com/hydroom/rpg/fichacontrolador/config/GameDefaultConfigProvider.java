@@ -138,4 +138,46 @@ public interface GameDefaultConfigProvider {
      * @return Lista de VantagemConfigDTO
      */
     List<VantagemConfigDTO> getDefaultVantagens();
+
+    /**
+     * Retorna os 9 bônus calculados padrão (B.B.A, B.B.M, Defesa, Esquiva, etc.).
+     *
+     * @return Lista de BonusConfigDTO com fórmulas
+     */
+    List<BonusConfigDTO> getDefaultBonus();
+
+    /**
+     * Retorna os 8 marcos de pontos de vantagem por nível.
+     * Cada entrada indica quantos pontos de vantagem são ganhos ao atingir aquele nível.
+     *
+     * @return Lista de PontosVantagemConfigDTO
+     */
+    List<PontosVantagemConfigDTO> getDefaultPontosVantagem();
+
+    /**
+     * Retorna as 8 categorias de vantagem padrão com cores hex.
+     *
+     * @return Lista de CategoriaVantagemDTO
+     */
+    List<CategoriaVantagemDTO> getDefaultCategoriasVantagem();
+
+    /**
+     * Retorna defaults de pontos extras por classe (por nível).
+     *
+     * <p>TODO PA-015-01: Definir com PO os valores canônicos por classe.
+     * Por enquanto retorna vazio — Mestre configura manualmente após criar o jogo.</p>
+     *
+     * @return Mapa de nome da classe → lista de pontos por nível
+     */
+    Map<String, List<?>> getDefaultClassePontos();
+
+    /**
+     * Retorna defaults de pontos extras por raça (por nível).
+     *
+     * <p>TODO PA-015-02: Definir com PO os valores canônicos por raça.
+     * Por enquanto retorna vazio — Mestre configura manualmente após criar o jogo.</p>
+     *
+     * @return Mapa de nome da raça → lista de pontos por nível
+     */
+    Map<String, List<?>> getDefaultRacaPontos();
 }

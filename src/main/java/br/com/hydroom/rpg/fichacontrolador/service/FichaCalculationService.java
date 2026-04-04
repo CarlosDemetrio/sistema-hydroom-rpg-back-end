@@ -293,12 +293,14 @@ public class FichaCalculationService {
             List<FichaVantagem> vantagens) {
 
         // PASSO 0: aplicar efeitos de vantagens (antes dos demais cálculos)
-        if (vantagens != null && !vantagens.isEmpty()) {
-            aplicarEfeitosVantagens(vantagens, atributos, aptidoes, bonus, vida, membros, essencia);
-        }
+        // zerarContribuicoesVantagens é sempre chamado (dentro de aplicarEfeitosVantagens)
+        // para garantir idempotência mesmo quando não há vantagens.
+        aplicarEfeitosVantagens(
+                vantagens != null ? vantagens : List.of(),
+                atributos, aptidoes, bonus, vida, membros, essencia);
 
-        // PASSO 1: zerar campos deriváveis para garantir idempotência
-        resetarCamposDerivaveis(atributos, aptidoes, bonus, vida, essencia);
+        // PASSO 1: zerar campos de raça/classe que serão recalculados nos passos 2–4
+        resetarCamposDerivaveis(bonus);
 
         // PASSO 2: aplicar bônus raciais em FichaAtributo.outros (GAP-CALC-03)
         aplicarRacaBonusAtributo(ficha, atributos, racaBonusAtributos);
@@ -360,26 +362,18 @@ public class FichaCalculationService {
     // ==================== MÉTODOS PRIVADOS ====================
 
     /**
-     * Passo 1 da sequência: zera todos os campos que serão recalculados.
-     * Chamado no início de recalcular() para garantir idempotência.
+     * Passo 1 da sequência: zera campos de raça/classe que serão recalculados nos passos 2–4.
+     * Chamado após zerarContribuicoesVantagens para garantir idempotência completa.
      * NÃO zera campos de entrada manual do Mestre (itens, gloria, outros, etc.).
+     *
+     * <p>Campos gerenciados pelo PASSO 0 (zerarContribuicoesVantagens):
+     * atributo.outros, aptidao.outros, bonus.vantagens, vida.vt,
+     * membro.bonusVantagens e essencia.vantagens.</p>
      */
-    private void resetarCamposDerivaveis(
-            List<FichaAtributo> atributos,
-            List<FichaAptidao> aptidoes,
-            List<FichaBonus> bonus,
-            FichaVida vida,
-            FichaEssencia essencia) {
-
-        atributos.forEach(a -> a.setOutros(0));
-        bonus.forEach(b -> {
-            b.setVantagens(0);
-            b.setClasse(0);
-        });
+    private void resetarCamposDerivaveis(List<FichaBonus> bonus) {
+        bonus.forEach(b -> b.setClasse(0));
         // FichaAptidao.classe NÃO é resetado aqui porque pode ser definido manualmente pelo Mestre.
         // O aplicarClasseAptidaoBonus sobrescreve o valor quando há ClasseAptidaoBonus configurado.
-        vida.setVt(0);
-        essencia.setVantagens(0);
     }
 
     /**
@@ -488,10 +482,14 @@ public class FichaCalculationService {
     /**
      * Aplica efeitos de VantagemConfig sobre os sub-registros da ficha.
      *
-     * <p>Stub para preenchimento nas tasks T2–T6 da Spec 007.
-     * Processa os 8 tipos de {@link br.com.hydroom.rpg.fichacontrolador.model.enums.TipoEfeito}:
-     * BONUS_ATRIBUTO, BONUS_APTIDAO, BONUS_DERIVADO, BONUS_VIDA, BONUS_VIDA_MEMBRO,
-     * BONUS_ESSENCIA, DADO_UP, FORMULA_CUSTOMIZADA.</p>
+     * <p>Processa os tipos de {@link br.com.hydroom.rpg.fichacontrolador.model.enums.TipoEfeito}
+     * implementados até o momento: BONUS_ATRIBUTO, BONUS_APTIDAO, BONUS_VIDA, BONUS_ESSENCIA.
+     * Tipos T4–T6 (BONUS_DERIVADO, BONUS_VIDA_MEMBRO, DADO_UP,
+     * FORMULA_CUSTOMIZADA) são ignorados e serão implementados nas tasks subsequentes.</p>
+     *
+     * <p>Chamado no PASSO 0 de recalcular(), antes do reset das demais parcelas e antes
+     * de recalcularAtributos(). A ordem é crítica: os bônus de vantagem em atributos devem
+     * estar populados antes do cálculo dos totais.</p>
      *
      * @param vantagens  lista de FichaVantagem com VantagemConfig.efeitos carregados via JOIN FETCH
      * @param atributos  lista de FichaAtributo da ficha
@@ -509,9 +507,96 @@ public class FichaCalculationService {
             FichaVida vida,
             List<FichaVidaMembro> membros,
             FichaEssencia essencia) {
-        // TODO: implementar nas tasks T2–T6 da Spec 007
-        // Cada efeito será processado por TipoEfeito, acumulando valores nos campos correspondentes
-        // antes do reset + recálculo dos passos 1–9.
-        log.debug("aplicarEfeitosVantagens: {} vantagens recebidas (stub — sem efeitos aplicados)", vantagens.size());
+
+        zerarContribuicoesVantagens(atributos, aptidoes, bonus, vida, membros, essencia);
+
+        Map<Long, FichaAtributo> atributosMap = atributos.stream()
+                .filter(a -> a.getAtributoConfig() != null)
+                .collect(Collectors.toMap(a -> a.getAtributoConfig().getId(), a -> a));
+
+        Map<Long, FichaAptidao> aptidoesMap = aptidoes.stream()
+                .filter(a -> a.getAptidaoConfig() != null)
+                .collect(Collectors.toMap(a -> a.getAptidaoConfig().getId(), a -> a));
+
+        for (FichaVantagem fichaVantagem : vantagens) {
+            if (fichaVantagem.getVantagemConfig() == null) {
+                log.warn("FichaVantagem ID {} sem VantagemConfig — ignorado", fichaVantagem.getId());
+                continue;
+            }
+            int nivel = fichaVantagem.getNivelAtual() != null ? fichaVantagem.getNivelAtual() : 1;
+
+            for (VantagemEfeito efeito : fichaVantagem.getVantagemConfig().getEfeitos()) {
+                if (efeito.getDeletedAt() != null) continue; // RN-001: soft delete
+
+                switch (efeito.getTipoEfeito()) {
+                    case BONUS_ATRIBUTO -> {
+                        if (efeito.getAtributoAlvo() == null) {
+                            log.warn("BONUS_ATRIBUTO sem atributoAlvo — efeito ID {}", efeito.getId());
+                            break;
+                        }
+                        FichaAtributo alvo = atributosMap.get(efeito.getAtributoAlvo().getId());
+                        if (alvo != null) {
+                            alvo.setOutros(alvo.getOutros() + calcularValorEfeito(efeito, nivel));
+                        } else {
+                            log.warn("BONUS_ATRIBUTO: FichaAtributo não encontrado para AtributoConfig ID {}",
+                                    efeito.getAtributoAlvo().getId());
+                        }
+                    }
+                    case BONUS_APTIDAO -> {
+                        if (efeito.getAptidaoAlvo() == null) {
+                            log.warn("BONUS_APTIDAO sem aptidaoAlvo — efeito ID {}", efeito.getId());
+                            break;
+                        }
+                        FichaAptidao alvo = aptidoesMap.get(efeito.getAptidaoAlvo().getId());
+                        if (alvo != null) {
+                            alvo.setOutros(alvo.getOutros() + calcularValorEfeito(efeito, nivel));
+                        } else {
+                            log.warn("BONUS_APTIDAO: FichaAptidao não encontrada para AptidaoConfig ID {}",
+                                    efeito.getAptidaoAlvo().getId());
+                        }
+                    }
+                    case BONUS_VIDA -> {
+                        int bonus2 = calcularValorEfeito(efeito, nivel);
+                        vida.setVt(vida.getVt() + bonus2);
+                    }
+                    case BONUS_ESSENCIA -> {
+                        int bonus2 = calcularValorEfeito(efeito, nivel);
+                        essencia.setVantagens(essencia.getVantagens() + bonus2);
+                    }
+                    default -> { /* T4–T6: BONUS_DERIVADO, BONUS_VIDA_MEMBRO, DADO_UP, FORMULA_CUSTOMIZADA */ }
+                }
+            }
+        }
+    }
+
+    /**
+     * Zera todos os campos que serão recalculados a partir de efeitos de vantagem.
+     * Chamado no início de aplicarEfeitosVantagens() para garantir idempotência (RN-007).
+     * NÃO zera campos de entrada manual do Mestre.
+     */
+    private void zerarContribuicoesVantagens(
+            List<FichaAtributo> atributos,
+            List<FichaAptidao> aptidoes,
+            List<FichaBonus> bonus,
+            FichaVida vida,
+            List<FichaVidaMembro> membros,
+            FichaEssencia essencia) {
+
+        atributos.forEach(a -> a.setOutros(0));
+        aptidoes.forEach(a -> a.setOutros(0));
+        bonus.forEach(b -> b.setVantagens(0));
+        vida.setVt(0);
+        membros.forEach(m -> m.setBonusVantagens(0));
+        essencia.setVantagens(0);
+    }
+
+    /**
+     * Calcula o valor numérico de um efeito para um dado nível de vantagem.
+     * Fórmula: (valorFixo ?? 0) + (valorPorNivel ?? 0) * nivelVantagem
+     */
+    private int calcularValorEfeito(VantagemEfeito efeito, int nivelVantagem) {
+        double valorFixo = efeito.getValorFixo() != null ? efeito.getValorFixo().doubleValue() : 0.0;
+        double valorPorNivel = efeito.getValorPorNivel() != null ? efeito.getValorPorNivel().doubleValue() : 0.0;
+        return (int) Math.round(valorFixo + valorPorNivel * nivelVantagem);
     }
 }

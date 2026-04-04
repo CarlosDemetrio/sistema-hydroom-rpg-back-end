@@ -58,7 +58,16 @@ public class FichaAptidao extends BaseEntity {
     private Integer classe = 0;
 
     /**
-     * Total calculado: base + sorte + classe.
+     * Bônus vindos de efeitos de VantagemConfig (tipo BONUS_APTIDAO).
+     * Separado de sorte e classe para rastreabilidade.
+     */
+    @NotNull
+    @Builder.Default
+    @Column(name = "outros", nullable = false)
+    private Integer outros = 0;
+
+    /**
+     * Total calculado: base + sorte + classe + outros.
      */
     @NotNull
     @Builder.Default
@@ -71,6 +80,7 @@ public class FichaAptidao extends BaseEntity {
     public void recalcularTotal() {
         this.total = (base != null ? base : 0) +
                      (sorte != null ? sorte : 0) +
-                     (classe != null ? classe : 0);
+                     (classe != null ? classe : 0) +
+                     (outros != null ? outros : 0);
     }
 }

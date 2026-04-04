@@ -276,6 +276,7 @@ public class FichaCalculationService {
      * @param racaBonusAtributos lista de RacaBonusAtributo da raça (carregados via JOIN FETCH)
      * @param classeBonus      lista de ClasseBonus da classe (carregados previamente via JOIN FETCH)
      * @param classeAptidaoBonus lista de ClasseAptidaoBonus da classe (carregados previamente)
+     * @param vantagens        lista de FichaVantagem com VantagemConfig.efeitos carregados via JOIN FETCH
      */
     public void recalcular(
             Ficha ficha,
@@ -288,7 +289,13 @@ public class FichaCalculationService {
             FichaAmeaca ameaca,
             List<RacaBonusAtributo> racaBonusAtributos,
             List<ClasseBonus> classeBonus,
-            List<ClasseAptidaoBonus> classeAptidaoBonus) {
+            List<ClasseAptidaoBonus> classeAptidaoBonus,
+            List<FichaVantagem> vantagens) {
+
+        // PASSO 0: aplicar efeitos de vantagens (antes dos demais cálculos)
+        if (vantagens != null && !vantagens.isEmpty()) {
+            aplicarEfeitosVantagens(vantagens, atributos, aptidoes, bonus, vida, membros, essencia);
+        }
 
         // PASSO 1: zerar campos deriváveis para garantir idempotência
         resetarCamposDerivaveis(atributos, aptidoes, bonus, vida, essencia);
@@ -305,7 +312,7 @@ public class FichaCalculationService {
         // PASSO 5: recalcular totais de atributos (total = base + nivel + outros)
         recalcularAtributos(atributos);
 
-        // PASSO 6: recalcular totais de aptidões (total = base + sorte + classe)
+        // PASSO 6: recalcular totais de aptidões (total = base + sorte + classe + outros)
         aptidoes.forEach(FichaAptidao::recalcularTotal);
 
         // PASSO 7: recalcular bônus derivados (base via fórmula + demais parcelas)
@@ -331,10 +338,10 @@ public class FichaCalculationService {
     }
 
     /**
-     * Sobrecarga retrocompatível sem aptidoes, racaBonusAtributos, classeBonus e classeAptidaoBonus.
+     * Sobrecarga retrocompatível sem aptidoes, racaBonusAtributos, classeBonus, classeAptidaoBonus e vantagens.
      * Mantida para não quebrar chamadas existentes que ainda não passam esses parâmetros.
      *
-     * @deprecated Prefira a sobrecarga completa para garantir cálculos corretos de bônus de classe e raça.
+     * @deprecated Prefira a sobrecarga completa para garantir cálculos corretos de bônus de classe, raça e vantagens.
      */
     @Deprecated(since = "Spec-007-T0", forRemoval = true)
     public void recalcular(
@@ -347,7 +354,7 @@ public class FichaCalculationService {
             FichaAmeaca ameaca) {
 
         recalcular(ficha, atributos, List.of(), bonus, vida, membros, essencia, ameaca,
-                List.of(), List.of(), List.of());
+                List.of(), List.of(), List.of(), List.of());
     }
 
     // ==================== MÉTODOS PRIVADOS ====================
@@ -476,5 +483,35 @@ public class FichaCalculationService {
                         cab.getAptidao().getId(), ficha.getClasse().getNome());
             }
         }
+    }
+
+    /**
+     * Aplica efeitos de VantagemConfig sobre os sub-registros da ficha.
+     *
+     * <p>Stub para preenchimento nas tasks T2–T6 da Spec 007.
+     * Processa os 8 tipos de {@link br.com.hydroom.rpg.fichacontrolador.model.enums.TipoEfeito}:
+     * BONUS_ATRIBUTO, BONUS_APTIDAO, BONUS_DERIVADO, BONUS_VIDA, BONUS_VIDA_MEMBRO,
+     * BONUS_ESSENCIA, DADO_UP, FORMULA_CUSTOMIZADA.</p>
+     *
+     * @param vantagens  lista de FichaVantagem com VantagemConfig.efeitos carregados via JOIN FETCH
+     * @param atributos  lista de FichaAtributo da ficha
+     * @param aptidoes   lista de FichaAptidao da ficha
+     * @param bonus      lista de FichaBonus da ficha
+     * @param vida       FichaVida da ficha
+     * @param membros    lista de FichaVidaMembro da ficha
+     * @param essencia   FichaEssencia da ficha
+     */
+    private void aplicarEfeitosVantagens(
+            List<FichaVantagem> vantagens,
+            List<FichaAtributo> atributos,
+            List<FichaAptidao> aptidoes,
+            List<FichaBonus> bonus,
+            FichaVida vida,
+            List<FichaVidaMembro> membros,
+            FichaEssencia essencia) {
+        // TODO: implementar nas tasks T2–T6 da Spec 007
+        // Cada efeito será processado por TipoEfeito, acumulando valores nos campos correspondentes
+        // antes do reset + recálculo dos passos 1–9.
+        log.debug("aplicarEfeitosVantagens: {} vantagens recebidas (stub — sem efeitos aplicados)", vantagens.size());
     }
 }

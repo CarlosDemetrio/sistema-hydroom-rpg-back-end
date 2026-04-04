@@ -58,6 +58,15 @@ public class FichaVidaMembro extends BaseEntity {
     private Integer danoRecebido = 0;
 
     /**
+     * Bônus de vida no membro vindos de efeitos de VantagemConfig (tipo BONUS_VIDA_MEMBRO).
+     * Acumula sobre a vida base calculada pela porcentagem, sem alterar o pool global.
+     */
+    @NotNull
+    @Builder.Default
+    @Column(name = "bonus_vantagens", nullable = false)
+    private Integer bonusVantagens = 0;
+
+    /**
      * Calcula a vida restante do membro.
      */
     public Integer calcularVidaRestante() {

@@ -913,8 +913,8 @@ public class FichaService {
      * Carrega todos os sub-registros da ficha, recalcula e persiste.
      * Usa queries com JOIN FETCH para evitar N+1 ao acessar configs durante recálculo.
      *
-     * <p>Carrega ClasseBonus e ClasseAptidaoBonus da classe da ficha (se houver) para
-     * aplicar bônus de classe em bônus derivados e aptidões (GAP-CALC-01 e GAP-CALC-02).</p>
+     * <p>Carrega ClasseBonus, ClasseAptidaoBonus e FichaVantagem com efeitos
+     * da classe/raça da ficha (se houver) para aplicar bônus completos.</p>
      */
     private void recalcular(Ficha ficha) {
         Long fichaId = ficha.getId();
@@ -945,10 +945,13 @@ public class FichaService {
                 ? classeAptidaoBonusRepository.findByClasseIdWithAptidao(ficha.getClasse().getId())
                 : List.of();
 
+        // Carregar FichaVantagem com efeitos para aplicarEfeitosVantagens (Spec 007 T1)
+        List<FichaVantagem> vantagens = fichaVantagemRepository.findByFichaIdWithEfeitos(fichaId);
+
         // Recalcular tudo
         fichaCalculationService.recalcular(
                 ficha, atributos, aptidoes, bonus, vida, membros, essencia, ameaca,
-                racaBonusAtributos, classeBonus, classeAptidaoBonus);
+                racaBonusAtributos, classeBonus, classeAptidaoBonus, vantagens);
 
         // Persistir sub-registros recalculados
         fichaAtributoRepository.saveAll(atributos);

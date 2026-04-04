@@ -46,4 +46,12 @@ public class FichaProspeccao extends BaseEntity {
     @Builder.Default
     @Column(name = "quantidade", nullable = false)
     private Integer quantidade = 0;
+
+    /**
+     * Dado de prospecção disponível por efeito de VantagemConfig (tipo DADO_UP).
+     * Null quando nenhuma vantagem ativa concede dado extra.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dado_disponivel_id")
+    private DadoProspeccaoConfig dadoDisponivel;
 }

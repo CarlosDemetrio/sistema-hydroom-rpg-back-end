@@ -10,6 +10,7 @@ import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Service responsável pelo cálculo de valores derivados da Ficha.
@@ -17,6 +18,17 @@ import java.util.Map;
  * <p>Recalcula: totais de atributos, ímpeto, base de bônus, vida, vida por membro,
  * essência e ameaça. Não persiste nada - apenas atualiza os campos das entidades
  * recebidas.</p>
+ *
+ * <p>Sequência de recálculo:</p>
+ * <ol>
+ *   <li>Reset de campos deriváveis (idempotência)</li>
+ *   <li>Bônus raciais em FichaAtributo.outros (GAP-CALC-03)</li>
+ *   <li>Bônus de classe em FichaBonus.classe (GAP-CALC-01)</li>
+ *   <li>Bônus de classe em FichaAptidao.classe (GAP-CALC-02)</li>
+ *   <li>Totais de atributos e ímpeto</li>
+ *   <li>Totais de bônus derivados</li>
+ *   <li>Vida, membros, essência, ameaça</li>
+ * </ol>
  */
 @Slf4j
 @Service
@@ -244,24 +256,62 @@ public class FichaCalculationService {
     /**
      * Recalcula todos os valores derivados da ficha.
      *
-     * <p>Ordem: atributos → bônus → vida/essência/ameaça</p>
+     * <p>Sequência completa:</p>
+     * <ol>
+     *   <li>Reset de campos deriváveis (idempotência)</li>
+     *   <li>Bônus raciais (GAP-CALC-03)</li>
+     *   <li>Bônus de classe em bônus derivados (GAP-CALC-01)</li>
+     *   <li>Bônus de classe em aptidões (GAP-CALC-02)</li>
+     *   <li>Atributos → bônus → vida/essência/ameaça</li>
+     * </ol>
+     *
+     * @param ficha            ficha com raca e classe carregados (para logging)
+     * @param atributos        lista de FichaAtributo com AtributoConfig carregado
+     * @param aptidoes         lista de FichaAptidao com AptidaoConfig carregado
+     * @param bonus            lista de FichaBonus com BonusConfig carregado
+     * @param vida             FichaVida da ficha
+     * @param membros          lista de FichaVidaMembro com MembroCorpoConfig carregado
+     * @param essencia         FichaEssencia da ficha
+     * @param ameaca           FichaAmeaca da ficha
+     * @param racaBonusAtributos lista de RacaBonusAtributo da raça (carregados via JOIN FETCH)
+     * @param classeBonus      lista de ClasseBonus da classe (carregados previamente via JOIN FETCH)
+     * @param classeAptidaoBonus lista de ClasseAptidaoBonus da classe (carregados previamente)
      */
     public void recalcular(
             Ficha ficha,
             List<FichaAtributo> atributos,
+            List<FichaAptidao> aptidoes,
             List<FichaBonus> bonus,
             FichaVida vida,
             List<FichaVidaMembro> membros,
             FichaEssencia essencia,
-            FichaAmeaca ameaca) {
+            FichaAmeaca ameaca,
+            List<RacaBonusAtributo> racaBonusAtributos,
+            List<ClasseBonus> classeBonus,
+            List<ClasseAptidaoBonus> classeAptidaoBonus) {
 
-        // 1. Recalcular atributos
+        // PASSO 1: zerar campos deriváveis para garantir idempotência
+        resetarCamposDerivaveis(atributos, aptidoes, bonus, vida, essencia);
+
+        // PASSO 2: aplicar bônus raciais em FichaAtributo.outros (GAP-CALC-03)
+        aplicarRacaBonusAtributo(ficha, atributos, racaBonusAtributos);
+
+        // PASSO 3: aplicar bônus de classe em FichaBonus.classe (GAP-CALC-01)
+        aplicarClasseBonus(ficha, bonus, classeBonus);
+
+        // PASSO 4: aplicar bônus de classe em FichaAptidao.classe (GAP-CALC-02)
+        aplicarClasseAptidaoBonus(ficha, aptidoes, classeAptidaoBonus);
+
+        // PASSO 5: recalcular totais de atributos (total = base + nivel + outros)
         recalcularAtributos(atributos);
 
-        // 2. Recalcular bônus
+        // PASSO 6: recalcular totais de aptidões (total = base + sorte + classe)
+        aptidoes.forEach(FichaAptidao::recalcularTotal);
+
+        // PASSO 7: recalcular bônus derivados (base via fórmula + demais parcelas)
         recalcularBonus(atributos, bonus);
 
-        // 3. Encontrar VIG e SAB pelo atributoConfig.abreviacao
+        // PASSO 8: encontrar VIG e SAB pelo atributoConfig.abreviacao
         int vigorTotal = atributos.stream()
                 .filter(a -> a.getAtributoConfig() != null
                         && "VIG".equalsIgnoreCase(a.getAtributoConfig().getAbreviacao()))
@@ -276,7 +326,155 @@ public class FichaCalculationService {
                 .findFirst()
                 .orElse(0);
 
-        // 4. Recalcular estado (vida, membros, essência, ameaça)
+        // PASSO 9: recalcular estado (vida, membros, essência, ameaça)
         recalcularEstado(ficha, vida, membros, essencia, ameaca, vigorTotal, sabedoriaTotal);
+    }
+
+    /**
+     * Sobrecarga retrocompatível sem aptidoes, racaBonusAtributos, classeBonus e classeAptidaoBonus.
+     * Mantida para não quebrar chamadas existentes que ainda não passam esses parâmetros.
+     *
+     * @deprecated Prefira a sobrecarga completa para garantir cálculos corretos de bônus de classe e raça.
+     */
+    @Deprecated(since = "Spec-007-T0", forRemoval = true)
+    public void recalcular(
+            Ficha ficha,
+            List<FichaAtributo> atributos,
+            List<FichaBonus> bonus,
+            FichaVida vida,
+            List<FichaVidaMembro> membros,
+            FichaEssencia essencia,
+            FichaAmeaca ameaca) {
+
+        recalcular(ficha, atributos, List.of(), bonus, vida, membros, essencia, ameaca,
+                List.of(), List.of(), List.of());
+    }
+
+    // ==================== MÉTODOS PRIVADOS ====================
+
+    /**
+     * Passo 1 da sequência: zera todos os campos que serão recalculados.
+     * Chamado no início de recalcular() para garantir idempotência.
+     * NÃO zera campos de entrada manual do Mestre (itens, gloria, outros, etc.).
+     */
+    private void resetarCamposDerivaveis(
+            List<FichaAtributo> atributos,
+            List<FichaAptidao> aptidoes,
+            List<FichaBonus> bonus,
+            FichaVida vida,
+            FichaEssencia essencia) {
+
+        atributos.forEach(a -> a.setOutros(0));
+        bonus.forEach(b -> {
+            b.setVantagens(0);
+            b.setClasse(0);
+        });
+        // FichaAptidao.classe NÃO é resetado aqui porque pode ser definido manualmente pelo Mestre.
+        // O aplicarClasseAptidaoBonus sobrescreve o valor quando há ClasseAptidaoBonus configurado.
+        vida.setVt(0);
+        essencia.setVantagens(0);
+    }
+
+    /**
+     * Passo 2 da sequência: aplica bônus raciais em FichaAtributo.outros.
+     * Bônus de raça é fixo (não escala com nível) e pode ser negativo.
+     * O campo outros já foi zerado no Passo 1 — este método soma em cima de zero.
+     *
+     * @param ficha              ficha (usada apenas para logging)
+     * @param atributos          lista de FichaAtributo da ficha
+     * @param racaBonusAtributos lista de RacaBonusAtributo carregados com JOIN FETCH pelo FichaService
+     */
+    private void aplicarRacaBonusAtributo(
+            Ficha ficha,
+            List<FichaAtributo> atributos,
+            List<RacaBonusAtributo> racaBonusAtributos) {
+
+        if (racaBonusAtributos == null || racaBonusAtributos.isEmpty()) return;
+
+        Map<Long, FichaAtributo> atributosMap = atributos.stream()
+                .filter(a -> a.getAtributoConfig() != null)
+                .collect(Collectors.toMap(a -> a.getAtributoConfig().getId(), a -> a));
+
+        String nomeRaca = ficha.getRaca() != null ? ficha.getRaca().getNome() : "desconhecida";
+        for (RacaBonusAtributo racaBonus : racaBonusAtributos) {
+            if (racaBonus.getAtributo() == null) continue;
+            FichaAtributo alvo = atributosMap.get(racaBonus.getAtributo().getId());
+            if (alvo != null) {
+                alvo.setOutros(alvo.getOutros() + racaBonus.getBonus());
+            } else {
+                log.warn("RacaBonusAtributo: FichaAtributo não encontrado para AtributoConfig ID {} (raça: {})",
+                        racaBonus.getAtributo().getId(), nomeRaca);
+            }
+        }
+    }
+
+    /**
+     * Passo 3 da sequência: aplica bônus de classe em FichaBonus.classe.
+     * Fórmula: round(classeBonus.valorPorNivel * ficha.nivel) para cada BonusConfig da classe.
+     * O campo classe já foi zerado no Passo 1 — este método sobrescreve com o valor correto.
+     * ClasseBonus é opcional: classes sem bônus configurados retornam lista vazia.
+     *
+     * @param ficha       ficha com getClasse() carregado
+     * @param bonus       lista de FichaBonus da ficha
+     * @param classeBonus lista de ClasseBonus da classe (carregados pelo FichaService via JOIN FETCH)
+     */
+    private void aplicarClasseBonus(Ficha ficha, List<FichaBonus> bonus, List<ClasseBonus> classeBonus) {
+        if (ficha.getClasse() == null || classeBonus.isEmpty()) return;
+
+        int nivel = ficha.getNivel() != null ? ficha.getNivel() : 1;
+
+        Map<Long, FichaBonus> bonusMap = bonus.stream()
+                .filter(b -> b.getBonusConfig() != null)
+                .collect(Collectors.toMap(b -> b.getBonusConfig().getId(), b -> b));
+
+        for (ClasseBonus cb : classeBonus) {
+            if (cb.getBonus() == null) continue;
+            FichaBonus alvo = bonusMap.get(cb.getBonus().getId());
+            if (alvo != null) {
+                int valorClasse = cb.getValorPorNivel() != null
+                        ? cb.getValorPorNivel().multiply(BigDecimal.valueOf(nivel))
+                                .setScale(0, RoundingMode.HALF_UP).intValue()
+                        : 0;
+                alvo.setClasse(alvo.getClasse() + valorClasse);
+            } else {
+                log.warn("ClasseBonus: FichaBonus não encontrado para BonusConfig ID {} (classe: {})",
+                        cb.getBonus().getId(), ficha.getClasse().getNome());
+            }
+        }
+    }
+
+    /**
+     * Passo 4 da sequência: aplica bônus fixo de classe em FichaAptidao.classe.
+     * ClasseAptidaoBonus.bonus é FIXO — não multiplica pelo nível.
+     * O campo classe já foi zerado no Passo 1 — este método soma sobre zero.
+     * ClasseAptidaoBonus é opcional: classes sem bônus de aptidão retornam lista vazia.
+     *
+     * @param ficha              ficha com getClasse() carregado
+     * @param aptidoes           lista de FichaAptidao da ficha
+     * @param classeAptidaoBonus lista de ClasseAptidaoBonus (carregados pelo FichaService)
+     */
+    private void aplicarClasseAptidaoBonus(
+            Ficha ficha,
+            List<FichaAptidao> aptidoes,
+            List<ClasseAptidaoBonus> classeAptidaoBonus) {
+
+        if (ficha.getClasse() == null || classeAptidaoBonus.isEmpty()) return;
+
+        Map<Long, FichaAptidao> aptidoesMap = aptidoes.stream()
+                .filter(a -> a.getAptidaoConfig() != null)
+                .collect(Collectors.toMap(a -> a.getAptidaoConfig().getId(), a -> a));
+
+        for (ClasseAptidaoBonus cab : classeAptidaoBonus) {
+            if (cab.getAptidao() == null) continue;
+            FichaAptidao alvo = aptidoesMap.get(cab.getAptidao().getId());
+            if (alvo != null) {
+                // Sobrescreve (não soma) para garantir idempotência do campo calculado.
+                // Aptidões sem ClasseAptidaoBonus mantêm o valor definido manualmente pelo Mestre.
+                alvo.setClasse(cab.getBonus() != null ? cab.getBonus() : 0);
+            } else {
+                log.warn("ClasseAptidaoBonus: FichaAptidao não encontrada para AptidaoConfig ID {} (classe: {})",
+                        cab.getAptidao().getId(), ficha.getClasse().getNome());
+            }
+        }
     }
 }

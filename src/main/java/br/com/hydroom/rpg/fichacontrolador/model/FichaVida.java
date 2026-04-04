@@ -48,7 +48,9 @@ public class FichaVida extends BaseEntity {
     private Integer outros = 0;
 
     /**
-     * Vida total calculada: vt + outros.
+     * Vida total calculada: vigorTotal + ficha.nivel + vt + ficha.renascimentos + outros.
+     * Calculada exclusivamente via FichaCalculationService.calcularVidaTotal().
+     * O vigorTotal e o nivel da ficha são externos a esta entidade e não podem ser calculados aqui.
      */
     @NotNull
     @Builder.Default
@@ -64,13 +66,4 @@ public class FichaVida extends BaseEntity {
     @Builder.Default
     @Column(name = "vida_atual", nullable = false)
     private Integer vidaAtual = 0;
-
-    /**
-     * Recalcula e persiste a vida total.
-     * Quando a vida total aumenta, incrementa vida atual proporcionalmente.
-     */
-    public void recalcularTotal() {
-        this.vidaTotal = (vt != null ? vt : 0) +
-                         (outros != null ? outros : 0);
-    }
 }

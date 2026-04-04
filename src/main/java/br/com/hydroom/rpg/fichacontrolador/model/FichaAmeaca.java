@@ -60,20 +60,12 @@ public class FichaAmeaca extends BaseEntity {
     private Integer outros = 0;
 
     /**
-     * Total calculado: itens + titulos + renascimentos + outros.
+     * Total calculado: ficha.nivel + itens + titulos + renascimentos + outros.
+     * Calculado exclusivamente via FichaCalculationService.calcularAmeacaTotal().
+     * O nivel da ficha é externo a esta entidade e não pode ser calculado aqui.
      */
     @NotNull
     @Builder.Default
     @Column(name = "total", nullable = false)
     private Integer total = 0;
-
-    /**
-     * Recalcula e persiste o total.
-     */
-    public void recalcularTotal() {
-        this.total = (itens != null ? itens : 0) +
-                     (titulos != null ? titulos : 0) +
-                     (renascimentos != null ? renascimentos : 0) +
-                     (outros != null ? outros : 0);
-    }
 }

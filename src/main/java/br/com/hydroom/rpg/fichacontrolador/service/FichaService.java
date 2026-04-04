@@ -20,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+import br.com.hydroom.rpg.fichacontrolador.dto.response.ConcederXpResponse;
+
 /**
  * Service para gerenciamento de Fichas de personagem.
  *
@@ -60,6 +62,9 @@ public class FichaService {
     private final GeneroConfigRepository generoConfigRepository;
     private final IndoleConfigRepository indoleConfigRepository;
     private final PresencaConfigRepository presencaConfigRepository;
+    private final ClasseBonusRepository classeBonusRepository;
+    private final ClasseAptidaoBonusRepository classeAptidaoBonusRepository;
+    private final RacaBonusAtributoRepository racaBonusAtributoRepository;
 
     // Repositories de configuração de nível
     private final ConfiguracaoNivelRepository nivelConfigRepository;
@@ -434,6 +439,40 @@ public class FichaService {
         verificarAcessoEscrita(ficha);
         ficha.setDescricao(descricao);
         return fichaRepository.save(ficha);
+    }
+
+    /**
+     * Concede XP a uma ficha (Mestre only) e recalcula o nível automaticamente.
+     * Retorna flag levelUp=true se o nível aumentou após a concessão.
+     */
+    @Transactional
+    public ConcederXpResponse concederXp(Long fichaId, Long xp) {
+        Ficha ficha = fichaRepository.findById(fichaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ficha não encontrada: " + fichaId));
+
+        verificarAcessoEscrita(ficha);
+
+        int nivelAnterior = ficha.getNivel() != null ? ficha.getNivel() : 1;
+        ficha.setXp(xp);
+
+        Long jogoId = ficha.getJogo().getId();
+        Optional<NivelConfig> nivelAlcancado = nivelConfigRepository.findNivelPorExperiencia(jogoId, xp);
+        int novoNivel = nivelAlcancado
+                .filter(n -> n.getNivel() >= 1)
+                .map(NivelConfig::getNivel)
+                .orElse(nivelAnterior);
+        ficha.setNivel(novoNivel);
+
+        ficha = fichaRepository.save(ficha);
+
+        boolean levelUp = novoNivel > nivelAnterior;
+        if (levelUp) {
+            recalcular(ficha);
+            log.info("Level up! Ficha '{}' (ID: {}) avançou do nível {} para {}",
+                    ficha.getNome(), fichaId, nivelAnterior, novoNivel);
+        }
+
+        return new ConcederXpResponse(fichaId, ficha.getXp(), ficha.getNivel(), levelUp);
     }
 
     /**
@@ -873,11 +912,15 @@ public class FichaService {
     /**
      * Carrega todos os sub-registros da ficha, recalcula e persiste.
      * Usa queries com JOIN FETCH para evitar N+1 ao acessar configs durante recálculo.
+     *
+     * <p>Carrega ClasseBonus e ClasseAptidaoBonus da classe da ficha (se houver) para
+     * aplicar bônus de classe em bônus derivados e aptidões (GAP-CALC-01 e GAP-CALC-02).</p>
      */
     private void recalcular(Ficha ficha) {
         Long fichaId = ficha.getId();
 
         List<FichaAtributo> atributos = fichaAtributoRepository.findByFichaIdWithConfig(fichaId);
+        List<FichaAptidao> aptidoes = fichaAptidaoRepository.findByFichaIdWithConfig(fichaId);
         List<FichaBonus> bonus = fichaBonusRepository.findByFichaIdWithConfig(fichaId);
 
         FichaVida vida = fichaVidaRepository.findByFichaId(fichaId).orElse(null);
@@ -889,11 +932,27 @@ public class FichaService {
 
         if (essencia == null || ameaca == null) return;
 
+        // Carregar RacaBonusAtributo para evitar N+1 dentro do calculation service (GAP-CALC-03)
+        List<RacaBonusAtributo> racaBonusAtributos = ficha.getRaca() != null
+                ? racaBonusAtributoRepository.findByRacaIdWithAtributo(ficha.getRaca().getId())
+                : List.of();
+
+        // Carregar ClasseBonus e ClasseAptidaoBonus para evitar N+1 (GAP-CALC-01 / GAP-CALC-02)
+        List<ClasseBonus> classeBonus = ficha.getClasse() != null
+                ? classeBonusRepository.findByClasseIdWithBonusConfig(ficha.getClasse().getId())
+                : List.of();
+        List<ClasseAptidaoBonus> classeAptidaoBonus = ficha.getClasse() != null
+                ? classeAptidaoBonusRepository.findByClasseIdWithAptidao(ficha.getClasse().getId())
+                : List.of();
+
         // Recalcular tudo
-        fichaCalculationService.recalcular(ficha, atributos, bonus, vida, membros, essencia, ameaca);
+        fichaCalculationService.recalcular(
+                ficha, atributos, aptidoes, bonus, vida, membros, essencia, ameaca,
+                racaBonusAtributos, classeBonus, classeAptidaoBonus);
 
         // Persistir sub-registros recalculados
         fichaAtributoRepository.saveAll(atributos);
+        fichaAptidaoRepository.saveAll(aptidoes);
         fichaBonusRepository.saveAll(bonus);
         fichaVidaRepository.save(vida);
         fichaVidaMembroRepository.saveAll(membros);

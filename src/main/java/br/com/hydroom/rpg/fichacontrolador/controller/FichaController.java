@@ -5,11 +5,13 @@ import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarAtributoRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarProspeccaoRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarVidaRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.ComprarVantagemRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.ConcederXpRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.CreateFichaRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.DuplicarFichaRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.FichaPreviewRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.NpcCreateRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.UpdateFichaRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.ConcederXpResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.DuplicarFichaResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaAptidaoResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaAtributoResponse;
@@ -306,5 +308,18 @@ public class FichaController {
         fichaVidaService.atualizarProspeccao(id, request);
         var resumo = fichaResumoService.getResumo(id);
         return ResponseEntity.ok(resumo);
+    }
+
+    // ==================== XP ====================
+
+    @PutMapping("/api/v1/fichas/{id}/xp")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Conceder XP à ficha (Apenas MESTRE)",
+               description = "Define o XP total da ficha e recalcula o nível automaticamente. Retorna levelUp=true se o nível aumentou.")
+    public ResponseEntity<ConcederXpResponse> concederXp(
+            @PathVariable Long id,
+            @Valid @RequestBody ConcederXpRequest request) {
+        var response = fichaService.concederXp(id, request.xp());
+        return ResponseEntity.ok(response);
     }
 }

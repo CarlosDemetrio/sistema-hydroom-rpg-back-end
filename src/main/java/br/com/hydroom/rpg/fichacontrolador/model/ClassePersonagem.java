@@ -58,6 +58,14 @@ public class ClassePersonagem extends BaseEntity implements ConfiguracaoEntity {
     @Builder.Default
     private Set<ClasseAptidaoBonus> aptidaoBonus = new HashSet<>();
 
+    @OneToMany(mappedBy = "classePersonagem", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<ClassePontosConfig> pontosConfig = new HashSet<>();
+
+    @OneToMany(mappedBy = "classePersonagem", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<ClasseVantagemPreDefinida> vantagensPreDefinidas = new HashSet<>();
+
     @Builder.Default
     @Column(name = "ordem_exibicao", nullable = false)
     private Integer ordemExibicao = 0;

@@ -57,6 +57,14 @@ public class Raca extends BaseEntity implements ConfiguracaoEntity {
     @Builder.Default
     private Set<RacaClassePermitida> classesPermitidas = new HashSet<>();
 
+    @OneToMany(mappedBy = "raca", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<RacaPontosConfig> pontosConfig = new HashSet<>();
+
+    @OneToMany(mappedBy = "raca", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<RacaVantagemPreDefinida> vantagensPreDefinidas = new HashSet<>();
+
     @Builder.Default
     @Column(name = "ordem_exibicao", nullable = false)
     private Integer ordemExibicao = 0;

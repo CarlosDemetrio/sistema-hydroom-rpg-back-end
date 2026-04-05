@@ -3,6 +3,7 @@ package br.com.hydroom.rpg.fichacontrolador.service;
 import br.com.hydroom.rpg.fichacontrolador.exception.BusinessException;
 import br.com.hydroom.rpg.fichacontrolador.exception.ConflictException;
 import br.com.hydroom.rpg.fichacontrolador.exception.ForbiddenException;
+import br.com.hydroom.rpg.fichacontrolador.exception.ResourceNotFoundException;
 import br.com.hydroom.rpg.fichacontrolador.model.Jogo;
 import br.com.hydroom.rpg.fichacontrolador.model.JogoParticipante;
 import br.com.hydroom.rpg.fichacontrolador.model.Usuario;
@@ -514,5 +515,32 @@ class JogoParticipanteServiceIntegrationTest {
         setAuth(jogador);
         assertThrows(BusinessException.class, () ->
             participanteService.cancelarSolicitacao(jogo.getId()));
+    }
+
+    @Test
+    @DisplayName("cancelarSolicitacao deve lançar ResourceNotFoundException quando usuário não tem participação")
+    void naoDeveCancelarSolicitacaoInexistente() {
+        // Arrange: outroJogador nunca solicitou entrada neste jogo
+        setAuth(outroJogador);
+
+        // Act + Assert
+        assertThrows(ResourceNotFoundException.class, () ->
+            participanteService.cancelarSolicitacao(jogo.getId()));
+    }
+
+    @Test
+    @DisplayName("banir deve manter registro visível (deletedAt nulo) pois BANIDO é diferente de soft-deleted")
+    void banirNaoDeveSetarDeletedAt() {
+        // Arrange
+        JogoParticipante aprovado = participanteRepository.save(JogoParticipante.builder()
+            .jogo(jogo).usuario(jogador).role(RoleJogo.JOGADOR).status(StatusParticipante.APROVADO).build());
+
+        // Act
+        setAuth(mestre);
+        JogoParticipante banido = participanteService.banir(jogo.getId(), aprovado.getId());
+
+        // Assert: status BANIDO, mas deletedAt permanece nulo (não é soft delete)
+        assertThat(banido.getStatus()).isEqualTo(StatusParticipante.BANIDO);
+        assertThat(banido.getDeletedAt()).isNull();
     }
 }

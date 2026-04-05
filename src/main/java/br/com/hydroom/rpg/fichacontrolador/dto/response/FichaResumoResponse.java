@@ -4,6 +4,9 @@ import java.util.Map;
 
 /**
  * Resposta resumida de uma ficha de personagem, com valores calculados agregados.
+ *
+ * <p>Inclui pontos disponiveis para atributos, aptidoes e vantagens
+ * (total concedido pelo nivel - pontos ja gastos).</p>
  */
 public record FichaResumoResponse(
         Long id,
@@ -16,5 +19,8 @@ public record FichaResumoResponse(
         Map<String, Integer> bonusTotais,
         int vidaTotal,
         int essenciaTotal,
-        int ameacaTotal
+        int ameacaTotal,
+        int pontosAtributoDisponiveis,
+        int pontosAptidaoDisponiveis,
+        int pontosVantagemDisponiveis
 ) {}

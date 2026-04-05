@@ -3,22 +3,9 @@ package br.com.hydroom.rpg.fichacontrolador.service;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaResumoResponse;
 import br.com.hydroom.rpg.fichacontrolador.exception.ForbiddenException;
 import br.com.hydroom.rpg.fichacontrolador.exception.ResourceNotFoundException;
-import br.com.hydroom.rpg.fichacontrolador.model.Ficha;
-import br.com.hydroom.rpg.fichacontrolador.model.FichaAmeaca;
-import br.com.hydroom.rpg.fichacontrolador.model.FichaAtributo;
-import br.com.hydroom.rpg.fichacontrolador.model.FichaBonus;
-import br.com.hydroom.rpg.fichacontrolador.model.FichaEssencia;
-import br.com.hydroom.rpg.fichacontrolador.model.FichaVida;
-import br.com.hydroom.rpg.fichacontrolador.model.Usuario;
+import br.com.hydroom.rpg.fichacontrolador.model.*;
 import br.com.hydroom.rpg.fichacontrolador.model.enums.RoleJogo;
-import br.com.hydroom.rpg.fichacontrolador.repository.FichaAmeacaRepository;
-import br.com.hydroom.rpg.fichacontrolador.repository.FichaAtributoRepository;
-import br.com.hydroom.rpg.fichacontrolador.repository.FichaBonusRepository;
-import br.com.hydroom.rpg.fichacontrolador.repository.FichaEssenciaRepository;
-import br.com.hydroom.rpg.fichacontrolador.repository.FichaRepository;
-import br.com.hydroom.rpg.fichacontrolador.repository.FichaVidaRepository;
-import br.com.hydroom.rpg.fichacontrolador.repository.JogoParticipanteRepository;
-import br.com.hydroom.rpg.fichacontrolador.repository.UsuarioRepository;
+import br.com.hydroom.rpg.fichacontrolador.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,10 +26,14 @@ public class FichaResumoService {
 
     private final FichaRepository fichaRepository;
     private final FichaAtributoRepository fichaAtributoRepository;
+    private final FichaAptidaoRepository fichaAptidaoRepository;
     private final FichaBonusRepository fichaBonusRepository;
     private final FichaVidaRepository fichaVidaRepository;
     private final FichaEssenciaRepository fichaEssenciaRepository;
     private final FichaAmeacaRepository fichaAmeacaRepository;
+    private final FichaVantagemRepository fichaVantagemRepository;
+    private final ConfiguracaoNivelRepository nivelConfigRepository;
+    private final PontosVantagemConfigRepository pontosVantagemConfigRepository;
     private final JogoParticipanteRepository jogoParticipanteRepository;
     private final UsuarioRepository usuarioRepository;
 
@@ -87,10 +78,49 @@ public class FichaResumoService {
         String racaNome = ficha.getRaca() != null ? ficha.getRaca().getNome() : null;
         String classeNome = ficha.getClasse() != null ? ficha.getClasse().getNome() : null;
 
+        // Calcular pontos disponiveis
+        int nivelAtual = ficha.getNivel() != null ? ficha.getNivel() : 1;
+        Long jogoId = ficha.getJogo().getId();
+
+        // Pontos de atributo: concedidos pelo NivelConfig - gastos (SUM(base + nivel) de cada FichaAtributo)
+        NivelConfig nivelConfig = nivelConfigRepository
+                .findByJogoIdAndNivel(jogoId, nivelAtual)
+                .orElse(null);
+
+        int pontosAtributoTotais = nivelConfig != null && nivelConfig.getPontosAtributo() != null
+                ? nivelConfig.getPontosAtributo() : 0;
+        int pontosAtributoGastos = fichaAtributos.stream()
+                .mapToInt(a -> (a.getBase() != null ? a.getBase() : 0)
+                        + (a.getNivel() != null ? a.getNivel() : 0))
+                .sum();
+        int pontosAtributoDisponiveis = Math.max(0, pontosAtributoTotais - pontosAtributoGastos);
+
+        // Pontos de aptidao: concedidos pelo NivelConfig - gastos (SUM(base) de cada FichaAptidao)
+        int pontosAptidaoTotais = nivelConfig != null && nivelConfig.getPontosAptidao() != null
+                ? nivelConfig.getPontosAptidao() : 0;
+        List<FichaAptidao> fichaAptidoes = fichaAptidaoRepository.findByFichaId(fichaId);
+        int pontosAptidaoGastos = fichaAptidoes.stream()
+                .mapToInt(a -> a.getBase() != null ? a.getBase() : 0)
+                .sum();
+        int pontosAptidaoDisponiveis = Math.max(0, pontosAptidaoTotais - pontosAptidaoGastos);
+
+        // Pontos de vantagem: SUM(pontosGanhos) para niveis <= nivelAtual - SUM(custoPago) das vantagens
+        List<PontosVantagemConfig> pontosVantagemConfigs = pontosVantagemConfigRepository
+                .findByJogoIdOrderByNivel(jogoId);
+        int pontosVantagemTotais = pontosVantagemConfigs.stream()
+                .filter(p -> p.getNivel() != null && p.getNivel() <= nivelAtual)
+                .mapToInt(p -> p.getPontosGanhos() != null ? p.getPontosGanhos() : 0)
+                .sum();
+        List<FichaVantagem> fichaVantagens = fichaVantagemRepository.findByFichaIdWithConfig(fichaId);
+        int pontosVantagemGastos = fichaVantagens.stream()
+                .mapToInt(v -> v.getCustoPago() != null ? v.getCustoPago() : 0)
+                .sum();
+        int pontosVantagemDisponiveis = Math.max(0, pontosVantagemTotais - pontosVantagemGastos);
+
         return new FichaResumoResponse(
                 ficha.getId(),
                 ficha.getNome(),
-                ficha.getNivel() != null ? ficha.getNivel() : 1,
+                nivelAtual,
                 ficha.getXp() != null ? ficha.getXp() : 0L,
                 racaNome,
                 classeNome,
@@ -98,7 +128,10 @@ public class FichaResumoService {
                 bonusTotais,
                 vidaTotal,
                 essenciaTotal,
-                ameacaTotal
+                ameacaTotal,
+                pontosAtributoDisponiveis,
+                pontosAptidaoDisponiveis,
+                pontosVantagemDisponiveis
         );
     }
 

@@ -1,6 +1,7 @@
 package br.com.hydroom.rpg.fichacontrolador.service;
 
 import br.com.hydroom.rpg.fichacontrolador.model.*;
+import br.com.hydroom.rpg.fichacontrolador.model.enums.TipoEfeito;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -169,7 +170,8 @@ public class FichaCalculationService {
     }
 
     /**
-     * Calcula a vida de um membro do corpo: floor(vidaTotal * porcentagem).
+     * Calcula a vida de um membro do corpo: floor(vidaTotal * porcentagem) + bonusVantagens.
+     * O campo bonusVantagens é populado por BONUS_VIDA_MEMBRO antes deste método ser chamado.
      */
     public int calcularVidaMembro(FichaVidaMembro membro, int vidaTotal, BigDecimal porcentagem) {
         if (porcentagem == null) {
@@ -178,7 +180,9 @@ public class FichaCalculationService {
         }
         BigDecimal resultado = BigDecimal.valueOf(vidaTotal).multiply(porcentagem)
                 .setScale(0, RoundingMode.FLOOR);
-        int vida = resultado.intValue();
+        int vidaProporcional = resultado.intValue();
+        int bonusVantagens = membro.getBonusVantagens() != null ? membro.getBonusVantagens() : 0;
+        int vida = vidaProporcional + bonusVantagens;
         membro.setVida(vida);
         return vida;
     }
@@ -263,20 +267,23 @@ public class FichaCalculationService {
      *   <li>Bônus de classe em bônus derivados (GAP-CALC-01)</li>
      *   <li>Bônus de classe em aptidões (GAP-CALC-02)</li>
      *   <li>Atributos → bônus → vida/essência/ameaça</li>
+     *   <li>DADO_UP nas prospecções</li>
      * </ol>
      *
-     * @param ficha            ficha com raca e classe carregados (para logging)
-     * @param atributos        lista de FichaAtributo com AtributoConfig carregado
-     * @param aptidoes         lista de FichaAptidao com AptidaoConfig carregado
-     * @param bonus            lista de FichaBonus com BonusConfig carregado
-     * @param vida             FichaVida da ficha
-     * @param membros          lista de FichaVidaMembro com MembroCorpoConfig carregado
-     * @param essencia         FichaEssencia da ficha
-     * @param ameaca           FichaAmeaca da ficha
+     * @param ficha              ficha com raca e classe carregados (para logging)
+     * @param atributos          lista de FichaAtributo com AtributoConfig carregado
+     * @param aptidoes           lista de FichaAptidao com AptidaoConfig carregado
+     * @param bonus              lista de FichaBonus com BonusConfig carregado
+     * @param vida               FichaVida da ficha
+     * @param membros            lista de FichaVidaMembro com MembroCorpoConfig carregado
+     * @param essencia           FichaEssencia da ficha
+     * @param ameaca             FichaAmeaca da ficha
      * @param racaBonusAtributos lista de RacaBonusAtributo da raça (carregados via JOIN FETCH)
-     * @param classeBonus      lista de ClasseBonus da classe (carregados previamente via JOIN FETCH)
+     * @param classeBonus        lista de ClasseBonus da classe (carregados previamente via JOIN FETCH)
      * @param classeAptidaoBonus lista de ClasseAptidaoBonus da classe (carregados previamente)
-     * @param vantagens        lista de FichaVantagem com VantagemConfig.efeitos carregados via JOIN FETCH
+     * @param vantagens          lista de FichaVantagem com VantagemConfig.efeitos carregados via JOIN FETCH
+     * @param dadosOrdenados     lista de DadoProspeccaoConfig do jogo ordenada por ordemExibicao ASC
+     * @param prospeccoes        lista de FichaProspeccao da ficha (para aplicar DADO_UP)
      */
     public void recalcular(
             Ficha ficha,
@@ -290,14 +297,18 @@ public class FichaCalculationService {
             List<RacaBonusAtributo> racaBonusAtributos,
             List<ClasseBonus> classeBonus,
             List<ClasseAptidaoBonus> classeAptidaoBonus,
-            List<FichaVantagem> vantagens) {
+            List<FichaVantagem> vantagens,
+            List<DadoProspeccaoConfig> dadosOrdenados,
+            List<FichaProspeccao> prospeccoes) {
 
         // PASSO 0: aplicar efeitos de vantagens (antes dos demais cálculos)
         // zerarContribuicoesVantagens é sempre chamado (dentro de aplicarEfeitosVantagens)
         // para garantir idempotência mesmo quando não há vantagens.
         aplicarEfeitosVantagens(
                 vantagens != null ? vantagens : List.of(),
-                atributos, aptidoes, bonus, vida, membros, essencia);
+                atributos, aptidoes, bonus, vida, membros, essencia,
+                dadosOrdenados != null ? dadosOrdenados : List.of(),
+                prospeccoes != null ? prospeccoes : List.of());
 
         // PASSO 1: zerar campos de raça/classe que serão recalculados nos passos 2–4
         resetarCamposDerivaveis(bonus);
@@ -340,10 +351,10 @@ public class FichaCalculationService {
     }
 
     /**
-     * Sobrecarga retrocompatível sem aptidoes, racaBonusAtributos, classeBonus, classeAptidaoBonus e vantagens.
-     * Mantida para não quebrar chamadas existentes que ainda não passam esses parâmetros.
+     * Sobrecarga retrocompatível sem aptidoes, racaBonusAtributos, classeBonus, classeAptidaoBonus, vantagens,
+     * dadosOrdenados e prospeccoes. Mantida para não quebrar chamadas existentes.
      *
-     * @deprecated Prefira a sobrecarga completa para garantir cálculos corretos de bônus de classe, raça e vantagens.
+     * @deprecated Prefira a sobrecarga completa para garantir cálculos corretos.
      */
     @Deprecated(since = "Spec-007-T0", forRemoval = true)
     public void recalcular(
@@ -356,7 +367,50 @@ public class FichaCalculationService {
             FichaAmeaca ameaca) {
 
         recalcular(ficha, atributos, List.of(), bonus, vida, membros, essencia, ameaca,
-                List.of(), List.of(), List.of(), List.of());
+                List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
+    }
+
+    // ==================== PROSPECÇÃO ====================
+
+    /**
+     * Calcula o dado disponível resultante de todas as vantagens DADO_UP ativas.
+     * Retorna o DadoProspeccaoConfig correspondente à maior posição alcançada,
+     * ou null se não há vantagem DADO_UP ativa.
+     *
+     * <p>Lógica: cada nível de DADO_UP avança uma posição na sequência (0-indexed).
+     * Múltiplas vantagens DADO_UP: vence a maior posição (MAX, não acumulam).
+     * Cap no último dado se o nível excede o tamanho da sequência.</p>
+     *
+     * @param vantagens      vantagens da ficha com efeitos carregados
+     * @param dadosOrdenados lista de DadoProspeccaoConfig ordenada por ordemExibicao ASC
+     */
+    public DadoProspeccaoConfig calcularDadoUp(
+            List<FichaVantagem> vantagens,
+            List<DadoProspeccaoConfig> dadosOrdenados) {
+
+        if (dadosOrdenados == null || dadosOrdenados.isEmpty()) return null;
+
+        int posicaoMaxima = -1;
+
+        for (FichaVantagem fichaVantagem : vantagens) {
+            if (fichaVantagem.getVantagemConfig() == null) continue;
+            int nivel = fichaVantagem.getNivelAtual() != null ? fichaVantagem.getNivelAtual() : 1;
+
+            for (VantagemEfeito efeito : fichaVantagem.getVantagemConfig().getEfeitos()) {
+                if (efeito.getDeletedAt() != null) continue;
+                if (efeito.getTipoEfeito() != TipoEfeito.DADO_UP) continue;
+
+                int posicaoCandidata = nivel - 1; // 0-indexed: nível 1 → posição 0
+                if (posicaoCandidata > posicaoMaxima) {
+                    posicaoMaxima = posicaoCandidata;
+                }
+            }
+        }
+
+        if (posicaoMaxima < 0) return null;
+
+        int indiceFinal = Math.min(posicaoMaxima, dadosOrdenados.size() - 1);
+        return dadosOrdenados.get(indiceFinal);
     }
 
     // ==================== MÉTODOS PRIVADOS ====================
@@ -482,22 +536,24 @@ public class FichaCalculationService {
     /**
      * Aplica efeitos de VantagemConfig sobre os sub-registros da ficha.
      *
-     * <p>Processa os tipos de {@link br.com.hydroom.rpg.fichacontrolador.model.enums.TipoEfeito}
-     * implementados até o momento: BONUS_ATRIBUTO, BONUS_APTIDAO, BONUS_VIDA, BONUS_ESSENCIA.
-     * Tipos T4–T6 (BONUS_DERIVADO, BONUS_VIDA_MEMBRO, DADO_UP,
-     * FORMULA_CUSTOMIZADA) são ignorados e serão implementados nas tasks subsequentes.</p>
+     * <p>Processa os tipos de {@link br.com.hydroom.rpg.fichacontrolador.model.enums.TipoEfeito}:
+     * BONUS_ATRIBUTO, BONUS_APTIDAO, BONUS_VIDA, BONUS_ESSENCIA, BONUS_DERIVADO,
+     * BONUS_VIDA_MEMBRO e DADO_UP.
+     * Tipo restante (FORMULA_CUSTOMIZADA) é ignorado e será implementado em task subsequente.</p>
      *
      * <p>Chamado no PASSO 0 de recalcular(), antes do reset das demais parcelas e antes
      * de recalcularAtributos(). A ordem é crítica: os bônus de vantagem em atributos devem
      * estar populados antes do cálculo dos totais.</p>
      *
-     * @param vantagens  lista de FichaVantagem com VantagemConfig.efeitos carregados via JOIN FETCH
-     * @param atributos  lista de FichaAtributo da ficha
-     * @param aptidoes   lista de FichaAptidao da ficha
-     * @param bonus      lista de FichaBonus da ficha
-     * @param vida       FichaVida da ficha
-     * @param membros    lista de FichaVidaMembro da ficha
-     * @param essencia   FichaEssencia da ficha
+     * @param vantagens      lista de FichaVantagem com VantagemConfig.efeitos carregados via JOIN FETCH
+     * @param atributos      lista de FichaAtributo da ficha
+     * @param aptidoes       lista de FichaAptidao da ficha
+     * @param bonus          lista de FichaBonus da ficha
+     * @param vida           FichaVida da ficha
+     * @param membros        lista de FichaVidaMembro da ficha
+     * @param essencia       FichaEssencia da ficha
+     * @param dadosOrdenados lista de DadoProspeccaoConfig ordenada por ordemExibicao ASC
+     * @param prospeccoes    lista de FichaProspeccao da ficha
      */
     private void aplicarEfeitosVantagens(
             List<FichaVantagem> vantagens,
@@ -506,7 +562,9 @@ public class FichaCalculationService {
             List<FichaBonus> bonus,
             FichaVida vida,
             List<FichaVidaMembro> membros,
-            FichaEssencia essencia) {
+            FichaEssencia essencia,
+            List<DadoProspeccaoConfig> dadosOrdenados,
+            List<FichaProspeccao> prospeccoes) {
 
         zerarContribuicoesVantagens(atributos, aptidoes, bonus, vida, membros, essencia);
 
@@ -517,6 +575,14 @@ public class FichaCalculationService {
         Map<Long, FichaAptidao> aptidoesMap = aptidoes.stream()
                 .filter(a -> a.getAptidaoConfig() != null)
                 .collect(Collectors.toMap(a -> a.getAptidaoConfig().getId(), a -> a));
+
+        Map<Long, FichaBonus> bonusMap = bonus.stream()
+                .filter(b -> b.getBonusConfig() != null)
+                .collect(Collectors.toMap(b -> b.getBonusConfig().getId(), b -> b));
+
+        Map<Long, FichaVidaMembro> membrosMap = membros.stream()
+                .filter(m -> m.getMembroCorpoConfig() != null)
+                .collect(Collectors.toMap(m -> m.getMembroCorpoConfig().getId(), m -> m));
 
         for (FichaVantagem fichaVantagem : vantagens) {
             if (fichaVantagem.getVantagemConfig() == null) {
@@ -563,9 +629,42 @@ public class FichaCalculationService {
                         int bonus2 = calcularValorEfeito(efeito, nivel);
                         essencia.setVantagens(essencia.getVantagens() + bonus2);
                     }
-                    default -> { /* T4–T6: BONUS_DERIVADO, BONUS_VIDA_MEMBRO, DADO_UP, FORMULA_CUSTOMIZADA */ }
+                    case BONUS_DERIVADO -> {
+                        if (efeito.getBonusAlvo() == null) {
+                            log.warn("BONUS_DERIVADO sem bonusAlvo — efeito ID {}", efeito.getId());
+                            break;
+                        }
+                        FichaBonus alvoBonus = bonusMap.get(efeito.getBonusAlvo().getId());
+                        if (alvoBonus != null) {
+                            alvoBonus.setVantagens(alvoBonus.getVantagens() + calcularValorEfeito(efeito, nivel));
+                        } else {
+                            log.warn("BONUS_DERIVADO: FichaBonus não encontrada para BonusConfig ID {}",
+                                    efeito.getBonusAlvo().getId());
+                        }
+                    }
+                    case BONUS_VIDA_MEMBRO -> {
+                        if (efeito.getMembroAlvo() == null) {
+                            log.warn("BONUS_VIDA_MEMBRO sem membroAlvo — efeito ID {}", efeito.getId());
+                            break;
+                        }
+                        FichaVidaMembro alvoMembro = membrosMap.get(efeito.getMembroAlvo().getId());
+                        if (alvoMembro != null) {
+                            alvoMembro.setBonusVantagens(alvoMembro.getBonusVantagens() + calcularValorEfeito(efeito, nivel));
+                        } else {
+                            log.warn("BONUS_VIDA_MEMBRO: FichaVidaMembro não encontrada para MembroCorpoConfig ID {}",
+                                    efeito.getMembroAlvo().getId());
+                        }
+                    }
+                    case DADO_UP -> { /* tratado em lote após o loop — ver abaixo */ }
+                    default -> { /* FORMULA_CUSTOMIZADA — implementado em task subsequente */ }
                 }
             }
+        }
+
+        // Aplicar DADO_UP em lote: calcula o dado resultante uma única vez e atualiza todas as prospecções
+        DadoProspeccaoConfig dadoResultante = calcularDadoUp(vantagens, dadosOrdenados);
+        for (FichaProspeccao prospeccao : prospeccoes) {
+            prospeccao.setDadoDisponivel(dadoResultante);
         }
     }
 

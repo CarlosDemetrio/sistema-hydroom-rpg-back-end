@@ -948,10 +948,17 @@ public class FichaService {
         // Carregar FichaVantagem com efeitos para aplicarEfeitosVantagens (Spec 007 T1)
         List<FichaVantagem> vantagens = fichaVantagemRepository.findByFichaIdWithEfeitos(fichaId);
 
+        // Carregar DadoProspeccaoConfig e FichaProspeccao para DADO_UP (Spec 007 T5)
+        List<DadoProspeccaoConfig> dadosOrdenados = ficha.getJogo() != null
+                ? dadoProspeccaoConfigRepository.findByJogoIdOrderByOrdemExibicao(ficha.getJogo().getId())
+                : List.of();
+        List<FichaProspeccao> prospeccoes = fichaProspeccaoRepository.findByFichaIdWithConfig(fichaId);
+
         // Recalcular tudo
         fichaCalculationService.recalcular(
                 ficha, atributos, aptidoes, bonus, vida, membros, essencia, ameaca,
-                racaBonusAtributos, classeBonus, classeAptidaoBonus, vantagens);
+                racaBonusAtributos, classeBonus, classeAptidaoBonus, vantagens,
+                dadosOrdenados, prospeccoes);
 
         // Persistir sub-registros recalculados
         fichaAtributoRepository.saveAll(atributos);
@@ -961,5 +968,6 @@ public class FichaService {
         fichaVidaMembroRepository.saveAll(membros);
         fichaEssenciaRepository.save(essencia);
         fichaAmeacaRepository.save(ameaca);
+        fichaProspeccaoRepository.saveAll(prospeccoes);
     }
 }

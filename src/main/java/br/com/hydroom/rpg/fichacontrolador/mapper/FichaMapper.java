@@ -24,6 +24,7 @@ public interface FichaMapper {
     @Mapping(target = "indoleNome", source = "indole.nome")
     @Mapping(target = "presencaId", source = "presenca.id")
     @Mapping(target = "presencaNome", source = "presenca.nome")
+    @Mapping(target = "status", expression = "java(ficha.getStatus() != null ? ficha.getStatus().name() : null)")
     @Mapping(target = "dataCriacao", source = "createdAt")
     @Mapping(target = "dataUltimaAtualizacao", source = "updatedAt")
     FichaResponse toResponse(Ficha ficha);
@@ -39,6 +40,7 @@ public interface FichaMapper {
     @Mapping(target = "xp", constant = "0L")
     @Mapping(target = "renascimentos", constant = "0")
     @Mapping(target = "descricao", ignore = true)
+    @Mapping(target = "status", ignore = true)
     Ficha toEntity(CreateFichaRequest request);
 
     @Mapping(target = "id", ignore = true)
@@ -52,5 +54,6 @@ public interface FichaMapper {
     @Mapping(target = "nivel", ignore = true)
     @Mapping(target = "npc", ignore = true)
     @Mapping(target = "descricao", ignore = true)
+    @Mapping(target = "status", ignore = true)
     void updateEntity(UpdateFichaRequest request, @MappingTarget Ficha ficha);
 }

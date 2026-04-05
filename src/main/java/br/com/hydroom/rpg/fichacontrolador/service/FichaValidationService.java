@@ -1,6 +1,7 @@
 package br.com.hydroom.rpg.fichacontrolador.service;
 
 import br.com.hydroom.rpg.fichacontrolador.exception.BusinessException;
+import br.com.hydroom.rpg.fichacontrolador.exception.ValidationException;
 import br.com.hydroom.rpg.fichacontrolador.model.*;
 import br.com.hydroom.rpg.fichacontrolador.repository.RacaClassePermitidaRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.VantagemPreRequisitoRepository;
@@ -10,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -150,6 +152,37 @@ public class FichaValidationService {
                                     + nomeRequisito + "' no nível mínimo " + nivelMinimo);
                 }
             }
+        }
+    }
+
+    /**
+     * Valida se a ficha possui todos os campos obrigatórios para ser marcada como COMPLETA.
+     *
+     * <p>Campos verificados: raça, classe, gênero, índole, presença.</p>
+     *
+     * @throws ValidationException se algum campo obrigatório estiver ausente
+     */
+    public void validarCompletude(Ficha ficha) {
+        Map<String, String> erros = new LinkedHashMap<>();
+
+        if (ficha.getRaca() == null) {
+            erros.put("raca", "Raça é obrigatória para completar a ficha");
+        }
+        if (ficha.getClasse() == null) {
+            erros.put("classe", "Classe é obrigatória para completar a ficha");
+        }
+        if (ficha.getGenero() == null) {
+            erros.put("genero", "Gênero é obrigatório para completar a ficha");
+        }
+        if (ficha.getIndole() == null) {
+            erros.put("indole", "Índole é obrigatória para completar a ficha");
+        }
+        if (ficha.getPresenca() == null) {
+            erros.put("presenca", "Presença é obrigatória para completar a ficha");
+        }
+
+        if (!erros.isEmpty()) {
+            throw new ValidationException("Ficha incompleta: campos obrigatórios ausentes", erros);
         }
     }
 

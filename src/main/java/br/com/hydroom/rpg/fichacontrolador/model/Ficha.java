@@ -1,5 +1,6 @@
 package br.com.hydroom.rpg.fichacontrolador.model;
 
+import br.com.hydroom.rpg.fichacontrolador.model.enums.FichaStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -94,4 +95,13 @@ public class Ficha extends BaseEntity {
     @Size(max = 2000, message = "Descrição deve ter no máximo 2000 caracteres")
     @Column(name = "descricao", columnDefinition = "TEXT")
     private String descricao;
+
+    /**
+     * Status da ficha.
+     * RASCUNHO = criada mas incompleta; COMPLETA = todos os campos obrigatórios preenchidos.
+     */
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 20)
+    private FichaStatus status = FichaStatus.RASCUNHO;
 }

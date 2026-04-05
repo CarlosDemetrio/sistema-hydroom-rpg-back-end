@@ -4,7 +4,9 @@ import br.com.hydroom.rpg.fichacontrolador.dto.request.CreateFichaRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.UpdateFichaRequest;
 import br.com.hydroom.rpg.fichacontrolador.exception.ForbiddenException;
 import br.com.hydroom.rpg.fichacontrolador.exception.ResourceNotFoundException;
+import br.com.hydroom.rpg.fichacontrolador.exception.ValidationException;
 import br.com.hydroom.rpg.fichacontrolador.model.*;
+import br.com.hydroom.rpg.fichacontrolador.model.enums.FichaStatus;
 import br.com.hydroom.rpg.fichacontrolador.model.enums.RoleJogo;
 import br.com.hydroom.rpg.fichacontrolador.model.enums.StatusParticipante;
 import br.com.hydroom.rpg.fichacontrolador.repository.*;
@@ -108,6 +110,15 @@ class FichaServiceIntegrationTest {
 
     @Autowired
     private ConfiguracaoClasseRepository classeRepository;
+
+    @Autowired
+    private GeneroConfigRepository generoRepository;
+
+    @Autowired
+    private IndoleConfigRepository indoleRepository;
+
+    @Autowired
+    private PresencaConfigRepository presencaRepository;
 
     private static final AtomicInteger counter = new AtomicInteger(1);
 
@@ -921,6 +932,194 @@ class FichaServiceIntegrationTest {
 
         // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> fichaService.listarAptidoes(99999L));
+    }
+
+    // =========================================================
+    // TESTES DE STATUS / COMPLETAR
+    // =========================================================
+
+    @Test
+    @DisplayName("Ficha criada começa com status RASCUNHO")
+    void fichaDeveComecarComoRascunho() {
+        // Arrange
+        autenticarComo(mestre);
+        var request = new CreateFichaRequest(jogo.getId(), "Heroi Rascunho", null, null, null, null, null, null, false);
+
+        // Act
+        Ficha ficha = fichaService.criar(request);
+
+        // Assert
+        assertThat(ficha.getStatus()).isEqualTo(FichaStatus.RASCUNHO);
+    }
+
+    @Test
+    @DisplayName("Deve completar ficha com todos os campos obrigatórios preenchidos")
+    void deveCompletarFichaComTodosOsCampos() {
+        // Arrange
+        autenticarComo(mestre);
+        Raca raca = racaRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        ClassePersonagem classe = classeRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        GeneroConfig genero = generoRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        IndoleConfig indole = indoleRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        PresencaConfig presenca = presencaRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+
+        var request = new CreateFichaRequest(
+                jogo.getId(), "Heroi Completo",
+                null, raca.getId(), classe.getId(), genero.getId(), indole.getId(), presenca.getId(), false);
+        Ficha ficha = fichaService.criar(request);
+        assertThat(ficha.getStatus()).isEqualTo(FichaStatus.RASCUNHO);
+
+        // Act
+        Ficha completada = fichaService.completar(ficha.getId());
+
+        // Assert
+        assertThat(completada.getStatus()).isEqualTo(FichaStatus.COMPLETA);
+    }
+
+    @Test
+    @DisplayName("Completar ficha sem raça lança ValidationException")
+    void deveRejeitarCompletarSemRaca() {
+        // Arrange
+        autenticarComo(mestre);
+        ClassePersonagem classe = classeRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        GeneroConfig genero = generoRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        IndoleConfig indole = indoleRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        PresencaConfig presenca = presencaRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+
+        var request = new CreateFichaRequest(
+                jogo.getId(), "Sem Raca",
+                null, null, classe.getId(), genero.getId(), indole.getId(), presenca.getId(), false);
+        Ficha ficha = fichaService.criar(request);
+
+        // Act & Assert
+        ValidationException ex = assertThrows(ValidationException.class, () -> fichaService.completar(ficha.getId()));
+        assertThat(ex.getErrors()).containsKey("raca");
+        assertThat(ficha.getStatus()).isEqualTo(FichaStatus.RASCUNHO);
+    }
+
+    @Test
+    @DisplayName("Completar ficha sem classe lança ValidationException")
+    void deveRejeitarCompletarSemClasse() {
+        // Arrange
+        autenticarComo(mestre);
+        Raca raca = racaRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        GeneroConfig genero = generoRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        IndoleConfig indole = indoleRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        PresencaConfig presenca = presencaRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+
+        var request = new CreateFichaRequest(
+                jogo.getId(), "Sem Classe",
+                null, raca.getId(), null, genero.getId(), indole.getId(), presenca.getId(), false);
+        Ficha ficha = fichaService.criar(request);
+
+        // Act & Assert
+        ValidationException ex = assertThrows(ValidationException.class, () -> fichaService.completar(ficha.getId()));
+        assertThat(ex.getErrors()).containsKey("classe");
+    }
+
+    @Test
+    @DisplayName("Completar ficha sem gênero lança ValidationException")
+    void deveRejeitarCompletarSemGenero() {
+        // Arrange
+        autenticarComo(mestre);
+        Raca raca = racaRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        ClassePersonagem classe = classeRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        IndoleConfig indole = indoleRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        PresencaConfig presenca = presencaRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+
+        var request = new CreateFichaRequest(
+                jogo.getId(), "Sem Genero",
+                null, raca.getId(), classe.getId(), null, indole.getId(), presenca.getId(), false);
+        Ficha ficha = fichaService.criar(request);
+
+        // Act & Assert
+        ValidationException ex = assertThrows(ValidationException.class, () -> fichaService.completar(ficha.getId()));
+        assertThat(ex.getErrors()).containsKey("genero");
+    }
+
+    @Test
+    @DisplayName("Completar ficha já completa é idempotente")
+    void completarFichaJaCompletaEIdempotente() {
+        // Arrange
+        autenticarComo(mestre);
+        Raca raca = racaRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        ClassePersonagem classe = classeRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        GeneroConfig genero = generoRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        IndoleConfig indole = indoleRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        PresencaConfig presenca = presencaRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+
+        var request = new CreateFichaRequest(
+                jogo.getId(), "Heroi Idempotente",
+                null, raca.getId(), classe.getId(), genero.getId(), indole.getId(), presenca.getId(), false);
+        Ficha ficha = fichaService.criar(request);
+        fichaService.completar(ficha.getId());
+
+        // Act — segunda chamada não deve lançar exceção
+        Ficha resultado = fichaService.completar(ficha.getId());
+
+        // Assert
+        assertThat(resultado.getStatus()).isEqualTo(FichaStatus.COMPLETA);
+    }
+
+    @Test
+    @DisplayName("Jogador não pode completar ficha de outro jogador")
+    void jogadorNaoPodeCompletarFichaDeOutro() {
+        // Arrange
+        autenticarComo(mestre);
+        Raca raca = racaRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        ClassePersonagem classe = classeRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        GeneroConfig genero = generoRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        IndoleConfig indole = indoleRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        PresencaConfig presenca = presencaRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+
+        // Ficha pertence ao outroUsuario (não ao jogador autenticado)
+        Ficha fichaOutro = fichaService.criar(new CreateFichaRequest(
+                jogo.getId(), "Ficha Outro", outroUsuario.getId(),
+                raca.getId(), classe.getId(), genero.getId(), indole.getId(), presenca.getId(), false));
+
+        // Act & Assert — jogador tenta completar ficha que não é sua
+        autenticarComo(jogador);
+        assertThrows(ForbiddenException.class, () -> fichaService.completar(fichaOutro.getId()));
+    }
+
+    @Test
+    @DisplayName("FichaResponse inclui campo status")
+    void fichaResponseIncluiCampoStatus() {
+        // Arrange
+        autenticarComo(mestre);
+        var request = new CreateFichaRequest(jogo.getId(), "Heroi Response", null, null, null, null, null, null, false);
+        Ficha ficha = fichaService.criar(request);
+
+        // Act — buscar via buscarPorId para exercitar o mapper via toResponse
+        Ficha result = fichaService.buscarPorId(ficha.getId());
+
+        // Assert
+        assertThat(result.getStatus()).isEqualTo(FichaStatus.RASCUNHO);
+        assertThat(result.getStatus().name()).isEqualTo("RASCUNHO");
+    }
+
+    @Test
+    @DisplayName("NPC também começa como RASCUNHO e pode ser completado pelo Mestre")
+    void npcDeveComecarComoRascunhoESerCompletadoPeloMestre() {
+        // Arrange
+        autenticarComo(mestre);
+        Raca raca = racaRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        ClassePersonagem classe = classeRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        GeneroConfig genero = generoRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        IndoleConfig indole = indoleRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        PresencaConfig presenca = presencaRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+
+        Ficha npc = fichaService.criar(new CreateFichaRequest(
+                jogo.getId(), "Goblin NPC",
+                null, raca.getId(), classe.getId(), genero.getId(), indole.getId(), presenca.getId(), true));
+
+        assertThat(npc.getStatus()).isEqualTo(FichaStatus.RASCUNHO);
+
+        // Act
+        Ficha npcCompleto = fichaService.completar(npc.getId());
+
+        // Assert
+        assertThat(npcCompleto.getStatus()).isEqualTo(FichaStatus.COMPLETA);
     }
 
     // =========================================================

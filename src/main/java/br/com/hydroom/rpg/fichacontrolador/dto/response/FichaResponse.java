@@ -25,6 +25,7 @@ public record FichaResponse(
     Integer renascimentos,
     boolean isNpc,
     String descricao,
+    String status,
     LocalDateTime dataCriacao,
     LocalDateTime dataUltimaAtualizacao
 ) {}

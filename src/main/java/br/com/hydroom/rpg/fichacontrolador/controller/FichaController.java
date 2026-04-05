@@ -310,6 +310,18 @@ public class FichaController {
         return ResponseEntity.ok(resumo);
     }
 
+    // ==================== STATUS ====================
+
+    @PutMapping("/api/v1/fichas/{id}/completar")
+    @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
+    @Operation(summary = "Completar ficha",
+               description = "Valida e marca a ficha como COMPLETA. Requer raça, classe, gênero, índole e presença preenchidos. Idempotente.")
+    public ResponseEntity<FichaResponse> completar(@PathVariable Long id) {
+        var ficha = fichaService.completar(id);
+        var response = fichaMapper.toResponse(ficha);
+        return ResponseEntity.ok(response);
+    }
+
     // ==================== XP ====================
 
     @PutMapping("/api/v1/fichas/{id}/xp")

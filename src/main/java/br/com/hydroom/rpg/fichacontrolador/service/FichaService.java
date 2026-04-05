@@ -7,6 +7,7 @@ import br.com.hydroom.rpg.fichacontrolador.dto.request.UpdateFichaRequest;
 import br.com.hydroom.rpg.fichacontrolador.exception.ForbiddenException;
 import br.com.hydroom.rpg.fichacontrolador.exception.ResourceNotFoundException;
 import br.com.hydroom.rpg.fichacontrolador.exception.ValidationException;
+import br.com.hydroom.rpg.fichacontrolador.model.enums.FichaStatus;
 import br.com.hydroom.rpg.fichacontrolador.model.*;
 import br.com.hydroom.rpg.fichacontrolador.model.enums.RoleJogo;
 import br.com.hydroom.rpg.fichacontrolador.repository.*;
@@ -438,6 +439,31 @@ public class FichaService {
                 .orElseThrow(() -> new ResourceNotFoundException("Ficha não encontrada: " + fichaId));
         verificarAcessoEscrita(ficha);
         ficha.setDescricao(descricao);
+        return fichaRepository.save(ficha);
+    }
+
+    /**
+     * Marca a ficha como COMPLETA após validar que todos os campos obrigatórios estão preenchidos.
+     *
+     * <p>Idempotente: se a ficha já estiver COMPLETA, retorna sem erro.</p>
+     * <p>Campos obrigatórios: raça, classe, gênero, índole, presença.</p>
+     *
+     * @throws ValidationException se algum campo obrigatório estiver ausente
+     */
+    @Transactional
+    public Ficha completar(Long fichaId) {
+        Ficha ficha = fichaRepository.findByIdWithRelationships(fichaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ficha não encontrada: " + fichaId));
+
+        verificarAcessoEscrita(ficha);
+
+        if (FichaStatus.COMPLETA.equals(ficha.getStatus())) {
+            return ficha;
+        }
+
+        fichaValidationService.validarCompletude(ficha);
+
+        ficha.setStatus(FichaStatus.COMPLETA);
         return fichaRepository.save(ficha);
     }
 

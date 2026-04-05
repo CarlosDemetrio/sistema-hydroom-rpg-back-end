@@ -1,21 +1,23 @@
 package br.com.hydroom.rpg.fichacontrolador.controller.configuracao;
 
-import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.ClasseAptidaoBonusRequest;
-import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.ClasseBonusRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.ClassePontosConfigRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.ClasseVantagemPreDefinidaRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.CreateClasseRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.UpdateClasseRequest;
-import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.ClasseAptidaoBonusResponse;
-import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.ClasseBonusResponse;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.ClassePontosConfigResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.ClasseResponse;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.ClasseVantagemPreDefinidaResponse;
 import br.com.hydroom.rpg.fichacontrolador.mapper.configuracao.ClassePersonagemMapper;
-import br.com.hydroom.rpg.fichacontrolador.model.ClasseAptidaoBonus;
-import br.com.hydroom.rpg.fichacontrolador.model.ClasseBonus;
+import br.com.hydroom.rpg.fichacontrolador.mapper.configuracao.ClassePontosConfigMapper;
+import br.com.hydroom.rpg.fichacontrolador.mapper.configuracao.ClasseVantagemPreDefinidaMapper;
 import br.com.hydroom.rpg.fichacontrolador.model.ClassePersonagem;
+import br.com.hydroom.rpg.fichacontrolador.model.ClassePontosConfig;
+import br.com.hydroom.rpg.fichacontrolador.model.ClasseVantagemPreDefinida;
 import br.com.hydroom.rpg.fichacontrolador.model.Jogo;
-import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.ReordenarRequest;
 import br.com.hydroom.rpg.fichacontrolador.service.JogoService;
-import br.com.hydroom.rpg.fichacontrolador.service.ReordenacaoService;
 import br.com.hydroom.rpg.fichacontrolador.service.configuracao.ClasseConfiguracaoService;
+import br.com.hydroom.rpg.fichacontrolador.service.configuracao.ClassePontosConfigService;
+import br.com.hydroom.rpg.fichacontrolador.service.configuracao.ClasseVantagemPreDefinidaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -54,17 +56,10 @@ public class ClasseController {
     private final ClasseConfiguracaoService configuracaoService;
     private final JogoService jogoService;
     private final ClassePersonagemMapper mapper;
-    private final ReordenacaoService reordenacaoService;
-
-    @PutMapping("/reordenar")
-    @PreAuthorize("hasRole('MESTRE')")
-    @Operation(summary = "Reordenar classes (Apenas MESTRE)", description = "Atualiza a ordem de exibição de múltiplos itens em batch")
-    public ResponseEntity<Void> reordenar(
-            @RequestParam Long jogoId,
-            @Valid @RequestBody ReordenarRequest request) {
-        reordenacaoService.reordenarClasses(jogoId, request.itens());
-        return ResponseEntity.noContent().build();
-    }
+    private final ClassePontosConfigService classePontosConfigService;
+    private final ClasseVantagemPreDefinidaService classeVantagemPreDefinidaService;
+    private final ClassePontosConfigMapper classePontosConfigMapper;
+    private final ClasseVantagemPreDefinidaMapper classeVantagemPreDefinidaMapper;
 
     @GetMapping
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
@@ -79,11 +74,10 @@ public class ClasseController {
     })
     public ResponseEntity<List<ClasseResponse>> listar(
             @Parameter(description = "ID do jogo", required = true, example = "1")
-            @RequestParam Long jogoId,
-            @RequestParam(required = false) String nome) {
+            @RequestParam Long jogoId) {
 
         log.info("Listando classes do jogo: {}", jogoId);
-        List<ClassePersonagem> classes = configuracaoService.listar(jogoId, nome);
+        List<ClassePersonagem> classes = configuracaoService.listar(jogoId);
         List<ClasseResponse> response = classes.stream()
             .map(mapper::toResponse)
             .toList();
@@ -201,61 +195,79 @@ public class ClasseController {
         return ResponseEntity.noContent().build();
     }
 
-    // ===== ENDPOINTS DE BÔNUS =====
+    // ===== SUB-RECURSO: PONTOS POR NÍVEL =====
 
-    @GetMapping("/{id}/bonus")
+    @GetMapping("/{id}/pontos-config")
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
-    @Operation(summary = "Listar bônus de uma classe")
-    public ResponseEntity<List<ClasseBonusResponse>> listarBonus(@PathVariable Long id) {
-        return ResponseEntity.ok(
-            configuracaoService.listarBonus(id).stream().map(mapper::toBonusResponse).toList()
-        );
+    @Operation(summary = "Listar configurações de pontos por nível de uma classe")
+    public ResponseEntity<List<ClassePontosConfigResponse>> listarPontosConfig(@PathVariable Long id) {
+        List<ClassePontosConfig> pontos = classePontosConfigService.listarPorClasse(id);
+        return ResponseEntity.ok(classePontosConfigMapper.toResponseList(pontos));
     }
 
-    @PostMapping("/{id}/bonus")
+    @PostMapping("/{id}/pontos-config")
     @PreAuthorize("hasRole('MESTRE')")
-    @Operation(summary = "Adicionar bônus a uma classe (Apenas MESTRE)")
-    public ResponseEntity<ClasseBonusResponse> adicionarBonus(
+    @Operation(summary = "Criar configuração de pontos para um nível da classe (Apenas MESTRE)")
+    public ResponseEntity<ClassePontosConfigResponse> criarPontosConfig(
             @PathVariable Long id,
-            @Valid @RequestBody ClasseBonusRequest request) {
-        ClasseBonus cb = configuracaoService.adicionarBonus(id, request.bonusId(), request.valorPorNivel());
-        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toBonusResponse(cb));
+            @Valid @RequestBody ClassePontosConfigRequest request) {
+        ClassePontosConfig entity = classePontosConfigMapper.toEntity(request);
+        ClassePontosConfig salvo = classePontosConfigService.criar(id, entity);
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(classePontosConfigMapper.toResponse(salvo));
     }
 
-    @DeleteMapping("/{id}/bonus/{bonusId}")
+    @PutMapping("/{id}/pontos-config/{pontosConfigId}")
     @PreAuthorize("hasRole('MESTRE')")
-    @Operation(summary = "Remover bônus de uma classe (Apenas MESTRE)")
-    public ResponseEntity<Void> removerBonus(@PathVariable Long id, @PathVariable Long bonusId) {
-        configuracaoService.removerBonus(id, bonusId);
+    @Operation(summary = "Atualizar configuração de pontos de uma classe (Apenas MESTRE)")
+    public ResponseEntity<ClassePontosConfigResponse> atualizarPontosConfig(
+            @PathVariable Long id,
+            @PathVariable Long pontosConfigId,
+            @Valid @RequestBody ClassePontosConfigRequest request) {
+        ClassePontosConfig entity = classePontosConfigMapper.toEntity(request);
+        ClassePontosConfig atualizado = classePontosConfigService.atualizar(id, pontosConfigId, entity);
+        return ResponseEntity.ok(classePontosConfigMapper.toResponse(atualizado));
+    }
+
+    @DeleteMapping("/{id}/pontos-config/{pontosConfigId}")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Deletar configuração de pontos de uma classe (Apenas MESTRE)")
+    public ResponseEntity<Void> deletarPontosConfig(
+            @PathVariable Long id,
+            @PathVariable Long pontosConfigId) {
+        classePontosConfigService.deletar(id, pontosConfigId);
         return ResponseEntity.noContent().build();
     }
 
-    // ===== ENDPOINTS DE BÔNUS DE APTIDÃO =====
+    // ===== SUB-RECURSO: VANTAGENS PRÉ-DEFINIDAS =====
 
-    @GetMapping("/{id}/aptidao-bonus")
+    @GetMapping("/{id}/vantagens-predefinidas")
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
-    @Operation(summary = "Listar bônus de aptidão de uma classe")
-    public ResponseEntity<List<ClasseAptidaoBonusResponse>> listarAptidaoBonus(@PathVariable Long id) {
-        return ResponseEntity.ok(
-            configuracaoService.listarAptidaoBonus(id).stream().map(mapper::toAptidaoResponse).toList()
-        );
+    @Operation(summary = "Listar vantagens pré-definidas de uma classe")
+    public ResponseEntity<List<ClasseVantagemPreDefinidaResponse>> listarVantagensPreDefinidas(
+            @PathVariable Long id) {
+        List<ClasseVantagemPreDefinida> vantagens = classeVantagemPreDefinidaService.listarPorClasse(id);
+        return ResponseEntity.ok(classeVantagemPreDefinidaMapper.toResponseList(vantagens));
     }
 
-    @PostMapping("/{id}/aptidao-bonus")
+    @PostMapping("/{id}/vantagens-predefinidas")
     @PreAuthorize("hasRole('MESTRE')")
-    @Operation(summary = "Adicionar bônus de aptidão a uma classe (Apenas MESTRE)")
-    public ResponseEntity<ClasseAptidaoBonusResponse> adicionarAptidaoBonus(
+    @Operation(summary = "Adicionar vantagem pré-definida a uma classe (Apenas MESTRE)")
+    public ResponseEntity<ClasseVantagemPreDefinidaResponse> criarVantagemPreDefinida(
             @PathVariable Long id,
-            @Valid @RequestBody ClasseAptidaoBonusRequest request) {
-        ClasseAptidaoBonus cab = configuracaoService.adicionarAptidaoBonus(id, request.aptidaoId(), request.bonus());
-        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toAptidaoResponse(cab));
+            @Valid @RequestBody ClasseVantagemPreDefinidaRequest request) {
+        ClasseVantagemPreDefinida salvo = classeVantagemPreDefinidaService.criar(id, request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(classeVantagemPreDefinidaMapper.toResponse(salvo));
     }
 
-    @DeleteMapping("/{id}/aptidao-bonus/{aptidaoBonusId}")
+    @DeleteMapping("/{id}/vantagens-predefinidas/{predefinidaId}")
     @PreAuthorize("hasRole('MESTRE')")
-    @Operation(summary = "Remover bônus de aptidão de uma classe (Apenas MESTRE)")
-    public ResponseEntity<Void> removerAptidaoBonus(@PathVariable Long id, @PathVariable Long aptidaoBonusId) {
-        configuracaoService.removerAptidaoBonus(id, aptidaoBonusId);
+    @Operation(summary = "Remover vantagem pré-definida de uma classe (Apenas MESTRE)")
+    public ResponseEntity<Void> deletarVantagemPreDefinida(
+            @PathVariable Long id,
+            @PathVariable Long predefinidaId) {
+        classeVantagemPreDefinidaService.deletar(id, predefinidaId);
         return ResponseEntity.noContent().build();
     }
 }

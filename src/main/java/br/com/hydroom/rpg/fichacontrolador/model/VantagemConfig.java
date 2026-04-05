@@ -1,5 +1,6 @@
 package br.com.hydroom.rpg.fichacontrolador.model;
 
+import br.com.hydroom.rpg.fichacontrolador.model.enums.TipoVantagem;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -12,8 +13,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
- * Configuração de vantagem do jogo.
- * Vantagens são compradas com pontos e não podem ser revertidas.
+ * Configuracao de vantagem do jogo.
+ * Vantagens podem ser do tipo VANTAGEM (comprada com pontos) ou INSOLITUS (concedida pelo Mestre sem custo).
  */
 @Entity
 @Table(name = "vantagem_config", indexes = {
@@ -78,6 +79,15 @@ public class VantagemConfig extends BaseEntity implements ConfiguracaoEntity {
     @Builder.Default
     @ToString.Exclude
     private List<VantagemEfeito> efeitos = new ArrayList<>();
+
+    /**
+     * Tipo da vantagem: VANTAGEM (comprada com pontos) ou INSOLITUS (concedida pelo Mestre).
+     * Default: VANTAGEM para manter compatibilidade retroativa.
+     */
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_vantagem", nullable = false, length = 20)
+    private TipoVantagem tipoVantagem = TipoVantagem.VANTAGEM;
 
     @Builder.Default
     @Column(name = "ordem_exibicao")

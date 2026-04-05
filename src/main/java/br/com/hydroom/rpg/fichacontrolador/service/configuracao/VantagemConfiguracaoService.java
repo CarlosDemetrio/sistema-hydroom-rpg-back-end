@@ -193,5 +193,8 @@ public class VantagemConfiguracaoService extends AbstractConfiguracaoService<Van
         existente.setFormulaCusto(atualizado.getFormulaCusto());
         existente.setDescricaoEfeito(atualizado.getDescricaoEfeito());
         existente.setCategoriaVantagem(atualizado.getCategoriaVantagem());
+        if (atualizado.getTipoVantagem() != null) {
+            existente.setTipoVantagem(atualizado.getTipoVantagem());
+        }
     }
 }

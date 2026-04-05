@@ -1,5 +1,6 @@
 package br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao;
 
+import br.com.hydroom.rpg.fichacontrolador.model.enums.TipoVantagem;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 
@@ -34,5 +35,7 @@ public record UpdateVantagemRequest(
 
     Integer ordemExibicao,
 
-    Long categoriaVantagemId
+    Long categoriaVantagemId,
+
+    TipoVantagem tipoVantagem
 ) {}

@@ -10,6 +10,7 @@ import br.com.hydroom.rpg.fichacontrolador.model.Usuario;
 import br.com.hydroom.rpg.fichacontrolador.model.VantagemConfig;
 import br.com.hydroom.rpg.fichacontrolador.model.VantagemPreRequisito;
 import br.com.hydroom.rpg.fichacontrolador.model.enums.RoleJogo;
+import br.com.hydroom.rpg.fichacontrolador.model.enums.TipoVantagem;
 import br.com.hydroom.rpg.fichacontrolador.repository.FichaRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.FichaVantagemRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.JogoParticipanteRepository;
@@ -27,13 +28,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Service para gerenciamento de vantagens compradas por fichas.
+ * Service para gerenciamento de vantagens de fichas.
  *
- * <p>Regras de negócio:</p>
+ * <p>Regras de negocio:</p>
  * <ul>
- *   <li>Vantagens não podem ser removidas (apenas nível sobe)</li>
- *   <li>Pré-requisitos devem ser atendidos antes de comprar</li>
- *   <li>Nível não pode ultrapassar o nivelMaximo</li>
+ *   <li>Vantagens do tipo VANTAGEM sao compradas com custo de pontos</li>
+ *   <li>Vantagens do tipo INSOLITUS sao concedidas pelo Mestre sem custo de pontos</li>
+ *   <li>Pre-requisitos devem ser atendidos antes de comprar (exceto Insolitus)</li>
+ *   <li>Nivel nao pode ultrapassar o nivelMaximo</li>
+ *   <li>Mestre pode revogar qualquer vantagem (soft delete)</li>
  * </ul>
  */
 @Slf4j
@@ -166,7 +169,84 @@ public class FichaVantagemService {
     }
 
     /**
-     * Lista todas as vantagens compradas por uma ficha.
+     * Concede um Insolitus (vantagem especial) a uma ficha.
+     * Apenas o Mestre pode conceder. Sem custo de pontos, sem verificacao de pre-requisitos.
+     *
+     * @param fichaId ID da ficha
+     * @param vantagemConfigId ID da VantagemConfig (deve ser tipo INSOLITUS)
+     * @return FichaVantagem criada
+     */
+    @Transactional
+    public FichaVantagem concederInsolitus(Long fichaId, Long vantagemConfigId) {
+        // 1. Verificar se ja existe
+        fichaVantagemRepository.findByFichaIdAndVantagemConfigId(fichaId, vantagemConfigId)
+                .ifPresent(v -> {
+                    throw new ConflictException("A ficha já possui esta vantagem: " + vantagemConfigId);
+                });
+
+        // 2. Buscar ficha
+        Ficha ficha = fichaRepository.findById(fichaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ficha não encontrada: " + fichaId));
+
+        // 3. Verificar que usuario e Mestre
+        verificarAcessoMestre(ficha);
+
+        // 4. Buscar VantagemConfig
+        VantagemConfig vantagemConfig = vantagemConfigRepository.findById(vantagemConfigId)
+                .orElseThrow(() -> new ResourceNotFoundException("Vantagem não encontrada: " + vantagemConfigId));
+
+        // 5. Verificar que e do tipo INSOLITUS
+        if (vantagemConfig.getTipoVantagem() != TipoVantagem.INSOLITUS) {
+            throw new ValidationException(
+                    "A vantagem '" + vantagemConfig.getNome() + "' não é do tipo Insólitus. "
+                    + "Use o endpoint de compra para vantagens normais.");
+        }
+
+        // 6. Criar FichaVantagem sem custo
+        FichaVantagem fichaVantagem = FichaVantagem.builder()
+                .ficha(ficha)
+                .vantagemConfig(vantagemConfig)
+                .nivelAtual(1)
+                .custoPago(0)
+                .concedidoPeloMestre(true)
+                .build();
+
+        fichaVantagem = fichaVantagemRepository.save(fichaVantagem);
+        log.info("Insólitus '{}' concedido pelo Mestre para ficha {} (custo: 0)",
+                vantagemConfig.getNome(), fichaId);
+        return fichaVantagem;
+    }
+
+    /**
+     * Revoga uma vantagem de uma ficha (soft delete).
+     * Apenas o Mestre pode revogar qualquer vantagem (inclusive Insolitus).
+     *
+     * @param fichaId ID da ficha
+     * @param fichaVantagemId ID da FichaVantagem
+     */
+    @Transactional
+    public void revogarVantagem(Long fichaId, Long fichaVantagemId) {
+        // 1. Buscar FichaVantagem
+        FichaVantagem fichaVantagem = fichaVantagemRepository.findById(fichaVantagemId)
+                .orElseThrow(() -> new ResourceNotFoundException("FichaVantagem não encontrada: " + fichaVantagemId));
+
+        // 2. Verificar que pertence a ficha correta
+        if (!fichaVantagem.getFicha().getId().equals(fichaId)) {
+            throw new ForbiddenException("Esta vantagem não pertence à ficha informada.");
+        }
+
+        // 3. Verificar que usuario e Mestre
+        verificarAcessoMestre(fichaVantagem.getFicha());
+
+        // 4. Soft delete
+        fichaVantagem.delete();
+        fichaVantagemRepository.save(fichaVantagem);
+        log.info("Vantagem '{}' revogada da ficha {} pelo Mestre",
+                fichaVantagem.getVantagemConfig().getNome(), fichaId);
+    }
+
+    /**
+     * Lista todas as vantagens de uma ficha.
      *
      * @param fichaId ID da ficha
      * @return Lista de FichaVantagem
@@ -200,6 +280,18 @@ public class FichaVantagemService {
 
         if (!usuarioAtual.getId().equals(ficha.getJogadorId())) {
             throw new ForbiddenException("Acesso negado: você não tem permissão para acessar esta ficha.");
+        }
+    }
+
+    private void verificarAcessoMestre(Ficha ficha) {
+        Usuario usuarioAtual = getUsuarioAtual();
+        Long jogoId = ficha.getJogo().getId();
+
+        boolean isMestre = jogoParticipanteRepository.existsByJogoIdAndUsuarioIdAndRole(
+                jogoId, usuarioAtual.getId(), RoleJogo.MESTRE);
+
+        if (!isMestre) {
+            throw new ForbiddenException("Apenas o Mestre pode realizar esta operação.");
         }
     }
 

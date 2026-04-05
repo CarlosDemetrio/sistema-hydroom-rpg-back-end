@@ -14,6 +14,7 @@ public record VantagemResponse(
     String descricao,
     Long categoriaVantagemId,
     String categoriaNome,
+    String tipoVantagem,
     Integer nivelMaximo,
     String formulaCusto,
     String descricaoEfeito,

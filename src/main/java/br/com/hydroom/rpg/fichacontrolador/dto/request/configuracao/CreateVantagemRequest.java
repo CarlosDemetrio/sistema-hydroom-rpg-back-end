@@ -1,5 +1,6 @@
 package br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao;
 
+import br.com.hydroom.rpg.fichacontrolador.model.enums.TipoVantagem;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,11 +11,12 @@ import jakarta.validation.constraints.Size;
  *
  * @param jogoId ID do jogo
  * @param nome Nome da vantagem
- * @param descricao Descrição da vantagem
- * @param nivelMaximo Nível máximo da vantagem
- * @param formulaCusto Fórmula para cálculo do custo (ex: "NIVEL * 2")
- * @param descricaoEfeito Descrição do efeito da vantagem
- * @param ordemExibicao Ordem de exibição
+ * @param descricao Descricao da vantagem
+ * @param nivelMaximo Nivel maximo da vantagem
+ * @param formulaCusto Formula para calculo do custo (ex: "NIVEL * 2")
+ * @param descricaoEfeito Descricao do efeito da vantagem
+ * @param ordemExibicao Ordem de exibicao
+ * @param tipoVantagem Tipo: VANTAGEM (default) ou INSOLITUS
  */
 public record CreateVantagemRequest(
     @NotNull(message = "Jogo é obrigatório")
@@ -43,5 +45,7 @@ public record CreateVantagemRequest(
 
     Integer ordemExibicao,
 
-    Long categoriaVantagemId
+    Long categoriaVantagemId,
+
+    TipoVantagem tipoVantagem
 ) {}

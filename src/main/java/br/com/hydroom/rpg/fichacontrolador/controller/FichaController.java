@@ -234,6 +234,31 @@ public class FichaController {
         return ResponseEntity.ok(response);
     }
 
+    // ==================== INSOLITUS ====================
+
+    @PostMapping("/api/v1/fichas/{id}/vantagens/insolitus/{vantagemConfigId}")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Conceder Insolitus (Apenas MESTRE)",
+               description = "Concede uma vantagem do tipo INSOLITUS sem custo de pontos. Apenas o Mestre pode conceder.")
+    public ResponseEntity<FichaVantagemResponse> concederInsolitus(
+            @PathVariable Long id,
+            @PathVariable Long vantagemConfigId) {
+        var fichaVantagem = fichaVantagemService.concederInsolitus(id, vantagemConfigId);
+        var response = fichaVantagemMapper.toResponse(fichaVantagem);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @DeleteMapping("/api/v1/fichas/{id}/vantagens/{vid}")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Revogar vantagem da ficha (Apenas MESTRE)",
+               description = "Revoga qualquer vantagem (incluindo Insolitus) da ficha. Soft delete.")
+    public ResponseEntity<Void> revogarVantagem(
+            @PathVariable Long id,
+            @PathVariable Long vid) {
+        fichaVantagemService.revogarVantagem(id, vid);
+        return ResponseEntity.noContent().build();
+    }
+
     // ==================== ATRIBUTOS ====================
 
     @GetMapping("/api/v1/fichas/{id}/atributos")

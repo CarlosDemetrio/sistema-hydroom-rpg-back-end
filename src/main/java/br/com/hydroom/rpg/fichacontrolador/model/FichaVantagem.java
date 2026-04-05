@@ -11,7 +11,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
- * Entidade que armazena as vantagens compradas por uma ficha.
+ * Entidade que armazena as vantagens de uma ficha (compradas ou concedidas pelo Mestre).
  */
 @Entity
 @Table(name = "ficha_vantagens", indexes = {
@@ -51,6 +51,14 @@ public class FichaVantagem extends BaseEntity {
     @Min(value = 0, message = ValidationMessages.FichaVantagem.CUSTO_MINIMO)
     @Column(name = "custo_pago", nullable = false)
     private Integer custoPago;
+
+    /**
+     * Indica se esta vantagem foi concedida diretamente pelo Mestre (Insolitus ou concessao manual).
+     * Vantagens concedidas pelo Mestre nao custam pontos de vantagem.
+     */
+    @Builder.Default
+    @Column(name = "concedido_pelo_mestre", nullable = false)
+    private Boolean concedidoPeloMestre = false;
 
     /**
      * Calcula se pode subir de nível.

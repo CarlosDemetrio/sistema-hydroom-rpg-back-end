@@ -9,6 +9,8 @@ import br.com.hydroom.rpg.fichacontrolador.mapper.FichaVantagemMapper;
 import br.com.hydroom.rpg.fichacontrolador.model.*;
 import br.com.hydroom.rpg.fichacontrolador.model.enums.RoleJogo;
 import br.com.hydroom.rpg.fichacontrolador.model.enums.StatusParticipante;
+import br.com.hydroom.rpg.fichacontrolador.model.enums.TipoVantagem;
+import br.com.hydroom.rpg.fichacontrolador.exception.ForbiddenException;
 import br.com.hydroom.rpg.fichacontrolador.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -399,8 +401,116 @@ class FichaVantagemServiceIntegrationTest {
     }
 
     // =========================================================
+    // TESTES DE INSOLITUS
+    // =========================================================
+
+    @Test
+    @DisplayName("Deve conceder Insolitus pelo Mestre sem custo de pontos")
+    void deveConcederInsolitusSeJaMestre() {
+        // Arrange
+        VantagemConfig insolitus = criarVantagemInsolitus("Poder Divino", "1", 3);
+
+        // Act
+        autenticarComo(mestre);
+        FichaVantagem resultado = fichaVantagemService.concederInsolitus(ficha.getId(), insolitus.getId());
+
+        // Assert
+        assertThat(resultado.getId()).isNotNull();
+        assertThat(resultado.getNivelAtual()).isEqualTo(1);
+        assertThat(resultado.getCustoPago()).isEqualTo(0);
+        assertThat(resultado.getConcedidoPeloMestre()).isTrue();
+        assertThat(resultado.getVantagemConfig().getTipoVantagem()).isEqualTo(TipoVantagem.INSOLITUS);
+    }
+
+    @Test
+    @DisplayName("Deve rejeitar concessao de Insolitus por Jogador")
+    void deveRejeitarConcessaoInsolitusSeJogador() {
+        // Arrange
+        VantagemConfig insolitus = criarVantagemInsolitus("Poder Proibido", "1", 3);
+
+        // Act & Assert
+        autenticarComo(jogador);
+        assertThrows(ForbiddenException.class,
+                () -> fichaVantagemService.concederInsolitus(ficha.getId(), insolitus.getId()));
+    }
+
+    @Test
+    @DisplayName("Deve rejeitar concessao de Insolitus quando tipo e VANTAGEM")
+    void deveRejeitarConcessaoInsolitusQuandoTipoVantagem() {
+        // Arrange - vantagem normal, nao insolitus
+        VantagemConfig vantagemNormal = criarVantagem("Vantagem Normal", "1", 5);
+
+        // Act & Assert
+        autenticarComo(mestre);
+        assertThrows(ValidationException.class,
+                () -> fichaVantagemService.concederInsolitus(ficha.getId(), vantagemNormal.getId()));
+    }
+
+    // =========================================================
+    // TESTES DE REVOGACAO
+    // =========================================================
+
+    @Test
+    @DisplayName("Deve revogar vantagem pelo Mestre (soft delete)")
+    void deveRevogarVantagemPeloMestre() {
+        // Arrange
+        VantagemConfig vantagem = criarVantagem("Vantagem Revogavel", "1", 5);
+        autenticarComo(mestre);
+        FichaVantagem comprada = fichaVantagemService.comprar(ficha.getId(), vantagem.getId());
+
+        // Act
+        fichaVantagemService.revogarVantagem(ficha.getId(), comprada.getId());
+
+        // Assert - vantagem nao aparece mais na listagem (soft delete)
+        List<FichaVantagem> vantagens = fichaVantagemService.listar(ficha.getId());
+        assertThat(vantagens).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Deve revogar Insolitus pelo Mestre")
+    void deveRevogarInsolitusComSucesso() {
+        // Arrange
+        VantagemConfig insolitus = criarVantagemInsolitus("Insolitus Revogavel", "1", 3);
+        autenticarComo(mestre);
+        FichaVantagem concedido = fichaVantagemService.concederInsolitus(ficha.getId(), insolitus.getId());
+
+        // Act
+        fichaVantagemService.revogarVantagem(ficha.getId(), concedido.getId());
+
+        // Assert
+        List<FichaVantagem> vantagens = fichaVantagemService.listar(ficha.getId());
+        assertThat(vantagens).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Deve rejeitar revogacao de vantagem por Jogador")
+    void deveRejeitarRevogacaoPorJogador() {
+        // Arrange
+        VantagemConfig vantagem = criarVantagem("Vantagem Protegida", "1", 5);
+        autenticarComo(mestre);
+        FichaVantagem comprada = fichaVantagemService.comprar(ficha.getId(), vantagem.getId());
+
+        // Act & Assert
+        autenticarComo(jogador);
+        assertThrows(ForbiddenException.class,
+                () -> fichaVantagemService.revogarVantagem(ficha.getId(), comprada.getId()));
+    }
+
+    // =========================================================
     // HELPERS
     // =========================================================
+
+    private VantagemConfig criarVantagemInsolitus(String nome, String formulaCusto, int nivelMaximo) {
+        VantagemConfig vantagem = VantagemConfig.builder()
+                .jogo(jogo)
+                .nome(nome)
+                .formulaCusto(formulaCusto)
+                .nivelMaximo(nivelMaximo)
+                .tipoVantagem(TipoVantagem.INSOLITUS)
+                .ordemExibicao(0)
+                .build();
+        return vantagemConfigRepository.save(vantagem);
+    }
 
     private VantagemConfig criarVantagem(String nome, String formulaCusto, int nivelMaximo) {
         VantagemConfig vantagem = VantagemConfig.builder()

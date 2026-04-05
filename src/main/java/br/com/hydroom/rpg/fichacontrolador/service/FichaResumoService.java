@@ -34,6 +34,8 @@ public class FichaResumoService {
     private final FichaVantagemRepository fichaVantagemRepository;
     private final ConfiguracaoNivelRepository nivelConfigRepository;
     private final PontosVantagemConfigRepository pontosVantagemConfigRepository;
+    private final ClassePontosConfigRepository classePontosConfigRepository;
+    private final RacaPontosConfigRepository racaPontosConfigRepository;
     private final JogoParticipanteRepository jogoParticipanteRepository;
     private final UsuarioRepository usuarioRepository;
 
@@ -87,15 +89,43 @@ public class FichaResumoService {
                 .findByJogoIdAndNivel(jogoId, nivelAtual)
                 .orElse(null);
 
-        int pontosAtributoTotais = nivelConfig != null && nivelConfig.getPontosAtributo() != null
+        // --- Pontos base do NivelConfig ---
+        int pontosAtributoBase = nivelConfig != null && nivelConfig.getPontosAtributo() != null
                 ? nivelConfig.getPontosAtributo() : 0;
+
+        // --- Pontos extras de ClassePontosConfig (para niveis <= nivelAtual) ---
+        int classePontosAtributo = 0;
+        int classePontosVantagem = 0;
+        if (ficha.getClasse() != null) {
+            List<ClassePontosConfig> classePontos = classePontosConfigRepository
+                    .findByClassePersonagemIdAndNivelLessThanEqual(ficha.getClasse().getId(), nivelAtual);
+            classePontosAtributo = classePontos.stream()
+                    .mapToInt(c -> c.getPontosAtributo() != null ? c.getPontosAtributo() : 0).sum();
+            classePontosVantagem = classePontos.stream()
+                    .mapToInt(c -> c.getPontosVantagem() != null ? c.getPontosVantagem() : 0).sum();
+        }
+
+        // --- Pontos extras de RacaPontosConfig (para niveis <= nivelAtual) ---
+        int racaPontosAtributo = 0;
+        int racaPontosVantagem = 0;
+        if (ficha.getRaca() != null) {
+            List<RacaPontosConfig> racaPontos = racaPontosConfigRepository
+                    .findByRacaIdAndNivelLessThanEqual(ficha.getRaca().getId(), nivelAtual);
+            racaPontosAtributo = racaPontos.stream()
+                    .mapToInt(r -> r.getPontosAtributo() != null ? r.getPontosAtributo() : 0).sum();
+            racaPontosVantagem = racaPontos.stream()
+                    .mapToInt(r -> r.getPontosVantagem() != null ? r.getPontosVantagem() : 0).sum();
+        }
+
+        // Total pontos atributo = NivelConfig + ClassePontosConfig + RacaPontosConfig
+        int pontosAtributoTotais = pontosAtributoBase + classePontosAtributo + racaPontosAtributo;
         int pontosAtributoGastos = fichaAtributos.stream()
                 .mapToInt(a -> (a.getBase() != null ? a.getBase() : 0)
                         + (a.getNivel() != null ? a.getNivel() : 0))
                 .sum();
         int pontosAtributoDisponiveis = Math.max(0, pontosAtributoTotais - pontosAtributoGastos);
 
-        // Pontos de aptidao: concedidos pelo NivelConfig - gastos (SUM(base) de cada FichaAptidao)
+        // Pontos de aptidao: APENAS NivelConfig (aptidoes independentes de classe/raca - decisao PO)
         int pontosAptidaoTotais = nivelConfig != null && nivelConfig.getPontosAptidao() != null
                 ? nivelConfig.getPontosAptidao() : 0;
         List<FichaAptidao> fichaAptidoes = fichaAptidaoRepository.findByFichaId(fichaId);
@@ -104,13 +134,14 @@ public class FichaResumoService {
                 .sum();
         int pontosAptidaoDisponiveis = Math.max(0, pontosAptidaoTotais - pontosAptidaoGastos);
 
-        // Pontos de vantagem: SUM(pontosGanhos) para niveis <= nivelAtual - SUM(custoPago) das vantagens
+        // Pontos de vantagem: PontosVantagemConfig + ClassePontosConfig + RacaPontosConfig - gastos
         List<PontosVantagemConfig> pontosVantagemConfigs = pontosVantagemConfigRepository
                 .findByJogoIdOrderByNivel(jogoId);
-        int pontosVantagemTotais = pontosVantagemConfigs.stream()
+        int pontosVantagemBase = pontosVantagemConfigs.stream()
                 .filter(p -> p.getNivel() != null && p.getNivel() <= nivelAtual)
                 .mapToInt(p -> p.getPontosGanhos() != null ? p.getPontosGanhos() : 0)
                 .sum();
+        int pontosVantagemTotais = pontosVantagemBase + classePontosVantagem + racaPontosVantagem;
         List<FichaVantagem> fichaVantagens = fichaVantagemRepository.findByFichaIdWithConfig(fichaId);
         int pontosVantagemGastos = fichaVantagens.stream()
                 .mapToInt(v -> v.getCustoPago() != null ? v.getCustoPago() : 0)

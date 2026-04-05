@@ -51,6 +51,10 @@ class FichaResumoServiceIntegrationTest {
     @Autowired private ConfiguracaoNivelRepository nivelConfigRepository;
     @Autowired private PontosVantagemConfigRepository pontosVantagemConfigRepository;
     @Autowired private VantagemConfigRepository vantagemConfigRepository;
+    @Autowired private ConfiguracaoRacaRepository racaRepository;
+    @Autowired private ConfiguracaoClasseRepository classeRepository;
+    @Autowired private ClassePontosConfigRepository classePontosConfigRepository;
+    @Autowired private RacaPontosConfigRepository racaPontosConfigRepository;
 
     private static final AtomicInteger counter = new AtomicInteger(1);
 
@@ -140,6 +144,63 @@ class FichaResumoServiceIntegrationTest {
 
         // Assert
         assertThat(depois.pontosVantagemDisponiveis()).isEqualTo(Math.max(0, pontosVantagemAntes - 1));
+    }
+
+    @Test
+    @DisplayName("Deve somar pontosAtributo e pontosVantagem de ClassePontosConfig ao total")
+    void deveSomarPontosDeClassePontosConfig() {
+        // Arrange - criar classe, atribuir a ficha, criar ClassePontosConfig
+        Raca raca = racaRepository.save(Raca.builder()
+                .jogo(jogo).nome("Elfo Resumo").ordemExibicao(0).build());
+        ClassePersonagem classe = classeRepository.save(ClassePersonagem.builder()
+                .jogo(jogo).nome("Guerreiro Resumo").ordemExibicao(0).build());
+
+        // Dar classe e raca a ficha
+        ficha.setRaca(raca);
+        ficha.setClasse(classe);
+        fichaRepository.save(ficha);
+
+        // ClassePontosConfig: nivel 1 concede +2 atributo, +1 vantagem
+        classePontosConfigRepository.save(ClassePontosConfig.builder()
+                .classePersonagem(classe).nivel(1).pontosAtributo(2).pontosVantagem(1).build());
+
+        FichaResumoResponse antes = fichaResumoService.getResumo(ficha.getId());
+
+        // Agora adicionar RacaPontosConfig: nivel 1 concede +1 atributo, +1 vantagem
+        racaPontosConfigRepository.save(RacaPontosConfig.builder()
+                .raca(raca).nivel(1).pontosAtributo(1).pontosVantagem(1).build());
+
+        // Act
+        FichaResumoResponse depois = fichaResumoService.getResumo(ficha.getId());
+
+        // Assert - pontos devem ter aumentado com extras de raca
+        assertThat(depois.pontosAtributoDisponiveis())
+                .isEqualTo(antes.pontosAtributoDisponiveis() + 1); // +1 da raca
+        assertThat(depois.pontosVantagemDisponiveis())
+                .isEqualTo(antes.pontosVantagemDisponiveis() + 1); // +1 da raca
+    }
+
+    @Test
+    @DisplayName("Deve NAO somar pontosAptidao de ClassePontosConfig (aptidoes independentes de classe/raca)")
+    void naoDeveSomarPontosAptidaoDeClasseOuRaca() {
+        // Arrange
+        ClassePersonagem classe = classeRepository.save(ClassePersonagem.builder()
+                .jogo(jogo).nome("Mago Resumo").ordemExibicao(0).build());
+        ficha.setClasse(classe);
+        fichaRepository.save(ficha);
+
+        // ClassePontosConfig com pontosAtributo e pontosVantagem (mas sem pontosAptidao - campo nao existe)
+        classePontosConfigRepository.save(ClassePontosConfig.builder()
+                .classePersonagem(classe).nivel(1).pontosAtributo(5).pontosVantagem(3).build());
+
+        // Act
+        FichaResumoResponse resumo = fichaResumoService.getResumo(ficha.getId());
+
+        // Assert - pontosAptidao vem APENAS de NivelConfig
+        NivelConfig nivelConfig = nivelConfigRepository.findByJogoIdAndNivel(jogo.getId(), 1).orElse(null);
+        int esperado = nivelConfig != null && nivelConfig.getPontosAptidao() != null
+                ? nivelConfig.getPontosAptidao() : 0;
+        assertThat(resumo.pontosAptidaoDisponiveis()).isEqualTo(esperado);
     }
 
     @Test

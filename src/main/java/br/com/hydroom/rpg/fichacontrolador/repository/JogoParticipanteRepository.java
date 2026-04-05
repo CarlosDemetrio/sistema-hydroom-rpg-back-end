@@ -65,6 +65,18 @@ public interface JogoParticipanteRepository extends JpaRepository<JogoParticipan
     @Query("SELECT COUNT(p) FROM JogoParticipante p WHERE p.jogo.id = :jogoId AND p.status = :status AND p.deletedAt IS NULL")
     long countByJogoIdAndStatus(@Param("jogoId") Long jogoId, @Param("status") StatusParticipante status);
 
+    @Query("""
+        SELECT p FROM JogoParticipante p
+        WHERE p.jogo.id = :jogoId
+        AND p.deletedAt IS NULL
+        AND (:status IS NULL OR p.status = :status)
+        ORDER BY p.createdAt DESC
+    """)
+    List<JogoParticipante> findByJogoIdAndStatusOpcional(
+        @Param("jogoId") Long jogoId,
+        @Param("status") StatusParticipante status
+    );
+
     @Query("SELECT p FROM JogoParticipante p WHERE p.usuario.id = :usuarioId AND p.deletedAt IS NULL")
     List<JogoParticipante> findByUsuarioIdNotDeleted(@Param("usuarioId") Long usuarioId);
 

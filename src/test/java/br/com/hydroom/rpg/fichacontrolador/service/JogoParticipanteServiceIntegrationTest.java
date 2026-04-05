@@ -222,7 +222,7 @@ class JogoParticipanteServiceIntegrationTest {
     // ===== LISTAR =====
 
     @Test
-    @DisplayName("Mestre deve listar todos os participantes")
+    @DisplayName("Mestre deve listar todos os participantes sem filtro")
     void deveListarTodosParticipantesSendoMestre() {
         // Adiciona jogador pendente
         participanteRepository.save(JogoParticipante.builder()
@@ -232,14 +232,29 @@ class JogoParticipanteServiceIntegrationTest {
             .jogo(jogo).usuario(outroJogador).role(RoleJogo.JOGADOR).status(StatusParticipante.APROVADO).build());
 
         setAuth(mestre);
-        List<JogoParticipante> lista = participanteService.listar(jogo.getId());
+        List<JogoParticipante> lista = participanteService.listar(jogo.getId(), null);
 
         // Mestre + pendente + aprovado = 3
         assertThat(lista).hasSize(3);
     }
 
     @Test
-    @DisplayName("Jogador deve listar apenas participantes APROVADOS")
+    @DisplayName("Mestre deve listar apenas PENDENTES quando filtro é PENDENTE")
+    void deveListarApenasParticipantesPendentesSendoMestreComFiltro() {
+        participanteRepository.save(JogoParticipante.builder()
+            .jogo(jogo).usuario(jogador).role(RoleJogo.JOGADOR).status(StatusParticipante.PENDENTE).build());
+        participanteRepository.save(JogoParticipante.builder()
+            .jogo(jogo).usuario(outroJogador).role(RoleJogo.JOGADOR).status(StatusParticipante.APROVADO).build());
+
+        setAuth(mestre);
+        List<JogoParticipante> lista = participanteService.listar(jogo.getId(), StatusParticipante.PENDENTE);
+
+        assertThat(lista).hasSize(1);
+        assertThat(lista).allMatch(p -> StatusParticipante.PENDENTE.equals(p.getStatus()));
+    }
+
+    @Test
+    @DisplayName("Jogador deve listar apenas participantes APROVADOS ignorando filtro")
     void deveListarApenasAprovadosSendoJogador() {
         participanteRepository.save(JogoParticipante.builder()
             .jogo(jogo).usuario(jogador).role(RoleJogo.JOGADOR).status(StatusParticipante.APROVADO).build());
@@ -247,9 +262,9 @@ class JogoParticipanteServiceIntegrationTest {
             .jogo(jogo).usuario(outroJogador).role(RoleJogo.JOGADOR).status(StatusParticipante.PENDENTE).build());
 
         setAuth(jogador);
-        List<JogoParticipante> lista = participanteService.listar(jogo.getId());
+        List<JogoParticipante> lista = participanteService.listar(jogo.getId(), StatusParticipante.PENDENTE);
 
-        // Mestre (APROVADO) + jogador (APROVADO) = 2; pendente não aparece
+        // Jogador sempre vê só APROVADOS, independente do filtro: Mestre + jogador = 2
         assertThat(lista).hasSize(2);
         assertThat(lista).allMatch(p -> StatusParticipante.APROVADO.equals(p.getStatus()));
     }
@@ -360,5 +375,144 @@ class JogoParticipanteServiceIntegrationTest {
         assertThat(resultado.getRole()).isEqualTo(RoleJogo.JOGADOR);
         assertThat(resultado.getUsuario().getId()).isEqualTo(jogador.getId());
         assertThat(resultado.isActive()).isTrue();
+    }
+
+    // ===== BANIR (restrição APROVADO) =====
+
+    @Test
+    @DisplayName("banir deve rejeitar participante PENDENTE com BusinessException")
+    void naoDeveBanirParticipantePendente() {
+        // Arrange: jogador com solicitação pendente
+        setAuth(jogador);
+        JogoParticipante pendente = participanteService.solicitar(jogo.getId());
+
+        // Act + Assert
+        setAuth(mestre);
+        assertThrows(BusinessException.class, () ->
+            participanteService.banir(jogo.getId(), pendente.getId()));
+    }
+
+    // ===== DESBANIR =====
+
+    @Test
+    @DisplayName("deve desbanir participante BANIDO retornando status APROVADO")
+    void deveDesbanirParticipanteBanido() {
+        // Arrange: jogador aprovado e depois banido
+        JogoParticipante aprovado = participanteRepository.save(JogoParticipante.builder()
+            .jogo(jogo).usuario(jogador).role(RoleJogo.JOGADOR).status(StatusParticipante.APROVADO).build());
+
+        setAuth(mestre);
+        participanteService.banir(jogo.getId(), aprovado.getId());
+
+        // Act
+        JogoParticipante desbanido = participanteService.desbanir(jogo.getId(), aprovado.getId());
+
+        // Assert
+        assertThat(desbanido.getStatus()).isEqualTo(StatusParticipante.APROVADO);
+    }
+
+    @Test
+    @DisplayName("desbanir deve rejeitar participante não-BANIDO com BusinessException")
+    void naoDeveDesbanirParticipanteAprovado() {
+        // Arrange: jogador aprovado diretamente (sem banimento)
+        JogoParticipante aprovado = participanteRepository.save(JogoParticipante.builder()
+            .jogo(jogo).usuario(jogador).role(RoleJogo.JOGADOR).status(StatusParticipante.APROVADO).build());
+
+        // Act + Assert
+        setAuth(mestre);
+        assertThrows(BusinessException.class, () ->
+            participanteService.desbanir(jogo.getId(), aprovado.getId()));
+    }
+
+    // ===== REMOVER (soft delete) =====
+
+    @Test
+    @DisplayName("deve remover participante APROVADO com soft delete (deletedAt preenchido)")
+    void deveRemoverParticipanteAprovadoComSoftDelete() {
+        // Arrange
+        JogoParticipante aprovado = participanteRepository.save(JogoParticipante.builder()
+            .jogo(jogo).usuario(jogador).role(RoleJogo.JOGADOR).status(StatusParticipante.APROVADO).build());
+
+        // Act
+        setAuth(mestre);
+        participanteService.remover(jogo.getId(), aprovado.getId());
+
+        // Assert: registro deve estar soft-deleted (não retornado por findByJogoIdAndUsuarioId)
+        var resultado = participanteRepository.findByJogoIdAndUsuarioId(jogo.getId(), jogador.getId());
+        assertThat(resultado).isEmpty();
+    }
+
+    @Test
+    @DisplayName("remover deve rejeitar participante não-APROVADO com BusinessException")
+    void naoDeveRemoverParticipantePendente() {
+        // Arrange: jogador com solicitação pendente
+        setAuth(jogador);
+        JogoParticipante pendente = participanteService.solicitar(jogo.getId());
+
+        // Act + Assert
+        setAuth(mestre);
+        assertThrows(BusinessException.class, () ->
+            participanteService.remover(jogo.getId(), pendente.getId()));
+    }
+
+    // ===== MEU STATUS =====
+
+    @Test
+    @DisplayName("meuStatus deve retornar participação do usuário autenticado")
+    void deveMeuStatusRetornarParticipacaoDoUsuarioAtual() {
+        // Arrange: jogador solicita entrada
+        setAuth(jogador);
+        JogoParticipante pendente = participanteService.solicitar(jogo.getId());
+
+        // Act
+        var resultado = participanteService.meuStatus(jogo.getId());
+
+        // Assert
+        assertThat(resultado).isPresent();
+        assertThat(resultado.get().getId()).isEqualTo(pendente.getId());
+        assertThat(resultado.get().getStatus()).isEqualTo(StatusParticipante.PENDENTE);
+    }
+
+    @Test
+    @DisplayName("meuStatus deve retornar Optional.empty se usuário nunca solicitou")
+    void deveMeuStatusRetornarVazioSeNuncaSolicitou() {
+        // Arrange: nenhum registro para outroJogador
+        setAuth(outroJogador);
+
+        // Act
+        var resultado = participanteService.meuStatus(jogo.getId());
+
+        // Assert
+        assertThat(resultado).isEmpty();
+    }
+
+    // ===== CANCELAR SOLICITACAO =====
+
+    @Test
+    @DisplayName("deve cancelar solicitação PENDENTE do próprio usuário (soft delete)")
+    void deveCancelarSolicitacaoPendente() {
+        // Arrange
+        setAuth(jogador);
+        participanteService.solicitar(jogo.getId());
+
+        // Act
+        participanteService.cancelarSolicitacao(jogo.getId());
+
+        // Assert: registro removido (soft-deleted)
+        var resultado = participanteRepository.findByJogoIdAndUsuarioId(jogo.getId(), jogador.getId());
+        assertThat(resultado).isEmpty();
+    }
+
+    @Test
+    @DisplayName("cancelarSolicitacao deve rejeitar status não-PENDENTE com BusinessException")
+    void naoDeveCancelarSolicitacaoAprovada() {
+        // Arrange: jogador já aprovado
+        participanteRepository.save(JogoParticipante.builder()
+            .jogo(jogo).usuario(jogador).role(RoleJogo.JOGADOR).status(StatusParticipante.APROVADO).build());
+
+        // Act + Assert
+        setAuth(jogador);
+        assertThrows(BusinessException.class, () ->
+            participanteService.cancelarSolicitacao(jogo.getId()));
     }
 }

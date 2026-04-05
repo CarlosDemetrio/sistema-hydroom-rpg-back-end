@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service para gerenciamento do fluxo de participação em jogos.
@@ -118,7 +119,7 @@ public class JogoParticipanteService {
     }
 
     /**
-     * Mestre bane um participante.
+     * Mestre bane um participante APROVADO.
      */
     @Transactional
     public JogoParticipante banir(Long jogoId, Long participanteId) {
@@ -129,9 +130,7 @@ public class JogoParticipanteService {
         if (participante.isMestre()) {
             throw new BusinessException("O Mestre não pode se banir do próprio jogo.");
         }
-        if (StatusParticipante.BANIDO.equals(participante.getStatus())) {
-            throw new BusinessException("Participante já está banido.");
-        }
+        assertStatus(participante, StatusParticipante.APROVADO, "banir");
 
         participante.setStatus(StatusParticipante.BANIDO);
         log.info("Mestre {} baniu participante {} no jogo {}", mestre.getId(), participanteId, jogoId);
@@ -139,15 +138,75 @@ public class JogoParticipanteService {
     }
 
     /**
-     * Lista participantes: Mestre vê todos; Jogador vê apenas APROVADOS.
+     * Mestre desbane participante BANIDO, retornando-o ao status APROVADO.
      */
-    public List<JogoParticipante> listar(Long jogoId) {
+    @Transactional
+    public JogoParticipante desbanir(Long jogoId, Long participanteId) {
+        Usuario mestre = getUsuarioAtual();
+        assertMestre(jogoId, mestre.getId());
+
+        JogoParticipante participante = buscarParticipante(jogoId, participanteId);
+        assertStatus(participante, StatusParticipante.BANIDO, "desbanir");
+
+        participante.setStatus(StatusParticipante.APROVADO);
+        log.info("Mestre {} desbaniu participante {} no jogo {}", mestre.getId(), participanteId, jogoId);
+        return participanteRepository.save(participante);
+    }
+
+    /**
+     * Mestre remove provisoriamente um participante APROVADO (soft delete).
+     * O jogador pode re-solicitar via strategy Reactivate.
+     */
+    @Transactional
+    public void remover(Long jogoId, Long participanteId) {
+        Usuario mestre = getUsuarioAtual();
+        assertMestre(jogoId, mestre.getId());
+
+        JogoParticipante participante = buscarParticipante(jogoId, participanteId);
+        assertStatus(participante, StatusParticipante.APROVADO, "remover");
+
+        participante.delete();
+        log.info("Mestre {} removeu participante {} do jogo {}", mestre.getId(), participanteId, jogoId);
+        participanteRepository.save(participante);
+    }
+
+    /**
+     * Retorna o status de participação do usuário autenticado no jogo.
+     * Retorna Optional.empty() se nunca solicitou ou se o registro foi removido.
+     */
+    public Optional<JogoParticipante> meuStatus(Long jogoId) {
+        Usuario usuario = getUsuarioAtual();
+        return participanteRepository.findByJogoIdAndUsuarioId(jogoId, usuario.getId());
+    }
+
+    /**
+     * Usuário cancela a própria solicitação PENDENTE (soft delete do registro).
+     */
+    @Transactional
+    public void cancelarSolicitacao(Long jogoId) {
+        Usuario usuario = getUsuarioAtual();
+
+        JogoParticipante participante = participanteRepository
+            .findByJogoIdAndUsuarioId(jogoId, usuario.getId())
+            .orElseThrow(() -> new ResourceNotFoundException("Participacao", jogoId));
+
+        assertStatus(participante, StatusParticipante.PENDENTE, "cancelar solicitacao");
+
+        participante.delete();
+        log.info("Usuário {} cancelou solicitação no jogo {}", usuario.getId(), jogoId);
+        participanteRepository.save(participante);
+    }
+
+    /**
+     * Lista participantes: Mestre vê todos (com filtro opcional); Jogador vê apenas APROVADOS.
+     */
+    public List<JogoParticipante> listar(Long jogoId, StatusParticipante filtroStatus) {
         Usuario usuario = getUsuarioAtual();
         boolean ehMestre = participanteRepository.existsByJogoIdAndUsuarioIdAndRole(
             jogoId, usuario.getId(), RoleJogo.MESTRE);
 
         if (ehMestre) {
-            return participanteRepository.findByJogoId(jogoId);
+            return participanteRepository.findByJogoIdAndStatusOpcional(jogoId, filtroStatus);
         }
         return participanteRepository.findByJogoIdAndStatus(jogoId, StatusParticipante.APROVADO);
     }

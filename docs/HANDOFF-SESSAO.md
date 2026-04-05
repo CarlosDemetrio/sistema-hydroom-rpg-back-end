@@ -1,30 +1,34 @@
-# Handoff de Sessao -- 2026-04-04 (pos-sessao 10, rodada 4)
+# Handoff de Sessao -- 2026-04-05 (pos-sessao 11, rodada 5)
 
 > Documento de transferencia de contexto para a proxima sessao de trabalho.
-> Branch atual: `feature/009-npc-fichas-mestre`
-> Backend: **509 testes** passando, 0 falhas | Frontend: **359 testes** passando, 0 falhas
-> Sprint 2: **11/35 tasks concluidas** (31%)
-> Ultima atualizacao: 2026-04-04 (Rodada 4)
+> Branch atual: `main`
+> Backend: **523 testes** passando, 0 falhas | Frontend: **359 testes** passando, 0 falhas
+> Sprint 2: **15/35 tasks concluidas** (43%)
+> Ultima atualizacao: 2026-04-05 (Rodada 5)
 
 ---
 
 ## Resumo Executivo
 
-A Rodada 4 concluiu 5 tasks em paralelo: S007-T3+T4+T5 (BONUS_DERIVADO, BONUS_VIDA_MEMBRO, DADO_UP no motor de efeitos), S015-T2 (14 endpoints CRUD sub-recursos ConfigPontos) e S006-T1 (FichaStatus RASCUNHO/COMPLETA + endpoint /completar). O motor agora aplica 7 dos 8 tipos de efeito (falta apenas FORMULA_CUSTOMIZADA, bloqueado por PA-004). Os bugs de frontend QW-Bug1/Bug2 ja estavam corrigidos desde a rodada 2.
+A Rodada 5 concluiu 4 tasks: S007-T7 (TipoVantagem INSOLITUS com endpoints de concessao e revogacao), S006-T2 (validacao RacaClassePermitida na criacao de ficha), S006-T5 (pontosDisponiveis no FichaResumoResponse) e S015-T3 (integracao ClassePontosConfig/RacaPontosConfig no calculo de pontos). O motor de vantagens agora suporta Insolitus (concedido pelo Mestre sem custo) e revogacao de qualquer vantagem. O resumo da ficha inclui pontos disponiveis para atributos, aptidoes e vantagens com somatoria completa de NivelConfig + ClassePontosConfig + RacaPontosConfig.
 
-**Proximo foco:** S007-T7 (Insolitus + endpoint concessao), S006-T2 (validacao RacaClassePermitida), S006-T5 (pontosDisponiveis no response).
+**Proximo foco:** S007-T8 (testes integracao todos efeitos), S005-P1T1/T2 (participantes), S006-T4 (XP MESTRE-only).
 
 ---
 
-## O que Foi Feito (acumulado Sprint 2: 11/35)
+## O que Foi Feito (acumulado Sprint 2: 15/35)
 
-### Backend -- 509 testes (+35 desde Rodada 3)
+### Backend -- 523 testes (+14 desde Rodada 4)
 
 | ID | Descricao | Rodada | Detalhes |
 |----|-----------|--------|----------|
-| S007-T3+T4+T5 | BONUS_DERIVADO, BONUS_VIDA_MEMBRO, DADO_UP | R4 | FichaCalculationService: BONUS_DERIVADO via bonusMap, BONUS_VIDA_MEMBRO via membrosMap, calcularDadoUp() para DADO_UP. Assinatura recalcular() estendida com dadosOrdenados e prospeccoes. FichaService carrega DadoProspeccaoConfig e FichaProspeccao. Commit `0621bc8`. |
-| S015-T2 | 14 endpoints CRUD sub-recursos | R4 | 4 services (ClassePontos, ClasseVantagemPreDef, RacaPontos, RacaVantagemPreDef) + 7 endpoints em ClasseController + 7 endpoints em RacaController + 2 testes integracao. Commit `ba52d29`. |
-| S006-T1 | FichaStatus + endpoint /completar | R4 | Enum FichaStatus (RASCUNHO, COMPLETA), campo status em Ficha com @Builder.Default, endpoint PUT /fichas/{id}/completar, validarCompletude() em FichaValidationService, 9 testes novos. Commit `d55e312`. |
+| S007-T7 | Insolitus + endpoints concessao/revogacao | R5 | Enum TipoVantagem (VANTAGEM/INSOLITUS), campo tipoVantagem em VantagemConfig, campo concedidoPeloMestre em FichaVantagem. POST /fichas/{id}/vantagens/insolitus/{vantagemConfigId} (MESTRE-only, custo 0). DELETE /fichas/{id}/vantagens/{vid} (MESTRE-only, soft delete). Atualizado DTOs, mapper, VantagemConfiguracaoService. 6 testes. Commit `bd75582`. |
+| S006-T2 | Validacao RacaClassePermitida na criacao | R5 | Adicionada chamada fichaValidationService.validarClassePermitidaPorRaca() no metodo criar() de FichaService. Se existem restricoes para a raca, classe deve estar na lista. 3 testes. Commit `1cb523a`. |
+| S006-T5 | pontosDisponiveis no FichaResumoResponse | R5 | Novos campos: pontosAtributoDisponiveis, pontosAptidaoDisponiveis, pontosVantagemDisponiveis. Calculo: total concedido por nivel - pontos gastos. 3 testes. Commit `61b0bb4`. |
+| S015-T3 | Integrar ConfigPontos no FichaResumo | R5 | pontosAtributoTotais = NivelConfig + ClassePontosConfig + RacaPontosConfig. pontosVantagemTotais idem. pontosAptidao = APENAS NivelConfig (decisao PO). 2 testes. Commit `5dc8bf2`. |
+| S007-T3+T4+T5 | BONUS_DERIVADO, BONUS_VIDA_MEMBRO, DADO_UP | R4 | FichaCalculationService: BONUS_DERIVADO via bonusMap, BONUS_VIDA_MEMBRO via membrosMap, calcularDadoUp() para DADO_UP. Commit `0621bc8`. |
+| S015-T2 | 14 endpoints CRUD sub-recursos | R4 | 4 services + 14 endpoints + 2 testes integracao. Commit `ba52d29`. |
+| S006-T1 | FichaStatus + endpoint /completar | R4 | Enum FichaStatus, campo status, endpoint PUT /fichas/{id}/completar, 9 testes. Commit `d55e312`. |
 | S007-T2 | BONUS_ATRIBUTO + BONUS_APTIDAO | R3 | Tambem implementou BONUS_VIDA e BONUS_ESSENCIA (escopo expandido). Commit `52738da`. |
 | S015-T1 | 4 entidades ConfigPontos | R3 | ClassePontosConfig, ClasseVantagemPreDefinida, RacaPontosConfig, RacaVantagemPreDefinida + repos + DTOs + mappers. Commit `9ac2465`. |
 | S007-T0 | Corrigir 6 bugs motor calculos | R1 | GAP-CALC-01/02/03/06/07/08. 7 testes novos. |
@@ -42,7 +46,7 @@ A Rodada 4 concluiu 5 tasks em paralelo: S007-T3+T4+T5 (BONUS_DERIVADO, BONUS_VI
 
 ---
 
-## O que Esta Pendente (24 tasks restantes)
+## O que Esta Pendente (20 tasks restantes)
 
 ### Caminho Critico: Spec 007 (VantagemEfeito + Motor)
 
@@ -51,11 +55,11 @@ A Rodada 4 concluiu 5 tasks em paralelo: S007-T3+T4+T5 (BONUS_DERIVADO, BONUS_VI
 | S007-T2 | Backend | BONUS_ATRIBUTO + BONUS_APTIDAO + BONUS_VIDA + BONUS_ESSENCIA | T1 | **CONCLUIDA** (R3) |
 | S007-T3+T4+T5 | Backend | BONUS_DERIVADO + BONUS_VIDA_MEMBRO + DADO_UP | T2 | **CONCLUIDA** (R4) |
 | S007-T5alt | Backend | FORMULA_CUSTOMIZADA | T1, PA-004 | **BLOQUEADO** (PA-004 nao resolvido) |
-| S007-T7 | Backend | Insolitus + endpoint concessao | T1 | **DESBLOQUEADO** |
-| S007-T8 | Backend | Testes integracao todos efeitos | T3-T7 | PENDENTE |
+| S007-T7 | Backend | Insolitus + endpoint concessao/revogacao | T1 | **CONCLUIDA** (R5) |
+| S007-T8 | Backend | Testes integracao todos efeitos | T3-T7 | **DESBLOQUEADO** |
 | S007-T9..T12 | Frontend | UI efeitos (4 tasks) | T8 | PENDENTE |
 
-**NOTA:** 7 de 8 TipoEfeito implementados no motor. Falta apenas FORMULA_CUSTOMIZADA (bloqueado por PA-004).
+**NOTA:** 7 de 8 TipoEfeito implementados no motor. Falta apenas FORMULA_CUSTOMIZADA (bloqueado por PA-004). Insolitus completo com concessao + revogacao.
 
 ### Track B: Spec 015 (ConfigPontos)
 
@@ -63,18 +67,18 @@ A Rodada 4 concluiu 5 tasks em paralelo: S007-T3+T4+T5 (BONUS_DERIVADO, BONUS_VI
 |----|------|-----------|-------------|--------|
 | S015-T1 | Backend | 4 entidades, repos, DTOs, mappers | Nenhuma | **CONCLUIDA** (R3) |
 | S015-T2 | Backend | CRUD endpoints sub-recursos | S015-T1 | **CONCLUIDA** (R4) |
-| S015-T3 | Backend | Integrar pontos no FichaResumoResponse | S015-T1, S007-T1 | **DESBLOQUEADO** |
-| S015-T4 | Backend | Auto-concessao vantagens pre-definidas | S015-T1, S007-T7 | PENDENTE |
+| S015-T3 | Backend | Integrar pontos no FichaResumoResponse | S015-T1, S007-T1 | **CONCLUIDA** (R5) |
+| S015-T4 | Backend | Auto-concessao vantagens pre-definidas | S015-T1, S007-T7 | **DESBLOQUEADO** |
 
 ### Track C: Spec 006 (Wizard Ficha)
 
 | ID | Tipo | Descricao | Dependencia | Status |
 |----|------|-----------|-------------|--------|
 | S006-T1 | Backend | Campo status + /completar | Nenhuma | **CONCLUIDA** (R4) |
-| S006-T2 | Backend | Validacao RacaClassePermitida | Nenhuma | **DESBLOQUEADO** |
+| S006-T2 | Backend | Validacao RacaClassePermitida | Nenhuma | **CONCLUIDA** (R5) |
 | S006-T3 | Backend | (ABSORVIDA por URG-01) | -- | -- |
 | S006-T4 | Backend | PUT /fichas/{id}/xp MESTRE-only | Nenhuma | [PENDENTE] |
-| S006-T5 | Backend | pontosDisponiveis no response | Nenhuma | **DESBLOQUEADO** |
+| S006-T5 | Backend | pontosDisponiveis no response | Nenhuma | **CONCLUIDA** (R5) |
 | S006-T6..T13 | Frontend | Wizard 6 passos + auto-save + badge | S006-T1, T5, Spec 007 | PENDENTE |
 
 ### Track D: Spec 005 (Participantes) -- 6 tasks, todas PENDENTES
@@ -83,74 +87,81 @@ A Rodada 4 concluiu 5 tasks em paralelo: S007-T3+T4+T5 (BONUS_DERIVADO, BONUS_VI
 
 ---
 
-## Rodada 4 -- CONCLUIDA (3 commits, merge limpo, 509 testes)
+## Rodada 5 -- CONCLUIDA (4 commits, merge limpo, 523 testes)
 
-### Resultado da Rodada 4
+### Resultado da Rodada 5
 
 | Agente | Task | Resultado |
 |--------|------|-----------|
-| Agente 1 (S007-T3+T4+T5) | BONUS_DERIVADO + BONUS_VIDA_MEMBRO + DADO_UP | **CONCLUIDO** — commit `0621bc8`. 7 de 8 tipos de efeito implementados. |
-| Agente 3 (S015-T2) | 14 CRUD endpoints sub-recursos | **CONCLUIDO** — 4 services + 14 endpoints + 2 testes integracao. Commit `ba52d29`. |
-| Agente 4 (S006-T1) | FichaStatus + /completar | **CONCLUIDO** — enum FichaStatus, campo status, endpoint, validarCompletude, 9 testes. Commit `d55e312`. |
+| Agente A (S007-T7) | Insolitus + endpoints concessao/revogacao | **CONCLUIDO** -- TipoVantagem enum, campo concedidoPeloMestre, POST insolitus, DELETE revogacao, 6 testes. Commit `bd75582`. |
+| Agente B (S006-T2) | Validacao RacaClassePermitida na criacao | **CONCLUIDO** -- Validacao adicionada no criar() de FichaService, 3 testes. Commit `1cb523a`. |
+| Agente C (S006-T5) | pontosDisponiveis no FichaResumoResponse | **CONCLUIDO** -- 3 novos campos no response, calculo NivelConfig-based, 3 testes. Commit `61b0bb4`. |
+| Agente D (S015-T3) | Integrar ConfigPontos no FichaResumo | **CONCLUIDO** -- ClassePontosConfig+RacaPontosConfig somados ao total, aptidao independente, 2 testes. Commit `5dc8bf2`. |
 
-**Merge:** Conflito potencial FichaService.java (S007 vs S006-T1) resolvido manualmente — reconciliacao bem-sucedida. 509 testes passando, 0 falhas.
+**Merge:** Cherry-pick de 3 worktrees isolados + commit direto para T3 sequencial. 523 testes passando, 0 falhas.
 
 ---
 
-## Proxima Rodada (Rodada 5) -- Planejamento
+## Proxima Rodada (Rodada 6) -- Planejamento
 
-### Agente 1 -- Backend Caminho Critico: S007-T7 (Insolitus)
+### Agente 1 -- Backend: S007-T8 (Testes integracao todos efeitos)
 
-**Task:** Insolitus + endpoint de concessao
+**Task:** Testes de integracao cobrindo todos os 7 tipos de efeito em cenarios completos
+**Estimativa:** 4-6 horas
+**Dependencia:** S007-T2..T7 (todas CONCLUIDAS)
+
+### Agente 2 -- Backend: S005-P1T1 (Re-solicitacao constraint)
+
+**Task:** Constraint de re-solicitacao apos rejeicao
+**Estimativa:** 2-3 horas
+**Dependencia:** Nenhuma
+
+### Agente 3 -- Backend: S005-P1T2 (Endpoints faltantes participantes)
+
+**Task:** Endpoints CRUD faltantes para JogoParticipante
 **Estimativa:** 3-4 horas
-**Dependencia:** S007-T1 (CONCLUIDA)
-**Escopo:**
-- Campo tipoVantagem em VantagemConfig (enum VANTAGEM | INSOLITUS)
-- Endpoint POST /fichas/{id}/vantagens/conceder (MESTRE-only, sem custo de pontos)
-- Endpoint DELETE /fichas/{id}/vantagens/{vantagemId} (MESTRE-only, revogacao)
-**Arquivos principais:** `model/VantagemConfig.java`, `service/FichaService.java`, `controller/FichaController.java`
-
-### Agente 2 -- Backend Paralelo: S006-T2
-
-**Task:** Validacao RacaClassePermitida na criacao
-**Estimativa:** 2-3 horas
 **Dependencia:** Nenhuma
-**Escopo:** Validar na criacao/atualizacao de ficha se a combinacao raca+classe e permitida
-**Arquivos:** `service/FichaValidationService.java`
 
-### Agente 3 -- Backend Paralelo: S006-T5
+### Agente 4 -- Backend: S006-T4 (PUT /fichas/{id}/xp MESTRE-only)
 
-**Task:** pontosDisponiveis no FichaResumoResponse
-**Estimativa:** 2-3 horas
+**Task:** Endpoint XP ja existe, verificar constraint MESTRE-only
+**Estimativa:** 1-2 horas
 **Dependencia:** Nenhuma
-**Escopo:** Calcular e incluir pontosAtributoDisponiveis, pontosAptidaoDisponiveis, pontosVantagemDisponiveis no response
-**Arquivos:** `dto/response/FichaResumoResponse.java`, `service/FichaResumoService.java`
-
-### Agente 4 -- Backend Paralelo: S015-T3
-
-**Task:** Integrar pontos ConfigPontos no FichaResumoResponse
-**Estimativa:** 2-3 horas
-**Dependencia:** S015-T1 (CONCLUIDA), S007-T1 (CONCLUIDA)
-**Escopo:** Somar pontos de ClassePontosConfig + RacaPontosConfig com NivelConfig no FichaResumo
-**Arquivos:** `service/FichaResumoService.java`
-
-**NOTA:** Agente 3 e Agente 4 tocam o mesmo arquivo (FichaResumoService). Mitigacao: S006-T5 roda PRIMEIRO, S015-T3 roda APOS.
 
 ---
 
-## Plano Anti-Conflito de Merge (Rodada 5)
+## Sequencia Completa
 
-| Agente | Pacotes/Arquivos PERMITIDOS | NAO TOCAR |
-|--------|---------------------------|-----------|
-| Agente 1 (S007-T7) | `model/VantagemConfig.java`, `service/FichaService.java`, `controller/FichaController.java` | configuracao/*, FichaResumoService, FichaValidationService |
-| Agente 2 (S006-T2) | `service/FichaValidationService.java`, `service/FichaService.java` | FichaCalculation*, configuracao/*, FichaResumoService |
-| Agente 3 (S006-T5) | `dto/response/FichaResumoResponse.java`, `service/FichaResumoService.java` | FichaCalculation*, configuracao/*, FichaValidationService |
-| Agente 4 (S015-T3) | `service/FichaResumoService.java` (APOS S006-T5) | FichaCalculation*, configuracao/*, FichaValidationService |
+```
+RODADA 3 — CONCLUIDA:
+  [CONCLUIDO] S007-T2: BONUS_ATRIBUTO+APTIDAO+VIDA+ESSENCIA  commit 52738da
+  [CONCLUIDO] S015-T1: 4 entidades ConfigPontos ............. commit 9ac2465
+  [CONCLUIDO] QW-Bug1/2: frontend ja corrigido .............. verificado R3
 
-**Conflitos potenciais:**
-- Agente 1 vs Agente 2: ambos tocam FichaService. Mitigacao: T7 adiciona metodos novos, T2 modifica validacoes existentes — areas distintas.
-- Agente 3 vs Agente 4: MESMO ARQUIVO (FichaResumoService). Mitigacao: sequencial.
-- Demais combinacoes: NENHUM conflito.
+RODADA 4 — CONCLUIDA:
+  [CONCLUIDO] S007-T3+T4+T5: DERIVADO+VIDA_MEMBRO+DADO_UP .. commit 0621bc8
+  [CONCLUIDO] S006-T1: FichaStatus + /completar ............. commit d55e312
+  [CONCLUIDO] S015-T2: 14 CRUD endpoints sub-recursos ....... commit ba52d29
+
+RODADA 5 — CONCLUIDA:
+  [CONCLUIDO] S007-T7: Insolitus + concessao/revogacao ...... commit bd75582
+  [CONCLUIDO] S006-T2: Validacao RacaClassePermitida ........ commit 1cb523a
+  [CONCLUIDO] S006-T5: pontosDisponiveis no response ........ commit 61b0bb4
+  [CONCLUIDO] S015-T3: ConfigPontos no FichaResumo .......... commit 5dc8bf2
+
+RODADA 6 (proxima):
+  S007-T8 (testes integracao todos efeitos) ................. 4-6h
+  S005-P1T1 (re-solicitacao constraint) ..................... 2-3h
+  S005-P1T2 (endpoints faltantes) ........................... 3-4h
+  S006-T4 (PUT /fichas/{id}/xp MESTRE-only) ................. 1-2h
+
+RODADA 7+:
+  [Backend]  S015-T4 (auto-concessao vantagens pre-definidas)  [DESBLOQUEADO]
+  [Frontend] S007-T9-T12 (frontend efeitos, 4 tasks) ........ [PENDENTE]
+  [Frontend] S006-T6-T13 (wizard frontend, 8 tasks) ......... [PENDENTE]
+  [Backend]  S005-P1T3 (testes integracao) ................... [PENDENTE]
+  [Frontend] S005-P2T1 a P2T3 (participantes frontend) ...... [PENDENTE]
+```
 
 ---
 
@@ -161,7 +172,6 @@ A Rodada 4 concluiu 5 tasks em paralelo: S007-T3+T4+T5 (BONUS_DERIVADO, BONUS_VI
 | PA-004 FORMULA_CUSTOMIZADA | Sem alvo definido (onde aplica o resultado?) | Bloqueia S007-T5alt |
 | PA-006 VIG/SAB hardcoded | Abreviacao hardcoded (GAP-CALC-09) | Pos-MVP |
 | FichaStatus MORTA/ABANDONADA | PO decidiu fichas nunca deletadas. Faltam status no enum. | Futuro (pos-wizard) |
-| FichaVantagem revogacao normal | Mestre pode revogar qualquer vantagem. Endpoint necessario. | S007-T7 |
 
 ---
 
@@ -171,7 +181,7 @@ A Rodada 4 concluiu 5 tasks em paralelo: S007-T3+T4+T5 (BONUS_DERIVADO, BONUS_VI
 |-----|-----------|-------------------|--------|
 | **GAP-MVP-02** | FichaStatus MORTA/ABANDONADA + DELETE retornar 405 | Spec 006 | NAO ENDERECADO |
 | **GAP-MVP-04** | Polling 30s no frontend | Spec 009-ext | PARCIALMENTE ENDERECADO |
-| **GAP-MVP-05** | FichaVantagem revogacao normal | Spec 007 | NAO ENDERECADO |
+| **GAP-MVP-05** | FichaVantagem revogacao normal | Spec 007 | **RESOLVIDO** (R5 - DELETE endpoint) |
 | **GAP-MVP-08** | Formulario de criacao de NPC no frontend | Spec 009-ext ou 006 | PARCIALMENTE ENDERECADO |
 
 ---
@@ -187,39 +197,5 @@ A Rodada 4 concluiu 5 tasks em paralelo: S007-T3+T4+T5 (BONUS_DERIVADO, BONUS_VI
 
 ---
 
-## Sequencia Apos Rodada 4
-
-```
-RODADA 3 — CONCLUIDA:
-  [CONCLUIDO] S007-T2: BONUS_ATRIBUTO+APTIDAO+VIDA+ESSENCIA  commit 52738da
-  [CONCLUIDO] S015-T1: 4 entidades ConfigPontos ............. commit 9ac2465
-  [CONCLUIDO] QW-Bug1/2: frontend ja corrigido .............. verificado R3
-
-RODADA 4 — CONCLUIDA:
-  [CONCLUIDO] S007-T3+T4+T5: DERIVADO+VIDA_MEMBRO+DADO_UP .. commit 0621bc8
-  [CONCLUIDO] S006-T1: FichaStatus + /completar ............. commit d55e312
-  [CONCLUIDO] S015-T2: 14 CRUD endpoints sub-recursos ....... commit ba52d29
-
-RODADA 5 (proxima):
-  S007-T7 (Insolitus + endpoint concessao) .................. 3-4h
-  S006-T2 (validacao RacaClassePermitida) ................... 2-3h
-  S006-T5 (pontosDisponiveis no response) ................... 2-3h
-  S015-T3 (integrar pontos no FichaResumo) .................. 2-3h (APOS S006-T5)
-
-RODADA 6:
-  S007-T8 (testes integracao todos efeitos) ................. 4-6h
-  S005-P1T1 (re-solicitacao constraint) ..................... 2-3h
-  S005-P1T2 (endpoints faltantes) ........................... 3-4h
-  S006-T4 (PUT /fichas/{id}/xp MESTRE-only) ................. 1-2h
-
-RODADA 7+:
-  [Frontend] S007-T9-T12 (frontend efeitos, 4 tasks) ........ [PENDENTE]
-  [Frontend] S006-T6-T13 (wizard frontend, 8 tasks) ......... [PENDENTE]
-  [Backend]  S005-P1T3 (testes integracao) ................... [PENDENTE]
-  [Frontend] S005-P2T1 a P2T3 (participantes frontend) ...... [PENDENTE]
-```
-
----
-
-*Produzido por: PM/Scrum Orchestrator | 2026-04-04 (pos-rodada 4: 11/35, 509B+359F testes, merge limpo)*
-*Proxima revisao: inicio da rodada 5*
+*Produzido por: PM/Scrum Orchestrator | 2026-04-05 (pos-rodada 5: 15/35, 523B+359F testes, merge limpo)*
+*Proxima revisao: inicio da rodada 6*

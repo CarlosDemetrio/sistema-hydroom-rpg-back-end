@@ -1,19 +1,19 @@
 ---
-name: Spec 015 Created
-description: Spec 015 ConfigPontos Classe/Raca + DefaultProvider — 7 tasks, P0, bloqueia 006 wizard
+name: Spec 015 Progress
+description: Spec 015 ConfigPontos Classe/Raca — 5/7 tasks concluidas (T1+T2+T3+T5 backend, T4 DESBLOQUEADO, 2F pendentes)
 type: project
 ---
 
-Spec 015 criada em 2026-04-04 com 7 tasks (5B + 2F) para resolver GAP-PONTOS-CONFIG e BUG-DC-02..09. TODAS as tasks e o dataset estao PRONTOS.
+Spec 015 progresso apos rodada 5 (2026-04-05): 5 de 7 tasks concluidas.
 
-**Why:** PO confirmou (Q14, 2026-04-03) que Classe e Raca devem liberar pontos por nivel alem de NivelConfig. Auditoria do DefaultProvider revelou 8+ bugs que criam jogos novos com dados incorretos.
+**Why:** PO confirmou (Q14, 2026-04-03) que Classe e Raca devem liberar pontos por nivel alem de NivelConfig. Implementacao avancou significativamente nas rodadas 3-5.
 
 **How to apply:**
-- spec.md + plan.md + 7 tasks individuais + dataset TODOS COMPLETOS
-- Dataset de defaults em `015-config-pontos-classe-raca/dataset/dataset-defaults-classe-raca.md` (43K)
-- Spec 015 T5 (DefaultProvider) e INDEPENDENTE — paralelizavel com qualquer outra task/spec
-- Spec 015 T3 (pontos disponiveis) deve ser concluida ANTES de Spec 006 T5
-- Spec 015 T4 (auto-vantagens) deve ser concluida ANTES de Spec 006 wizard nivel 1
-- 4 novas entidades: ClassePontosConfig, ClasseVantagemPreDefinida, RacaPontosConfig, RacaVantagemPreDefinida
-- PA-015-01/02/03: PO delegou valores exatos aos BAs. Dataset pode conter respostas.
-- PA-015-04: campo `origem` em FichaVantagem (JOGADOR/MESTRE/SISTEMA) — recomendado enum
+- T1 CONCLUIDA (R3): 4 entidades + repos + DTOs + mappers. Commit 9ac2465.
+- T2 CONCLUIDA (R4): 4 services + 14 endpoints CRUD sub-recursos. Commit ba52d29.
+- T3 CONCLUIDA (R5): Integracao ClassePontosConfig+RacaPontosConfig no FichaResumoResponse. Commit 5dc8bf2.
+- T5 CONCLUIDA (R2): DefaultProvider 8 bugs + defaults. Commit em feature/009 branch (merged).
+- T4 DESBLOQUEADO: Auto-concessao vantagens pre-definidas (deps T1+S007-T7 concluidas).
+- T6 PENDENTE (frontend): UI ClassePontosConfig/RacaPontosConfig.
+- T7 PENDENTE (frontend): UI VantagemPreDefinida.
+- PA-015-04: campo `origem` em FichaVantagem (JOGADOR/MESTRE/SISTEMA) — nao resolvido, bloqueia T4 parcialmente.

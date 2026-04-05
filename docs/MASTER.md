@@ -1,7 +1,7 @@
 # ficha-controlador — MASTER INDEX
 
 > Fonte unica de verdade para navegacao e estado do projeto.
-> Ultima atualizacao: 2026-04-04 (rev.8 — consolidacao final pos-rodada 2: 6/35 Sprint 2, 474B+359F testes) | Branch: `feature/009-npc-fichas-mestre`
+> Ultima atualizacao: 2026-04-05 (rev.9 — pos-rodada 5: 15/35 Sprint 2, 523B+359F testes) | Branch: `main`
 
 ---
 
@@ -9,11 +9,11 @@
 
 | Metrica | Valor |
 |---------|-------|
-| Backend testes | **474 passando**, 0 falhas |
+| Backend testes | **523 passando**, 0 falhas |
 | Frontend testes | **359 passando**, 0 falhas |
 | Frontend build | 0 erros, 0 warnings |
 | Sprint 1 | **CONCLUIDO** (94%, 29/31 tasks) |
-| Sprint 2 | **EM ANDAMENTO** — 35 tasks (**6/35 concluidas**: S007-T0, T1, S015-T5, URG-01, URG-02, QW-Bug3) |
+| Sprint 2 | **EM ANDAMENTO** — 35 tasks (**15/35 concluidas** (43%): S007-T0/T1/T2/T3+T4+T5/T7, S015-T1/T2/T3/T5, S006-T1/T2/T5, URG-01/02, QW-Bug3) |
 | Specs com spec+plan+tasks | 005, 006, 007, 008, 009-ext, 010, 011, 012, 013, 014, **015** |
 | Specs em especificacao | Nenhuma — **016** (Sistema de Itens) ja 100% especificada |
 | Decisoes PO | **TODAS RESOLVIDAS** (GAP-01 a GAP-08, INCONS-02, P-03, PA-001/002, Q14-Q17) |
@@ -30,9 +30,9 @@
 | 001 | Data model inicial, 13 CRUDs | — | — | — | CONCLUIDO |
 | 003 | Refactor: DTOs, validacoes, exceptions | — | — | — | CONCLUIDO |
 | 004 | Siglas, formulas, relacionamentos | `specs/004-*/` | — | 17 | CONCLUIDO |
-| **015** | **ConfigPontos Classe/Raca + DefaultProvider** | [`specs/015-config-pontos-classe-raca/`](specs/015-config-pontos-classe-raca/) | **P0** | 5B / 2F / **7** | **T5 CONCLUIDO** (rodada 2 — 8 bugs DefaultProvider). T1-T4 PENDENTES |
-| **007** | **VantagemEfeito + Motor de Calculos** | [`specs/007-vantagem-efeito/`](specs/007-vantagem-efeito/) | **P0-ABSOLUTA** | 9B / 4F / **13** | **T0+T1 CONCLUIDOS** (rodada 1+2, 474 testes). T2-T8 DESBLOQUEADOS |
-| **006** | **Wizard de Criacao de Ficha** | [`specs/006-ficha-wizard/`](specs/006-ficha-wizard/) | **P0** | 5B / 8F / **13** | spec+plan+tasks PRONTOS, implementacao PENDENTE |
+| **015** | **ConfigPontos Classe/Raca + DefaultProvider** | [`specs/015-config-pontos-classe-raca/`](specs/015-config-pontos-classe-raca/) | **P0** | 5B / 2F / **7** | **T1/T2/T3/T5 CONCLUIDOS** (5/7). T4 PENDENTE (depende S007-T6), T6/T7 frontend PENDENTES |
+| **007** | **VantagemEfeito + Motor de Calculos** | [`specs/007-vantagem-efeito/`](specs/007-vantagem-efeito/) | **P0-ABSOLUTA** | 9B / 4F / **13** | **T0/T1/T2/T3+T4+T5/T7 CONCLUIDOS** (7/8 efeitos, 523 testes). T8 PENDENTE, T5alt BLOQUEADO (PA-004) |
+| **006** | **Wizard de Criacao de Ficha** | [`specs/006-ficha-wizard/`](specs/006-ficha-wizard/) | **P0** | 5B / 8F / **13** | **T1/T2/T5 CONCLUIDOS** (3/13). T3-T4 backend PENDENTES, T6-T13 frontend PENDENTES |
 | **005** | **Gestao de Participantes** | [`specs/005-participantes/`](specs/005-participantes/) | **P0** | 3B / 3F / **6** | spec+plan+tasks PRONTOS, implementacao PENDENTE |
 | **008** | **Sub-recursos Classes/Racas (frontend)** | [`specs/008-sub-recursos-classes-racas/`](specs/008-sub-recursos-classes-racas/) | **P1** | 0B / 4F / **4** | spec+plan+tasks PRONTOS, implementacao PENDENTE |
 | **009-ext** | **NPC Visibility + Prospeccao + Essencia** | [`specs/009-npc-visibility/`](specs/009-npc-visibility/) | **P1** | 6B / 4F+QW / **11** | spec+plan+tasks PRONTOS, T-QW adicionada, implementacao PENDENTE |
@@ -98,7 +98,7 @@ P3 — DOCUMENTACAO E QUALIDADE (apos todas as specs funcionais)
      6 tasks: 4 backend + 2 frontend
 ```
 
-**Caminho critico:** `~~007-T0~~ -> ~~007-T1~~ -> 007-T2 -> T3 -> T4..T7 (paralelo) -> T8 -> 006-frontend -> 005` (T0+T1 concluidos; T2-T7 DESBLOQUEADOS, T2/T3 sequenciais)
+**Caminho critico:** `~~007-T0~~ -> ~~007-T1~~ -> ~~007-T2~~ -> ~~T3+T4+T5~~ -> ~~T7~~ -> T8 -> 006-frontend -> 005` (7/8 efeitos concluidos; T8 PENDENTE, T5alt BLOQUEADO PA-004)
 **Paralelo possivel:** Track B (015-T1, 006/005 backend), Track C (frontend: QWs, 008, 012-config)
 **ULTIMO:** Spec 010 (Roles) deve ser implementada por ultimo — impacto transversal em ~50+ @PreAuthorize
 
@@ -175,10 +175,10 @@ APOS TODAS AS SPECS FUNCIONAIS:
 | GAP-03 | VantagemEfeito ignorado pelo motor | A-Bloqueador | Spec 007 (T1-T8) | Pendente |
 | GAP-04 | Participantes sem maquina de estados | A-Bloqueador | Spec 005 (P1-T1) | Pendente |
 | GAP-05 | NPC visibilidade apenas binaria | B-Alta | Spec 009-ext (T1-T2) | Pendente |
-| GAP-06 | Pontos disponiveis ausentes no response | B-Alta | Spec 006 (T5) | Pendente |
+| GAP-06 | Pontos disponiveis ausentes no response | B-Alta | Spec 006 (T5) | **CONCLUIDO** (rodada 5 — S006-T5) |
 | GAP-07 | essenciaAtual sem endpoint dedicado | B-Alta | Spec 009-ext (T5) | Pendente |
 | GAP-08 | Prospeccao sem endpoints semanticos | B-Alta | Spec 009-ext (T3) | Pendente |
-| GAP-09 | Insolitus sem modelagem | B-Alta | Spec 007 (T7) | Pendente |
+| GAP-09 | Insolitus sem modelagem | B-Alta | Spec 007 (T7) | **CONCLUIDO** (rodada 5 — S007-T7) |
 | GAP-10 | Roles sem ADMIN, inconsistencia global/jogo | B-Alta | Spec 010 (T1-T5) | Pendente |
 | ~~GAP-CALC-01..08~~ | ~~6 bugs no motor de calculos~~ | ~~A-Bloqueador~~ | Spec 007 (T0) | **CONCLUIDO** (sessao 10, 464 testes) |
 
@@ -189,9 +189,9 @@ APOS TODAS AS SPECS FUNCIONAIS:
 **Resultado:** 29/31 tasks. 457 testes backend. FichaDetail funcional end-to-end.
 **Tasks movidas para backlog:** SP1-T13 (barras HP membro), SP1-T27 (DDL producao)
 
-## Sprint 2 — "Motor Correto + Ficha Funcional" (EM ANDAMENTO — 1/35)
+## Sprint 2 — "Motor Correto + Ficha Funcional" (EM ANDAMENTO — 15/35)
 
-**Progresso:** 6/35 concluidas. S007-T0+T1, S015-T5, URG-01, URG-02, QW-Bug3 entregues. 474 testes backend, 359 testes frontend. Proxima rodada (3): 4 agentes -- S007-T2 + S007-T3 (sequenciais) + S015-T1 (paralelo) + QW-Bug1/Bug2 (paralelo)
+**Progresso:** 15/35 concluidas (43%). S007-T0/T1/T2/T3+T4+T5/T7, S015-T1/T2/T3/T5, S006-T1/T2/T5, URG-01/02, QW-Bug3 entregues. 523 testes backend, 359 testes frontend.
 **Detalhes completos:** [`SPRINT-ATUAL.md`](SPRINT-ATUAL.md)
 
 | Prio | Descricao | Spec/Task | Tasks |

@@ -1,7 +1,7 @@
 # PM Scrum Orchestrator Memory Index
 
 - [Sprint 1 State](project_sprint1_state.md) — CONCLUIDO 94% (29/31), 457 tests, formally closed 2026-04-03
-- [Sprint 2 State](project_sprint2_state.md) — EM ANDAMENTO, 15/35 concluidas (43%), 523B+359F, Rodada 6 planejada
+- [Sprint 2 State](project_sprint2_state.md) — EM ANDAMENTO, 19/35 concluidas (54%), 571B+359F, Rodada 7 planejada
 - [PO Decisions](project_po_decisions_2026_04_03.md) — ALL gaps resolved: INCONS-02 (no delete fichas), P-03 (admin scope), renascimento out
 - [Backend Audit](project_backend_audit.md) — 523 testes, 7/8 TipoEfeito, ConfigPontos integrado, branch main
 - [Frontend Debt](project_frontend_debt.md) — 359 testes (0 falhas), QW-Bug1/Bug2 CONCLUIDOS (R3), 23 gaps parcialmente resolvidos

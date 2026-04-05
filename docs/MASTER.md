@@ -1,7 +1,7 @@
 # ficha-controlador — MASTER INDEX
 
 > Fonte unica de verdade para navegacao e estado do projeto.
-> Ultima atualizacao: 2026-04-05 (rev.9 — pos-rodada 5: 15/35 Sprint 2, 523B+359F testes) | Branch: `main`
+> Ultima atualizacao: 2026-04-05 [14:01] (rev.10 — pos-rodada 6: 19/35 Sprint 2, 571B+359F testes) | Branch: `main`
 
 ---
 
@@ -9,11 +9,11 @@
 
 | Metrica | Valor |
 |---------|-------|
-| Backend testes | **523 passando**, 0 falhas |
+| Backend testes | **571 passando**, 0 falhas |
 | Frontend testes | **359 passando**, 0 falhas |
 | Frontend build | 0 erros, 0 warnings |
 | Sprint 1 | **CONCLUIDO** (94%, 29/31 tasks) |
-| Sprint 2 | **EM ANDAMENTO** — 35 tasks (**15/35 concluidas** (43%): S007-T0/T1/T2/T3+T4+T5/T7, S015-T1/T2/T3/T5, S006-T1/T2/T5, URG-01/02, QW-Bug3) |
+| Sprint 2 | **EM ANDAMENTO** — 35 tasks (**19/35 concluidas** (54%): S007-T0/T1/T2/T3+T4+T5/T7/T8, S015-T1/T2/T3/T5, S006-T1/T2/T4/T5, S005-P1T1/P1T2, URG-01/02, QW-Bug3) |
 | Specs com spec+plan+tasks | 005, 006, 007, 008, 009-ext, 010, 011, 012, 013, 014, **015** |
 | Specs em especificacao | Nenhuma — **016** (Sistema de Itens) ja 100% especificada |
 | Decisoes PO | **TODAS RESOLVIDAS** (GAP-01 a GAP-08, INCONS-02, P-03, PA-001/002, Q14-Q17) |
@@ -31,9 +31,9 @@
 | 003 | Refactor: DTOs, validacoes, exceptions | — | — | — | CONCLUIDO |
 | 004 | Siglas, formulas, relacionamentos | `specs/004-*/` | — | 17 | CONCLUIDO |
 | **015** | **ConfigPontos Classe/Raca + DefaultProvider** | [`specs/015-config-pontos-classe-raca/`](specs/015-config-pontos-classe-raca/) | **P0** | 5B / 2F / **7** | **T1/T2/T3/T5 CONCLUIDOS** (5/7). T4 PENDENTE (depende S007-T6), T6/T7 frontend PENDENTES |
-| **007** | **VantagemEfeito + Motor de Calculos** | [`specs/007-vantagem-efeito/`](specs/007-vantagem-efeito/) | **P0-ABSOLUTA** | 9B / 4F / **13** | **T0/T1/T2/T3+T4+T5/T7 CONCLUIDOS** (7/8 efeitos, 523 testes). T8 PENDENTE, T5alt BLOQUEADO (PA-004) |
-| **006** | **Wizard de Criacao de Ficha** | [`specs/006-ficha-wizard/`](specs/006-ficha-wizard/) | **P0** | 5B / 8F / **13** | **T1/T2/T5 CONCLUIDOS** (3/13). T3-T4 backend PENDENTES, T6-T13 frontend PENDENTES |
-| **005** | **Gestao de Participantes** | [`specs/005-participantes/`](specs/005-participantes/) | **P0** | 3B / 3F / **6** | spec+plan+tasks PRONTOS, implementacao PENDENTE |
+| **007** | **VantagemEfeito + Motor de Calculos** | [`specs/007-vantagem-efeito/`](specs/007-vantagem-efeito/) | **P0-ABSOLUTA** | 9B / 4F / **13** | **T0/T1/T2/T3+T4+T5/T7/T8 CONCLUIDOS** (8/9 backend, 571 testes). T5alt BLOQUEADO (PA-004). Frontend T9-T12 DESBLOQUEADO |
+| **006** | **Wizard de Criacao de Ficha** | [`specs/006-ficha-wizard/`](specs/006-ficha-wizard/) | **P0** | 5B / 8F / **13** | **T1/T2/T4/T5 CONCLUIDOS** (4/13). T3 absorvida. Frontend T6-T13 DESBLOQUEADO |
+| **005** | **Gestao de Participantes** | [`specs/005-participantes/`](specs/005-participantes/) | **P0** | 3B / 3F / **6** | **P1T1/P1T2 CONCLUIDOS** (2/6). P1T3 DESBLOQUEADO, frontend P2T1-P2T3 DESBLOQUEADO |
 | **008** | **Sub-recursos Classes/Racas (frontend)** | [`specs/008-sub-recursos-classes-racas/`](specs/008-sub-recursos-classes-racas/) | **P1** | 0B / 4F / **4** | spec+plan+tasks PRONTOS, implementacao PENDENTE |
 | **009-ext** | **NPC Visibility + Prospeccao + Essencia** | [`specs/009-npc-visibility/`](specs/009-npc-visibility/) | **P1** | 6B / 4F+QW / **11** | spec+plan+tasks PRONTOS, T-QW adicionada, implementacao PENDENTE |
 | **010** | **Roles ADMIN/MESTRE/JOGADOR refactor** | [`specs/010-roles-refactor/`](specs/010-roles-refactor/) | **P1** | 5B / 3F+1T / **9** | spec+plan+tasks PRONTOS, implementacao PENDENTE |
@@ -98,7 +98,7 @@ P3 — DOCUMENTACAO E QUALIDADE (apos todas as specs funcionais)
      6 tasks: 4 backend + 2 frontend
 ```
 
-**Caminho critico:** `~~007-T0~~ -> ~~007-T1~~ -> ~~007-T2~~ -> ~~T3+T4+T5~~ -> ~~T7~~ -> T8 -> 006-frontend -> 005` (7/8 efeitos concluidos; T8 PENDENTE, T5alt BLOQUEADO PA-004)
+**Caminho critico:** `~~007-T0~~ -> ~~007-T1~~ -> ~~007-T2~~ -> ~~T3+T4+T5~~ -> ~~T7~~ -> ~~T8~~ -> 006-frontend -> 005-frontend` (8/9 backend concluidos; T5alt BLOQUEADO PA-004; frontend DESBLOQUEADO em 3 tracks)
 **Paralelo possivel:** Track B (015-T1, 006/005 backend), Track C (frontend: QWs, 008, 012-config)
 **ULTIMO:** Spec 010 (Roles) deve ser implementada por ultimo — impacto transversal em ~50+ @PreAuthorize
 
@@ -155,7 +155,7 @@ APOS TODAS AS SPECS FUNCIONAIS:
 | PA-004 (007) | FORMULA_CUSTOMIZADA sem alvo definido: onde aplica o resultado? | Spec 007 | Alta — afeta T6 | Pendente |
 | PA-006 (007) | VIG/SAB hardcoded por abreviacao (GAP-CALC-09) | Spec 007 | Media | Pendente — fora do escopo de T0 |
 | INCONS-02 | DELETE /fichas — fichas sao deletaveis? | Spec 006 | **CRITICO** | RESOLVIDO: Fichas NUNCA sao deletadas. Status morta/abandonada. Backend retorna 405. |
-| GAP-02 | Bug XP: jogador altera propria XP via PUT /fichas/{id} | Spec 006 (T3) | **URGENTE** | **CORRIGIR IMEDIATAMENTE** |
+| GAP-02 | Bug XP: jogador altera propria XP via PUT /fichas/{id} | Spec 006 (T3/T4) | **URGENTE** | **RESOLVIDO** (R2 seguranca + R6 XP acumulativo commit `d37b227`) |
 | Q14 | Modo Sessao no MVP? | Geral | Media | RESOLVIDO: Polling 30s. SSE/WebSocket pos-MVP. |
 | Q15 | Essencia: quantos endpoints? | Spec 009-ext | Media | RESOLVIDO: Dois — gastar (JOGADOR) + resetar (MESTRE). |
 | Q16 | GAP-PONTOS-CONFIG: Classe/Raca pontos extras por nivel? | Spec 012 | Baixa | RESOLVIDO: Pos-MVP. |
@@ -171,9 +171,9 @@ APOS TODAS AS SPECS FUNCIONAIS:
 | Gap | Problema | Criticidade | Spec que resolve | Status |
 |-----|---------|-------------|------------------|--------|
 | GAP-01 | Wizard criacao envia apenas {nome} | A-Bloqueador | Spec 006 (T6-T11) | Pendente |
-| GAP-02 | XP editavel por JOGADOR (vuln seguranca) | A-Bloqueador | Spec 006 (T3) | **URGENTE** |
-| GAP-03 | VantagemEfeito ignorado pelo motor | A-Bloqueador | Spec 007 (T1-T8) | Pendente |
-| GAP-04 | Participantes sem maquina de estados | A-Bloqueador | Spec 005 (P1-T1) | Pendente |
+| GAP-02 | XP editavel por JOGADOR (vuln seguranca) | A-Bloqueador | Spec 006 (T3/T4) | **CONCLUIDO** (R2 seguranca + R6 XP acumulativo) |
+| GAP-03 | VantagemEfeito ignorado pelo motor | A-Bloqueador | Spec 007 (T1-T8) | **CONCLUIDO** (R2-R6 — 7/8 tipos implementados + 20 testes integracao) |
+| GAP-04 | Participantes sem maquina de estados | A-Bloqueador | Spec 005 (P1-T1/T2) | **CONCLUIDO** (R6 — strategy Reactivate + 5 endpoints) |
 | GAP-05 | NPC visibilidade apenas binaria | B-Alta | Spec 009-ext (T1-T2) | Pendente |
 | GAP-06 | Pontos disponiveis ausentes no response | B-Alta | Spec 006 (T5) | **CONCLUIDO** (rodada 5 — S006-T5) |
 | GAP-07 | essenciaAtual sem endpoint dedicado | B-Alta | Spec 009-ext (T5) | Pendente |
@@ -191,7 +191,7 @@ APOS TODAS AS SPECS FUNCIONAIS:
 
 ## Sprint 2 — "Motor Correto + Ficha Funcional" (EM ANDAMENTO — 15/35)
 
-**Progresso:** 15/35 concluidas (43%). S007-T0/T1/T2/T3+T4+T5/T7, S015-T1/T2/T3/T5, S006-T1/T2/T5, URG-01/02, QW-Bug3 entregues. 523 testes backend, 359 testes frontend.
+**Progresso:** 19/35 concluidas (54%). S007-T0/T1/T2/T3+T4+T5/T7/T8, S015-T1/T2/T3/T5, S006-T1/T2/T4/T5, S005-P1T1/P1T2, URG-01/02, QW-Bug3 entregues. 571 testes backend, 359 testes frontend.
 **Detalhes completos:** [`SPRINT-ATUAL.md`](SPRINT-ATUAL.md)
 
 | Prio | Descricao | Spec/Task | Tasks |
@@ -217,7 +217,7 @@ APOS TODAS AS SPECS FUNCIONAIS:
 |-------|---------|-----------|
 | ~~GAP-02 vuln XP~~ | ~~Jogador altera propria XP~~ | **RESOLVIDO** (rodada 2) |
 | ~~6 bugs motor (GAP-CALC-01..08)~~ | ~~Calculos incorretos~~ | **RESOLVIDO** (rodada 1) |
-| VantagemEfeito desconectado do motor | Calculos de vantagem incorretos em TODAS as fichas | Spec 007 P0-ABSOLUTA, ~20-30 arquivos impactados |
+| ~~VantagemEfeito desconectado do motor~~ | ~~Calculos de vantagem incorretos~~ | **RESOLVIDO** (R2-R6: 7/8 tipos + 20 testes integracao, 571 testes) |
 | FichaForm envia apenas {nome} | Criacao de ficha quebrada | Spec 006 (T6-T11) wizard rewrite |
 | Spec 010 e transversal | ~50+ @PreAuthorize a revisar, pode quebrar todo o auth | Implementar POR ULTIMO, branch dedicada, testes extensivos |
 | DDL producao pendente | Bloqueia deploy | SP1-T27 -- backlog Sprint 3+ |

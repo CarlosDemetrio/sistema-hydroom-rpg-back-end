@@ -2,7 +2,7 @@
 
 # Sprint Atual — Sprint 2: "Motor Correto + Ficha Funcional"
 
-> Atualizado: 2026-04-05 (sessao 11, rodada 5 — S007-T7, S006-T2, S006-T5, S015-T3 concluidas, 523 testes)
+> Atualizado: 2026-04-05 [14:01] (sessao 12, rodada 6 — S007-T8, S005-P1T1, S005-P1T2, S006-T4 concluidas, 571 testes)
 > PM: Scrum Orchestrator
 > Objetivo: Corrigir bugs de calculo, integrar VantagemEfeito no motor, entregar wizard de ficha funcional e gestao de participantes
 > Duracao estimada: 3-4 semanas
@@ -31,11 +31,11 @@
 | Metrica | Valor |
 |---------|-------|
 | Tasks totais Sprint 2 | **35** (13 Spec 007 + 13 Spec 006 + 6 Spec 005 + 1 bug XP + 1 fix testes + 1 T-QW frontend) |
-| Concluidas | **15** (S007-T0, T1, T2, T3+T4+T5, T7, S015-T5, T1, T2, T3, S006-T1, T2, T5, URG-01, URG-02, QW-Bug3) |
+| Concluidas | **19** (S007-T0, T1, T2, T3+T4+T5, T7, T8, S015-T5, T1, T2, T3, S006-T1, T2, T4, T5, S005-P1T1, P1T2, URG-01, URG-02, QW-Bug3) |
 | Em andamento | 0 |
-| Pendentes | 19 |
+| Pendentes | 15 |
 | Bloqueadas | 1 (S007-T5alt: FORMULA_CUSTOMIZADA — PA-004) |
-| Testes backend | **523 passando**, 0 falhas (+14 da rodada 5) |
+| Testes backend | **571 passando**, 0 falhas (+48 da rodada 6) |
 | Testes frontend | **359 passando**, 0 falhas |
 | Gaps resolvidos pelo PO | **TODOS** (GAP-01 a GAP-08, INCONS-02, P-03, PA-001/002, Q14-Q17) |
 
@@ -133,7 +133,7 @@ TRACK F — Documentacao e Qualidade (apos TODAS as specs funcionais):
 | S007-T3+T4+T5 | 007/T3-T5 | Backend | FichaCalculationService — BONUS_DERIVADO, BONUS_VIDA_MEMBRO, DADO_UP | S007-T2 | **[CONCLUIDO]** (rodada 4 — commit `0621bc8`, 7/8 efeitos) |
 | S007-T5alt | 007/T5alt | Backend | FichaCalculationService — FORMULA_CUSTOMIZADA | S007-T1, PA-004 | **[BLOQUEADO]** (PA-004) |
 | S007-T7 | 007/T7 | Backend | Insolitus — campo tipoVantagem + endpoint de concessao | S007-T1 | **[CONCLUIDO]** (rodada 5 — commit `bd75582`) |
-| S007-T8 | 007/T8 | Backend | Testes de integracao para todos os tipos de efeito | T3-T7 | [PENDENTE] |
+| S007-T8 | 007/T8 | Backend | Testes de integracao para todos os tipos de efeito | T3-T7 | **[CONCLUIDO]** (rodada 6 [13:20] — commit `e1bbe50`, 20 testes, 7 tipos cobertos) |
 
 **Fase Frontend (T9-T12)**
 
@@ -160,8 +160,8 @@ TRACK F — Documentacao e Qualidade (apos TODAS as specs funcionais):
 |----|-----------|------|-----------|-------------|--------|
 | S006-T1 | 006/T1 | Backend | Campo status + endpoint /completar | — | **[CONCLUIDO]** (rodada 4 — commit `d55e312`, 9 testes) |
 | S006-T2 | 006/T2 | Backend | Validacao RacaClassePermitida na criacao | — | **[CONCLUIDO]** (rodada 5 — commit `1cb523a`) |
-| S006-T3 | 006/T3 | Backend | Bloquear XP no PUT /fichas/{id} para JOGADOR | — | [PENDENTE] |
-| S006-T4 | 006/T4 | Backend | Endpoint PUT /fichas/{id}/xp (MESTRE-only) | — | [PENDENTE] |
+| S006-T3 | 006/T3 | Backend | Bloquear XP no PUT /fichas/{id} para JOGADOR | — | (ABSORVIDA por URG-01) |
+| S006-T4 | 006/T4 | Backend | Endpoint PUT /fichas/{id}/xp acumulativo + motivo | — | **[CONCLUIDO]** (rodada 6 [11:19] — commit `d37b227`, 14 testes) |
 | S006-T5 | 006/T5 | Backend | pontosDisponiveis no FichaResumoResponse | — | **[CONCLUIDO]** (rodada 5 — commit `61b0bb4`) |
 
 > **NOTA:** S006-T3 e URG-01 sao a mesma task. Corrigir imediatamente como urgencia, nao esperar o restante da Spec 006.
@@ -187,9 +187,9 @@ TRACK F — Documentacao e Qualidade (apos TODAS as specs funcionais):
 
 | ID | Spec Task | Tipo | Descricao | Dependencia | Status |
 |----|-----------|------|-----------|-------------|--------|
-| S005-P1T1 | 005/P1-T1 | Backend | Corrigir logica de re-solicitacao e constraint | — | [PENDENTE] |
-| S005-P1T2 | 005/P1-T2 | Backend | Endpoints faltantes (banir, desbanir, remover, meu-status, cancelar, filtro) | S005-P1T1 | [PENDENTE] |
-| S005-P1T3 | 005/P1-T3 | Backend | Testes de integracao completos | S005-P1T1, S005-P1T2 | [PENDENTE] |
+| S005-P1T1 | 005/P1-T1 | Backend | Corrigir logica de re-solicitacao (strategy Reactivate) | — | **[CONCLUIDO]** (rodada 6 [11:14] — commit `32b984f`, 6 testes) |
+| S005-P1T2 | 005/P1-T2 | Backend | Endpoints faltantes (banir, desbanir, remover, meu-status, filtro) | S005-P1T1 | **[CONCLUIDO]** (rodada 6 [11:19] — commit `7a71a55`, 12 testes) |
+| S005-P1T3 | 005/P1-T3 | Backend | Testes de integracao completos | S005-P1T1, S005-P1T2 | **[DESBLOQUEADO]** |
 
 **Fase Frontend (P2-T1 a P2-T3)**
 
@@ -297,20 +297,26 @@ RODADA 5 CONCLUIDA:
   [Backend]  S006-T5: pontosDisponiveis no response .......... **[CONCLUIDO]** (commit 61b0bb4)
   [Backend]  S015-T3: integrar pontos no FichaResumo ......... **[CONCLUIDO]** (commit 5dc8bf2)
 
-PROXIMA RODADA (rodada 6):
-  [Backend]  S007-T8 (testes integracao todos efeitos) ....... [PENDENTE]
-  [Backend]  S005-P1T1 (re-solicitacao constraint) ........... [PENDENTE]
-  [Backend]  S005-P1T2 (endpoints faltantes) ................. [PENDENTE]
-  [Backend]  S006-T4 (PUT /fichas/{id}/xp MESTRE-only) ....... [PENDENTE]
+RODADA 6 CONCLUIDA [14:01]:
+  [Backend]  S005-P1T1: re-solicitacao Reactivate ............ **[CONCLUIDO]** (commit 32b984f [11:14])
+  [Backend]  S005-P1T2: endpoints faltantes participantes .... **[CONCLUIDO]** (commit 7a71a55 [11:19])
+  [Backend]  S006-T4: XP acumulativo + motivo ................ **[CONCLUIDO]** (commit d37b227 [11:19])
+  [Backend]  S007-T8: testes integracao 7 efeitos ............ **[CONCLUIDO]** (commit e1bbe50 [13:20])
 
-RODADA 7+:
-  [Frontend] S007-T9-T12 (frontend efeitos, 4 tasks) ........ [PENDENTE]
-  [Frontend] S006-T6-T13 (wizard frontend, 8 tasks) ......... [PENDENTE]
-  [Backend]  S005-P1T3 (testes integracao) ................... [PENDENTE]
+PROXIMA RODADA (rodada 7):
+  [Backend]  S015-T4 (auto-concessao vantagens pre-definidas)  [DESBLOQUEADO]
+  [Backend]  S005-P1T3 (testes integracao participantes) ..... [DESBLOQUEADO]
+  [Frontend] S007-T9 (frontend efeitos UI) ................... [DESBLOQUEADO]
+  [Frontend] S006-T6 (wizard passo 1 identificacao) .......... [DESBLOQUEADO]
+
+RODADA 8+:
+  [Frontend] S007-T10-T12 (frontend efeitos, 3 tasks) ....... [PENDENTE]
+  [Frontend] S006-T7-T13 (wizard passos 2-6 + auto-save) .... [PENDENTE]
   [Frontend] S005-P2T1 a P2T3 (participantes frontend) ...... [PENDENTE]
+  [Backend]  S015-T6/T7 (frontend ConfigPontos) .............. [PENDENTE]
 ```
 
-**Gargalo principal ATUALIZADO (R5):** 7 de 8 TipoEfeito implementados no motor. FORMULA_CUSTOMIZADA bloqueado por PA-004. Insolitus (T7) CONCLUIDO. Caminho critico agora: T8 (testes integracao) -> frontend (T9-T12). S006-T2/T5 e S015-T3 CONCLUIDOS. Sprint 2 a 43% (15/35).
+**Gargalo principal ATUALIZADO (R6):** Backend Spec 007 100% concluido (exceto T5alt bloqueado por PA-004). 7/8 TipoEfeito + 20 testes de integracao. Participantes backend (P1T1+P1T2) concluidos, XP refatorado. Caminho critico agora: frontend (S007-T9..T12 + S006-T6..T13 + S005-P2T1..P2T3) + S015-T4 (auto-concessao). Sprint 2 a 54% (19/35).
 
 ---
 
@@ -325,7 +331,7 @@ RODADA 7+:
 | Spec 007 impacta ~20-30 arquivos | Risco de regressao nos calculos existentes | Spec 007 T8 cobre com testes de integracao extensivos |
 | PA-004 nao resolvido | FORMULA_CUSTOMIZADA sem alvo definido bloqueia T6 | Escalar ao PO antes de T6 |
 | PA-006 nao resolvido | VIG/SAB hardcoded por abreviacao (GAP-CALC-09) | Fora do escopo de T0; escalar ao PO |
-| Sprint 2 e denso (35 tasks, 15 concluidas) | 20 tasks restantes | T8 proximo; S005 e S006 frontend desbloqueados; modelo 1 task/agente |
+| Sprint 2 e denso (35 tasks, 19 concluidas) | 16 tasks restantes (maioria frontend) | Backend quase completo; frontend desbloqueado em 3 tracks (007, 006, 005); modelo 1 task/agente |
 
 ---
 

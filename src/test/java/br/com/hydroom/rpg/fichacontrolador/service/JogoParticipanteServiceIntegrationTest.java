@@ -253,4 +253,112 @@ class JogoParticipanteServiceIntegrationTest {
         assertThat(lista).hasSize(2);
         assertThat(lista).allMatch(p -> StatusParticipante.APROVADO.equals(p.getStatus()));
     }
+
+    // ===== RE-SOLICITACAO (strategy Reactivate) =====
+
+    @Test
+    @DisplayName("deve permitir re-solicitação após rejeição, reutilizando mesmo registro")
+    void devePermitirReSolicitacaoAposRejeicao() {
+        // Arrange: solicitar e rejeitar
+        setAuth(jogador);
+        JogoParticipante pendente = participanteService.solicitar(jogo.getId());
+
+        setAuth(mestre);
+        participanteService.rejeitar(jogo.getId(), pendente.getId());
+
+        // Act: re-solicitar
+        setAuth(jogador);
+        JogoParticipante reativado = participanteService.solicitar(jogo.getId());
+
+        // Assert: mesmo ID (registro reutilizado), status PENDENTE
+        assertThat(reativado.getStatus()).isEqualTo(StatusParticipante.PENDENTE);
+        assertThat(reativado.getId()).isEqualTo(pendente.getId());
+        assertThat(reativado.isActive()).isTrue();
+    }
+
+    @Test
+    @DisplayName("deve permitir re-solicitação após remoção (soft-deleted), reutilizando mesmo registro")
+    void devePermitirReSolicitacaoAposRemocao() {
+        // Arrange: criar registro aprovado e depois soft-deletar
+        JogoParticipante aprovado = participanteRepository.save(JogoParticipante.builder()
+            .jogo(jogo)
+            .usuario(jogador)
+            .role(RoleJogo.JOGADOR)
+            .status(StatusParticipante.APROVADO)
+            .build());
+        aprovado.delete();
+        participanteRepository.saveAndFlush(aprovado);
+
+        // Act: solicitar (deve reativar o registro removido)
+        setAuth(jogador);
+        JogoParticipante reativado = participanteService.solicitar(jogo.getId());
+
+        // Assert: mesmo ID (registro reutilizado), status PENDENTE, deletedAt nulo
+        assertThat(reativado.getId()).isEqualTo(aprovado.getId());
+        assertThat(reativado.getStatus()).isEqualTo(StatusParticipante.PENDENTE);
+        assertThat(reativado.isActive()).isTrue();
+    }
+
+    @Test
+    @DisplayName("não deve permitir solicitação se BANIDO")
+    void naoDevePermitirSolicitacaoSeBanido() {
+        // Arrange: criar aprovado e banir
+        JogoParticipante aprovado = participanteRepository.save(JogoParticipante.builder()
+            .jogo(jogo)
+            .usuario(jogador)
+            .role(RoleJogo.JOGADOR)
+            .status(StatusParticipante.APROVADO)
+            .build());
+
+        setAuth(mestre);
+        participanteService.banir(jogo.getId(), aprovado.getId());
+
+        // Act + Assert
+        setAuth(jogador);
+        assertThrows(ConflictException.class, () -> participanteService.solicitar(jogo.getId()));
+    }
+
+    @Test
+    @DisplayName("não deve permitir solicitação se já APROVADO")
+    void naoDevePermitirSolicitacaoSeAprovado() {
+        // Arrange: inserir participante APROVADO diretamente
+        participanteRepository.save(JogoParticipante.builder()
+            .jogo(jogo)
+            .usuario(jogador)
+            .role(RoleJogo.JOGADOR)
+            .status(StatusParticipante.APROVADO)
+            .build());
+
+        // Act + Assert
+        setAuth(jogador);
+        assertThrows(ConflictException.class, () -> participanteService.solicitar(jogo.getId()));
+    }
+
+    @Test
+    @DisplayName("não deve permitir solicitação se já PENDENTE")
+    void naoDevePermitirSolicitacaoSePendente() {
+        // Arrange: solicitar uma primeira vez (cria PENDENTE)
+        setAuth(jogador);
+        participanteService.solicitar(jogo.getId());
+
+        // Act + Assert: segunda solicitação deve falhar
+        assertThrows(ConflictException.class, () -> participanteService.solicitar(jogo.getId()));
+    }
+
+    @Test
+    @DisplayName("deve criar novo registro na primeira vez que usuário solicita")
+    void deveCriarNovoRegistroNaPrimeiraVez() {
+        // Arrange: sem nenhum registro existente para o jogador
+
+        // Act
+        setAuth(jogador);
+        JogoParticipante resultado = participanteService.solicitar(jogo.getId());
+
+        // Assert
+        assertThat(resultado.getId()).isNotNull();
+        assertThat(resultado.getStatus()).isEqualTo(StatusParticipante.PENDENTE);
+        assertThat(resultado.getRole()).isEqualTo(RoleJogo.JOGADOR);
+        assertThat(resultado.getUsuario().getId()).isEqualTo(jogador.getId());
+        assertThat(resultado.isActive()).isTrue();
+    }
 }

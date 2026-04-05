@@ -67,4 +67,19 @@ public interface JogoParticipanteRepository extends JpaRepository<JogoParticipan
 
     @Query("SELECT p FROM JogoParticipante p WHERE p.usuario.id = :usuarioId AND p.deletedAt IS NULL")
     List<JogoParticipante> findByUsuarioIdNotDeleted(@Param("usuarioId") Long usuarioId);
+
+    /**
+     * Busca participação incluindo registros soft-deleted.
+     * Usado para verificar banimentos e re-solicitações (strategy Reactivate).
+     * nativeQuery=true necessário para contornar @SQLRestriction da BaseEntity.
+     */
+    @Query(value = """
+        SELECT * FROM jogo_participantes
+        WHERE jogo_id = :jogoId AND usuario_id = :usuarioId
+        ORDER BY created_at DESC LIMIT 1
+    """, nativeQuery = true)
+    Optional<JogoParticipante> findByJogoIdAndUsuarioIdIncluindoRemovidos(
+        @Param("jogoId") Long jogoId,
+        @Param("usuarioId") Long usuarioId
+    );
 }

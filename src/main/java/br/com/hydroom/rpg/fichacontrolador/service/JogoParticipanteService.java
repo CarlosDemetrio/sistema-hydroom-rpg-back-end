@@ -37,6 +37,9 @@ public class JogoParticipanteService {
 
     /**
      * Jogador solicita entrada em um jogo. Status inicial: PENDENTE.
+     *
+     * <p>Implementa a strategy "Reactivate": reutiliza o registro existente (incluindo soft-deleted)
+     * em vez de criar um novo, preservando a unique constraint (jogo_id, usuario_id).</p>
      */
     @Transactional
     public JogoParticipante solicitar(Long jogoId) {
@@ -47,8 +50,28 @@ public class JogoParticipanteService {
         if (participanteRepository.existsByJogoIdAndUsuarioIdAndRole(jogoId, usuario.getId(), RoleJogo.MESTRE)) {
             throw new BusinessException("O Mestre não pode solicitar entrada no seu próprio jogo.");
         }
-        if (participanteRepository.existsByJogoIdAndUsuarioId(jogoId, usuario.getId())) {
-            throw new ConflictException("Você já possui uma participação neste jogo.");
+
+        var existente = participanteRepository
+            .findByJogoIdAndUsuarioIdIncluindoRemovidos(jogoId, usuario.getId());
+
+        if (existente.isPresent()) {
+            JogoParticipante p = existente.get();
+
+            if (StatusParticipante.BANIDO.equals(p.getStatus())) {
+                throw new ConflictException("Você foi banido deste jogo pelo Mestre.");
+            }
+            if (StatusParticipante.APROVADO.equals(p.getStatus()) && p.isActive()) {
+                throw new ConflictException("Você já é participante aprovado deste jogo.");
+            }
+            if (StatusParticipante.PENDENTE.equals(p.getStatus()) && p.isActive()) {
+                throw new ConflictException("Você já possui uma solicitação pendente neste jogo.");
+            }
+
+            // REJEITADO ativo ou REMOVIDO (soft-deleted, não-BANIDO) — reativar registro
+            p.setStatus(StatusParticipante.PENDENTE);
+            p.restore();
+            log.info("Reativando participação {} para usuário {} no jogo {}", p.getId(), usuario.getId(), jogoId);
+            return participanteRepository.save(p);
         }
 
         JogoParticipante participante = JogoParticipante.builder()

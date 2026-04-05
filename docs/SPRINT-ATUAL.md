@@ -1,493 +1,369 @@
-# Sprint Atual — Sprint 1: "Ficha Jogavel"
+> Para navegacao rapida e indice completo, ver `docs/MASTER.md`.
 
-> Gerado: 2026-04-01 | Atualizado: 2026-04-02 (sessao 4)
+# Sprint Atual — Sprint 2: "Motor Correto + Ficha Funcional"
+
+> Atualizado: 2026-04-04 (sessao 10, rodada 4 — S007-T3+T4+T5, S015-T2, S006-T1 concluidas, 509 testes)
 > PM: Scrum Orchestrator
-> Objetivo do Sprint: Tornar a ficha de personagem funcional end-to-end (backend ja pronto, foco em frontend + polimento backend)
-> Duracao estimada: 2 semanas
+> Objetivo: Corrigir bugs de calculo, integrar VantagemEfeito no motor, entregar wizard de ficha funcional e gestao de participantes
+> Duracao estimada: 3-4 semanas
+> Indice mestre: `docs/MASTER.md` | Cronologia: `docs/CRONOLOGIA.md`
 
 ---
 
-## Progresso Geral
+## Sprint 1 — ENCERRADO (2026-04-01 a 2026-04-03)
+
+| Metrica | Valor Final |
+|---------|-------------|
+| Tasks totais | 31 |
+| Concluidas | 29 (94%) |
+| Nao concluidas | 2 (SP1-T13 barras HP membro, SP1-T27 DDL producao) |
+| Testes backend ao fechar | **457 passando**, 0 falhas |
+| Testes frontend ao fechar | 271 passando, ~34 falhando |
+| Frontend build | 0 erros, 0 warnings |
+| Decisao | Tasks restantes movidas para backlog (Sprint 3+) |
+
+**Nota:** Sprint 1 focou em tornar a ficha visualizavel end-to-end. O objetivo foi atingido: FichaDetail funcional com dados reais (atributos, aptidoes, vantagens com categoriaNome). A criacao de ficha (wizard) e a progressao (XP/nivel) ficam para Sprint 2.
+
+---
+
+## Sprint 2 — Progresso Geral
 
 | Metrica | Valor |
 |---------|-------|
-| Tasks totais Sprint 1 | 27 |
-| Concluidas | 23 |
-| Em andamento | 5 |
-| Pendentes | 4 |
-| Adiadas Sprint 2 | 2 |
-| **Progresso Sprint 1** | **85% concluido** (23/27) |
-| Testes backend | **422 testes** (era 405 pre-sprint) |
-| Gaps criticos descobertos (sessao 4) | 23 (C1-C2, M1-M7, G1-G10) |
-| User Stories mapeadas (BA) | 8 (US-FICHA-01 a US-FICHA-08) |
+| Tasks totais Sprint 2 | **35** (13 Spec 007 + 13 Spec 006 + 6 Spec 005 + 1 bug XP + 1 fix testes + 1 T-QW frontend) |
+| Concluidas | **11** (S007-T0, T1, T2, T3+T4+T5, S015-T5, T1, T2, S006-T1, URG-01, URG-02, QW-Bug3) |
+| Em andamento | 0 |
+| Pendentes | 24 |
+| Bloqueadas | 1 (S007-T5alt: FORMULA_CUSTOMIZADA — PA-004) |
+| Testes backend | **509 passando**, 0 falhas (+35 da rodada 4) |
+| Testes frontend | **359 passando**, 0 falhas |
+| Gaps resolvidos pelo PO | **TODOS** (GAP-01 a GAP-08, INCONS-02, P-03, PA-001/002, Q14-Q17) |
+
+**Novas decisoes do PO (Q14-Q17):**
+- **Q14 Modo Sessao:** Polling 30s no MVP. SSE/WebSocket para versao futura.
+- **Q15 Essencia:** Dois endpoints semanticos — `POST /fichas/{id}/essencia/gastar` (JOGADOR) + `POST /fichas/{id}/essencia/resetar` (MESTRE).
+- **Q16 GAP-PONTOS-CONFIG:** Classe/Raca dando pontos extras por nivel = gap pos-MVP. Nao bloqueia Sprint 2.
+- **Q17 pontosAptidaoGastos:** = SUM(FichaAptidao.base) — sem distincao criacao/level-up.
+
+**Decisao arquitetural pendente (S007-T0):**
+- `FichaAptidao.classe` nao e zerado no reset para compatibilidade com entrada manual. O `aplicarClasseAptidaoBonus` sobrescreve com valor calculado quando ha config automatica. Validar com Tech Lead: sobrescrever (atual) ou somar com manual?
 
 ---
 
-## Sessao 2026-04-02 (Sessao 3) — Correcoes de Build Frontend
-
-### O que foi feito
-
-12 correcoes de compilacao Angular realizadas nesta sessao. O frontend estava quebrado por incompatibilidades PrimeNG 21, modelos desalinhados com backend, e imports incorretos.
-
-- [x] `tsconfig.json`: alias `@shared` adicionado (bare + wildcard)
-- [x] `base-config-table`: `p-input-icon` migrado para `p-inputicon` (PrimeNG 21), null guard em `rowReorder`
-- [x] `mestre-dashboard`: `totalJogadores` corrigido para `totalJogos`, `jogosRecentes` para `jogos`
-- [x] `jogador-dashboard`: modelo Ficha alinhado (flat: `nivel`, `racaNome`, `classeNome` direto)
-- [x] `classes-config`: `FormsModule` adicionado para `ngModel` em `p-select`
-- [x] `limitadores-config`: componente zombie removido (entidade backend removida na Spec 004)
-- [x] `ficha-form`: `@shared` import corrigido, modelo flat, `createFicha(jogoId, dto)` correto
-- [x] `identificacao-section`: `@shared` import corrigido
-- [x] `fichas-list`: `p-input-icon` migrado, modelo flat, removido `ficha.calculados` (inexistente)
-- [x] `ficha-detail`: `valueChange` type fix, `AnotacaoCardComponent` warning removido
-- [x] `ficha-resumo-tab`: `DecimalPipe` adicionado
-- [x] `ficha-vantagens-tab`: `DividerModule` adicionado
-
-**Testes frontend em andamento:** Dev 3 escrevendo specs para `base-config-table`, `atributos-config`, `niveis-config`.
-
-### Tasks atualizadas nesta sessao
-
-| ID | Mudanca |
-|----|---------|
-| SP1-T24 | [CONCLUIDO] — jogo-detail ja estava corrigido na sessao anterior + fix mestre-dashboard |
-| SP1-T25 | [CONCLUIDO] — jogo-form fix completado + ficha-form + identificacao-section |
-| SP1-T26 | [CONCLUIDO] — imports @shared corrigidos em todos os componentes afetados |
-
----
-
-## Sessao 2026-04-02 (Sessao 4) — Quick Wins + Auditorias Profundas
-
-### Quick Wins Implementados (Dev 1)
-
-- [x] **QW-5**: Tooltips em tabs desabilitadas (classes, racas, vantagens) — explica ao usuario porque a tab esta desabilitada
-- [x] **QW-3**: Aviso de pre-requisito ausente em AptidoesConfig — alerta visual quando aptidao referencia tipo inexistente
-- [x] **QW-2**: Badges de contagem na sidebar + reordenacao logica de dependencias — sidebar mostra quantos itens cada config tem
-
-### Bug Corrigido (Tech Lead)
-
-- [x] **Fix totalFichas**: mestre-dashboard exibia array raw em vez de contagem — corrigido para `.length` via `computed()`
-
-### Em Andamento (lancados nesta sessao)
-
-- [ ] **FormulaEditorComponent** (Dev 2) — relancado, sem resultado confirmado ainda
-- [ ] **QW-4**: Formula visivel na lista de bonus de Classe
-- [ ] **QW-1**: Conectar reordenacao ao backend real (wiring handleReorder -> ConfigApiService)
-- [ ] **Backend**: GET /fichas/{id}/atributos + GET /fichas/{id}/aptidoes + categoriaNome no response
-- [ ] **NPC screen**: Tela de NPCs para o Mestre (listagem + criacao)
-
-### Gaps Criticos Descobertos — Auditoria Tech Lead Frontend
-
-O Tech Lead Frontend realizou auditoria completa de codigo e descobriu divergencias significativas entre backend e frontend.
-
-#### CRITICOS — Funcionalidade 100% quebrada
-
-| ID | Descricao | Impacto |
-|----|-----------|---------|
-| **C1** | `handleReorder()` em TODOS os 13 config components mostra toast falso SEM chamar a API. `ConfigApiService` ja tem metodos prontos — falta wiring. | Reordenacao esta 100% fake em 13 telas |
-| **C2** | Dashboard do Mestre: "Jogadores Ativos" exibe contagem de jogos, nao participantes. Backend tem `GET /jogos/{id}/dashboard` com `totalParticipantes`. | Dado errado exibido ao Mestre |
-
-#### MAJOR — Endpoints backend sem cobertura no frontend
-
-| ID | Descricao | Impacto |
-|----|-----------|---------|
-| **M1** | `PontosVantagemController` — CRUD completo no backend, ZERO no frontend (sem model, service, store, component) | Feature inteira invisivel |
-| **M2** | `FormulaController` (POST /preview, GET /variaveis) sem API service no frontend | Formula Editor nao funciona sem isso |
-| **M3** | `SiglaController` (GET /siglas) sem API service no frontend | Validacao cross-entity impossivel no frontend |
-| **M4** | Atributos tab no FichaDetail: mockados com base=0, nivel=0 (falta GET /fichas/{id}/atributos no backend) | Atributos sempre zerados |
-| **M5** | Aptidoes tab no FichaDetail: sempre vazia (falta GET /fichas/{id}/aptidoes no backend) | Tab inutilizavel |
-| **M7** | PUT /usuarios/me sem UI no frontend (edicao de perfil) | Feature backend desperdicada |
-
-#### DIVIDA TECNICA
-
-| ID | Descricao |
-|----|-----------|
-| DT-FE-01 | `atualizarAnotacao()` no frontend sem endpoint PUT no backend (metodo fantasma) |
-| DT-FE-02 | `CategoriaVantagem` URL usa `/api/jogos/` sem `/v1/` — inconsistencia com todos os outros services |
-| DT-FE-03 | ConfigStore type assertions `any` em multiplos locais |
-
-### Gaps Criticos Descobertos — Auditoria BA (Fluxo Ficha)
-
-O BA realizou analise end-to-end do fluxo de ficha e descobriu que a maior parte da funcionalidade de ficha e uma casca vazia ou mockada.
-
-#### BLOQUEADORES DE USO REAL
-
-| ID | Descricao | Impacto |
-|----|-----------|---------|
-| **G1** | FichaFormComponent envia apenas `{nome}` para backend — ignora raca, classe, genero, indole, presenca. Formulario de 10 secoes e casca vazia. | Criacao de ficha nao funciona |
-| **G2** | Atributos mockados (base=0, nivel=0, impeto=0) no FichaDetail | Dados falsos exibidos |
-| **G3** | Aptidoes nunca carregadas — lista sempre vazia | Feature quebrada |
-| **G4** | Sem UI para Mestre conceder XP ou renascimentos | Progressao de nivel impossivel |
-| **G5** | Sem tela de NPC para o Mestre (listagem + criacao) | Funcionalidade totalmente ausente |
-
-#### FUNCIONALIDADE INCOMPLETA
-
-| ID | Descricao | Impacto |
-|----|-----------|---------|
-| **G6** | Barras de Vida e Essencia sempre 100% (backend nao retorna vidaAtual/essenciaAtual no resumo) | Dados falsos |
-| **G7** | `pontosVantagemRestantes` hardcoded como 0 | Calculo de pontos nao funciona |
-| **G8** | FichaVantagemResponse sem `categoriaNome` — vantagens sem organizacao por categoria | UX confusa |
-| **G9** | Rota de edicao inconsistente entre List e Detail | Navegacao quebrada |
-| **G10** | Sem marketplace de compra de vantagens | Feature planejada ausente |
-
-#### DADOS QUE BACKEND PRECISA ADICIONAR
-
-| Campo/Endpoint | Onde | Status |
-|----------------|------|--------|
-| `vidaAtual`/`essenciaAtual` no FichaResumoResponse | Backend response | PENDENTE |
-| `base`, `nivel`, `outros`, `impeto` por atributo (GET /fichas/{id}/atributos) | Novo endpoint | EM ANDAMENTO |
-| `categoriaNome` em FichaVantagemResponse | Backend response | EM ANDAMENTO |
-| Pontos de atributo disponiveis vs. usados no resumo | Backend response | PENDENTE |
-| GET /fichas/{id}/aptidoes | Novo endpoint | EM ANDAMENTO |
-
-### 8 User Stories Mapeadas pelo BA
-
-| ID | Titulo | Prioridade | Estimativa | Dependencia |
-|----|--------|-----------|-----------|-------------|
-| US-FICHA-01 | Reescrita do formulario de criacao (wizard alinhado ao backend) | P0 | P3 (grande) | Backend pronto |
-| US-FICHA-02 | Atributos reais no Detail (sem mock) | P0 | P2 | GET /fichas/{id}/atributos (backend) |
-| US-FICHA-03 | Distribuicao de atributos e aptidoes | P0 | P2 | US-FICHA-02 |
-| US-FICHA-04 | Concessao de XP pelo Mestre | P0 | P2 | Backend pronto |
-| US-FICHA-05 | Tela de NPCs para o Mestre | P0 | P2 | Backend pronto (NPC endpoints existem) |
-| US-FICHA-06 | Barras de Vida e Essencia reativas | P1 | P1 | vidaAtual/essenciaAtual no response (backend) |
-| US-FICHA-07 | Compra de Vantagens (marketplace) | P1 | P3 (grande) | US-FICHA-01, categoriaNome |
-| US-FICHA-08 | Unificacao de rota de edicao | P2 | P1 | Nenhuma |
-
-### Features faltantes identificadas (analise BA sessao 3)
-
-Novas tasks criadas para Sprint 2 a partir da analise dos documentos BA:
-
-| ID | Prioridade | Descricao |
-|----|-----------|-----------|
-| SP2-T01 | CRITICO | Formula Editor Component — editor visual com autocomplete de variaveis, botao "Validar", preview numerico |
-| SP2-T02 | CRITICO | Sub-recursos de Classe no frontend (ClasseBonus + ClasseAptidaoBonus) — endpoints existem |
-| SP2-T03 | CRITICO | Sub-recursos de Raca no frontend (RacaBonusAtributo + RacaClassePermitida) — endpoints existem |
-| SP2-T04 | ALTA | Color picker para CategoriaVantagem |
-| SP2-T05 | ALTA | Validacao async de unicidade de sigla nos campos de abreviacao |
-| SP2-T06 | ALTA | Sub-recursos de Vantagem (efeitos e pre-requisitos) — UI de gestao |
-| SP2-T07 | MEDIA | Inline editable table para NivelConfig |
-| SP2-T08 | MEDIA | Validacao de sequencia crescente de XP no frontend |
-| SP2-T09 | MEDIA | Progress bar visual para porcentagemVida em MembroCorpoConfig |
-| SP2-T10 | BAIXA | Filtro/agrupamento por TipoAptidao nas aptidoes |
-| SP2-T11 | BAIXA | Indicador visual de bonus negativo nas racas |
-
----
-
-## Diagnostico Pre-Sprint
-
-### Descobertas da Auditoria de Codigo (2026-04-01)
-
-| Item | Status Documentado (PM.md) | Status Real (codigo) | Impacto |
-|------|---------------------------|---------------------|---------|
-| B001: Role checks em ~18 controllers | CRITICA - pendente | **JA IMPLEMENTADO** em todos os 18 controllers | Issue FECHADA - nao bloqueia mais |
-| B002: JogoController.criar() PreAuthorize | ALTA - pendente | **JA IMPLEMENTADO** | Issue FECHADA |
-| Testes backend | 272 testes | **422 testes passando**, 0 failures | Melhoria significativa |
-| FichaController endpoints | 90% | **100%** - todos os endpoints com PreAuthorize | Pronto |
-| FichaDetailComponent | Placeholder | **IMPLEMENTADO** (SP1-T01 a SP1-T06) | CONCLUIDO |
-| JogosDisponiveisComponent | Placeholder | **IMPLEMENTADO** (SP1-T07) | CONCLUIDO |
-| FichaForm 10 secoes | Desalinhado | **Confirmado** - campos inexistentes (origem, linhagem, etc.), atributos hardcoded | ADIADO Sprint 2 |
-
-### Conclusao: Backend CONCLUIDO (422 testes). Frontend FichaDetail e JogosDisponiveis CONCLUIDOS. Build frontend corrigido (sessao 3). Restam reviews de backend e DDL.
-
----
-
-## Caminho Critico — ATUALIZADO (sessao 4)
+## Tracks Paralelos — O que pode rodar simultaneamente
 
 ```
-SPRINT 1 — FASE DE FECHAMENTO (85% concluido)
-=============================================
+TRACK A — Backend Critico (sequencial, caminho critico):
+  URG-01 (bug XP, 30min)
+  -> S007-T0 (bugs calculo base, 4-6h)
+  -> S007-T1 (adaptar modelo dados)
+  -> S007-T2..T7 (6 tipos efeito, PARALELO entre si)
+  -> S007-T8 (testes integracao efeitos)
 
-CONCLUIDOS:
-  FichaDetailComponent (SP1-T01 a T06) .....  CONCLUIDO
-  JogosDisponiveisComponent (SP1-T07) .....  CONCLUIDO
-  Build fixes (SP1-T24, T25, T26) .....  CONCLUIDO (sessao 3)
-  Quick Wins QW-2, QW-3, QW-5, fix totalFichas .....  CONCLUIDO (sessao 4)
+TRACK B — Backend Secundario (paralelo com Track A):
+  S006-T1 (campo status + /completar)
+  S006-T2 (validacao RacaClassePermitida)
+  S006-T4 (PUT /fichas/{id}/xp, MESTRE-only)
+  S006-T5 (pontosDisponiveis no response)
+  S005-P1T1 (re-solicitacao constraint)
+  -> S005-P1T2 (endpoints faltantes)
+  -> S005-P1T3 (testes integracao)
 
-EM ANDAMENTO (sessao 4):
-  SP1-T18 (seguranca NPC) [EM ANDAMENTO] --> commit pending
-  SP1-T22 (N+1 queries) [EM ANDAMENTO]
-  SP1-T23 (testes FichaController) [EM ANDAMENTO]
-  SP1-T28 (GET /fichas/{id}/atributos) [EM ANDAMENTO] --> desbloqueia G2, M4
-  SP1-T29 (GET /fichas/{id}/aptidoes) [EM ANDAMENTO] --> desbloqueia G3, M5
-  SP1-T30 (categoriaNome response) [EM ANDAMENTO] --> desbloqueia G8
-  QW-1 (handleReorder wiring) [EM ANDAMENTO] --> resolve C1
+TRACK C — Frontend Independente (pode iniciar AGORA):
+  URG-02 (fix ~34 testes falhando)
+  T-QW Bug 1 (barras vida/essencia hardcoded, 1h30)
+  T-QW Bug 2 (pontos vantagem hardcoded, 15min)
+  T-QW Bug 3 (rota NPC errada, 5min)
+  Spec 008 T1..T4 (sub-recursos Classes/Racas — frontend puro)
+  Spec 012 T1..T4, T14 (PontosVantagem/CategoriaVantagem config — frontend puro)
 
-PENDENTES:
-  SP1-T27 (DDL producao) [PENDENTE] --> precisa antes do deploy
-  SP1-T13 (barras HP) [PENDENTE]
-  SP1-T14 (participantes UI) [PENDENTE]
-  SP1-T17 (skeletons) [PENDENTE]
+TRACK D — Frontend Apos Backend (depende de Tracks A/B):
+  S007-T9..T12 (efeitos frontend, apos T8)
+  S006-T6..T13 (wizard frontend, apos T1 e T5 backend)
+  S005-P2T1..P2T3 (participantes frontend, apos P1-T2)
+  S012-T5 (backend pontos) -> S012-T6..T11 (level up frontend)
 
-CAMINHO CRITICO PARA "FICHA USAVEL DE VERDADE":
-  GET /fichas/{id}/atributos (SP1-T28) --> US-FICHA-02 --> US-FICHA-03
-  FichaForm rewrite (US-FICHA-01) --> tudo depende de form funcional
-  Tela NPC (US-FICHA-05) --> funcionalidade 100% ausente
-  XP pelo Mestre (US-FICHA-04) --> progressao impossivel sem isso
+TRACK E — Por ultimo (alto impacto transversal):
+  Spec 010 (Roles ADMIN) — implementar DEPOIS de tudo
+  Spec 011 (Galeria/Anotacoes) — P2
+
+TRACK F — Documentacao e Qualidade (apos TODAS as specs funcionais):
+  Spec 013 (Documentacao Tecnica) — Javadoc, OpenAPI, TSDoc, swagger.json (6 tasks)
+  Spec 014 (Cobertura de Testes) — JaCoCo, Vitest coverage, testes faltantes (6 tasks)
+  > NOTA: Track F so inicia quando Specs 005-012 estiverem 100% implementadas.
+  > Documentar e medir cobertura de codigo instavel gera retrabalho.
 ```
 
 ---
 
-## Quadro de Tarefas do Sprint
+## Prioridade de Ataque — Sprint 2
 
-### P0 — Bloqueadores (Sprint Goal) — TODOS CONCLUIDOS
+### URGENTE + QUICK WINS (independente, fazer PRIMEIRO)
 
-| ID | Dono | Descricao | Status | Dependencia | Estimativa |
-|---|---|---|---|---|---|
-| SP1-T01 | angular-frontend-dev | FichaDetailComponent: smart page com abas + header sticky + stats bar | **[CONCLUIDO]** | Nenhuma | P2 (grande) |
-| SP1-T02 | angular-frontend-dev | FichaDetailComponent: ficha-header sub-component | **[CONCLUIDO]** | SP1-T01 | P2 |
-| SP1-T03 | angular-frontend-dev | FichaDetailComponent: ficha-atributos-tab + ficha-resumo-tab | **[CONCLUIDO]** | SP1-T01 | P2 |
-| SP1-T04 | angular-frontend-dev | FichaDetailComponent: ficha-aptidoes-tab (agrupadas por tipo) | **[CONCLUIDO]** | SP1-T01 | P1 |
-| SP1-T05 | angular-frontend-dev | FichaDetailComponent: ficha-vantagens-tab com cards por categoria | **[CONCLUIDO]** | SP1-T01 | P2 |
-| SP1-T06 | angular-frontend-dev | FichaDetailComponent: ficha-anotacoes-tab com CRUD inline | **[CONCLUIDO]** | SP1-T01 | P2 |
-| SP1-T07 | angular-frontend-dev | JogosDisponiveisComponent: cards de jogos + selecionar jogo | **[CONCLUIDO]** | Nenhuma | P2 |
+| ID | Spec/Task | Tipo | Descricao | Dependencia | Status |
+|----|-----------|------|-----------|-------------|--------|
+| URG-01 | Spec 006 T3 | Backend | Bloquear XP no PUT /fichas/{id} para JOGADOR — vuln seguranca ativa | Nenhuma | **[CONCLUIDO]** (rodada 2 — ja tinha @PreAuthorize, fix erros compilacao) |
+| URG-02 | — | Frontend | Corrigir ~34 testes frontend falhando | Nenhuma | **[CONCLUIDO]** (rodada 2 — 38 testes corrigidos, 359/359 passando) |
+| QW-Bug3 | 009-ext T-QW | Frontend | Corrigir rota errada no NpcsComponent (L432: /jogador/ -> /mestre/) | Nenhuma | **[CONCLUIDO]** (rodada 2) |
 
-### P1 — Alta Prioridade
+### P0-ABSOLUTA: Spec 007 — VantagemEfeito + Motor de Calculos (13 tasks)
 
-| ID | Dono | Descricao | Status | Dependencia | Estimativa |
-|---|---|---|---|---|---|
-| SP1-T08 | angular-frontend-dev | Consumir GET /fichas/{id}/resumo para exibir valores calculados | **[CONCLUIDO]** | SP1-T01 | P1 |
-| SP1-T09 | primeng-ux-architect | Design specs: FichaDetailPage layout + componentes visuais | **[CONCLUIDO]** | Nenhuma | P1 |
-| SP1-T10 | primeng-ux-architect | Design specs: JogosDisponiveisComponent layout | **[CONCLUIDO]** | Nenhuma | P1 |
-| SP1-T11 | angular-tech-lead | Models: FichaVantagemResponse, ComprarVantagemDto, FichaCompletaData | **[CONCLUIDO]** | Nenhuma | P1 |
-| SP1-T12 | angular-tech-lead | FichaBusinessService completo (loadFichaCompleta, vantagens, anotacoes CRUD) | **[CONCLUIDO]** | SP1-T11 | P1 |
-| SP1-T13 | primeng-ux-architect | Membros do corpo em VidaSectionComponent: barras de HP por membro | [PENDENTE] | SP1-T09 | P2 |
-| SP1-T14 | angular-tech-lead | Participantes UI: aprovar/rejeitar/banir (componente + service) | [PENDENTE] | Nenhuma | P2 |
+> Sem o motor correto, TODA ficha criada tera valores matematicamente errados. Bloqueia Spec 006.
 
-### P2 — Should Have
+**Fase Pre-Requisito (T0) — BLOQUEIA TODAS AS DEMAIS**
 
-| ID | Dono | Descricao | Status | Dependencia | Estimativa |
-|---|---|---|---|---|---|
-| SP1-T15 | angular-frontend-dev | FichaForm Wizard 4 passos: reescrever step-identificacao | **[ADIADO SPRINT 2]** | SP1-T11 | P2 |
-| SP1-T16 | angular-frontend-dev | FichaForm Wizard: step-atributos dinamico | **[ADIADO SPRINT 2]** | SP1-T15 | P2 |
-| SP1-T17 | primeng-ux-architect | Estados de loading/erro/vazio (skeletons, empty states) | [PENDENTE] | SP1-T09 | P1 |
-| SP1-T18 | senior-backend-dev | Revisao de seguranca: NPCs bloqueados para Jogadores + N+1 fixes | **[EM ANDAMENTO]** | Nenhuma | P1 |
-| SP1-T19 | senior-backend-dev | Endpoint PUT /fichas/{id}/vida e PUT /fichas/{id}/prospeccao | **[CONCLUIDO]** | Nenhuma | P1 |
-| SP1-T20 | senior-backend-dev | NpcCreateRequest completo + campo descricao no fluxo NPC | **[CONCLUIDO]** | Nenhuma | P1 |
+| ID | Spec Task | Tipo | Descricao | Dependencia | Status |
+|----|-----------|------|-----------|-------------|--------|
+| S007-T0 | 007/T0 | Backend | Corrigir 6 bugs no FichaCalculationService (ClasseBonus, RacaBonus, ClasseAptidaoBonus zerados + nivel nao recalcula ao ganhar XP) | — | **[CONCLUIDO]** (sessao 10, 464 testes) |
 
-### Backend
+**Bugs corrigidos por T0:**
+- GAP-CALC-01: `FichaBonus.classe` = `ClasseBonus.valorPorNivel * ficha.nivel` (nunca calculado)
+- GAP-CALC-02: `FichaAptidao.classe` = `ClasseAptidaoBonus.bonus` (nunca calculado)
+- GAP-CALC-03: `FichaAtributo.outros` = `RacaBonusAtributo.bonus` (nunca aplicado)
+- GAP-CALC-06: `Ficha.nivel` nao recalculava ao ganhar XP
+- GAP-CALC-07: `FichaAmeaca.recalcularTotal()` nao incluia `nivel`
+- GAP-CALC-08: `FichaVida.recalcularTotal()` ignorava `vigorTotal` e `nivel`
 
-| ID | Dono | Descricao | Status | Dependencia | Estimativa |
-|---|---|---|---|---|---|
-| SP1-T21 | senior-backend-dev | Perfil do usuario: GET/PUT /api/v1/usuarios/me (6 testes) | **[CONCLUIDO]** | Nenhuma | P1 |
-| SP1-T22 | java-spring-tech-lead | Tech Lead review: N+1 queries nos endpoints de ficha | **[EM ANDAMENTO]** | Nenhuma | P1 |
-| SP1-T23 | java-spring-tech-lead | Testes integracao: FichaController (todos os endpoints) | **[EM ANDAMENTO]** | Nenhuma | P2 |
+**Fase Backend (T1-T8)**
 
-### Novas Tasks Descobertas e Resolvidas (sessoes 2 e 3)
+| ID | Spec Task | Tipo | Descricao | Dependencia | Status |
+|----|-----------|------|-----------|-------------|--------|
+| S007-T1 | 007/T1 | Backend | Adaptar modelo de dados para efeitos de vantagem | S007-T0 | **[CONCLUIDO]** (rodada 2 — SCHEMA-01/02, FichaProspeccao.dadoDisponivel, findByFichaIdWithEfeitos, stub aplicarEfeitosVantagens) |
+| S007-T2 | 007/T2 | Backend | FichaCalculationService — BONUS_ATRIBUTO, BONUS_APTIDAO, BONUS_VIDA, BONUS_ESSENCIA | S007-T1 | **[CONCLUIDO]** (rodada 3 — escopo expandido, commit `52738da`) |
+| S007-T3+T4+T5 | 007/T3-T5 | Backend | FichaCalculationService — BONUS_DERIVADO, BONUS_VIDA_MEMBRO, DADO_UP | S007-T2 | **[CONCLUIDO]** (rodada 4 — commit `0621bc8`, 7/8 efeitos) |
+| S007-T5alt | 007/T5alt | Backend | FichaCalculationService — FORMULA_CUSTOMIZADA | S007-T1, PA-004 | **[BLOQUEADO]** (PA-004) |
+| S007-T7 | 007/T7 | Backend | Insolitus — campo tipoVantagem + endpoint de concessao | S007-T1 | **[DESBLOQUEADO]** |
+| S007-T8 | 007/T8 | Backend | Testes de integracao para todos os tipos de efeito | T3-T7 | [PENDENTE] |
 
-| ID | Dono | Descricao | Status | Dependencia | Estimativa |
-|---|---|---|---|---|---|
-| SP1-T24 | angular-frontend-dev | Fix jogo-detail + mestre-dashboard: modelos alinhados com backend | **[CONCLUIDO]** | Nenhuma | P1 |
-| SP1-T25 | angular-frontend-dev | Fix jogo-form + ficha-form + identificacao-section: imports e modelos | **[CONCLUIDO]** | Nenhuma | P1 |
-| SP1-T26 | angular-tech-lead | Atualizar imports @shared em todos os componentes afetados | **[CONCLUIDO]** | Nenhuma | P1 |
-| SP1-T27 | java-spring-tech-lead | DDL para producao: 3 ALTER TABLE statements | [PENDENTE] | SP1-T19 | P1 |
+**Fase Frontend (T9-T12)**
 
-### Quick Wins e Fixes (sessao 4)
+| ID | Spec Task | Tipo | Descricao | Dependencia | Status |
+|----|-----------|------|-----------|-------------|--------|
+| S007-T8 | 007/T8 | Frontend | VantagensConfigComponent — secao de efeitos | S007-T7 | [PENDENTE] |
+| S007-T9 | 007/T9 | Frontend | FormulaEditor integrado para FORMULA_CUSTOMIZADA | S007-T8 | [PENDENTE] |
+| S007-T10 | 007/T10 | Frontend | Seletor de dado para DADO_UP | S007-T8 | [PENDENTE] |
+| S007-T11 | 007/T11 | Frontend | UI de concessao de Insolitus pelo Mestre | S007-T6, S007-T8 | [PENDENTE] |
 
-| ID | Dono | Descricao | Status | Estimativa |
-|---|---|---|---|---|
-| QW-5 | angular-frontend-dev | Tooltips em tabs desabilitadas (classes, racas, vantagens) | **[CONCLUIDO]** | P1 |
-| QW-3 | angular-frontend-dev | Aviso de pre-requisito ausente em AptidoesConfig | **[CONCLUIDO]** | P1 |
-| QW-2 | angular-frontend-dev | Badges de contagem na sidebar + reordenacao logica | **[CONCLUIDO]** | P1 |
-| FIX-01 | angular-tech-lead | Fix totalFichas no mestre-dashboard: array -> .length via computed() | **[CONCLUIDO]** | P1 |
-| QW-4 | angular-frontend-dev | Formula visivel na lista de bonus de Classe | [EM ANDAMENTO] | P1 |
-| QW-1 | angular-frontend-dev | Conectar reordenacao ao backend real (wiring handleReorder) | [EM ANDAMENTO] | P1 |
+**Pontos em Aberto (confirmar antes de iniciar T6/T7):**
+- PA-001: RESOLVIDO — MESTRE pode revogar QUALQUER vantagem (incluindo Insolitus)
+- PA-002: RESOLVIDO — Enum TipoVantagem (VANTAGEM | INSOLITUS)
+- PA-004: PENDENTE — FORMULA_CUSTOMIZADA sem alvo definido (onde aplica o resultado?) — afeta T6
+- PA-006: PENDENTE — VIG/SAB hardcoded por abreviacao (GAP-CALC-09) — fora do escopo de T0
 
-### Backend — Novos endpoints em andamento (sessao 4)
+### P0: Spec 006 — Wizard de Criacao de Ficha (13 tasks)
 
-| ID | Dono | Descricao | Status | Estimativa |
-|---|---|---|---|---|
-| SP1-T28 | senior-backend-dev | GET /fichas/{id}/atributos (detalhado: base, nivel, outros, impeto) | [EM ANDAMENTO] | P1 |
-| SP1-T29 | senior-backend-dev | GET /fichas/{id}/aptidoes (lista real, nao mockada) | [EM ANDAMENTO] | P1 |
-| SP1-T30 | senior-backend-dev | Adicionar `categoriaNome` em FichaVantagemResponse | [EM ANDAMENTO] | P1 |
-| SP1-T31 | senior-backend-dev | Tela NPC para o Mestre (backend support — listagem/criacao) | [EM ANDAMENTO] | P1 |
+> Depende de Spec 007 para calculos corretos. Backend (T1-T5) pode iniciar em paralelo com 007.
 
-### Issues Fechadas (pre-sprint audit)
+**Fase Backend (T1-T5) — pode iniciar em paralelo com Spec 007**
+
+| ID | Spec Task | Tipo | Descricao | Dependencia | Status |
+|----|-----------|------|-----------|-------------|--------|
+| S006-T1 | 006/T1 | Backend | Campo status + endpoint /completar | — | **[CONCLUIDO]** (rodada 4 — commit `d55e312`, 9 testes) |
+| S006-T2 | 006/T2 | Backend | Validacao RacaClassePermitida na criacao | — | **[DESBLOQUEADO]** |
+| S006-T3 | 006/T3 | Backend | Bloquear XP no PUT /fichas/{id} para JOGADOR | — | [PENDENTE] |
+| S006-T4 | 006/T4 | Backend | Endpoint PUT /fichas/{id}/xp (MESTRE-only) | — | [PENDENTE] |
+| S006-T5 | 006/T5 | Backend | pontosDisponiveis no FichaResumoResponse | — | [PENDENTE] |
+
+> **NOTA:** S006-T3 e URG-01 sao a mesma task. Corrigir imediatamente como urgencia, nao esperar o restante da Spec 006.
+
+**Fase Frontend (T6-T13) — depende de T1 e T5, e de Spec 007 para calculos**
+
+| ID | Spec Task | Tipo | Descricao | Dependencia | Status |
+|----|-----------|------|-----------|-------------|--------|
+| S006-T6 | 006/T6 | Frontend | Passo 1: Identificacao (rewrite do wizard) | S006-T1 | [PENDENTE] |
+| S006-T7 | 006/T7 | Frontend | Passo 2: Descricao fisica | S006-T6 | [PENDENTE] |
+| S006-T8 | 006/T8 | Frontend | Passo 3: Distribuicao de atributos | S006-T5, S006-T6 | [PENDENTE] |
+| S006-T9 | 006/T9 | Frontend | Passo 4: Distribuicao de aptidoes | S006-T5, S006-T6 | [PENDENTE] |
+| S006-T10 | 006/T10 | Frontend | Passo 5: Compra de vantagens iniciais | S006-T5, S006-T6 | [PENDENTE] |
+| S006-T11 | 006/T11 | Frontend | Passo 6: Revisao e confirmacao | S006-T1, S006-T6 | [PENDENTE] |
+| S006-T12 | 006/T12 | Frontend | Auto-save visual (indicador de salvamento) | S006-T6 | [PENDENTE] |
+| S006-T13 | 006/T13 | Frontend | Badge "incompleta" na listagem de fichas | S006-T1 | [PENDENTE] |
+
+### P0: Spec 005 — Gestao de Participantes (6 tasks)
+
+> Pode iniciar backend em paralelo com Specs 007 e 006. Frontend depende de P1-T2.
+
+**Fase Backend (P1-T1 a P1-T3)**
+
+| ID | Spec Task | Tipo | Descricao | Dependencia | Status |
+|----|-----------|------|-----------|-------------|--------|
+| S005-P1T1 | 005/P1-T1 | Backend | Corrigir logica de re-solicitacao e constraint | — | [PENDENTE] |
+| S005-P1T2 | 005/P1-T2 | Backend | Endpoints faltantes (banir, desbanir, remover, meu-status, cancelar, filtro) | S005-P1T1 | [PENDENTE] |
+| S005-P1T3 | 005/P1-T3 | Backend | Testes de integracao completos | S005-P1T1, S005-P1T2 | [PENDENTE] |
+
+**Fase Frontend (P2-T1 a P2-T3)**
+
+| ID | Spec Task | Tipo | Descricao | Dependencia | Status |
+|----|-----------|------|-----------|-------------|--------|
+| S005-P2T1 | 005/P2-T1 | Frontend | Alinhar API service e Business service com novos endpoints | S005-P1T2 | [PENDENTE] |
+| S005-P2T2 | 005/P2-T2 | Frontend | JogoDetail do Mestre (semantica remover/banir/desbanir + filtro + badge) | S005-P2T1 | [PENDENTE] |
+| S005-P2T3 | 005/P2-T3 | Frontend | JogosDisponiveis do Jogador (solicitar, status, cancelar) | S005-P2T1 | [PENDENTE] |
+
+### Spec 015 — ConfigPontos + DefaultProvider (rodada 2: T5 CONCLUIDA)
+
+| ID | Spec Task | Tipo | Descricao | Dependencia | Status |
+|----|-----------|------|-----------|-------------|--------|
+| S015-T5 | 015/T5 | Backend | Corrigir 8 bugs DefaultProvider + defaults canonicos | Nenhuma (independente) | **[CONCLUIDO]** (rodada 2 — BUG-DC-02..09 exceto DC-03, 10 testes unitarios) |
+| S015-T1 | 015/T1 | Backend | 4 novas entidades, repos, DTOs, mappers | Nenhuma | **[CONCLUIDO]** (rodada 3 — 22 arquivos, commit `9ac2465`) |
+| S015-T2 | 015/T2 | Backend | CRUD endpoints como sub-recursos (14 endpoints) | S015-T1 (CONCLUIDA) | **[CONCLUIDO]** (rodada 4 — commit `ba52d29`, 26 testes) |
+| S015-T3 | 015/T3 | Backend | Integrar pontos no FichaResumoResponse | S015-T1 (CONCLUIDA), S007-T1 (CONCLUIDA) | [PENDENTE] — **DESBLOQUEADO** |
+| S015-T4 | 015/T4 | Backend | Auto-concessao de vantagens pre-definidas | S015-T1 (CONCLUIDA), S007-T6 | [PENDENTE] |
+
+> **Nota S015-T5:** BUG-DC-03 (LimitadorConfig) NAO implementado — entidade nao existe, funcionalidade ja coberta por NivelConfig.limitadorAtributo. Os 8 bugs corrigidos incluem: Cabeca 75%, Indole 3 valores, Presenca 4 valores, Genero 3, Necromante fixes, Sangue fixes, limitadorAtributo do DTO. Defaults adicionados: 9 BonusConfig, 8 PontosVantagem, 8 CategoriaVantagem, 22 vantagens canonicas.
+
+### Quick Wins Frontend: 009-ext T-QW (3 bugs)
+
+> Independentes de qualquer spec. Podem ser corrigidos AGORA.
+
+| ID | Arquivo | Descricao | Estimativa | Dependencia | Status |
+|----|---------|-----------|-----------|-------------|--------|
+| QW-Bug1 | ficha-header.component.ts | Barras vida/essencia hardcoded | 1h30 | Nenhuma | **[CONCLUIDO]** (R3 — ja corrigido R2) |
+| QW-Bug2 | ficha-vantagens-tab.component.ts | Pontos vantagem hardcoded 0 | 15min | Nenhuma | **[CONCLUIDO]** (R3 — ja corrigido R2) |
+| QW-Bug3 | npcs.component.ts L432 | Mestre redirecionado para /jogador/fichas em vez de rota de Mestre | 5min | Nenhuma | **[CONCLUIDO]** (rodada 2) |
+
+---
+
+## Backlog Sprint 3+ (P1/P2 — nao entram no Sprint 2)
+
+| Prio | Spec | Tasks | Descricao |
+|------|------|-------|-----------|
+| P1 | 008 | 4 | Sub-recursos Classes/Racas frontend (T1-T4) |
+| **P1** | **016** | **~21** | **Sistema de Itens/Equipamentos — EM ESPECIFICACAO (3 BAs em paralelo). SD-1 config backend pode iniciar Sprint 3. Ver [`COORDENACAO-MULTI-BA.md`](specs/016-sistema-itens/COORDENACAO-MULTI-BA.md)** |
+| P1 | 012 | 12 ativas | Niveis e Progressao frontend (T1-T11, T14; T12/T13 fora do MVP) |
+| P1 | 009-ext | 10 | NPC Visibility + Prospeccao + Essencia + Reset (T1-T10, excluindo T-QW) |
+| P1 | 010 | 9 | Roles ADMIN/MESTRE/JOGADOR refactor — IMPLEMENTAR POR ULTIMO |
+| P2 | 011 | 8 | Galeria e Anotacoes |
+| Tech Debt | SP1-T13 | 1 | Membros do corpo em VidaSectionComponent (barras HP) |
+| Tech Debt | SP1-T27 | 1 | DDL producao (3 ALTER TABLE) |
+| Tech Debt | C1 | 1 | handleReorder wiring para 13 componentes (12/13 feito) |
+| Tech Debt | INCONS-01 | 1 | API-CONTRACT.md desatualizado |
+| Tech Debt | DT-FE-01/02/03 | 3 | Divida tecnica frontend |
+| **P3** | **013** | **6** | **Documentacao Tecnica — Javadoc, OpenAPI, TSDoc, swagger.json** |
+| **P3** | **014** | **6** | **Cobertura de Testes — JaCoCo 75% branch, Vitest coverage, testes faltantes** |
+| Pos-MVP | GAP-PONTOS-CONFIG | — | Classe/Raca dando pontos extras por nivel (decisao PO: pos-MVP) |
+
+> **Nota Spec 016:** Especificacao **100% COMPLETA** (2026-04-04). 11 tasks (7B+4F), dataset D&D 5e SRD (40 itens), API contracts, UX wireframes — tudo pronto. SD-1 (Configuracao backend) pode iniciar implementacao no Sprint 3. SD-2 (Inventario/Calculos) depende de Spec 007 completa. 4 novos pontos pendentes para PO: PA-016-DS-01..04 (em PERGUNTAS-PENDENTES-PO.md).
+
+---
+
+## Decisoes do PO (todas resolvidas em 2026-04-03)
+
+| ID | Decisao | Impacto |
+|----|---------|---------|
+| GAP-01 | Wizard 5-6 passos, todos campos obrigatorios, auto-save rascunho no backend | Spec 006 T6-T13 desbloqueadas |
+| GAP-02 | XP read-only para Jogador. Vulnerabilidade ativa — URGENTE corrigir | URG-01 / S006-T3 |
+| GAP-03 | VantagemEfeito e P0-ABSOLUTA (Spec 007) antes de qualquer modulo de ficha | Confirma sequencia 007 > 006 |
+| GAP-04 | REJEITADO pode re-solicitar sem cooldown. BANIDO reversivel. DELETE = remover provisorio | Spec 005 desbloqueada |
+| GAP-05 | NPC mecanicamente identico. descricao para todos. Mestre revela stats granularmente | Spec 009-ext T1-T2 |
+| GAP-06 | Pontos acumulam. Level up automatico. FichaResumoResponse inclui pontos disponiveis | Spec 006 T5, Spec 012 T5 |
+| GAP-07 | essenciaGasta persiste. Reset manual pelo Mestre. Endpoint POST /fichas/{id}/essencia/resetar | Spec 009-ext T4-T5 |
+| GAP-08 | Dois endpoints para prospeccao (conceder + usar). Mestre pode reverter; Jogador nao | Spec 009-ext T3 |
+| INCONS-02 | Fichas NUNCA deletadas. Status "morta"/"abandonada". Remover DELETE /fichas. Backend retorna 405 | Spec 006 T1 |
+| P-03 | ADMIN = apenas gestao de usuarios no MVP. Sem bypass de canAccessJogo | Spec 010 T3/T4 simplificadas |
+| PA-001 | Mestre pode revogar QUALQUER vantagem (incluindo Insolitus). Jogador nunca remove | Spec 007 T7, T12 |
+| PA-002 | Enum TipoVantagem (VANTAGEM / INSOLITUS) | Spec 007 T7 |
+| Renascimento | FORA DO MVP. T12/T13 da Spec 012 removidos | Spec 012 reduzida para 12 tasks |
+| Q14 | Modo Sessao: Polling 30s no MVP. SSE/WebSocket para versao futura | Frontend: setInterval simples |
+| Q15 | Essencia: dois endpoints semanticos (gastar/resetar) | Spec 009-ext T4-T5 |
+| Q16 | GAP-PONTOS-CONFIG: Classe/Raca pontos extras por nivel = pos-MVP | Nao bloqueia Sprint 2 |
+| Q17 | pontosAptidaoGastos = SUM(FichaAptidao.base) — sem distincao criacao/level-up | Simplifica Spec 006 T5 e Spec 012 T5 |
+
+---
+
+## Caminho Critico — Sprint 2
+
+```
+RODADA 2 CONCLUIDA (sessao 10):
+  [Backend]  URG-01: Corrigir bug XP ........................ **[CONCLUIDO]** (ja tinha @PreAuthorize)
+  [Backend]  S007-T0: Corrigir 6 bugs calculo base .......... **[CONCLUIDO]** (rodada 1, 464 testes)
+  [Backend]  S007-T1: Adaptar modelo dados ................... **[CONCLUIDO]** (rodada 2, 474 testes)
+  [Backend]  S015-T5: DefaultProvider fixes .................. **[CONCLUIDO]** (rodada 2, 10 testes unitarios)
+  [Frontend] QW-Bug3: Rota NPC errada ....................... **[CONCLUIDO]** (rodada 2)
+  [Frontend] URG-02: Fix 38 testes frontend falhando ........ **[CONCLUIDO]** (rodada 2, 359/359)
+
+RODADA 3 CONCLUIDA:
+  [Backend]  S007-T2: BONUS_ATRIBUTO+APTIDAO+VIDA+ESSENCIA .. **[CONCLUIDO]** (commit 52738da, 474 testes)
+  [Backend]  S015-T1: 4 entidades ConfigPontos .............. **[CONCLUIDO]** (commit 9ac2465, 22 arquivos)
+  [Frontend] QW-Bug1/2: Barras+pontos vantagem .............. **[CONCLUIDO]** (ja corrigidos R2)
+
+RODADA 4 CONCLUIDA:
+  [Backend]  S007-T3+T4+T5: DERIVADO+VIDA_MEMBRO+DADO_UP ... **[CONCLUIDO]** (commit 0621bc8, 509 testes)
+  [Backend]  S006-T1: FichaStatus + /completar .............. **[CONCLUIDO]** (commit d55e312, 9 testes novos)
+  [Backend]  S015-T2: 14 CRUD endpoints sub-recursos ........ **[CONCLUIDO]** (commit ba52d29, 26 testes novos)
+
+PROXIMA RODADA (rodada 5 — 4 agentes):
+  [Agente 1] S007-T7: Insolitus + endpoint concessao (3-4h)
+  [Agente 2] S006-T2: validacao RacaClassePermitida (2-3h)
+  [Agente 3] S006-T5: pontosDisponiveis no response (2-3h)
+  [Agente 4] S015-T3: integrar pontos no FichaResumo (2-3h, APOS S006-T5)
+
+RODADA 6:
+  [Backend]  S007-T8 (testes integracao todos efeitos) ....... [PENDENTE]
+  [Backend]  S005-P1T1 (re-solicitacao constraint) ........... [PENDENTE]
+  [Backend]  S005-P1T2 (endpoints faltantes) ................. [PENDENTE]
+  [Backend]  S006-T4 (PUT /fichas/{id}/xp MESTRE-only) ....... [PENDENTE]
+
+RODADA 7+:
+  [Frontend] S007-T9-T12 (frontend efeitos, 4 tasks) ........ [PENDENTE]
+  [Frontend] S006-T6-T13 (wizard frontend, 8 tasks) ......... [PENDENTE]
+  [Backend]  S005-P1T3 (testes integracao) ................... [PENDENTE]
+  [Frontend] S005-P2T1 a P2T3 (participantes frontend) ...... [PENDENTE]
+```
+
+**Gargalo principal ATUALIZADO (R4):** 7 de 8 TipoEfeito implementados no motor. FORMULA_CUSTOMIZADA bloqueado por PA-004. Insólitus (T7) desbloqueado. Caminho critico agora: T7 -> T8 (testes) -> frontend. S006-T2 e S006-T5 desbloqueados. Sprint 2 a 31% (11/35).
+
+---
+
+## Riscos em Aberto
+
+| Risco | Impacto | Mitigacao |
+|-------|---------|-----------|
+| ~~GAP-02 vuln XP ATIVA~~ | ~~Jogador altera propria XP~~ | **RESOLVIDO** (rodada 2) — PUT /fichas/{id}/xp ja tinha @PreAuthorize("hasRole('MESTRE')") |
+| ~~Spec 007 T0 corrige 6 bugs~~ | ~~Bugs encadeados~~ | **RESOLVIDO** — T0 concluido com 7 testes, 464 total |
+| ~~S007-T1 adaptar modelo~~ | ~~Bloqueava T2-T7~~ | **RESOLVIDO** (rodada 2) — SCHEMA-01, SCHEMA-02, stub aplicarEfeitosVantagens |
+| ~~34 testes frontend falhando~~ | ~~Build CI nao confiavel~~ | **RESOLVIDO** (rodada 2) — 359/359 testes passando, 0 falhas |
+| Spec 007 impacta ~20-30 arquivos | Risco de regressao nos calculos existentes | Spec 007 T8 cobre com testes de integracao extensivos |
+| PA-004 nao resolvido | FORMULA_CUSTOMIZADA sem alvo definido bloqueia T6 | Escalar ao PO antes de T6 |
+| PA-006 nao resolvido | VIG/SAB hardcoded por abreviacao (GAP-CALC-09) | Fora do escopo de T0; escalar ao PO |
+| Sprint 2 e denso (35 tasks, 11 concluidas) | 24 tasks restantes | T7 desbloqueado; S006-T2, T5, S015-T3 desbloqueados; modelo 1 task/agente |
+
+---
+
+## Referencia: Sprint 1 Completo (historico)
+
+<details>
+<summary>Clique para expandir o Sprint 1 completo</summary>
+
+### Tasks Concluidas (29/31)
+
+| ID | Descricao | Status |
+|----|-----------|--------|
+| SP1-T01 a T07 | FichaDetail + JogosDisponiveis | CONCLUIDO |
+| SP1-T08 a T12 | Resumo, design specs, models, business service | CONCLUIDO |
+| SP1-T18 a T23 | Security NPC, vida/prospeccao, perfil, N+1, testes 457 | CONCLUIDO |
+| SP1-T24 a T26 | Build fixes Angular | CONCLUIDO |
+| SP1-T28 a T31 | GET atributos/aptidoes, categoriaNome, NPC backend | CONCLUIDO |
+| QW-2, QW-3, QW-5, FIX-01 | Quick wins + fixes | CONCLUIDO |
+
+### Tasks Nao Concluidas (movidas para backlog)
 
 | ID | Descricao | Motivo |
-|---|---|---|
-| ~~B001~~ | ~~Role checks em ~18 controllers~~ | JA IMPLEMENTADO - verificado em codigo 2026-04-01 |
-| ~~B002~~ | ~~JogoController.criar() PreAuthorize~~ | JA IMPLEMENTADO - verificado em codigo 2026-04-01 |
+|----|-----------|--------|
+| SP1-T13 | Barras HP por membro do corpo | Prioridade rebaixada — Sprint 3 |
+| SP1-T27 | DDL producao (3 ALTER TABLE) | Nao bloqueia desenvolvimento, apenas deploy |
 
-### Fixes de Build Integrados (sessao 3 — sem task ID)
+### Commits Finais do Sprint 1
 
-Correcoes aplicadas diretamente em componentes existentes:
+| Commit | Descricao |
+|--------|-----------|
+| `027e709` | test(ficha): testes de integracao GET atributos, aptidoes e categoriaNome — 457 testes |
+| `9f87701` | feat(ficha): GET atributos/aptidoes por ficha + categoriaNome em FichaVantagemResponse |
+| `d650ddf` | feat(ficha): restringir acesso a NPCs apenas para o Mestre |
+| `4702887` | feat(ficha): vida/prospeccao endpoints, NPC descricao, N+1 fixes — 422 testes |
+| `8fece26` | feat(usuario): implementar atualizacao de perfil do usuario |
 
-- `base-config-table`: p-input-icon migrado para p-inputicon (PrimeNG 21), null guard rowReorder
-- `mestre-dashboard`: totalJogadores corrigido para totalJogos, jogosRecentes para jogos
-- `jogador-dashboard`: modelo Ficha flat (nivel, racaNome, classeNome direto)
-- `classes-config`: FormsModule adicionado para ngModel em p-select
-- `limitadores-config`: componente zombie removido
-- `fichas-list`: p-input-icon migrado, modelo flat, removido ficha.calculados
-- `ficha-detail`: valueChange type fix, AnotacaoCardComponent warning removido
-- `ficha-resumo-tab`: DecimalPipe adicionado
-- `ficha-vantagens-tab`: DividerModule adicionado
+</details>
 
 ---
 
-## Gargalos Detectados
-
-### GARGALO 1 — Frontend (RESOLVIDO sessao 2-3)
-
-```
-GARGALO RESOLVIDO
-Agente afetado: angular-frontend-dev
-Resolucao: Trabalho distribuido entre 3 agentes (UX, TL, Dev). Todos os P0 entregues.
-Build corrigido na sessao 3 (12 fixes de compilacao).
-Resultado: SP1-T01 a SP1-T08 CONCLUIDOS, build limpo.
-```
-
-### GARGALO 2 — Backend (BAIXO RISCO — MANTIDO)
-
-Backend esta saudavel (422 testes, 0 failures). 3 tasks em andamento com 2 agentes. SP1-T18 tem codigo pronto mas faltando commit (6 arquivos de security fixes).
-
-### GARGALO 3 — Frontend-Backend Gap (NOVO — sessao 4)
-
-```
-DETECTADO GARGALO: DIVERGENCIA MASSIVA FRONTEND-BACKEND
-Escopo: 23 gaps (C1-C2 criticos, M1-M7 major, G1-G10 fluxo ficha)
-Impacto: Funcionalidades que parecem prontas estao mockadas ou quebradas
-  - 13 telas de config com reordenacao fake (C1)
-  - Dashboard com dados errados (C2)
-  - Criacao de ficha envia apenas {nome} (G1)
-  - Atributos e aptidoes sempre zerados/vazios (G2, G3)
-  - Progressao de nivel impossivel (G4)
-  - Tela NPC inexistente (G5)
-Agentes afetados: angular-frontend-dev, senior-backend-dev
-Resolucao em andamento: QW-1 (C1), SP1-T28/T29/T30 (M4/M5/G8)
-Sprint 2 absorvera: US-FICHA-01 a US-FICHA-08
-```
-
----
-
-## Plano Anti-Conflito — ATUALIZADO
-
-### Regras de Propriedade de Arquivos
-
-| Agente | PODE tocar | NAO pode tocar |
-|--------|-----------|----------------|
-| **angular-frontend-dev** | `features/jogador/pages/**`, `features/mestre/pages/jogo-detail/**`, `features/mestre/pages/jogo-form/**` | `core/services/business/**`, `core/stores/**`, backend |
-| **angular-tech-lead** | `core/services/business/**`, `core/stores/**`, `core/services/api/**`, `core/models/**` | `features/**` (pages/componentes), backend |
-| **primeng-ux-architect** | `src/styles.scss`, `shared/components/**`, documentacao de design | `features/**` (pages), `core/**`, backend |
-| **java-spring-tech-lead** | Testes de integracao, DDL scripts, review de queries | `controller/configuracao/**`, model, `service/configuracao/**` |
-| **senior-backend-dev** | `service/Ficha*.java` (security fixes), novos arquivos | `controller/configuracao/**`, `service/configuracao/**` |
-
----
-
-## Proximos Despachos — Atualizado sessao 4
-
-### P0 — Bloqueadores imediatos
-
-| Prioridade | Task | Agente | Justificativa |
-|-----------|------|--------|---------------|
-| **1** | Commitar security fixes backend (SP1-T18) | senior-backend-dev | 6 arquivos nao commitados no working tree |
-| **2** | Confirmar SP1-T28/T29/T30 (atributos/aptidoes/categoriaNome) | senior-backend-dev | Desbloqueia G2, G3, G8, M4, M5 |
-| **3** | Confirmar QW-1 (handleReorder wiring) | angular-frontend-dev | Resolve C1 em 13 telas |
-| **4** | SP1-T27 | java-spring-tech-lead | DDL para producao — precisa antes do deploy |
-
-### Sprint 1 Closing — Em paralelo
-
-| Prioridade | Task | Agente | Justificativa |
-|-----------|------|--------|---------------|
-| **1** | SP1-T22 (N+1 queries) | java-spring-tech-lead | Em andamento |
-| **2** | SP1-T23 (testes FichaController) | java-spring-tech-lead | Em andamento |
-| **3** | SP1-T13 | primeng-ux-architect | Barras de HP por membro |
-| **4** | SP1-T14 | angular-tech-lead | Participantes UI |
-| **5** | SP1-T17 | primeng-ux-architect | Skeletons e empty states |
-
-### Sprint 2 Preparation — Iniciar assim que Sprint 1 fechar
-
-| Prioridade | Task | Agente sugerido | Justificativa |
-|-----------|------|----------------|---------------|
-| **1** | US-FICHA-01 (FichaForm wizard rewrite) | angular-frontend-dev | Bloqueador #1 de uso real |
-| **2** | US-FICHA-05 (Tela NPC Mestre) | angular-frontend-dev | Feature 100% ausente |
-| **3** | US-FICHA-04 (XP pelo Mestre) | angular-tech-lead + senior-backend-dev | Progressao impossivel |
-
----
-
-## Metricas de Sucesso do Sprint
-
-| Metrica | Target | Status Atual |
-|---------|--------|-------------|
-| FichaDetailPage funcional com dados reais | SIM | **PARCIAL** — estrutura pronta mas atributos/aptidoes mockados (G2, G3) |
-| JogosDisponiveisComponent funcional | SIM | **CONCLUIDO** |
-| Valores calculados visiveis na ficha | SIM | **PARCIAL** — resumo funciona, atributos detalhados pendentes |
-| Testes backend | >= 405 (manter) | **422** (+17) |
-| Zero regressoes | SIM | **SIM** |
-| TypeScript compila sem erros | SIM | **PENDENTE VERIFICACAO** (12 fixes aplicados, build nao confirmado) |
-| FichaForm cria ficha completa | SIM | **FALHOU** — envia apenas {nome} (G1) |
-| Reordenacao de configs funcional | SIM | **FALHOU** — toast falso em 13 telas (C1, fix em andamento) |
-
-**NOTA sessao 4**: A auditoria profunda revelou que varios itens marcados como "CONCLUIDO" nas sessoes anteriores estao parcialmente funcionais. Os componentes existem e compilam, mas exibem dados mockados ou nao conectam ao backend real. Isso muda a percepcao de "85% concluido" — o Sprint 1 entregou a **estrutura visual** mas nao a **funcionalidade real** em varias areas criticas.
-
----
-
-## Debitos Tecnicos Conhecidos
-
-| ID | Descricao | Impacto | Sprint |
-|----|-----------|---------|--------|
-| DT-01 | FichaForm.component.ts com campos fantasma (origem, linhagem, etc.) | CRITICO — form nao funciona (G1) | Sprint 2 (US-FICHA-01) |
-| DT-02 | Atributos hardcoded no FichaForm (FOR/AGI/VIG/SAB/INT) | CRITICO — nao generalizavel (G2) | Sprint 2 (US-FICHA-02) |
-| DT-03 | DDL de producao nao gerado (3 ALTER TABLE pendentes) | MEDIO — necessario antes do deploy | Sprint 1 (SP1-T27) |
-| DT-04 | Zero testes de componente Angular (cobertura minima = 0) | MEDIO | Sprint 2 |
-| DT-05 | Features faltantes: Formula Editor, sub-recursos Classe/Raca no frontend | ALTO — gap entre backend e frontend | Sprint 2 (SP2-T01 a T03) |
-| DT-06 | 13 handleReorder() com toast falso sem chamar API (C1) | CRITICO — feature fake em 13 telas | Sprint 1/2 (QW-1 em andamento) |
-| DT-07 | `atualizarAnotacao()` frontend sem endpoint PUT backend (fantasma) | MEDIO — metodo morto | Sprint 2 |
-| DT-08 | CategoriaVantagem URL `/api/jogos/` sem `/v1/` (inconsistencia) | BAIXO — funciona mas inconsistente | Sprint 2 |
-| DT-09 | ConfigStore type assertions `any` em multiplos locais | BAIXO — type safety | Sprint 2 |
-| DT-10 | PontosVantagemController: CRUD backend completo, ZERO frontend (M1) | ALTO — feature invisivel | Sprint 2 |
-| DT-11 | FormulaController + SiglaController sem API service frontend (M2, M3) | ALTO — infraestrutura ausente | Sprint 2 |
-
----
-
-## Backlog do Proximo Sprint (Preview — Atualizado sessao 4)
-
-### P0 — Critico (proxima implementacao imediata)
-
-| Prioridade | Descricao | Origem | Estimativa |
-|-----------|-----------|--------|-----------|
-| P0-1 | **US-FICHA-01**: Reescrita FichaForm wizard (10 secoes alinhadas ao backend) | G1, SP1-T15/T16 adiados | P3 (grande) |
-| P0-2 | **US-FICHA-05**: Tela de NPCs para o Mestre (listagem + criacao) | G5 — 100% ausente | P2 |
-| P0-3 | **US-FICHA-04**: Concessao de XP pelo Mestre (progressao de nivel) | G4 — impossivel sem isso | P2 |
-| P0-4 | **US-FICHA-02 + US-FICHA-03**: Atributos e aptidoes reais no Detail + distribuicao | G2, G3, M4, M5 | P2 |
-
-### P1 — Alta Prioridade (sprint proxima)
-
-| Prioridade | Descricao | Origem | Estimativa |
-|-----------|-----------|--------|-----------|
-| P1-1 | **SP2-T01**: Formula Editor Component (autocomplete, validacao, preview) | BA analise, M2 | P2 |
-| P1-2 | **M1**: PontosVantagem completo no frontend (model + service + store + component) | Tech Lead audit | P2 |
-| P1-3 | **US-FICHA-07**: Marketplace de compra de vantagens | G10, G7 | P3 (grande) |
-| P1-4 | **M2 + M3**: FormulaController + SiglaController API services no frontend | Tech Lead audit | P1 |
-| P1-5 | **SP2-T02**: Sub-recursos de Classe (ClasseBonus + ClasseAptidaoBonus) | BA analise, endpoints existem | P2 |
-| P1-6 | **SP2-T03**: Sub-recursos de Raca (RacaBonusAtributo + RacaClassePermitida) | BA analise, endpoints existem | P2 |
-
-### P2 — Media Prioridade
-
-| Prioridade | Descricao | Origem | Estimativa |
-|-----------|-----------|--------|-----------|
-| P2-1 | **US-FICHA-06**: Barras de Vida e Essencia reativas | G6 — depende de backend | P1 |
-| P2-2 | **C2**: Dashboard do Mestre com dados reais (totalParticipantes) | Tech Lead audit | P1 |
-| P2-3 | **M7**: Edicao de perfil (PUT /usuarios/me) com UI | Tech Lead audit | P1 |
-| P2-4 | **US-FICHA-08**: Unificacao de rota de edicao List vs Detail | G9 | P1 |
-| P2-5 | **SP2-T04**: Color picker CategoriaVantagem | BA analise | P1 |
-| P2-6 | **SP2-T05**: Validacao async de unicidade de sigla | BA analise | P1 |
-| P2-7 | **SP2-T06**: Sub-recursos de Vantagem (efeitos e pre-requisitos UI) | BA analise | P2 |
-
-### Divida Tecnica (Sprint 2)
-
-| Item | Descricao | Origem |
-|------|-----------|--------|
-| C1 | 13 handleReorder() conectados ao backend real | Tech Lead audit (QW-1 em andamento) |
-| DT-FE-01 | atualizarAnotacao() fantasma: remover ou backend implementa PUT | Tech Lead audit |
-| DT-FE-02 | CategoriaVantagem URL corrigida (`/api/v1/jogos/`) | Tech Lead audit |
-| DT-FE-03 | ConfigStore type assertions `any` removidas | Tech Lead audit |
-| SP2-T07 | NivelConfig inline editable table + validacao XP crescente | BA analise |
-| SP2-T09 | Progress bar porcentagemVida MembroCorpoConfig | BA analise |
-
-### P3 — Baixa Prioridade / Backlog Futuro
-
-| Item | Descricao | Origem |
-|------|-----------|--------|
-| SP2-T10 | Filtro/agrupamento por TipoAptidao nas aptidoes | BA analise |
-| SP2-T11 | Indicador visual de bonus negativo nas racas | BA analise |
-| — | Testes de componente Angular (cobertura minima) | Backlog original |
-| — | Historico Envers endpoint | Backlog original |
-| — | Mobile responsiveness | Backlog original |
+*Atualizado: 2026-04-04 (rodada 4: 11/35, 509B+359F testes, S007-T3+T4+T5+S015-T2+S006-T1 concluidas, merge limpo) | PM/Scrum Master*

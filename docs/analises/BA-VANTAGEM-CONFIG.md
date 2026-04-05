@@ -1,3 +1,7 @@
+> **Status: VALIDO** | Ultima revisao: 2026-04-02
+> VantagemConfig CRUD completo com pre-requisitos (deteccao ciclos DFS), CategoriaVantagem FK, e VantagemEfeito (8 tipos).
+> O que mudou desde a escrita: VantagemEfeito implementado com 8 tipos (BONUS_ATRIBUTO, BONUS_APTIDAO, BONUS_DERIVADO, BONUS_VIDA, BONUS_VIDA_MEMBRO, BONUS_ESSENCIA, DADO_UP, FORMULA_CUSTOMIZADA). GAP-03 confirma que VantagemEfeito NAO esta integrado ao FichaCalculationService (VT=0 hardcoded). Frontend sem UI para efeitos (SP2-T06 pendente).
+
 # BA-VANTAGEM-CONFIG.md — Análise Completa: Configuração de Vantagem
 
 > Documento de análise de negócio para a entidade `VantagemConfig` e seus relacionamentos.

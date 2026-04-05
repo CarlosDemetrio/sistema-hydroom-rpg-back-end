@@ -1,3 +1,7 @@
+> **Status: VALIDO** | Ultima revisao: 2026-04-02
+> Todos os CRUDs completos e testados. Frontend consome todos.
+> O que mudou desde a escrita: PUT /fichas/{id}/vida e PUT /fichas/{id}/prospeccao implementados (commit 4702887). MembroCorpoConfig com porcentagemVida funcional.
+
 # BA-CONFIGURACOES-SIMPLES.md — Análise Completa: Configurações de Identidade e Mecânicas Especiais
 
 > Documento de análise de negócio para as entidades `GeneroConfig`, `IndoleConfig`, `PresencaConfig`, `DadoProspeccaoConfig` e `MembroCorpoConfig`.

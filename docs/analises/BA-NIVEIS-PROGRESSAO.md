@@ -1,3 +1,7 @@
+> **Status: VALIDO** | Ultima revisao: 2026-04-02
+> NivelConfig com permitirRenascimento adicionado. CategoriaVantagem e PontosVantagemConfig CRUDs completos no backend.
+> O que mudou desde a escrita: PontosVantagemConfig tem CRUD completo mas ZERO cobertura frontend (M1 pendente). GAP-02 define que XP e read-only para jogador (PO decidiu). GAP-06 confirma que pontosDisponiveis ausentes do FichaResumoResponse.
+
 # BA-NIVEIS-PROGRESSAO.md — Análise Completa: Níveis e Progressão
 
 > Documento de análise de negócio para as entidades `NivelConfig`, `CategoriaVantagem` e `PontosVantagemConfig`, com referências a `VantagemConfig` (detalhada no BA-VANTAGEM-CONFIG.md).

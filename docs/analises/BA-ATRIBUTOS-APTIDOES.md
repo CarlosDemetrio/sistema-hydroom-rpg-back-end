@@ -1,3 +1,7 @@
+> **Status: VALIDO** | Ultima revisao: 2026-04-02
+> Specs 004 implementadas conforme esta analise. CRUDs completos com siglas, formulas e sub-recursos.
+> O que mudou desde a escrita: SiglaValidationService implementado (cross-entity), FormulaEvaluatorService com validarFormula() dinamico, GET /fichas/{id}/atributos e /aptidoes implementados.
+
 # BA-ATRIBUTOS-APTIDOES.md — Análise Completa: Atributos, Aptidões, Tipos de Aptidão e Bônus
 
 > Documento de análise de negócio para as entidades `AtributoConfig`, `AptidaoConfig`, `TipoAptidao` e `BonusConfig`.

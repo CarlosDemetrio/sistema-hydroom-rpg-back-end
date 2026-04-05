@@ -1,6 +1,8 @@
+> ARQUIVO ABSORVIDO — Ver `docs/MASTER.md` para informacao atualizada. Mantido como referencia historica.
+
 # INDEX — Klayrah RPG: Ficha Controlador
-> Índice mestre de controle. Última atualização: 2026-04-01
-> Branch: `feature/009-npc-fichas-mestre` | Completude geral: ~65%
+> Indice mestre de controle. Ultima atualizacao: 2026-04-02 (sessao 5)
+> Branch: `feature/009-npc-fichas-mestre` | Completude geral: ~72% | Backend: 457 testes | Frontend: 271 passando
 
 Fontes: `docs/PM.md`, `docs/PRODUCT-BACKLOG.md`, `docs/UX-BACKLOG.md`, `docs/TEAM-PLAN.md`, `docs/EPICS-BACKLOG.md`
 

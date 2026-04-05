@@ -1,3 +1,8 @@
+> **Status: PARCIALMENTE SUPERADO** | Ultima revisao: 2026-04-02
+> Backend da ficha ~90% pronto. FichaService, FichaCalculationService, FichaVantagemService, FichaPreviewService, FichaResumoService todos implementados.
+> O que mudou desde a escrita: GAP-01 confirma que FichaForm precisa rewrite wizard (envia apenas {nome}). GAP-03 confirma que VantagemEfeito nao esta integrado ao motor. PO decidiu wizard 5-6 passos com auto-save. Ver `docs/gaps/BA-GAPS-2026-04-02.md` para decisoes atualizadas.
+> Para requisitos de criacao de ficha, usar dossie de gaps como fonte mais recente.
+
 # BA-FICHA.md — Análise Completa: Ficha de Personagem
 
 > Documento de análise de negócio e UX para a feature central do produto.

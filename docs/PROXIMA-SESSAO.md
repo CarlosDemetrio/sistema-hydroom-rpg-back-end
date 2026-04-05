@@ -1,170 +1,213 @@
-# Proxima Sessao — Ponto de Retomada
+# Proxima Sessao -- Ponto de Retomada
 
-> Atualizado: 2026-04-02 (fim de sessao 5)
-> Branch frontend: `feature/009-npc-fichas-mestre` (ou main — verificar)
+> Atualizado: 2026-04-04 (consolidacao final pos-rodada 2, sessao 10)
 > Branch backend: `feature/009-npc-fichas-mestre`
+> Branch frontend: verificar com `git status` no repo frontend
 
 ---
 
-## Estado Atual do Build e Testes
+## Estado Atual (resumo executivo)
 
-### Backend
-- **457 testes passando** (era 422 — +35 novos testes de integracao)
-- GET /fichas/{id}/atributos: **JA IMPLEMENTADO** (estava no codigo, agente adicionou 8 testes)
-- GET /fichas/{id}/aptidoes: **JA IMPLEMENTADO** (estava no codigo, agente adicionou 8 testes)
-- categoriaNome em FichaVantagemResponse: **JA IMPLEMENTADO** (estava no codigo, agente adicionou 2 testes)
-- **Security fixes SP1-T18: CODIFICADOS MAS NAO COMMITADOS** (6 arquivos em service/)
-
-### Frontend
-- **Build Angular**: 0 erros, 0 warnings
-- **Testes Vitest**: parcialmente corrigidos — 32 passando / 34 falhando (sessao 5 corrigi inputBinding → componentInputs)
-- Commits pendentes (mudancas nao commitadas desta sessao)
+| Metrica | Valor |
+|---------|-------|
+| Backend testes | **474 passando**, 0 falhas |
+| Frontend testes | **359 passando**, 0 falhas |
+| Sprint 2 progresso | **6/35 concluidas** (17%) |
+| Riscos resolvidos | URG-01, URG-02, GAP-CALC-01..08, S007-T0/T1, S015-T5, QW-Bug3 |
+| Caminho critico | S007-T2..T7 **DESBLOQUEADOS** (T1 concluida) |
+| Regra de agentes | **1 task por agente** (max); tasks triviais <30min agrupam 2-3 |
 
 ---
 
-## ACAO IMEDIATA — Commits Pendentes
+## Comando de Retomada Rapida
 
-### Backend (repo ficha-controlador, branch feature/009-npc-fichas-mestre)
+Ao iniciar nova sessao, execute exatamente estes passos:
 
-```bash
-# SP1-T18: security fixes
-git add src/main/java/.../service/FichaAnotacaoService.java \
-        src/main/java/.../service/FichaPreviewService.java \
-        src/main/java/.../service/FichaResumoService.java \
-        src/main/java/.../service/FichaService.java \
-        src/main/java/.../service/FichaVantagemService.java \
-        src/main/java/.../service/FichaVidaService.java
-git commit -m "fix(security): bloquear NPCs para Jogadores + fixes N+1 — SP1-T18"
+### Passo 1: PM le contexto
 
-# Novos testes de integracao (GET atributos/aptidoes + categoriaNome)
-git add src/test/java/.../service/FichaServiceIntegrationTest.java
-git add src/test/java/.../service/FichaVantagemServiceIntegrationTest.java
-git commit -m "test(ficha): testes de integracao GET atributos, aptidoes e categoriaNome"
+```
+Ler docs/HANDOFF-SESSAO.md         -- estado completo, plano anti-conflito, agentes
+Ler docs/SPRINT-ATUAL.md           -- sprint tracking detalhado
 ```
 
-### Frontend (repo ficha-controlador-front-end)
+### Passo 2: Verificar testes (sanidade)
 
 ```bash
-# Fix testes — inputBinding → componentInputs (NG0315 corrigido)
-git add src/app/shared/components/formula-editor/formula-editor.component.spec.ts
-git add src/app/shared/components/base-config/base-config-table.component.spec.ts
-git add src/app/features/mestre/pages/config/configs/atributos-config/atributos-config.component.spec.ts
-git commit -m "fix(tests): corrigir specs — substituir inputBinding por componentInputs"
+cd /Users/carlosdemetrio/IdeaProjects/ficha-controlador
+./mvnw test 2>&1 | tail -5        # deve mostrar 474 testes, 0 falhas
 
-# FormulaEditorComponent + Quick Wins + handleReorder wiring
-git add src/app/shared/components/formula-editor/
-git add src/app/features/mestre/pages/config/configs/  # handleReorder wired
-git commit -m "feat(formula-editor): FormulaEditorComponent com chips, preview e validacao"
-git commit -m "feat(config): conectar handleReorder ao ConfigApiService em 12 componentes"
-git commit -m "feat(ux): quick wins QW-2 badges sidebar, QW-3 aviso aptidoes, QW-5 tooltips"
+cd /Users/carlosdemetrio/IdeaProjects/ficha-controlador-front-end/ficha-controlador-front-end
+npx vitest run 2>&1 | tail -10    # deve mostrar 359 testes, 0 falhas
+```
+
+### Passo 3: Lancar 4 agentes (Rodada 3)
+
+**IMPORTANTE:** Agente 2 (S007-T3) deve lancar APOS Agente 1 (S007-T2) concluir. Eles tocam o mesmo arquivo.
+
+---
+
+## AGENTE 1 -- S007-T2: BONUS_ATRIBUTO + BONUS_APTIDAO (Backend Caminho Critico)
+
+**Objetivo:** Implementar os dois primeiros tipos de efeito de vantagem no FichaCalculationService.
+
+**System prompt resumido:**
+```
+Voce e um desenvolvedor backend Java 25 / Spring Boot 4 especializado em logica de calculo de fichas RPG.
+
+TASK: Implementar BONUS_ATRIBUTO e BONUS_APTIDAO no FichaCalculationService.
+
+1. Ler: docs/specs/007-vantagem-efeito/tasks/P1-T2-bonus-atributo-aptidao.md (LEIA INTEIRO)
+2. Ler: CLAUDE.md para convencoes do projeto
+3. Implementar os 4 passos descritos na task:
+   - calcularValorEfeito(efeito, nivelVantagem)
+   - zerarContribuicoesVantagens() para idempotencia
+   - BONUS_ATRIBUTO no switch de aplicarEfeitosVantagens()
+   - BONUS_APTIDAO + adicionar List<FichaAptidao> ao metodo
+4. Rodar: ./mvnw test
+5. Reportar: quantos testes passam, se houve regressao
+
+Arquivo principal: service/FichaCalculationService.java
+NAO TOCAR: model/ClassePontos*, model/RacaPontos*, service/configuracao/Default*, qualquer arquivo frontend
+
+Convencoes:
+- @Transactional(readOnly = true) na classe, @Transactional em metodos de escrita
+- Lookup por mapa, nao iteracao O(n) dentro do loop
+- log.warn para dados faltantes, nunca lancar excecao
+- Soft delete: ignorar efeitos com deletedAt != null
 ```
 
 ---
 
-## Testes Frontend — O que Falta Corrigir
+## AGENTE 2 -- S007-T3: BONUS_VIDA + BONUS_ESSENCIA (Backend -- APOS T2)
 
-**Status apos sessao 5**: 32/66 passando com 2 spec files ainda falhando
+**Objetivo:** Adicionar dois cases simples ao switch ja criado por T2.
 
-### formula-editor.component.spec.ts
-- **Fix aplicado**: inputBinding → componentInputs + NO_ERRORS_SCHEMA + componentImports sem InputNumberModule
-- **Falhas restantes**: chips de variaveis (p-tag: 0 vs 3 esperado)
-  - Causa provavel: TagModule nao funciona via componentImports override em JIT
-  - Solucao: testar via `(component as any).todasVariaveis().length` em vez de querySelector('p-tag')
-  - Ou: incluir TagModule normalmente e verificar se PrimeNG Tag renderiza como `p-tag` no DOM
+**DEPENDENCIA CRITICA:** Lancar APOS Agente 1 concluir (mesmo arquivo).
 
-### base-config-table.component.spec.ts
-- **Fix aplicado**: inputBinding → componentInputs
-- **Status**: nao confirmado (sessao interrompida antes de rodar)
-- **Risco**: required inputs (`titulo`, `items`, `columns` sao `input.required<>()`) — se componentInputs nao funcionar, vai falhar com "required input not set"
+**System prompt resumido:**
+```
+Voce e um desenvolvedor backend Java 25 / Spring Boot 4.
 
-### atributos-config.component.spec.ts
-- **Fix aplicado**: ConfigApiService mock adicionado ao providers
-- **Status**: deve estar passando (fix simples e correto)
+TASK: Implementar BONUS_VIDA e BONUS_ESSENCIA no FichaCalculationService.
 
----
+1. Ler: docs/specs/007-vantagem-efeito/tasks/P1-T3-bonus-vida-essencia.md
+2. Ler: CLAUDE.md
+3. Adicionar 2 cases no switch de aplicarEfeitosVantagens():
+   - BONUS_VIDA: vida.setVt(vida.getVt() + bonus)
+   - BONUS_ESSENCIA: essencia.setVantagens(essencia.getVantagens() + bonus)
+4. Rodar: ./mvnw test
+5. Reportar: quantos testes passam
 
-## Proximos Passos Prioritarios
-
-### P0 — Fix testes frontend (continuar de onde parou)
-
-1. **Rodar npm test** para ver estado atual dos testes com as correcoes aplicadas
-2. **Corrigir chips tests** em formula-editor: substituir querySelector('p-tag') por contagem via `todasVariaveis().length`
-3. **Confirmar base-config-table** com componentInputs
-4. **Meta**: 0 testes falhando antes de qualquer nova feature
-
-### P1 — Commits pendentes
-
-5. Commitar security fixes backend (SP1-T18)
-6. Commitar testes de integracao novos backend
-7. Commitar fixes frontend (spec files + formula editor + QW)
-
-### P2 — Sprint 2 Features (em ordem de prioridade)
-
-Ver secao de repriorization abaixo — mantida da sessao 4.
+Arquivo: service/FichaCalculationService.java
+NAO TOCAR: model/ClassePontos*, model/RacaPontos*, frontend
+```
 
 ---
 
-## Repriorization Sprint 2 (inalterada da sessao 4)
+## AGENTE 3 -- S015-T1: 4 Entidades ConfigPontos (Backend Paralelo)
 
-### P0 — Critico (proxima implementacao)
+**Objetivo:** Criar camada de modelo e persistencia para pontos extras por classe/raca.
 
-- [ ] **US-FICHA-01** — Reescrita FichaForm wizard (envia apenas {nome} atualmente)
-- [ ] **US-FICHA-05** — Tela de NPCs para o Mestre (ausente totalmente)
-- [ ] **US-FICHA-04** — Concessao de XP pelo Mestre (progressao bloqueada)
-- [ ] **US-FICHA-02 + US-FICHA-03** — Atributos e aptidoes reais no FichaDetail
+**System prompt resumido:**
+```
+Voce e um desenvolvedor backend Java 25 / Spring Boot 4.
 
-### P1 — Alta prioridade
+TASK: Criar 4 novas entidades, repos, DTOs, mappers para ConfigPontos Classe/Raca.
 
-- [ ] **SP2-T01** — FormulaEditorComponent (CRIADO nesta sessao, integrar nos forms de config)
-- [ ] **M1** — PontosVantagem CRUD no frontend (zero cobertura)
-- [ ] **US-FICHA-07** — Marketplace de vantagens
-- [ ] **M2 + M3** — FormulaController + SiglaController API services no frontend
-- [ ] **SP2-T02** — Sub-recursos Classe (ClasseBonus + ClasseAptidaoBonus UI)
-- [ ] **SP2-T03** — Sub-recursos Raca (RacaBonusAtributo + RacaClassePermitida UI)
+1. Ler: docs/specs/015-config-pontos-classe-raca/tasks/P1-T1-entidades-config-pontos.md (LEIA INTEIRO)
+2. Ler: CLAUDE.md
+3. Criar:
+   - 4 entidades (ClassePontosConfig, ClasseVantagemPreDefinida, RacaPontosConfig, RacaVantagemPreDefinida)
+   - 4 repositories
+   - 8 DTOs (4 request + 4 response) como records
+   - 4 mappers MapStruct
+   - Adicionar Set<> em ClassePersonagem.java e Raca.java
+4. Rodar: ./mvnw test
+5. Reportar: quantos testes passam, se H2 criou tabelas
 
-### P2 — Media prioridade
+Convencoes:
+- Lombok: @Data @EqualsAndHashCode(callSuper = true) @Builder @NoArgsConstructor @AllArgsConstructor
+- Usar Set<> (nao List<>) para colecoes OneToMany
+- FetchType.LAZY em todos os @ManyToOne
+- @SQLRestriction("deleted_at IS NULL")
+- MapStruct: NullValuePropertyMappingStrategy.IGNORE no update
 
-- [ ] US-FICHA-06 — Barras de Vida e Essencia reativas
-- [ ] C2 — Dashboard Mestre com dados reais
-- [ ] M7 — Edicao de perfil UI
-- [ ] SP2-T04 — Color picker CategoriaVantagem
-- [ ] SP2-T05 — Validacao async unicidade de sigla
-
-### Divida Tecnica
-
-- [ ] C1 — handleReorder wiring para o 13o componente (12/13 feito)
-- [ ] DT-FE-01 — atualizarAnotacao() fantasma
-- [ ] DT-FE-02 — CategoriaVantagem URL corrigida
-- [ ] SP1-T23 — Testes de integracao FichaController
-- [ ] SP1-T27 — DDL de producao (3 ALTER TABLE)
-- [ ] SP1-T13, T14, T17 — Barras HP, Participantes UI, Skeletons
+NAO TOCAR: service/FichaCalculation*, qualquer arquivo frontend
+```
 
 ---
 
-## Endpoints Backend Disponiveis (prontos para frontend consumir)
+## AGENTE 4 -- QW-Bug1 + QW-Bug2: Barras e Pontos Hardcoded (Frontend)
 
-| Endpoint | Status | Usado no frontend? |
-|----------|--------|--------------------|
-| GET /api/v1/fichas/{id}/atributos | Implementado + testado | NAO — atributos mockados no FichaDetail |
-| GET /api/v1/fichas/{id}/aptidoes | Implementado + testado | NAO — aptidoes vazias no FichaDetail |
-| FichaVantagemResponse.categoriaNome | Implementado | NAO — frontend ignora esse campo |
-| GET /api/v1/fichas?isNpc=true | Existe | NAO — tela NPC ausente |
-| POST /api/v1/fichas (isNpc=true) | Existe | NAO |
-| PUT /api/v1/fichas/{id}/vida | Existe | Parcialmente |
-| GET /api/v1/usuarios/me | Existe | NAO — tela perfil ausente |
-| PUT /api/v1/usuarios/me | Existe | NAO |
-| POST /api/v1/formulas/preview | Existe | NAO |
-| GET /api/v1/formulas/variaveis | Existe | NAO |
-| GET /api/v1/siglas/{jogoId} | Existe | NAO |
+**Objetivo:** Corrigir 2 bugs de valores hardcoded na tela de ficha.
+
+**System prompt resumido:**
+```
+Voce e um desenvolvedor Angular 21 / PrimeNG 21 especializado em signals e componentes reativas.
+
+TASK: Corrigir 2 bugs de valores hardcoded.
+
+1. QW-Bug1: ficha-header.component.ts L82/95
+   - Barras vida/essencia: [value]="100" deve usar ficha.vida.total e ficha.essencia.total
+   - Se dados nao disponiveis, usar 0 ou ocultar barra
+
+2. QW-Bug2: ficha-vantagens-tab.component.ts L107
+   - Pontos vantagem: hardcoded 0 deve usar valor real ou mostrar traco "--"
+
+3. Rodar: npx vitest run
+4. Reportar: quantos testes passam
+
+Convencoes Angular:
+- inject() para DI, signal()/computed()/model()/input()/output()
+- @if/@for (nunca *ngIf/*ngFor)
+- Testes com Vitest: vi.fn(), @testing-library/angular
+
+NAO TOCAR: qualquer arquivo backend
+```
 
 ---
 
-## Causa Raiz: Falha nos Testes (para referencia futura)
+## Apos Rodada 3: Proximos Alvos
 
-**Problema**: `inputBinding` de `@angular/core` em `render({ bindings })` do @testing-library/angular aplica os bindings no wrapper component, nao no componente real — NG0315.
+**Backend (rodada 4, podem rodar em paralelo entre si):**
+- S007-T4: BONUS_DERIVADO + BONUS_VIDA_MEMBRO (2-3h)
+- S007-T5: DADO_UP (1-2h)
+- S015-T2: CRUD endpoints sub-recursos (3-4h)
+- S006-T1: Campo status + endpoint /completar (2-3h)
 
-**Solucao**: Usar `componentInputs` que chama `fixture.componentRef.setInput()` diretamente.
+**Backend (rodada 5):**
+- S007-T7: Insolitus + endpoint concessao (3-4h)
+- S005-P1T1: Re-solicitacao constraint (2-3h)
+- S006-T2: Validacao RacaClassePermitida (2-3h)
+- S006-T5: pontosDisponiveis no response (2-3h)
 
-**InputNumber CD loop**: Remover InputNumberModule via `componentImports` + adicionar `NO_ERRORS_SCHEMA` nos testes que usam FormulaEditorComponent.
+**Frontend (apos backend correspondente):**
+- S007-T9-T12 (VantagemEfeito UI -- apos T8)
+- S006-T6-T13 (Wizard -- apos T1/T5 backend)
 
-**p-tag chips**: `p-tag` com `TagModule` via `componentImports` pode nao renderizar como elemento `p-tag` no DOM (PrimeNG pode criar shadow DOM). Testar via logica do componente em vez do DOM.
+---
+
+## Decisao Arquitetural Pendente
+
+**FichaAptidao.classe: sobrescrever vs somar**
+
+Contexto: T0 implementou sobrescrita. Campo `outros` existe para ajustes manuais.
+Recomendacao PM: Opcao A (sobrescrever). Validar com Tech Lead.
+
+---
+
+## Arquivos-chave para ler antes de comecar
+
+| Arquivo | Por que ler |
+|---------|-------------|
+| `docs/HANDOFF-SESSAO.md` | **LEIA PRIMEIRO** -- estado completo, plano anti-conflito, 4 agentes |
+| `docs/MASTER.md` | Indice mestre atualizado |
+| `docs/SPRINT-ATUAL.md` | Sprint 2 tracking com 6/35 concluidas |
+| `docs/specs/007-vantagem-efeito/tasks/P1-T2-bonus-atributo-aptidao.md` | Task do Agente 1 |
+| `docs/specs/007-vantagem-efeito/tasks/P1-T3-bonus-vida-essencia.md` | Task do Agente 2 |
+| `docs/specs/015-config-pontos-classe-raca/tasks/P1-T1-entidades-config-pontos.md` | Task do Agente 3 |
+| `docs/gaps/PERGUNTAS-PENDENTES-PO.md` | Perguntas abertas |
+
+---
+
+*Atualizado: 2026-04-04 (consolidacao final pos-rodada 2) | PM/Scrum Master*

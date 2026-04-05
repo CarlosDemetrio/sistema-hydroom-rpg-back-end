@@ -1,3 +1,5 @@
+> ARQUIVO ABSORVIDO — Ver `docs/MASTER.md` para informacao atualizada. Mantido como referencia historica.
+
 # Klayrah RPG — Team Plan (Backend + Frontend)
 
 > Gerado em: 2026-03-31  

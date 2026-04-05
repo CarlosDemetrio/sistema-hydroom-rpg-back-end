@@ -1,3 +1,7 @@
+> **Status: VALIDO** | Ultima revisao: 2026-04-02
+> Sub-recursos implementados conforme esta analise: ClasseBonus, ClasseAptidaoBonus, RacaBonusAtributo, RacaClassePermitida. Endpoints dedicados com JOIN FETCH.
+> O que mudou desde a escrita: todos os sub-recursos tem endpoints REST dedicados. Frontend ainda nao consome (SP2-T02, SP2-T03 pendentes).
+
 # BA-CLASSES-RACAS.md — Análise Completa: Classes de Personagem e Raças
 
 > Documento de análise de negócio para as entidades `ClassePersonagem` (com `ClasseBonus` e `ClasseAptidaoBonus`) e `Raca` (com `RacaBonusAtributo` e `RacaClassePermitida`).

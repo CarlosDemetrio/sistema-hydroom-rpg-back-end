@@ -1,6 +1,7 @@
 package br.com.hydroom.rpg.fichacontrolador.model;
 
 import br.com.hydroom.rpg.fichacontrolador.constants.ValidationMessages;
+import br.com.hydroom.rpg.fichacontrolador.model.enums.OrigemVantagem;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -59,6 +60,15 @@ public class FichaVantagem extends BaseEntity {
     @Builder.Default
     @Column(name = "concedido_pelo_mestre", nullable = false)
     private Boolean concedidoPeloMestre = false;
+
+    /**
+     * Origem da vantagem: JOGADOR (comprada com pontos), MESTRE (concedida manualmente),
+     * ou SISTEMA (auto-concedida por ClasseVantagemPreDefinida ou RacaVantagemPreDefinida).
+     */
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    @Column(name = "origem", nullable = false, length = 20)
+    private OrigemVantagem origem = OrigemVantagem.JOGADOR;
 
     /**
      * Calcula se pode subir de nível.

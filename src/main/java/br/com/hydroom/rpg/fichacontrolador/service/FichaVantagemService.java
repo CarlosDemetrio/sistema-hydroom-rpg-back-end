@@ -9,6 +9,7 @@ import br.com.hydroom.rpg.fichacontrolador.model.FichaVantagem;
 import br.com.hydroom.rpg.fichacontrolador.model.Usuario;
 import br.com.hydroom.rpg.fichacontrolador.model.VantagemConfig;
 import br.com.hydroom.rpg.fichacontrolador.model.VantagemPreRequisito;
+import br.com.hydroom.rpg.fichacontrolador.model.enums.OrigemVantagem;
 import br.com.hydroom.rpg.fichacontrolador.model.enums.RoleJogo;
 import br.com.hydroom.rpg.fichacontrolador.model.enums.TipoVantagem;
 import br.com.hydroom.rpg.fichacontrolador.repository.FichaRepository;
@@ -209,6 +210,7 @@ public class FichaVantagemService {
                 .nivelAtual(1)
                 .custoPago(0)
                 .concedidoPeloMestre(true)
+                .origem(OrigemVantagem.MESTRE)
                 .build();
 
         fichaVantagem = fichaVantagemRepository.save(fichaVantagem);

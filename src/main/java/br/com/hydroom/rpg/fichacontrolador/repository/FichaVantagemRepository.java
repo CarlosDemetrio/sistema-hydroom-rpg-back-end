@@ -17,6 +17,12 @@ public interface FichaVantagemRepository extends JpaRepository<FichaVantagem, Lo
     Optional<FichaVantagem> findByFichaIdAndVantagemConfigId(Long fichaId, Long vantagemConfigId);
 
     /**
+     * Verifica se a ficha já possui uma vantagem específica (independente da origem).
+     * Usado para evitar duplicatas na auto-concessão.
+     */
+    boolean existsByFichaIdAndVantagemConfigId(Long fichaId, Long vantagemConfigId);
+
+    /**
      * Busca vantagens da ficha com JOIN FETCH no VantagemConfig e LEFT JOIN FETCH na CategoriaVantagem para evitar N+1.
      * LEFT JOIN porque categoriaVantagem é nullable.
      */

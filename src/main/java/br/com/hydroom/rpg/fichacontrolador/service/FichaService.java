@@ -80,6 +80,7 @@ public class FichaService {
     private final FichaCalculationService fichaCalculationService;
     private final FichaValidationService fichaValidationService;
     private final FichaResumoService fichaResumoService;
+    private final VantagemAutoConcessaoService vantagemAutoConcessaoService;
 
     /**
      * Cria uma nova ficha e inicializa todos os sub-registros automaticamente.
@@ -189,8 +190,17 @@ public class FichaService {
         // 7. Inicializar sub-registros
         inicializarSubRegistros(ficha, jogo);
 
-        // 8. Recalcular valores derivados
+        // 8. Auto-conceder vantagens pré-definidas para nível 1 (classe + raça)
+        List<FichaVantagem> autoVantagens =
+                vantagemAutoConcessaoService.concederVantagensParaNivel(ficha, 1);
+
+        // 9. Recalcular valores derivados (inclui efeitos de vantagens auto-concedidas)
         recalcular(ficha);
+
+        if (!autoVantagens.isEmpty()) {
+            log.info("Ficha '{}' (ID: {}): {} vantagem(ns) auto-concedida(s) no nivel 1",
+                    ficha.getNome(), ficha.getId(), autoVantagens.size());
+        }
 
         log.info("Ficha '{}' criada com sucesso (ID: {})", ficha.getNome(), ficha.getId());
         return ficha;
@@ -505,9 +515,15 @@ public class FichaService {
 
         if (novoNivel > nivelAnterior) {
             ficha.setNivel(novoNivel);
-            log.info("Level up! Ficha '{}' (ID: {}) avançou do nível {} para {}",
+            log.info("Level up! Ficha '{}' (ID: {}) avancou do nivel {} para {}",
                     ficha.getNome(), fichaId, nivelAnterior, novoNivel);
             fichaRepository.save(ficha);
+
+            // Conceder vantagens pré-definidas para cada nível atingido (suporta pulo de níveis)
+            for (int n = nivelAnterior + 1; n <= novoNivel; n++) {
+                vantagemAutoConcessaoService.concederVantagensParaNivel(ficha, n);
+            }
+
             recalcular(ficha);
         } else {
             fichaRepository.save(ficha);
@@ -847,7 +863,7 @@ public class FichaService {
                 .toList();
         fichaProspeccaoRepository.saveAll(copiaProspeccoes);
 
-        // FichaVantagem — copia vantagens com os mesmos níveis e custos
+        // FichaVantagem — copia vantagens com os mesmos níveis, custos e origem
         List<FichaVantagem> vantagens = fichaVantagemRepository.findByFichaIdWithConfig(fichaOrigemId);
         List<FichaVantagem> copiaVantagens = vantagens.stream()
                 .map(fv -> FichaVantagem.builder()
@@ -855,6 +871,8 @@ public class FichaService {
                         .vantagemConfig(fv.getVantagemConfig())
                         .nivelAtual(fv.getNivelAtual())
                         .custoPago(fv.getCustoPago())
+                        .concedidoPeloMestre(fv.getConcedidoPeloMestre())
+                        .origem(fv.getOrigem())
                         .build())
                 .toList();
         fichaVantagemRepository.saveAll(copiaVantagens);

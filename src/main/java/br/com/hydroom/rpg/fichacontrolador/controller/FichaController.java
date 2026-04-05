@@ -11,7 +11,6 @@ import br.com.hydroom.rpg.fichacontrolador.dto.request.DuplicarFichaRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.FichaPreviewRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.NpcCreateRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.UpdateFichaRequest;
-import br.com.hydroom.rpg.fichacontrolador.dto.response.ConcederXpResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.DuplicarFichaResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaAptidaoResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaAtributoResponse;
@@ -352,11 +351,12 @@ public class FichaController {
     @PutMapping("/api/v1/fichas/{id}/xp")
     @PreAuthorize("hasRole('MESTRE')")
     @Operation(summary = "Conceder XP à ficha (Apenas MESTRE)",
-               description = "Define o XP total da ficha e recalcula o nível automaticamente. Retorna levelUp=true se o nível aumentou.")
-    public ResponseEntity<ConcederXpResponse> concederXp(
+               description = "Adiciona XP ao total da ficha (aditivo, nunca substitui) e recalcula o nível automaticamente. " +
+                             "Retorna o resumo atualizado com os novos pontos disponíveis.")
+    public ResponseEntity<FichaResumoResponse> concederXp(
             @PathVariable Long id,
             @Valid @RequestBody ConcederXpRequest request) {
-        var response = fichaService.concederXp(id, request.xp());
-        return ResponseEntity.ok(response);
+        var resumo = fichaService.concederXp(id, request);
+        return ResponseEntity.ok(resumo);
     }
 }

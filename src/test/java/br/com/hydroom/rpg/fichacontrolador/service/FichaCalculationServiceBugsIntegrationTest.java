@@ -1,9 +1,10 @@
 package br.com.hydroom.rpg.fichacontrolador.service;
 
+import br.com.hydroom.rpg.fichacontrolador.dto.request.ConcederXpRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.CreateFichaRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.CriarJogoRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.UpdateFichaRequest;
-import br.com.hydroom.rpg.fichacontrolador.dto.response.ConcederXpResponse;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaResumoResponse;
 import br.com.hydroom.rpg.fichacontrolador.model.*;
 import br.com.hydroom.rpg.fichacontrolador.repository.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -380,22 +381,20 @@ class FichaCalculationServiceBugsIntegrationTest {
     // =========================================================
 
     @Test
-    @DisplayName("T0-06: Conceder XP suficiente para nível 2 deve retornar levelUp=true e nivel=2")
-    void t006_concederXp_levelUp_deveRetornarFlagLevelUp() {
+    @DisplayName("T0-06: Conceder XP suficiente para nível 2 deve recalcular nível e retornar FichaResumoResponse")
+    void t006_concederXp_levelUp_deveRecalcularNivelERetornarResumo() {
         // Arrange: usar NivelConfigs do jogo (padrão: nivel=2 requer xp=3000)
         Ficha ficha = fichaService.criar(new CreateFichaRequest(
                 jogo.getId(), "Level Up Teste", null, null, null, null, null, null, false));
         assertThat(ficha.getNivel()).isEqualTo(1);
 
         // Act: conceder XP suficiente para nível 2 (3000 XP conforme DefaultGameConfigProvider)
-        ConcederXpResponse response = fichaService.concederXp(ficha.getId(), 3000L);
+        // Ficha começa com xp=0, após concessão: 0 + 3000 = 3000
+        FichaResumoResponse resumo = fichaService.concederXp(ficha.getId(), new ConcederXpRequest(3000L, null));
 
         // Assert
-        assertThat(response.xp()).isEqualTo(3000L);
-        assertThat(response.nivel()).isEqualTo(2);
-        assertThat(response.levelUp())
-                .as("Ao atingir nivel 2 pela primeira vez, levelUp deve ser true")
-                .isTrue();
+        assertThat(resumo.xp()).isEqualTo(3000L);
+        assertThat(resumo.nivel()).isEqualTo(2);
 
         // Verificar persistência no banco
         Ficha fichaAtualizada = fichaRepository.findById(ficha.getId()).orElseThrow();
@@ -408,27 +407,32 @@ class FichaCalculationServiceBugsIntegrationTest {
     // =========================================================
 
     @Test
-    @DisplayName("T0-07: Conceder XP insuficiente para próximo nível não deve retornar levelUp e nível permanece")
-    void t007_concederXp_xpInsuficiente_nivelNaoRegrideAbaixoDoAtual() {
-        // Arrange: criar ficha e levá-la para nível 2 (3000 XP)
+    @DisplayName("T0-07: XP acumula e nível não desce — segunda concessão soma ao total existente")
+    void t007_concederXp_acumulativo_nivelNaoRegrideAbaixoDoAtual() {
+        // Arrange: criar ficha e levá-la para nível 2 (3000 XP acumulado)
         Ficha ficha = fichaService.criar(new CreateFichaRequest(
                 jogo.getId(), "Sem Level Up", null, null, null, null, null, null, false));
 
-        fichaService.concederXp(ficha.getId(), 3000L);
+        fichaService.concederXp(ficha.getId(), new ConcederXpRequest(3000L, null));
         Ficha fichaAposLevelUp = fichaRepository.findById(ficha.getId()).orElseThrow();
         assertThat(fichaAposLevelUp.getNivel()).isEqualTo(2);
+        assertThat(fichaAposLevelUp.getXp()).isEqualTo(3000L);
 
-        // Act: conceder XP que permanece no nível 2 (3500 >= 3000 para nivel=2, < 6000 para nivel=3)
-        ConcederXpResponse response = fichaService.concederXp(ficha.getId(), 3500L);
+        // Act: conceder mais 500 XP — total acumulado = 3500, abaixo dos 6000 necessários para nivel=3
+        FichaResumoResponse resumo = fichaService.concederXp(ficha.getId(), new ConcederXpRequest(500L, null));
 
-        // Assert: nível permanece 2, levelUp=false
-        assertThat(response.nivel())
-                .as("Com XP=3500, nível deve permanecer 2 (3000 para nivel=2, 6000 para nivel=3)")
+        // Assert: XP acumulou (3000 + 500 = 3500), nível permanece 2
+        assertThat(resumo.xp())
+                .as("XP deve ser acumulativo: 3000 + 500 = 3500")
+                .isEqualTo(3500L);
+        assertThat(resumo.nivel())
+                .as("Com XP=3500, nível deve permanecer 2 (necessário 6000 para nivel=3)")
                 .isEqualTo(2);
-        assertThat(response.levelUp())
-                .as("Sem avanço de nível, levelUp deve ser false")
-                .isFalse();
-        assertThat(response.xp()).isEqualTo(3500L);
+
+        // Verificar persistência
+        Ficha fichaFinal = fichaRepository.findById(ficha.getId()).orElseThrow();
+        assertThat(fichaFinal.getXp()).isEqualTo(3500L);
+        assertThat(fichaFinal.getNivel()).isEqualTo(2);
     }
 
     // =========================================================

@@ -2,6 +2,7 @@ package br.com.hydroom.rpg.fichacontrolador.service;
 
 import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarAptidaoRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarAtributoRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.ConcederXpRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.CreateFichaRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.UpdateFichaRequest;
 import br.com.hydroom.rpg.fichacontrolador.exception.ForbiddenException;
@@ -21,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-import br.com.hydroom.rpg.fichacontrolador.dto.response.ConcederXpResponse;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaResumoResponse;
 
 /**
  * Service para gerenciamento de Fichas de personagem.
@@ -78,6 +79,7 @@ public class FichaService {
     // Services de cálculo e validação
     private final FichaCalculationService fichaCalculationService;
     private final FichaValidationService fichaValidationService;
+    private final FichaResumoService fichaResumoService;
 
     /**
      * Cria uma nova ficha e inicializa todos os sub-registros automaticamente.
@@ -475,36 +477,53 @@ public class FichaService {
 
     /**
      * Concede XP a uma ficha (Mestre only) e recalcula o nível automaticamente.
-     * Retorna flag levelUp=true se o nível aumentou após a concessão.
+     * XP é aditivo: soma ao total existente, nunca substitui.
+     * Nível nunca desce, mesmo com configurações inconsistentes.
+     * Retorna o FichaResumoResponse atualizado com os novos pontos disponíveis.
      */
     @Transactional
-    public ConcederXpResponse concederXp(Long fichaId, Long xp) {
+    public FichaResumoResponse concederXp(Long fichaId, ConcederXpRequest request) {
         Ficha ficha = fichaRepository.findById(fichaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ficha não encontrada: " + fichaId));
 
-        verificarAcessoEscrita(ficha);
+        verificarAcessoMestreDoJogo(ficha);
+
+        if (request.motivo() != null && !request.motivo().isBlank()) {
+            log.info("XP concedido com motivo: {}", request.motivo());
+        }
 
         int nivelAnterior = ficha.getNivel() != null ? ficha.getNivel() : 1;
-        ficha.setXp(xp);
+        long novoXp = (ficha.getXp() != null ? ficha.getXp() : 0L) + request.xp();
+        ficha.setXp(novoXp);
 
         Long jogoId = ficha.getJogo().getId();
-        Optional<NivelConfig> nivelAlcancado = nivelConfigRepository.findNivelPorExperiencia(jogoId, xp);
+        Optional<NivelConfig> nivelAlcancado = nivelConfigRepository.findNivelPorExperiencia(jogoId, novoXp);
         int novoNivel = nivelAlcancado
                 .filter(n -> n.getNivel() >= 1)
                 .map(NivelConfig::getNivel)
                 .orElse(nivelAnterior);
-        ficha.setNivel(novoNivel);
 
-        ficha = fichaRepository.save(ficha);
-
-        boolean levelUp = novoNivel > nivelAnterior;
-        if (levelUp) {
-            recalcular(ficha);
+        if (novoNivel > nivelAnterior) {
+            ficha.setNivel(novoNivel);
             log.info("Level up! Ficha '{}' (ID: {}) avançou do nível {} para {}",
                     ficha.getNome(), fichaId, nivelAnterior, novoNivel);
+            fichaRepository.save(ficha);
+            recalcular(ficha);
+        } else {
+            fichaRepository.save(ficha);
         }
 
-        return new ConcederXpResponse(fichaId, ficha.getXp(), ficha.getNivel(), levelUp);
+        return fichaResumoService.getResumo(fichaId);
+    }
+
+    private void verificarAcessoMestreDoJogo(Ficha ficha) {
+        Usuario usuarioAtual = getUsuarioAtual();
+        Long jogoId = ficha.getJogo().getId();
+        boolean isMestre = jogoParticipanteRepository.existsByJogoIdAndUsuarioIdAndRole(
+                jogoId, usuarioAtual.getId(), RoleJogo.MESTRE);
+        if (!isMestre) {
+            throw new ForbiddenException("Acesso negado: somente o Mestre pode conceder XP.");
+        }
     }
 
     /**

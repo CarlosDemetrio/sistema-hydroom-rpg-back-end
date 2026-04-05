@@ -3,7 +3,7 @@
 # PM.md — Klayrah RPG: Ficha Controlador
 
 > Fonte de status detalhado do projeto.
-> Gerado em: 2026-04-01 | Atualizado: 2026-04-05 [14:01] (sessao 12, rodada 6, rev.7 — 19/35 Sprint 2, 571 testes) | Branch: `main`
+> Gerado em: 2026-04-01 | Atualizado: 2026-04-05 [15:30] (sessao 12, rodada 8 parcial, rev.9 — 25/35 Sprint 2, 581B+459F testes) | Branch: `main`
 > Indice mestre: `docs/MASTER.md` | Cronologia: `docs/CRONOLOGIA.md`
 
 ---
@@ -14,20 +14,20 @@
 |------|-----------|------------|
 | Backend: Infraestrutura | 95% | DDL producao pendente (SP1-T27) |
 | Backend: Configuracoes (13 CRUDs) | 100% | Todos com testes de integracao |
-| Backend: Motor de Formulas | **95%** | FormulaEvaluatorService existe; 6 bugs CORRIGIDOS (T0); modelo adaptado (T1); 7/8 TipoEfeito implementados (T2/T3+T4+T5/T7 CONCLUIDOS); **T8 CONCLUIDO (571 testes, 20 testes integracao)**; FORMULA_CUSTOMIZADA bloqueado (PA-004) |
-| Backend: Ficha de Personagem (Spec 006/007) | **97%** | FichaCalculationService, FichaVantagemService, GET atributos/aptidoes — TUDO com testes. S006-T1/T2/T4/T5 CONCLUIDOS. **PUT /xp agora acumulativo + FichaResumoResponse (T4)**. Falta: wizard frontend (T6-T13) |
+| Backend: Motor de Formulas | **95%** | FormulaEvaluatorService existe; 6 bugs CORRIGIDOS (T0); modelo adaptado (T1); 7/8 TipoEfeito implementados (T2/T3+T4+T5/T7 CONCLUIDOS); **T8 CONCLUIDO (20 testes integracao)**; FORMULA_CUSTOMIZADA bloqueado (PA-004). **Frontend T9 CONCLUIDO (R7, 31 testes)**. T10-T12 DESBLOQUEADOS |
+| Backend: Ficha de Personagem (Spec 006/007) | **98%** | FichaCalculationService, FichaVantagemService, GET atributos/aptidoes — TUDO com testes. S006-T1/T2/T4/T5 CONCLUIDOS. **Wizard passo 1 (T6 R7)**, **Wizard passo 2 descricao (T7 R8, 21 testes)** CONCLUIDOS. **Participantes API/Service frontend (S005-P2T1 R8)** CONCLUIDO. Falta: wizard passos 3-6 (T8-T13), S005-P2T2/T3 |
 | Backend: NPC + Duplicacao (Spec 009) | **100%** | POST /jogos/{id}/npcs + POST /fichas/{id}/duplicar implementados. 457 testes |
 | Backend: Anotacoes | 100% | FichaAnotacaoController + Service implementados e testados |
 | Backend: Seguranca (role checks) | **100%** | TODOS controllers com @PreAuthorize. ~~BUG XP~~ RESOLVIDO (rodada 2 — PUT /fichas/{id}/xp ja tinha @PreAuthorize) |
 | Backend: Perfil Usuario | **100%** | GET/PUT /api/v1/usuarios/me implementado e testado |
-| Backend: Participantes (Spec 005) | **95%** | **P1T1 CONCLUIDO** (strategy Reactivate, re-solicitacao pos-rejeicao). **P1T2 CONCLUIDO** (banir/desbanir/remover/meu-status/filtro — DELETE corrigido). Falta: P1T3 (testes integracao completos), frontend |
+| Backend: Participantes (Spec 005) | **100%** | **P1T1/P1T2/P1T3 CONCLUIDOS**. Strategy Reactivate, banir/desbanir/remover/meu-status/filtro, 29 testes totais. Falta: frontend (P2T1-P2T3) |
 | Frontend: Modelos e Servicos de API | 75% | Alinhados com backend; sub-recursos (008) pendentes |
-| Frontend: Componentes | 70% | 26+ completos; FichaDetail com dados reais; NPC screen implementada |
-| Frontend: Testes | **100%** | **359 passando**, 0 falhas |
+| Frontend: Componentes | **75%** | 26+ completos; FichaDetail com dados reais; NPC screen; **EfeitoFormComponent (R7, 31 testes)**; **FichaWizardComponent passo 1 (R7, 34 testes)** |
+| Frontend: Testes | **100%** | **424 passando**, 0 falhas |
 
-**Completude geral estimada: ~83%** (era ~80% na rodada 5)
-**Backend: 571 testes, 0 falhas** (+48 desde rodada 5 — Spec 007 T8 + Spec 005 P1T1/P1T2 + Spec 006 T4)
-**Frontend: 359 testes passando, 0 falhas**
+**Completude geral estimada: ~86%** (era ~83% na rodada 6)
+**Backend: 581 testes, 0 falhas** (+10 desde rodada 6 — S015-T4 auto-concessao vantagens + S005-P1T3 testes participantes)
+**Frontend: 424 testes passando, 0 falhas** (+65 desde rodada 6 — S007-T9 efeitos UI + S006-T6 wizard passo 1)
 **Total tasks MVP: 96** (45 backend + 47 frontend + 4 outros)
 
 ---
@@ -59,7 +59,7 @@
 
 **Periodo estimado:** proxima sessao a +3-4 semanas
 **Tasks:** 35 total (19 backend + 14 frontend + 2 urgencias)
-**Progresso:** 19/35 concluidas (54%) — S007-T0/T1/T2/T3+T4+T5/T7/T8, S015-T1/T2/T3/T5, S006-T1/T2/T4/T5, S005-P1T1/P1T2, URG-01, URG-02, QW-Bug3
+**Progresso:** 23/35 concluidas (66%) — S007-T0/T1/T2/T3+T4+T5/T7/T8/T9, S015-T1/T2/T3/T4/T5, S006-T1/T2/T4/T5/T6, S005-P1T1/P1T2/P1T3, URG-01, URG-02, QW-Bug3
 
 | Prio | Spec | Tasks | Descricao | Status |
 |------|------|-------|-----------|--------|
@@ -73,19 +73,22 @@
 | ~~P0-ABS~~ | 007 T3+T4+T5 | 1B | BONUS_DERIVADO, BONUS_VIDA_MEMBRO, DADO_UP | **CONCLUIDO** (rodada 4) |
 | ~~P0-ABS~~ | 007 T7 | 1B | Insolitus — tipoVantagem + endpoint concessao | **CONCLUIDO** (rodada 5) |
 | ~~P0-ABS~~ | 007 T8 | 1B | Testes integracao 7 tipos de efeito (20 testes) | **CONCLUIDO** (rodada 6 [13:20]) |
+| ~~P0-ABS~~ | 007 T9 | 1F | VantagensConfig secao de efeitos (31 testes) | **CONCLUIDO** (rodada 7 — commit `f19c213`) |
 | ~~P0~~ | 015 T1 | 1B | 4 novas entidades ConfigPontos | **CONCLUIDO** (rodada 3) |
 | ~~P0~~ | 015 T2 | 1B | 14 CRUD endpoints sub-recursos | **CONCLUIDO** (rodada 4) |
 | ~~P0~~ | 015 T3 | 1B | Integrar pontos no FichaResumoResponse | **CONCLUIDO** (rodada 5) |
+| ~~P0~~ | 015 T4 | 1B | Auto-concessao vantagens pre-definidas (8 testes) | **CONCLUIDO** (rodada 7 — commit `1dec7db`) |
 | ~~P0~~ | 006 T1 | 1B | FichaStatus + /completar | **CONCLUIDO** (rodada 4) |
 | ~~P0~~ | 006 T2 | 1B | Validacao RacaClassePermitida | **CONCLUIDO** (rodada 5) |
 | ~~P0~~ | 006 T4 | 1B | PUT /xp acumulativo + motivo + FichaResumoResponse | **CONCLUIDO** (rodada 6 [11:19]) |
 | ~~P0~~ | 006 T5 | 1B | pontosDisponiveis no response | **CONCLUIDO** (rodada 5) |
+| ~~P0~~ | 006 T6 | 1F | Wizard Passo 1 Identificacao (34 testes) | **CONCLUIDO** (rodada 7 — commit `064d648`) |
 | ~~P0~~ | 005 P1T1 | 1B | Corrigir re-solicitacao (strategy Reactivate) | **CONCLUIDO** (rodada 6 [11:14]) |
 | ~~P0~~ | 005 P1T2 | 1B | Endpoints faltantes (banir/desbanir/remover/meu-status) | **CONCLUIDO** (rodada 6 [11:19]) |
-| P0-ABS | 007 | 4F | VantagemEfeito: T9-T12 frontend | DESBLOQUEADO (T8 concluida) |
-| P0 | 015 | 1B | ConfigPontos: T4 auto-concessao vantagens | DESBLOQUEADO |
-| P0 | 006 | 8F | Wizard: T6-T13 frontend | DESBLOQUEADO |
-| P0 | 005 | 1B+3F | P1T3 testes integracao + P2T1-T3 frontend | DESBLOQUEADO |
+| ~~P0~~ | 005 P1T3 | 1B | Testes integracao participantes (2 testes novos) | **CONCLUIDO** (rodada 7 — commit `32d4b94`) |
+| P0-ABS | 007 | 3F | VantagemEfeito: T10-T12 frontend | DESBLOQUEADO (T9 concluida) |
+| P0 | 006 | 7F | Wizard: T7-T13 frontend | DESBLOQUEADO (T6 concluida) |
+| P0 | 005 | 3F | P2T1-T3 frontend | DESBLOQUEADO (P1T3 concluida) |
 
 **Criterio de sucesso (ATUALIZADO):**
 - ~~Bug XP corrigido antes de qualquer deploy~~ FEITO
@@ -111,12 +114,12 @@
 - **Spec 001** — 13 CRUDs de configuracao + Template Klayrah (GameConfigInitializerService)
 - **Spec 003** — Refactor: DTOs records, validacoes, exceptions, mappers, testes base
 - **Spec 004** — SiglaValidationService, CategoriaVantagem, PontosVantagem, VantagemPreRequisito, ClasseBonus, RacaClassePermitida, VantagemEfeito (8 tipos entity)
-- **Spec 005 (parcial)** — JogoParticipante com fluxo basico de aprovacao (faltam endpoints)
-- **Spec 006/007 (parcial)** — FichaService, FichaCalculationService, FichaVantagemService, FichaPreviewService, FichaResumoService, GET atributos/aptidoes, vida/prospeccao endpoints. T0/T1/T2/T3+T4+T5/T7 CONCLUIDOS (7/8 efeitos). S006-T1/T2/T5 CONCLUIDOS (status, RacaClassePermitida, pontosDisponiveis). FALTAM: T8 (testes integracao), T5alt (FORMULA_CUSTOMIZADA bloqueado PA-004), wizard frontend (006 T6-T13), T3/T4 backend
-- **Spec 015 (parcial)** — T1/T2/T3/T5 CONCLUIDOS (5/7): 4 entidades ConfigPontos, 14 CRUD endpoints, pontos integrados no FichaResumoResponse, DefaultProvider 8 bugs corrigidos. FALTAM: T4 (auto-concessao vantagens, depende S007-T6), T6/T7 (frontend)
+- **Spec 005 (backend 100%)** — JogoParticipante: P1T1 (strategy Reactivate), P1T2 (5 endpoints), P1T3 (29 testes). Faltam: P2T1-P2T3 frontend
+- **Spec 006/007 (backend 100%, frontend em andamento)** — FichaService, FichaCalculationService, FichaVantagemService, FichaPreviewService, FichaResumoService, GET atributos/aptidoes, vida/prospeccao. T0/T1/T2/T3+T4+T5/T7/T8 CONCLUIDOS (7/8 efeitos + 20 testes integracao). S006-T1/T2/T4/T5 CONCLUIDOS. **S007-T9 CONCLUIDO (R7, efeitos UI, 31 testes)**. **S006-T6 CONCLUIDO (R7, wizard passo 1, 34 testes)**. FALTAM: T5alt (FORMULA_CUSTOMIZADA bloqueado PA-004), wizard frontend (006 T7-T13), efeitos frontend (007 T10-T12)
+- **Spec 015 (backend 100%)** — T1/T2/T3/T4/T5 CONCLUIDOS (5/5 backend): 4 entidades ConfigPontos, 14 CRUD endpoints, pontos integrados no FichaResumoResponse, DefaultProvider 8 bugs corrigidos, **auto-concessao vantagens pre-definidas (T4 R7, 8 testes)**. FALTAM: T6/T7 (frontend)
 - **Spec 008-old** — DashboardController, duplicacao de jogo, export/import de config, resumo de ficha, filtros, reordenacao batch (tudo implementado)
 - **Spec 009** — NPC security, POST /jogos/{id}/npcs, POST /fichas/{id}/duplicar, anotacoes, updates diretos, categoriaNome. 100% backend
-- **Frontend Sprint 1+2** — Design system RPG, BaseConfigTable, 13 paginas de config, FichaDetail (5 abas), JogosDisponiveis, NPC screen, OAuth2, Quick Wins (badges, tooltips, formula editor). QW-Bug1/2/3 TODOS corrigidos. **359 testes passando, 0 falhas**
+- **Frontend Sprint 1+2** — Design system RPG, BaseConfigTable, 13 paginas de config, FichaDetail (5 abas), JogosDisponiveis, NPC screen, OAuth2, Quick Wins (badges, tooltips, formula editor). QW-Bug1/2/3 TODOS corrigidos. **EfeitoFormComponent (R7, efeitos UI, 31 testes)**. **FichaWizardComponent passo 1 (R7, retomada rascunho, classesFiltradas, 34 testes)**. **424 testes passando, 0 falhas**
 
 ---
 
@@ -199,7 +202,7 @@
 | Spec 007 impacta ~20-30 arquivos | Regressao nos calculos | Spec 007 T8 com testes extensivos |
 | PA-004 nao resolvido | FORMULA_CUSTOMIZADA sem alvo | Escalar ao PO antes de T6 |
 | PA-006 nao resolvido | VIG/SAB hardcoded (GAP-CALC-09) | Fora do escopo de T0; escalar ao PO |
-| Sprint 2: 20 tasks restantes | Maioria e frontend (depende de backend pronto) | T8 proximo; backend 007 quase completo (7/8); modelo 1 task/agente |
+| Sprint 2: 12 tasks restantes | Maioria e frontend (wizard, efeitos, participantes) | Backend 100% exceto T5alt (PA-004); modelo 1 task/agente; 4 agentes paralelos por rodada |
 | Spec 010 transversal | ~50+ @PreAuthorize a revisar | Implementar por ULTIMO, branch dedicada |
 
 ---
@@ -218,4 +221,4 @@
 
 ---
 
-*Atualizado: 2026-04-05 (rev.6 — pos-rodada 5: 15/35, 523B+359F, 43% Sprint 2) | PM/Scrum Master*
+*Atualizado: 2026-04-05 [14:54] (rev.8 — pos-rodada 7: 23/35, 581B+424F, 66% Sprint 2) | PM/Scrum Master*

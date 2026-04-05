@@ -162,6 +162,12 @@ public class FichaService {
             }
         }
 
+        // 5.1. Validar combinacao raca + classe (se ambos fornecidos)
+        if (raca != null && classe != null) {
+            Ficha fichaTemp = Ficha.builder().raca(raca).classe(classe).build();
+            fichaValidationService.validarClassePermitidaPorRaca(fichaTemp);
+        }
+
         // 6. Criar e salvar a Ficha
         boolean isNpc = Boolean.TRUE.equals(request.isNpc());
         Ficha ficha = Ficha.builder()

@@ -1,5 +1,19 @@
 {
   "enabledPlugins": {
     "claude-mem@thedotmack": true
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=\"$CLAUDE_TOOL_INPUT_FILE_PATH\"; if echo \"$FILE\" | grep -q 'ficha-controlador-front-end'; then cd /Users/carlosdemetrio/IdeaProjects/ficha-controlador-front-end/ficha-controlador-front-end && npx ng lint --quiet 2>&1 | grep -v '^$' | tail -5; elif echo \"$FILE\" | grep -q '/ficha-controlador/src'; then cd /Users/carlosdemetrio/IdeaProjects/ficha-controlador && ./mvnw compile -q 2>&1 | grep 'ERROR' | head -8; fi",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
   }
 }

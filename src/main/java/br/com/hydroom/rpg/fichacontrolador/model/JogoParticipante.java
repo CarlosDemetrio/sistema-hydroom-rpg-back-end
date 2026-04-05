@@ -1,14 +1,13 @@
 package br.com.hydroom.rpg.fichacontrolador.model;
 
 import br.com.hydroom.rpg.fichacontrolador.model.enums.RoleJogo;
+import br.com.hydroom.rpg.fichacontrolador.model.enums.StatusParticipante;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 /**
  * Representa a participação de um usuário em um jogo.
- *
- * @author Carlos Demétrio
  */
 @Entity
 @Table(
@@ -18,8 +17,8 @@ import lombok.*;
         columnNames = {"jogo_id", "usuario_id"}
     )
 )
-@Getter
-@Setter
+@Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -45,17 +44,21 @@ public class JogoParticipante extends BaseEntity {
     @Builder.Default
     private RoleJogo role = RoleJogo.JOGADOR;
 
-    /**
-     * Verifica se o participante é o mestre do jogo.
-     */
+    @NotNull(message = "Status é obrigatório")
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20, columnDefinition = "VARCHAR(20) DEFAULT 'APROVADO'")
+    @Builder.Default
+    private StatusParticipante status = StatusParticipante.APROVADO;
+
     public boolean isMestre() {
         return RoleJogo.MESTRE.equals(role);
     }
 
-    /**
-     * Verifica se o participante é um jogador.
-     */
     public boolean isJogador() {
         return RoleJogo.JOGADOR.equals(role);
+    }
+
+    public boolean isAprovado() {
+        return StatusParticipante.APROVADO.equals(status);
     }
 }

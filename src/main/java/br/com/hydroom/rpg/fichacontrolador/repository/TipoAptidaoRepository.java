@@ -23,4 +23,6 @@ public interface TipoAptidaoRepository extends JpaRepository<TipoAptidao, Long> 
      */
     @Query("SELECT COUNT(t) > 0 FROM TipoAptidao t WHERE t.jogo.id = :jogoId AND LOWER(t.nome) = LOWER(:nome)")
     boolean existsByJogoIdAndNomeIgnoreCase(Long jogoId, String nome);
+
+    List<TipoAptidao> findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(Long jogoId, String nome);
 }

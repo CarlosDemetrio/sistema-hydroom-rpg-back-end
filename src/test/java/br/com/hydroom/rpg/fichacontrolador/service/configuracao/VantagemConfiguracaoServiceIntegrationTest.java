@@ -41,7 +41,7 @@ class VantagemConfiguracaoServiceIntegrationTest extends
             .nome("Ambidestria " + getUniqueSuffix())
             .descricao("Pode usar ambas as mãos igualmente")
             .nivelMaximo(5)
-            .formulaCusto("NIVEL * 2")
+            .formulaCusto("custo_base * nivel_vantagem")
             .descricaoEfeito("Reduz penalidades de usar armas em ambas as mãos")
             .ordemExibicao(1)
             .build();
@@ -54,7 +54,7 @@ class VantagemConfiguracaoServiceIntegrationTest extends
             .nome(configuracaoExistente.getNome())
             .descricao("Descrição diferente")
             .nivelMaximo(3)
-            .formulaCusto("NIVEL")
+            .formulaCusto("custo_base")
             .build();
     }
 
@@ -63,7 +63,7 @@ class VantagemConfiguracaoServiceIntegrationTest extends
         configuracao.setNome("Ambidestria Atualizada");
         configuracao.setDescricao("Nova descrição");
         configuracao.setNivelMaximo(10);
-        configuracao.setFormulaCusto("NIVEL * 3");
+        configuracao.setFormulaCusto("custo_base * nivel_vantagem * 3");
         configuracao.setOrdemExibicao(10);
     }
 
@@ -72,7 +72,7 @@ class VantagemConfiguracaoServiceIntegrationTest extends
         assertThat(configuracao.getNome()).isEqualTo("Ambidestria Atualizada");
         assertThat(configuracao.getDescricao()).isEqualTo("Nova descrição");
         assertThat(configuracao.getNivelMaximo()).isEqualTo(10);
-        assertThat(configuracao.getFormulaCusto()).isEqualTo("NIVEL * 3");
+        assertThat(configuracao.getFormulaCusto()).isEqualTo("custo_base * nivel_vantagem * 3");
         assertThat(configuracao.getOrdemExibicao()).isEqualTo(10);
     }
 }

@@ -18,4 +18,6 @@ public interface PresencaConfigRepository extends JpaRepository<PresencaConfig, 
     List<PresencaConfig> findByJogoIdOrderByOrdemExibicao(Long jogoId);
 
     boolean existsByJogoIdAndNomeIgnoreCase(Long jogoId, String nome);
+
+    List<PresencaConfig> findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(Long jogoId, String nome);
 }

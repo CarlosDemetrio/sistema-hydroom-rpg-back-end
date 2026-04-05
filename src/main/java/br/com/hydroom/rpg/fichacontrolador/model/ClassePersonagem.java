@@ -2,6 +2,8 @@ package br.com.hydroom.rpg.fichacontrolador.model;
 
 import br.com.hydroom.rpg.fichacontrolador.constants.ValidationMessages;
 import jakarta.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -47,6 +49,22 @@ public class ClassePersonagem extends BaseEntity implements ConfiguracaoEntity {
     @Column(columnDefinition = "TEXT")
     private String descricao;
 
+
+    @OneToMany(mappedBy = "classe", fetch = FetchType.LAZY)
+    @Builder.Default
+    private Set<ClasseBonus> bonusConfig = new HashSet<>();
+
+    @OneToMany(mappedBy = "classe", fetch = FetchType.LAZY)
+    @Builder.Default
+    private Set<ClasseAptidaoBonus> aptidaoBonus = new HashSet<>();
+
+    @OneToMany(mappedBy = "classePersonagem", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<ClassePontosConfig> pontosConfig = new HashSet<>();
+
+    @OneToMany(mappedBy = "classePersonagem", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<ClasseVantagemPreDefinida> vantagensPreDefinidas = new HashSet<>();
 
     @Builder.Default
     @Column(name = "ordem_exibicao", nullable = false)

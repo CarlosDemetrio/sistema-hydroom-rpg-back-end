@@ -24,6 +24,7 @@ public record NivelResponse(
     Integer pontosAtributo,
     Integer pontosAptidao,
     Integer limitadorAtributo,
+    Boolean permitirRenascimento,
     LocalDateTime dataCriacao,
     LocalDateTime dataUltimaAtualizacao
 ) {}

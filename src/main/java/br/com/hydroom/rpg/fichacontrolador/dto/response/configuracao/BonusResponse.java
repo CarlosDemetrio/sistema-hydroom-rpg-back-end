@@ -19,6 +19,7 @@ public record BonusResponse(
     Long id,
     Long jogoId,
     String nome,
+    String sigla,
     String descricao,
     String formulaBase,
     Integer ordemExibicao,

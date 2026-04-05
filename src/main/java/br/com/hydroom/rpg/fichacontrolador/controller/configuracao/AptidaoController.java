@@ -7,8 +7,10 @@ import br.com.hydroom.rpg.fichacontrolador.mapper.configuracao.AptidaoConfigMapp
 import br.com.hydroom.rpg.fichacontrolador.model.AptidaoConfig;
 import br.com.hydroom.rpg.fichacontrolador.model.Jogo;
 import br.com.hydroom.rpg.fichacontrolador.model.TipoAptidao;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.ReordenarRequest;
 import br.com.hydroom.rpg.fichacontrolador.service.configuracao.AptidaoConfiguracaoService;
 import br.com.hydroom.rpg.fichacontrolador.service.JogoService;
+import br.com.hydroom.rpg.fichacontrolador.service.ReordenacaoService;
 import br.com.hydroom.rpg.fichacontrolador.service.configuracao.TipoAptidaoConfiguracaoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -48,6 +50,17 @@ public class AptidaoController {
     private final TipoAptidaoConfiguracaoService tipoAptidaoService;
     private final JogoService jogoService;
     private final AptidaoConfigMapper mapper;
+    private final ReordenacaoService reordenacaoService;
+
+    @PutMapping("/reordenar")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Reordenar aptidões (Apenas MESTRE)", description = "Atualiza a ordem de exibição de múltiplos itens em batch")
+    public ResponseEntity<Void> reordenar(
+            @RequestParam Long jogoId,
+            @Valid @RequestBody ReordenarRequest request) {
+        reordenacaoService.reordenarAptidoes(jogoId, request.itens());
+        return ResponseEntity.noContent().build();
+    }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
@@ -64,7 +77,8 @@ public class AptidaoController {
             @Parameter(description = "ID do jogo", required = true, example = "1")
             @RequestParam Long jogoId,
             @Parameter(description = "Filtrar por tipo de aptidão (opcional)", example = "1")
-            @RequestParam(required = false) Long tipoAptidaoId) {
+            @RequestParam(required = false) Long tipoAptidaoId,
+            @RequestParam(required = false) String nome) {
 
         log.info("Listando aptidões do jogo: {}, tipoAptidaoId: {}", jogoId, tipoAptidaoId);
         List<AptidaoConfig> aptidoes;
@@ -72,7 +86,7 @@ public class AptidaoController {
             TipoAptidao tipoAptidao = tipoAptidaoService.buscarPorId(tipoAptidaoId);
             aptidoes = configuracaoService.listarPorTipo(jogoId, tipoAptidao);
         } else {
-            aptidoes = configuracaoService.listar(jogoId);
+            aptidoes = configuracaoService.listar(jogoId, nome);
         }
         List<AptidaoResponse> response = aptidoes.stream()
             .map(mapper::toResponse)

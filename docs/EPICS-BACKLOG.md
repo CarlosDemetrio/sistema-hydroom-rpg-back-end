@@ -1,26 +1,31 @@
-# 📋 Backlog de Epics — Ficha Controlador (Backend)
+# Backlog de Epics — Ficha Controlador (Backend)
 
-> Atualizado em: Março 2026
-> Base: Glossário completo (01 a 05) × Estado atual do código × Specs planejadas
-> **Tudo referente a Ficha será refeito do ZERO.**
+> Atualizado em: 2026-04-03
+> Base: Glossario completo (01 a 05) x Estado atual do codigo x Specs planejadas
+> **Tudo referente a Ficha sera refeito do ZERO.**
 
 ---
 
-## 📁 Specs e Planejamento
+## Specs e Planejamento
 
-| # | Spec | Épico(s) | Status |
+| # | Spec | Epico(s) | Status |
 |---|------|---------|--------|
-| 001 | `001-backend-data-model` | Data model inicial, 13 CRUDs base | ✅ Concluído |
-| 003 | `003-backend-refactor-best-practices` | DTOs records, validações, exceptions, mappers, testes, AWS | ✅ Concluído |
-| 004 | [`004-configuracoes-siglas-formulas`](../specs/004-configuracoes-siglas-formulas/spec.md) | EPIC 1 + EPIC 2 (siglas, fórmulas, relacionamentos) | 📝 Planejado |
-| 005 | [`005-gestao-participantes`](../specs/005-gestao-participantes/spec.md) | EPIC 3 (participantes, aprovação, permissões) | 📝 Planejado |
-| 006 | [`006-ficha-personagem`](../specs/006-ficha-personagem/spec.md) | EPIC 4 (Ficha do zero — todas as sub-entities) | 📝 Planejado |
-| 007 | [`007-motor-calculos`](../specs/007-motor-calculos/spec.md) | EPIC 5 (FichaCalculationService, validações, preview) | 📝 Planejado |
-| 008 | [`008-utilidade-fluidez`](../specs/008-utilidade-fluidez/spec.md) | EPIC 7 (dashboards, filtros, reordenação, export/import) | 📝 Planejado |
-| 009 | [`009-npc-fichas-mestre`](../specs/009-npc-fichas-mestre/spec.md) | EPIC 8 (NPC, duplicação de ficha) | 📝 Planejado |
-| 010 | [`010-galeria-anotacoes`](../specs/010-galeria-anotacoes/spec.md) | EPIC 9 (galeria de imagens, anotações) | 📝 Planejado |
+| 001 | `001-backend-data-model` | Data model inicial, 13 CRUDs base | ✅ Concluido |
+| 003 | `003-backend-refactor-best-practices` | DTOs records, validacoes, exceptions, mappers, testes, AWS | ✅ Concluido |
+| 004 | [`004-configuracoes-siglas-formulas`](../specs/004-configuracoes-siglas-formulas/spec.md) | EPIC 1 + EPIC 2 (siglas, formulas, relacionamentos) | ✅ Concluido (17 tasks) |
+| 005 | [`005-participantes`](../specs/005-participantes/spec.md) | EPIC 3 (participantes, aprovacao, permissoes) | 🟡 Spec + plan + tasks criados (6 tasks), implementacao pendente |
+| 006 | [`006-ficha-wizard`](../specs/006-ficha-wizard/spec.md) | EPIC 4 (Wizard de criacao de ficha — 5-6 passos) | 🟡 Spec + plan + tasks criados (13 tasks), implementacao pendente |
+| 007 | [`007-vantagem-efeito`](../specs/007-vantagem-efeito/spec.md) | EPIC 1.2 + EPIC 5 (VantagemEfeito + Motor de Calculos) | 🟡 Spec criado, plan+tasks pendentes |
+| 008 | `008-utilidade-fluidez` | EPIC 7 (dashboards, filtros, reordenacao, export/import) | ✅ Backend ~100% |
+| 009 | `009-npc-fichas-mestre` | EPIC 8 (NPC, duplicacao de ficha) | ✅ Backend ~100% (457 testes) |
+| **008** | [`008-sub-recursos-classes-racas`](../specs/008-sub-recursos-classes-racas/) | Sub-recursos de Classes e Racas no frontend (ClasseBonus, AptidaoBonus, RacaBonus, ClassePermitida) | 🟡 spec.md PRONTO, tasks em criacao |
+| **009-ext** | [`009-npc-visibility`](../specs/009-npc-visibility/) | NPC Visibility granular + Prospeccao sessao + Essencia (10 tasks: 6B + 4F) | 🟡 Spec + plan + tasks criados, implementacao pendente |
+| **010** | [`010-roles-refactor`](../specs/010-roles-refactor/) | Roles ADMIN/MESTRE/JOGADOR por jogo, onboarding (9 tasks: 5B + 3F + 1T) | 🟡 Spec + plan + tasks criados, implementacao pendente |
+| **011** | [`011-galeria-anotacoes`](../specs/011-galeria-anotacoes/) | EPIC 9 (galeria de imagens, anotacoes do jogador/mestre) (8 tasks: 4B + 4F) | 🟡 Spec + plan + tasks criados, implementacao pendente |
+| **012** | [`012-niveis-progressao-frontend`](../specs/012-niveis-progressao-frontend/) | Niveis, Level Up e PontosVantagem no frontend | 📝 Diretorio criado, spec em criacao |
 
-> Spec 002 não utilizado.
+> Spec 002 nao utilizado.
+> Specs 008, 009-ext, 010, 011 e 012 sao novas (adicionadas em 2026-04-03).
 
 ### 📋 Tasks do Spec 004
 
@@ -382,67 +387,118 @@ Task: [P2-T3](../specs/004-configuracoes-siglas-formulas/tasks/P2-T3-formula-pre
 
 ---
 
-## 🏔️ EPIC 9 — Galeria de Imagens e Anotações
+## EPIC 9 — Galeria de Imagens e Anotacoes
 
-> **Objetivo:** Features complementares para enriquecer a experiência.
-> **Spec**: [`010-galeria-anotacoes`](../specs/010-galeria-anotacoes/spec.md)
+> **Objetivo:** Features complementares para enriquecer a experiencia.
+> **Spec**: [`011-galeria-anotacoes`](../specs/011-galeria-anotacoes/) (EM ESPECIFICACAO)
 
 ### O que falta:
 
 **9.1 — Galeria de imagens da ficha**
 - Upload de imagem do personagem (avatar)
-- Galeria de referências visuais
+- Galeria de referencias visuais
 - Storage: S3 ou filesystem local
 
-**9.2 — Anotações/Diário do personagem**
-- CRUD de anotações livres vinculadas à ficha
-- Campos: título, conteúdo (texto), data, visibilidade (pública/privada)
+**9.2 — Anotacoes/Diario do personagem**
+- CRUD de anotacoes livres vinculadas a ficha
+- Campos: titulo, conteudo (texto), data, visibilidade (publica/privada)
 
-**9.3 — Anotações do Mestre sobre participante/ficha**
-- Notas privadas que só o Mestre vê sobre cada ficha/jogador
-
----
-
-## 📌 Prioridade Sugerida
-
-| Ordem | Epic | Spec | Justificativa |
-|-------|------|------|---------------|
-| 1️⃣ | **EPIC 1** — Aprofundamento Configs | 004 📝 | Base para tudo — sem sub-entidades e siglas, as fichas não funcionam |
-| 2️⃣ | **EPIC 2** — Motor de Fórmulas | 004 📝 | Validação e preview de fórmulas antes de construir fichas |
-| 3️⃣ | **EPIC 3** — Gestão de Participantes | — | Precisa existir antes de criar fichas (quem pode criar?) |
-| 4️⃣ | **EPIC 4** — Ficha de Personagem | — | O core — depende das 3 anteriores + VantagemEfeito (⚠️ adiado) |
-| 5️⃣ | **EPIC 5** — Motor de Cálculos | — | Integra fórmulas ao ciclo de vida da ficha |
-| 6️⃣ | **EPIC 7** — Utilidade e Fluidez | — | Melhora UX, endpoints de conveniência |
-| 7️⃣ | **EPIC 6** — Auditoria | — | Importante mas não bloqueante |
-| 8️⃣ | **EPIC 8** — NPC | — | Extensão natural da ficha |
-| 9️⃣ | **EPIC 9** — Galeria/Anotações | — | Nice-to-have, última prioridade |
+**9.3 — Anotacoes do Mestre sobre participante/ficha**
+- Notas privadas que so o Mestre ve sobre cada ficha/jogador
 
 ---
 
-## 📈 Estimativa de Escopo
+## EPIC 10 — NPC Visibility, Prospeccao em Sessao, Essencia (NOVO)
 
-| Epic | Spec | Entities novas | Endpoints novos (aprox.) | Complexidade |
-|------|------|---------------|-------------------------|-------------|
-| EPIC 1 | 004 | ~6 (ClasseBonus, ClasseAptidaoBonus, RacaClassePermitida, VantagemPreRequisito, + 2 CRUDs) | ~12 | 🟡 Média |
-| EPIC 2 | 004 | 0 (services/endpoints novos) | ~4 | 🟡 Média |
-| EPIC 3 | — | ~1 (status/enum) | ~6 | 🟢 Baixa-Média |
-| EPIC 4 | — | ~10 (refeitas do zero) | ~20+ | 🔴 Alta |
-| EPIC 5 | — | 0 (service) | ~2 | 🔴 Alta (lógica) |
-| EPIC 6 | — | 0 (@Audited) | ~3 | 🟢 Baixa |
-| EPIC 7 | — | 0 | ~8 | 🟡 Média |
-| EPIC 8 | — | 0 (reuso Ficha) | ~4 | 🟢 Baixa |
-| EPIC 9 | — | ~2-3 | ~6 | 🟡 Média |
+> **Objetivo:** Completar o fluxo de NPC (visibilidade granular por jogador) e integrar prospeccao/essencia ao ciclo de sessao.
+> **Spec**: [`009-npc-visibility`](../specs/009-npc-visibility/) (EM ESPECIFICACAO)
+> **Depende de**: Spec 006 (ficha funcional), parcialmente Spec 009 (NPC backend existente)
+
+### O que falta:
+
+**10.1 — Visibilidade granular de NPC**
+- Mestre revela stats de NPC para jogadores especificos (nao todos de uma vez)
+- Dois niveis de revelacao: existencia vs. stats completos
+- Modelagem adicional no backend para controle por jogador
+- Design existente: `docs/design/NPC-VISIBILITY.md`
+
+**10.2 — Prospeccao em sessao**
+- Jogador usa dado de prospeccao, Mestre confirma consumo
+- Mestre pode reverter uso (erro, situacao especial)
+- Design existente: `docs/design/PROSPECCAO-SESSAO.md`
+
+**10.3 — Essencia atual (campo persistido + endpoint)**
+- `essenciaAtual` como campo persistido na ficha (nao apenas calculado)
+- Endpoint para gastar/restaurar essencia em sessao
+- GAP-07 do dossie de gaps
 
 ---
 
-## ⚠️ Itens Explicitamente Adiados (não entram no spec 004)
+## EPIC 11 — Roles ADMIN/MESTRE/JOGADOR Refactor (NOVO)
+
+> **Objetivo:** Refatorar o sistema de roles para suportar ADMIN global, separar MESTRE/JOGADOR por jogo, e implementar onboarding.
+> **Spec**: [`010-roles-refactor`](../specs/010-roles-refactor/) (EM ESPECIFICACAO)
+> **Depende de**: Spec 005 (participantes com maquina de estados)
+
+### O que falta:
+
+**11.1 — Role ADMIN global**
+- Novo papel com acesso a todos os jogos e operacoes administrativas
+- Diferente de MESTRE (que e por jogo)
+
+**11.2 — Roles por jogo**
+- MESTRE e JOGADOR sao papeis dentro de um jogo, nao globais
+- Refatorar SecurityConfig e @PreAuthorize para suportar contexto de jogo
+
+**11.3 — Onboarding**
+- Fluxo de primeiro acesso para novos usuarios
+- Perfil inicial, selecao de jogo
+
+---
+
+## Prioridade Sugerida (atualizada 2026-04-03)
+
+| Ordem | Epic | Spec | Status | Justificativa |
+|-------|------|------|--------|---------------|
+| 1 | **EPIC 1+2** — Configs + Formulas | 004 | ✅ Concluido | Base para tudo — sub-entidades, siglas, formulas |
+| 2 | **EPIC 1.2+5** — VantagemEfeito + Motor | 007 | 🟡 Spec criado | Pre-requisito obrigatorio para ficha funcional |
+| 3 | **EPIC 4** — Wizard de Criacao de Ficha | 006 | 🟡 Spec+plan+tasks | O core — ficha funcional de verdade |
+| 4 | **EPIC 3** — Gestao de Participantes | 005 | 🟡 Spec+plan+tasks | Desbloqueia fluxo completo de acesso |
+| 5 | **EPIC 7** — Utilidade e Fluidez | 008 | ✅ Backend pronto | Melhora UX, endpoints de conveniencia |
+| 6 | **EPIC 8** — NPC Backend | 009 | ✅ Backend pronto | Extensao natural da ficha |
+| 7 | **EPIC 10** — NPC Visibility + Prospeccao | 009-ext | 📝 Em especificacao | Visibilidade granular, sessao, essencia |
+| 8 | **EPIC 11** — Roles Refactor | 010 | 📝 Em especificacao | ADMIN global, roles por jogo, onboarding |
+| 9 | **EPIC 9** — Galeria/Anotacoes | 011 | 📝 Em especificacao | Enriquecimento da ficha |
+| 10 | **EPIC 6** — Auditoria (Envers) | — | Adiado | Importante mas nao MVP |
+
+---
+
+## Estimativa de Escopo
+
+| Epic | Spec | Entities novas | Endpoints novos (aprox.) | Complexidade | Status |
+|------|------|---------------|-------------------------|-------------|--------|
+| EPIC 1+2 | 004 | ~6 (ClasseBonus, ClasseAptidaoBonus, RacaClassePermitida, VantagemPreRequisito, + 2 CRUDs) + services | ~16 | Media | ✅ Concluido |
+| EPIC 1.2+5 | 007 | ~1 (InsolitusCo) + refactor motor | ~4 | Alta (logica) | 🟡 Spec criado |
+| EPIC 4 | 006 | ~0 (refactor existentes) | ~5 backend + wizard frontend | Alta | 🟡 Spec+plan+tasks |
+| EPIC 3 | 005 | ~0 (correcao existentes) | ~4 endpoints faltantes | Media | 🟡 Spec+plan+tasks |
+| EPIC 7 | 008 | 0 | ~8 | Media | ✅ Backend pronto |
+| EPIC 8 | 009 | 0 (reuso Ficha) | ~4 | Baixa | ✅ Backend pronto |
+| EPIC 10 | 009-ext | ~1-2 (NpcVisibilidade, EssenciaLog) | ~6 | Media | 📝 Em especificacao |
+| EPIC 11 | 010 | ~1 (AdminRole, refactor SecurityConfig) | ~5 | Alta (seguranca) | 📝 Em especificacao |
+| EPIC 9 | 011 | ~2-3 (Galeria, Anotacao) | ~6 | Media | 📝 Em especificacao |
+| EPIC 6 | — | 0 (@Audited) | ~3 | Baixa | Adiado |
+
+---
+
+## Itens Explicitamente Adiados
 
 | Item | Motivo | Quando retomar |
 |---|---|---|
-| `VantagemEfeito` (1.2) | Complexidade elevada, bloqueia só EPIC 4/5 | Spec posterior antes de EPIC 4 |
-| Detecção de ciclos em fórmulas (2.4) | Complexidade elevada, não bloqueia EPIC 1-3 | Spec posterior, junto ou após EPIC 5 |
-| Análise detalhada de impacto de sigla (2.5) | Refinamento do aviso básico já planejado | Idem EPIC 2.4 |
+| `VantagemEfeito` integrado ao motor (1.2) | Complexidade elevada | **Spec 007** — PRIORIDADE ABSOLUTA agora |
+| Deteccao de ciclos em formulas (2.4) | Complexidade elevada, nao bloqueia EPIC 1-3 | Spec posterior, junto ou apos EPIC 5 |
+| Analise detalhada de impacto de sigla (2.5) | Refinamento do aviso basico ja planejado | Idem EPIC 2.4 |
+| Auditoria Envers (EPIC 6) | Nao MVP | Apos todas as specs principais |
 
 ---
 
-*Documento vivo — atualizado conforme specs são criadas e tasks concluídas.*
+*Documento vivo — atualizado conforme specs sao criadas e tasks concluidas. Ultima atualizacao: 2026-04-03.*

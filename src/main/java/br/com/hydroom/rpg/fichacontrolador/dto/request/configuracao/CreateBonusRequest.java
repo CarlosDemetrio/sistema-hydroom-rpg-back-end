@@ -22,6 +22,10 @@ public record CreateBonusRequest(
     @Size(max = 50, message = "Nome deve ter no máximo 50 caracteres")
     String nome,
 
+    @NotBlank(message = "Sigla é obrigatória")
+    @Size(min = 2, max = 5, message = "Sigla deve ter entre 2 e 5 caracteres")
+    String sigla,
+
     @Size(max = 500, message = "Descrição deve ter no máximo 500 caracteres")
     String descricao,
 

@@ -33,6 +33,13 @@ public class AptidaoConfiguracaoService extends AbstractConfiguracaoService<Apti
         return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
+    public List<AptidaoConfig> listar(Long jogoId, String nome) {
+        if (nome != null && !nome.isBlank()) {
+            return repository.findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(jogoId, nome);
+        }
+        return listar(jogoId);
+    }
+
     /**
      * Lista aptidões por tipo específico.
      *

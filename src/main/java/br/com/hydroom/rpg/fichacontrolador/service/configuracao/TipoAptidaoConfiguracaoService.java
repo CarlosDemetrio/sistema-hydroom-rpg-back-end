@@ -32,6 +32,13 @@ public class TipoAptidaoConfiguracaoService extends AbstractConfiguracaoService<
         return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
+    public List<TipoAptidao> listar(Long jogoId, String nome) {
+        if (nome != null && !nome.isBlank()) {
+            return repository.findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(jogoId, nome);
+        }
+        return listar(jogoId);
+    }
+
     @Override
     protected void validarAntesCriar(TipoAptidao configuracao) {
         validateUniqueNome(configuracao.getNome(), configuracao.getJogo().getId());

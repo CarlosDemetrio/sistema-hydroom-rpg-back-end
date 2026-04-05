@@ -32,6 +32,13 @@ public class IndoleConfiguracaoService extends AbstractConfiguracaoService<Indol
         return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
+    public List<IndoleConfig> listar(Long jogoId, String nome) {
+        if (nome != null && !nome.isBlank()) {
+            return repository.findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(jogoId, nome);
+        }
+        return listar(jogoId);
+    }
+
     @Override
     protected void validarAntesCriar(IndoleConfig configuracao) {
         if (repository.existsByJogoIdAndNomeIgnoreCase(configuracao.getJogo().getId(), configuracao.getNome())) {

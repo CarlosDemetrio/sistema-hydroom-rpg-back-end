@@ -1,6 +1,6 @@
 package br.com.hydroom.rpg.fichacontrolador.model;
 
-import br.com.hydroom.rpg.fichacontrolador.constants.ValidationMessages;
+import br.com.hydroom.rpg.fichacontrolador.model.enums.FichaStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -8,8 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
+import org.hibernate.annotations.SQLRestriction;
 
 /**
  * Entidade que representa uma ficha de personagem de RPG.
@@ -17,9 +16,12 @@ import java.math.BigDecimal;
  */
 @Entity
 @Table(name = "fichas", indexes = {
-    @Index(name = "idx_ficha_jogo_usuario", columnList = "jogo_id, usuario_id"),
-    @Index(name = "idx_ficha_nome_personagem", columnList = "nome_personagem")
+    @Index(name = "idx_ficha_jogo", columnList = "jogo_id"),
+    @Index(name = "idx_ficha_jogador", columnList = "jogador_id"),
+    @Index(name = "idx_ficha_nome", columnList = "nome"),
+    @Index(name = "idx_ficha_is_npc", columnList = "is_npc")
 })
+@SQLRestriction("deleted_at IS NULL")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder
@@ -31,94 +33,33 @@ public class Ficha extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = ValidationMessages.Ficha.JOGO_OBRIGATORIO)
+    @NotNull(message = "Jogo é obrigatório")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "jogo_id", nullable = false)
     private Jogo jogo;
 
-    @NotNull(message = ValidationMessages.Ficha.USUARIO_OBRIGATORIO)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;
+    @NotBlank(message = "Nome é obrigatório")
+    @Size(max = 100, message = "Nome deve ter no máximo 100 caracteres")
+    @Column(name = "nome", nullable = false, length = 100)
+    private String nome;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "classe_personagem_id")
-    private ClassePersonagem classePersonagem;
+    /**
+     * ID do jogador dono da ficha. Null para NPCs.
+     */
+    @Column(name = "jogador_id")
+    private Long jogadorId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "raca_id")
     private Raca raca;
 
-    // ===== DADOS BÁSICOS DO PERSONAGEM =====
-
-    @NotBlank(message = ValidationMessages.Ficha.NOME_OBRIGATORIO)
-    @Size(min = ValidationMessages.Limites.FICHA_NOME_MIN,
-          max = ValidationMessages.Limites.FICHA_NOME_MAX,
-          message = ValidationMessages.Ficha.NOME_TAMANHO)
-    @Column(name = "nome_personagem", nullable = false, length = ValidationMessages.Limites.FICHA_NOME_MAX)
-    private String nomePersonagem;
-
-    @Size(max = ValidationMessages.Limites.FICHA_JOGADOR_NOME_MAX,
-          message = ValidationMessages.Ficha.JOGADOR_NOME_TAMANHO)
-    @Column(name = "jogador_nome", length = ValidationMessages.Limites.FICHA_JOGADOR_NOME_MAX)
-    private String jogadorNome;
-
-    @Size(max = ValidationMessages.Limites.FICHA_TITULO_MAX,
-          message = ValidationMessages.Ficha.TITULO_TAMANHO)
-    @Column(name = "titulo_heroico", length = ValidationMessages.Limites.FICHA_TITULO_MAX)
-    private String tituloHeroico;
-
-    @Size(max = ValidationMessages.Limites.FICHA_INSOLITUS_MAX,
-          message = ValidationMessages.Ficha.INSOLITUS_TAMANHO)
-    @Column(length = ValidationMessages.Limites.FICHA_INSOLITUS_MAX)
-    private String insolitus;
-
-    @Size(max = ValidationMessages.Limites.FICHA_ORIGEM_MAX,
-          message = ValidationMessages.Ficha.ORIGEM_TAMANHO)
-    @Column(length = ValidationMessages.Limites.FICHA_ORIGEM_MAX)
-    private String origem;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "classe_id")
+    private ClassePersonagem classe;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "genero_id")
     private GeneroConfig genero;
-
-    @Size(max = ValidationMessages.Limites.FICHA_ARQUETIPO_MAX,
-          message = ValidationMessages.Ficha.ARQUETIPO_TAMANHO)
-    @Column(name = "arquetipo_referencia", length = ValidationMessages.Limites.FICHA_ARQUETIPO_MAX)
-    private String arquetipoReferencia;
-
-    // ===== APARÊNCIA FÍSICA =====
-
-    @Min(value = 0, message = ValidationMessages.Ficha.IDADE_MINIMA)
-    @Max(value = 9999, message = ValidationMessages.Ficha.IDADE_MAXIMA)
-    private Integer idade;
-
-    @Min(value = 0, message = ValidationMessages.Ficha.ALTURA_MINIMA)
-    @Max(value = 999, message = ValidationMessages.Ficha.ALTURA_MAXIMA)
-    @Column(name = "altura_cm")
-    private Integer alturaCm;
-
-    @DecimalMin(value = "0.0", message = ValidationMessages.Ficha.PESO_MINIMO)
-    @DecimalMax(value = "999.99", message = ValidationMessages.Ficha.PESO_MAXIMO)
-    @Column(name = "peso_kg", precision = 5, scale = 2)
-    private BigDecimal pesoKg;
-
-    @Size(max = ValidationMessages.Limites.FICHA_COR_MAX,
-          message = ValidationMessages.Ficha.COR_CABELO_TAMANHO)
-    @Column(name = "cor_cabelo", length = ValidationMessages.Limites.FICHA_COR_MAX)
-    private String corCabelo;
-
-    @Size(max = ValidationMessages.Limites.FICHA_COR_MAX,
-          message = ValidationMessages.Ficha.TAMANHO_CABELO_TAMANHO)
-    @Column(name = "tamanho_cabelo", length = ValidationMessages.Limites.FICHA_COR_MAX)
-    private String tamanhoCabelo;
-
-    @Size(max = ValidationMessages.Limites.FICHA_COR_MAX,
-          message = ValidationMessages.Ficha.COR_OLHOS_TAMANHO)
-    @Column(name = "cor_olhos", length = ValidationMessages.Limites.FICHA_COR_MAX)
-    private String corOlhos;
-
-    // ===== PERSONALIDADE =====
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "indole_id")
@@ -128,35 +69,39 @@ public class Ficha extends BaseEntity {
     @JoinColumn(name = "presenca_id")
     private PresencaConfig presenca;
 
-    // ===== PROGRESSÃO =====
-
-    @NotNull(message = ValidationMessages.Ficha.NIVEL_OBRIGATORIO)
-    @Min(value = ValidationMessages.Limites.FICHA_NIVEL_MIN,
-         message = ValidationMessages.Ficha.NIVEL_MINIMO)
-    @Max(value = 99, message = ValidationMessages.Ficha.NIVEL_MAXIMO)
+    @Min(value = 1, message = "Nível mínimo é 1")
     @Builder.Default
-    @Column(nullable = false)
+    @Column(name = "nivel", nullable = false)
     private Integer nivel = 1;
 
-    @NotNull(message = ValidationMessages.Ficha.EXPERIENCIA_OBRIGATORIA)
-    @Min(value = 0, message = ValidationMessages.Ficha.EXPERIENCIA_MINIMA)
+    @Min(value = 0, message = "XP mínima é 0")
     @Builder.Default
-    @Column(nullable = false)
-    private Long experiencia = 0L;
+    @Column(name = "xp", nullable = false)
+    private Long xp = 0L;
 
-    @NotNull
-    @Min(value = 0, message = ValidationMessages.Ficha.RENASCIMENTOS_MINIMO)
+    @Min(value = 0, message = "Renascimentos mínimo é 0")
     @Builder.Default
-    @Column(nullable = false)
+    @Column(name = "renascimentos", nullable = false)
     private Integer renascimentos = 0;
 
-    @Size(max = 2000)
-    @Column(name = "imagem_url", length = 2000)
-    private String imagemUrl;
-
-    // ===== CONTROLE =====
-
     @Builder.Default
-    @Column(name = "compartilhada_com_jogadores", nullable = false)
-    private Boolean compartilhadaComJogadores = false;
+    @Column(name = "is_npc", nullable = false)
+    private boolean isNpc = false;
+
+    /**
+     * Descrição textual livre do personagem/NPC.
+     * Opcional — especialmente útil para descrever NPCs.
+     */
+    @Size(max = 2000, message = "Descrição deve ter no máximo 2000 caracteres")
+    @Column(name = "descricao", columnDefinition = "TEXT")
+    private String descricao;
+
+    /**
+     * Status da ficha.
+     * RASCUNHO = criada mas incompleta; COMPLETA = todos os campos obrigatórios preenchidos.
+     */
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 20)
+    private FichaStatus status = FichaStatus.RASCUNHO;
 }

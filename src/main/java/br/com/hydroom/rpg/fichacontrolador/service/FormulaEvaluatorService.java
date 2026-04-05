@@ -1,10 +1,16 @@
 package br.com.hydroom.rpg.fichacontrolador.service;
 
+import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.FormulaValidationResult;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -99,6 +105,73 @@ public class FormulaEvaluatorService {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    private static final Set<String> FUNCOES_CONHECIDAS = Set.of("floor", "ceil", "min", "max", "abs", "sqrt");
+    private static final Pattern VARIAVEL_PATTERN = Pattern.compile("[A-Za-z_][A-Za-z0-9_.]*");
+
+    /**
+     * Valida uma fórmula contra um conjunto dinâmico de variáveis permitidas.
+     *
+     * <p>Verifica sintaxe e se todas as variáveis usadas estão no conjunto permitido.
+     * Funções matemáticas conhecidas (floor, ceil, min, max, abs, sqrt) são ignoradas.</p>
+     *
+     * @param formula             Fórmula a validar
+     * @param variaveisPermitidas Conjunto de variáveis aceitas (case-insensitive)
+     * @return resultado estruturado da validação
+     */
+    public FormulaValidationResult validarFormula(String formula, Set<String> variaveisPermitidas) {
+        if (formula == null || formula.isBlank()) {
+            return FormulaValidationResult.erroSintaxe("Fórmula não pode ser vazia.");
+        }
+
+        String normalized = normalizeFormula(formula);
+
+        // Passo 1: extrair tokens que parecem variáveis (antes da checagem de sintaxe)
+        Set<String> variaveisUsadas = extrairVariaveis(normalized);
+
+        // Passo 2: testar sintaxe declarando TODAS as variáveis extraídas (evita erro por variável desconhecida)
+        try {
+            ExpressionBuilder builder = new ExpressionBuilder(normalized);
+            variaveisUsadas.forEach(builder::variable);
+            builder.build().validate();
+        } catch (Exception e) {
+            return FormulaValidationResult.erroSintaxe("Fórmula inválida: " + e.getMessage());
+        }
+
+        // Passo 3: verificar se alguma variável usada não está no conjunto permitido (case-insensitive)
+        Set<String> permitidasUpper = variaveisPermitidas.stream()
+            .map(String::toUpperCase)
+            .collect(Collectors.toSet());
+
+        List<String> invalidas = variaveisUsadas.stream()
+            .filter(v -> !permitidasUpper.contains(v.toUpperCase()))
+            .sorted()
+            .toList();
+
+        if (!invalidas.isEmpty()) {
+            return FormulaValidationResult.variaveisInvalidas(invalidas);
+        }
+
+        return FormulaValidationResult.ok();
+    }
+
+    /**
+     * Extrai tokens que parecem variáveis da fórmula.
+     * Exclui chamadas de funções (token seguido de '(') e funções matemáticas conhecidas.
+     */
+    private Set<String> extrairVariaveis(String formula) {
+        Set<String> variaveis = new LinkedHashSet<>();
+        Matcher matcher = VARIAVEL_PATTERN.matcher(formula);
+        while (matcher.find()) {
+            String token = matcher.group();
+            int end = matcher.end();
+            boolean isFunctionCall = end < formula.length() && formula.charAt(end) == '(';
+            if (!isFunctionCall && !FUNCOES_CONHECIDAS.contains(token.toLowerCase())) {
+                variaveis.add(token);
+            }
+        }
+        return variaveis;
     }
 
     /**

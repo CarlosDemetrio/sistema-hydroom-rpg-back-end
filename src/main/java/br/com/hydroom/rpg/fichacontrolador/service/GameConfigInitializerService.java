@@ -49,6 +49,9 @@ public class GameConfigInitializerService {
     private final PresencaConfigRepository presencaRepository;
     private final MembroCorpoConfigRepository membroCorpoRepository;
     private final VantagemConfigRepository vantagemRepository;
+    private final BonusConfigRepository bonusConfigRepository;
+    private final PontosVantagemConfigRepository pontosVantagemRepository;
+    private final CategoriaVantagemRepository categoriaVantagemRepository;
 
     // Provider de dados default
     private final GameDefaultConfigProvider defaultProvider;
@@ -56,8 +59,25 @@ public class GameConfigInitializerService {
     /**
      * Inicializa todas as configurações padrão para um jogo.
      *
-     * <p><strong>⚠️ IMPORTANTE</strong>: Este método é transacional.
-     * Se qualquer erro ocorrer, todas as mudanças serão revertidas.</p>
+     * <p><strong>Ordem de inicialização:</strong></p>
+     * <ol>
+     *   <li>AtributoConfig</li>
+     *   <li>TipoAptidao</li>
+     *   <li>AptidaoConfig</li>
+     *   <li>BonusConfig (antes de ClasseBonus)</li>
+     *   <li>NivelConfig</li>
+     *   <li>PontosVantagemConfig</li>
+     *   <li>CategoriaVantagem (antes de VantagemConfig)</li>
+     *   <li>ClassePersonagem</li>
+     *   <li>RacaConfig</li>
+     *   <li>RacaBonusAtributo</li>
+     *   <li>DadoProspeccaoConfig</li>
+     *   <li>GeneroConfig</li>
+     *   <li>IndoleConfig</li>
+     *   <li>PresencaConfig</li>
+     *   <li>MembroCorpoConfig</li>
+     *   <li>VantagemConfig</li>
+     * </ol>
      *
      * @param jogoId ID do jogo a ser inicializado
      * @throws IllegalArgumentException se jogo não existe
@@ -91,51 +111,59 @@ public class GameConfigInitializerService {
         log.debug("Criando aptidões...");
         createAptidoes(jogo, tiposAptidao, defaultProvider.getDefaultAptidoes());
 
-        // 6. Criar níveis
+        // 6. Criar bônus calculados (antes de ClasseBonus para que ClasseBonus possa referenciar)
+        log.debug("Criando bônus calculados...");
+        createBonus(jogo, defaultProvider.getDefaultBonus());
+
+        // 7. Criar níveis
         log.debug("Criando níveis...");
-        List<NivelConfig> niveis = createNiveis(jogo, defaultProvider.getDefaultNiveis());
+        createNiveis(jogo, defaultProvider.getDefaultNiveis());
 
-        // 6. Criar limitadores (se houver repository - verificar se existe)
-        // log.debug("Criando limitadores...");
-        // List<LimitadorConfig> limitadores = createLimitadores(jogo, defaultProvider.getDefaultLimitadores());
+        // 8. Criar pontos de vantagem por nível
+        log.debug("Criando pontos de vantagem por nível...");
+        createPontosVantagem(jogo, defaultProvider.getDefaultPontosVantagem());
 
-        // 7. Criar classes
+        // 9. Criar categorias de vantagem (antes de VantagemConfig)
+        log.debug("Criando categorias de vantagem...");
+        Map<String, CategoriaVantagem> categorias = createCategoriasVantagem(jogo, defaultProvider.getDefaultCategoriasVantagem());
+
+        // 10. Criar classes
         log.debug("Criando classes...");
-        List<ClassePersonagem> classes = createClasses(jogo, defaultProvider.getDefaultClasses());
+        createClasses(jogo, defaultProvider.getDefaultClasses());
 
-        // 8. Criar raças
+        // 11. Criar raças
         log.debug("Criando raças...");
         List<Raca> racas = createRacas(jogo, defaultProvider.getDefaultRacas());
 
-        // 9. Criar bônus raciais
+        // 12. Criar bônus raciais
         log.debug("Criando bônus raciais...");
         createBonusRaciais(racas, atributos, defaultProvider.getDefaultBonusRaciais());
 
-        // 10. Criar prospecções
+        // 13. Criar prospecções
         log.debug("Criando dados de prospecção...");
         createProspeccoes(jogo, defaultProvider.getDefaultProspeccoes());
 
-        // 11. Criar gêneros
+        // 14. Criar gêneros
         log.debug("Criando gêneros...");
         createGeneros(jogo, defaultProvider.getDefaultGeneros());
 
-        // 12. Criar índoles
+        // 15. Criar índoles
         log.debug("Criando índoles...");
         createIndoles(jogo, defaultProvider.getDefaultIndoles());
 
-        // 13. Criar presenças
+        // 16. Criar presenças
         log.debug("Criando presenças...");
         createPresencas(jogo, defaultProvider.getDefaultPresencas());
 
-        // 14. Criar membros do corpo
+        // 17. Criar membros do corpo
         log.debug("Criando membros do corpo...");
         createMembrosCorpo(jogo, defaultProvider.getDefaultMembrosCorpo());
 
-        // 15. Criar vantagens
+        // 18. Criar vantagens (após CategoriaVantagem)
         log.debug("Criando vantagens...");
-        createVantagens(jogo, defaultProvider.getDefaultVantagens());
+        createVantagens(jogo, categorias, defaultProvider.getDefaultVantagens());
 
-        log.info("✅ Configurações padrão criadas com sucesso para jogo '{}'", jogo.getNome());
+        log.info("Configuracoes padrao criadas com sucesso para jogo '{}'", jogo.getNome());
     }
 
     /**
@@ -167,7 +195,7 @@ public class GameConfigInitializerService {
                 .toList();
 
         List<AtributoConfig> saved = atributoRepository.saveAll(entities);
-        log.debug("✅ {} atributos criados", saved.size());
+        log.debug("{} atributos criados", saved.size());
         return saved;
     }
 
@@ -191,7 +219,7 @@ public class GameConfigInitializerService {
                 .build();
 
         List<TipoAptidao> saved = tipoAptidaoRepository.saveAll(List.of(fisica, mental));
-        log.debug("✅ {} tipos de aptidão criados", saved.size());
+        log.debug("{} tipos de aptidão criados", saved.size());
 
         Map<String, TipoAptidao> map = new HashMap<>();
         map.put("FISICA", saved.get(0));
@@ -217,11 +245,31 @@ public class GameConfigInitializerService {
                 .toList();
 
         List<AptidaoConfig> saved = aptidaoRepository.saveAll(entities);
-        log.debug("✅ {} aptidões criadas", saved.size());
+        log.debug("{} aptidões criadas", saved.size());
+    }
+
+    /**
+     * Cria bônus calculados padrão para o jogo (B.B.A, B.B.M, Defesa, etc.).
+     * Deve ser chamado ANTES de criar classes (para ClasseBonus poder referenciar BonusConfig).
+     */
+    private void createBonus(Jogo jogo, List<BonusConfigDTO> dtos) {
+        List<BonusConfig> entities = dtos.stream()
+                .map(dto -> BonusConfig.builder()
+                        .jogo(jogo)
+                        .nome(dto.nome())
+                        .sigla(dto.sigla())
+                        .formulaBase(dto.formulaBase())
+                        .ordemExibicao(dto.ordemExibicao())
+                        .build())
+                .toList();
+
+        bonusConfigRepository.saveAll(entities);
+        log.debug("{} bônus criados", entities.size());
     }
 
     /**
      * Cria níveis padrão para o jogo (0-35).
+     * BUG-DC-02 corrigido: limitadorAtributo lido do DTO em vez de hardcoded 50.
      */
     private List<NivelConfig> createNiveis(Jogo jogo, List<NivelConfigDTO> dtos) {
         List<NivelConfig> entities = dtos.stream()
@@ -232,14 +280,57 @@ public class GameConfigInitializerService {
                     nivel.setXpNecessaria(dto.getExperienciaNecessaria());
                     nivel.setPontosAtributo(dto.getPontosAtributo());
                     nivel.setPontosAptidao(dto.getPontosAptidao());
-                    nivel.setLimitadorAtributo(50); // Default limitador (will be configurable later)
+                    nivel.setLimitadorAtributo(dto.getLimitadorAtributo() != null ? dto.getLimitadorAtributo() : 50);
+                    nivel.setPermitirRenascimento(dto.getNivel() >= 31);
                     return nivel;
                 })
                 .toList();
 
         List<NivelConfig> saved = nivelRepository.saveAll(entities);
-        log.debug("✅ {} níveis criados", saved.size());
+        log.debug("{} níveis criados", saved.size());
         return saved;
+    }
+
+    /**
+     * Cria pontos de vantagem por nível padrão para o jogo.
+     */
+    private void createPontosVantagem(Jogo jogo, List<PontosVantagemConfigDTO> dtos) {
+        List<PontosVantagemConfig> entities = dtos.stream()
+                .map(dto -> PontosVantagemConfig.builder()
+                        .jogo(jogo)
+                        .nivel(dto.nivel())
+                        .pontosGanhos(dto.pontos())
+                        .build())
+                .toList();
+
+        pontosVantagemRepository.saveAll(entities);
+        log.debug("{} pontos de vantagem criados", entities.size());
+    }
+
+    /**
+     * Cria categorias de vantagem padrão para o jogo.
+     * Deve ser chamado ANTES de criar vantagens.
+     *
+     * @return Mapa de nome da categoria → entidade salva (para uso no createVantagens)
+     */
+    private Map<String, CategoriaVantagem> createCategoriasVantagem(Jogo jogo, List<CategoriaVantagemDTO> dtos) {
+        List<CategoriaVantagem> entities = dtos.stream()
+                .map(dto -> CategoriaVantagem.builder()
+                        .jogo(jogo)
+                        .nome(dto.nome())
+                        .cor(dto.cor())
+                        .ordemExibicao(dto.ordemExibicao())
+                        .build())
+                .toList();
+
+        List<CategoriaVantagem> saved = categoriaVantagemRepository.saveAll(entities);
+        log.debug("{} categorias de vantagem criadas", saved.size());
+
+        Map<String, CategoriaVantagem> map = new HashMap<>();
+        for (CategoriaVantagem categoria : saved) {
+            map.put(categoria.getNome(), categoria);
+        }
+        return map;
     }
 
     /**
@@ -256,7 +347,7 @@ public class GameConfigInitializerService {
                 .toList();
 
         List<ClassePersonagem> saved = classeRepository.saveAll(entities);
-        log.debug("✅ {} classes criadas", saved.size());
+        log.debug("{} classes criadas", saved.size());
         return saved;
     }
 
@@ -274,7 +365,7 @@ public class GameConfigInitializerService {
                 .toList();
 
         List<Raca> saved = racaRepository.saveAll(entities);
-        log.debug("✅ {} raças criadas", saved.size());
+        log.debug("{} raças criadas", saved.size());
         return saved;
     }
 
@@ -287,19 +378,16 @@ public class GameConfigInitializerService {
      */
     private void createBonusRaciais(List<Raca> racas, List<AtributoConfig> atributos,
                                      Map<String, List<BonusAtributoDTO>> bonusMap) {
-        // Criar mapas para lookup rápido
         Map<String, Raca> racaMap = new HashMap<>();
         for (Raca raca : racas) {
             racaMap.put(raca.getNome(), raca);
         }
 
-        // Map por abreviação para encontrar atributos rapidamente
         Map<String, AtributoConfig> atributoMap = new HashMap<>();
         for (AtributoConfig attr : atributos) {
             atributoMap.put(attr.getAbreviacao(), attr);
         }
 
-        // Criar bônus
         List<RacaBonusAtributo> bonusList = new ArrayList<>();
         for (Map.Entry<String, List<BonusAtributoDTO>> entry : bonusMap.entrySet()) {
             String nomeRaca = entry.getKey();
@@ -320,7 +408,6 @@ public class GameConfigInitializerService {
                     continue;
                 }
 
-                // Criar RacaBonusAtributo
                 RacaBonusAtributo bonus = RacaBonusAtributo.builder()
                         .raca(raca)
                         .atributo(atributo)
@@ -332,7 +419,7 @@ public class GameConfigInitializerService {
         }
 
         racaBonusAtributoRepository.saveAll(bonusList);
-        log.debug("✅ {} bônus raciais criados", bonusList.size());
+        log.debug("{} bônus raciais criados", bonusList.size());
     }
 
     /**
@@ -349,7 +436,7 @@ public class GameConfigInitializerService {
                 .toList();
 
         prospeccaoRepository.saveAll(entities);
-        log.debug("✅ {} dados de prospecção criados", entities.size());
+        log.debug("{} dados de prospecção criados", entities.size());
     }
 
     /**
@@ -365,7 +452,7 @@ public class GameConfigInitializerService {
                 .toList();
 
         generoRepository.saveAll(entities);
-        log.debug("✅ {} gêneros criados", entities.size());
+        log.debug("{} gêneros criados", entities.size());
     }
 
     /**
@@ -381,7 +468,7 @@ public class GameConfigInitializerService {
                 .toList();
 
         indoleRepository.saveAll(entities);
-        log.debug("✅ {} índoles criadas", entities.size());
+        log.debug("{} índoles criadas", entities.size());
     }
 
     /**
@@ -397,7 +484,7 @@ public class GameConfigInitializerService {
                 .toList();
 
         presencaRepository.saveAll(entities);
-        log.debug("✅ {} presenças criadas", entities.size());
+        log.debug("{} presenças criadas", entities.size());
     }
 
     /**
@@ -414,13 +501,18 @@ public class GameConfigInitializerService {
                 .toList();
 
         membroCorpoRepository.saveAll(entities);
-        log.debug("✅ {} membros do corpo criados", entities.size());
+        log.debug("{} membros do corpo criados", entities.size());
     }
 
     /**
      * Cria vantagens padrão para o jogo.
+     * As vantagens são associadas às categorias criadas anteriormente.
+     *
+     * @param jogo        Jogo alvo
+     * @param categorias  Mapa de nome → CategoriaVantagem (criadas por createCategoriasVantagem)
+     * @param dtos        Lista de DTOs de vantagem
      */
-    private void createVantagens(Jogo jogo, List<VantagemConfigDTO> dtos) {
+    private void createVantagens(Jogo jogo, Map<String, CategoriaVantagem> categorias, List<VantagemConfigDTO> dtos) {
         List<VantagemConfig> entities = dtos.stream()
                 .map(dto -> VantagemConfig.builder()
                         .jogo(jogo)
@@ -428,12 +520,12 @@ public class GameConfigInitializerService {
                         .descricao(dto.getDescricao())
                         .nivelMaximo(dto.getNivelMaximoVantagem() != null ? dto.getNivelMaximoVantagem() : 10)
                         .formulaCusto(dto.getFormulaCusto())
-                        .descricaoEfeito(dto.getTipoBonus()) // Map tipoBonus to descricaoEfeito
+                        .descricaoEfeito(dto.getTipoBonus())
                         .ordemExibicao(dto.getOrdemExibicao() != null ? dto.getOrdemExibicao() : 0)
                         .build())
                 .toList();
 
         vantagemRepository.saveAll(entities);
-        log.debug("✅ {} vantagens criadas", entities.size());
+        log.debug("{} vantagens criadas", entities.size());
     }
 }

@@ -5,9 +5,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  * Categorias de vantagens (ex: Atributo, Combate, Magia, Social, etc).
@@ -15,13 +16,14 @@ import lombok.Setter;
  */
 @Entity
 @Table(name = "categorias_vantagem", uniqueConstraints = {
-        @UniqueConstraint(name = "uk_categoria_vantagem_nome_jogo", columnNames = {"jogo_id", "nome"})
+    @UniqueConstraint(name = "uk_categoria_vantagem_jogo_nome", columnNames = {"jogo_id", "nome"})
 })
-@Getter
-@Setter
+@Data
+@EqualsAndHashCode(callSuper = true)
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoriaVantagem extends BaseEntity {
+public class CategoriaVantagem extends BaseEntity implements ConfiguracaoEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,15 +42,11 @@ public class CategoriaVantagem extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String descricao;
 
-
-    @Column(name = "ordem", nullable = false)
-    @NotNull(message = "Ordem de exibição é obrigatória")
-    private Integer ordem;
-
-    /**
-     * Cor em hexadecimal para representação visual (ex: #FF0000).
-     */
     @Column(length = 7)
     @Size(max = 7, message = "Cor deve estar no formato #RRGGBB")
     private String cor;
+
+    @Column(name = "ordem_exibicao", nullable = false)
+    @Builder.Default
+    private Integer ordemExibicao = 0;
 }

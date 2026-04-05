@@ -222,6 +222,95 @@ public final class ValidationMessages {
         private Seguranca() {}
     }
 
+    // ===== ATRIBUTO CONFIG =====
+    public static final class AtributoConfig {
+        public static final String FORMULA_IMPETO_SINTAXE_INVALIDA = "Fórmula de ímpeto com sintaxe inválida";
+        public static final String FORMULA_IMPETO_VARIAVEIS_INVALIDAS =
+            "Fórmula de ímpeto usa variáveis não permitidas: %s. Permitida: total";
+
+        private AtributoConfig() {}
+    }
+
+    // ===== BONUS CONFIG =====
+    public static final class BonusConfig {
+        public static final String FORMULA_BASE_SINTAXE_INVALIDA = "Fórmula base com sintaxe inválida";
+        public static final String FORMULA_BASE_VARIAVEIS_INVALIDAS =
+            "Fórmula base usa variáveis não registradas no jogo: %s";
+
+        private BonusConfig() {}
+    }
+
+    // ===== VANTAGEM CONFIG =====
+    public static final class VantagemConfig {
+        public static final String FORMULA_CUSTO_SINTAXE_INVALIDA = "Fórmula de custo com sintaxe inválida";
+        public static final String FORMULA_CUSTO_VARIAVEIS_INVALIDAS =
+            "Fórmula de custo usa variáveis inválidas: %s. Permitidas: custo_base, nivel_vantagem";
+
+        private VantagemConfig() {}
+    }
+
+    // ===== CLASSE BONUS =====
+    public static final class ClasseBonus {
+        public static final String JA_EXISTE =
+            "Este bônus já está registrado para esta classe.";
+        public static final String JOGO_DIFERENTE =
+            "O bônus deve pertencer ao mesmo jogo da classe.";
+
+        private ClasseBonus() {}
+    }
+
+    // ===== CLASSE APTIDAO BONUS =====
+    public static final class ClasseAptidaoBonus {
+        public static final String JA_EXISTE =
+            "Este bônus de aptidão já está registrado para esta classe.";
+        public static final String JOGO_DIFERENTE =
+            "A aptidão deve pertencer ao mesmo jogo da classe.";
+
+        private ClasseAptidaoBonus() {}
+    }
+
+    // ===== RACA CLASSE PERMITIDA =====
+    public static final class RacaClassePermitida {
+        public static final String JA_EXISTE =
+            "Esta classe já é permitida para esta raça.";
+        public static final String JOGO_DIFERENTE =
+            "A classe deve pertencer ao mesmo jogo da raça.";
+
+        private RacaClassePermitida() {}
+    }
+
+    // ===== RACA BONUS ATRIBUTO =====
+    public static final class RacaBonusAtributo {
+        public static final String JA_EXISTE =
+            "Este bônus de atributo já está registrado para esta raça.";
+        public static final String JOGO_DIFERENTE =
+            "O atributo deve pertencer ao mesmo jogo da raça.";
+
+        private RacaBonusAtributo() {}
+    }
+
+    // ===== VANTAGEM PRÉ-REQUISITO =====
+    public static final class VantagemPreRequisito {
+        public static final String AUTO_REFERENCIA =
+            "Uma vantagem não pode ser pré-requisito de si mesma.";
+        public static final String CICLO_DETECTADO =
+            "Adicionar este pré-requisito criaria uma dependência circular entre vantagens.";
+        public static final String JA_EXISTE =
+            "Este pré-requisito já está registrado para esta vantagem.";
+        public static final String JOGOS_DIFERENTES =
+            "O pré-requisito deve pertencer ao mesmo jogo da vantagem.";
+
+        private VantagemPreRequisito() {}
+    }
+
+    // ===== SIGLAS =====
+    public static final class Sigla {
+        public static final String SIGLA_JA_EM_USO =
+            "Sigla '%s' já está em uso em %s neste jogo. Siglas devem ser únicas por jogo.";
+
+        private Sigla() {}
+    }
+
     // ===== ERROS GERAIS =====
     public static final class Erro {
         public static final String INTERNO = "Erro interno do servidor";

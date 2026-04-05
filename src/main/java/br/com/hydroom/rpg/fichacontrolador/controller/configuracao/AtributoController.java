@@ -1,7 +1,9 @@
 package br.com.hydroom.rpg.fichacontrolador.controller.configuracao;
 
 import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.CreateAtributoRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.ReordenarRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.UpdateAtributoRequest;
+import br.com.hydroom.rpg.fichacontrolador.service.ReordenacaoService;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.AtributoResponse;
 import br.com.hydroom.rpg.fichacontrolador.mapper.configuracao.AtributoConfigMapper;
 import br.com.hydroom.rpg.fichacontrolador.model.AtributoConfig;
@@ -50,6 +52,17 @@ public class AtributoController {
     private final AtributoConfiguracaoService configuracaoService;
     private final JogoService jogoService;
     private final AtributoConfigMapper mapper;
+    private final ReordenacaoService reordenacaoService;
+
+    @PutMapping("/reordenar")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Reordenar atributos (Apenas MESTRE)", description = "Atualiza a ordem de exibição de múltiplos atributos em batch")
+    public ResponseEntity<Void> reordenar(
+            @RequestParam Long jogoId,
+            @Valid @RequestBody ReordenarRequest request) {
+        reordenacaoService.reordenarAtributos(jogoId, request.itens());
+        return ResponseEntity.noContent().build();
+    }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
@@ -74,15 +87,13 @@ public class AtributoController {
         )
     })
     public ResponseEntity<List<AtributoResponse>> listar(
-            @Parameter(
-                description = "ID do jogo para listar os atributos",
-                required = true,
-                example = "1"
-            )
-            @RequestParam Long jogoId) {
+            @Parameter(description = "ID do jogo para listar os atributos", required = true, example = "1")
+            @RequestParam Long jogoId,
+            @Parameter(description = "Filtro por nome (parcial, case-insensitive)", example = "Força")
+            @RequestParam(required = false) String nome) {
 
-        log.info("Listando atributos do jogo: {}", jogoId);
-        List<AtributoConfig> atributos = configuracaoService.listar(jogoId);
+        log.info("Listando atributos do jogo: {}, nome: {}", jogoId, nome);
+        List<AtributoConfig> atributos = configuracaoService.listar(jogoId, nome);
         List<AtributoResponse> response = atributos.stream()
             .map(mapper::toResponse)
             .toList();

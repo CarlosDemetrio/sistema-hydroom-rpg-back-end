@@ -9,16 +9,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 /**
  * Entidade que armazena os dados de essência de uma ficha.
  */
 @Entity
-@Table(name = "ficha_essencia", indexes = {
-    @Index(name = "idx_ficha_essencia_ficha", columnList = "ficha_id")
-}, uniqueConstraints = {
+@Table(name = "ficha_essencia", uniqueConstraints = {
     @UniqueConstraint(name = "uk_ficha_essencia", columnNames = {"ficha_id"})
 })
+@SQLRestriction("deleted_at IS NULL")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder
@@ -36,19 +36,47 @@ public class FichaEssencia extends BaseEntity {
     private Ficha ficha;
 
     @NotNull
-    @Min(value = 0, message = ValidationMessages.FichaEssencia.GASTO_MINIMO)
+    @Min(value = 0)
     @Builder.Default
-    @Column(name = "gasto_temporario", nullable = false)
-    private Integer gastoTemporario = 0;
+    @Column(name = "renascimentos", nullable = false)
+    private Integer renascimentos = 0;
+
+    @NotNull
+    @Min(value = 0)
+    @Builder.Default
+    @Column(name = "vantagens", nullable = false)
+    private Integer vantagens = 0;
+
+    @NotNull
+    @Min(value = 0)
+    @Builder.Default
+    @Column(name = "outros", nullable = false)
+    private Integer outros = 0;
 
     /**
-     * Calcula a essência disponível.
-     * Disponível = Total (calculado pela fórmula) - GastoTemporario
-     * Total = (Fórmula configurada em EssenciaConfig)
+     * Total calculado: renascimentos + vantagens + outros.
      */
-    public Integer calcularDisponivel(Integer essenciaTotal) {
-        int total = essenciaTotal != null ? essenciaTotal : 0;
-        int gasto = gastoTemporario != null ? gastoTemporario : 0;
-        return Math.max(0, total - gasto);
+    @NotNull
+    @Builder.Default
+    @Column(name = "total", nullable = false)
+    private Integer total = 0;
+
+    /**
+     * Essência atual restante do personagem (estado de combate/uso de magias).
+     * Inicializada com total ao criar a ficha.
+     * Atualizada via PUT /fichas/{id}/vida.
+     */
+    @NotNull
+    @Builder.Default
+    @Column(name = "essencia_atual", nullable = false)
+    private Integer essenciaAtual = 0;
+
+    /**
+     * Recalcula e persiste o total.
+     */
+    public void recalcularTotal() {
+        this.total = (renascimentos != null ? renascimentos : 0) +
+                     (vantagens != null ? vantagens : 0) +
+                     (outros != null ? outros : 0);
     }
 }

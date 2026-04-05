@@ -21,4 +21,6 @@ public interface DadoProspeccaoConfigRepository extends JpaRepository<DadoProspe
      * Busca dado de prospecção por nome em um jogo.
      */
     boolean existsByJogoIdAndNomeIgnoreCase(Long jogoId, String nome);
+
+    List<DadoProspeccaoConfig> findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(Long jogoId, String nome);
 }

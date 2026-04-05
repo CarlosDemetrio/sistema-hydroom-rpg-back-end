@@ -69,4 +69,12 @@ public class NivelConfig extends BaseEntity implements ConfiguracaoEntity {
     @Min(value = 1, message = "Limitador de atributo deve ser maior que zero")
     private Integer limitadorAtributo;
 
+    /**
+     * Indica se personagens neste nível podem usar a mecânica de Renascimento.
+     * No Klayrah RPG padrão, apenas níveis >= 31 permitem renascimento.
+     */
+    @Builder.Default
+    @Column(name = "permitir_renascimento", nullable = false)
+    private Boolean permitirRenascimento = false;
+
 }

@@ -7,7 +7,7 @@ services:
       - 'POSTGRES_PASSWORD=secret'
       - 'POSTGRES_USER=myuser'
     ports:
-      - '5432:5432'
+      - '5453:5432'
     volumes:
       - postgres_data:/var/lib/postgresql
     networks:
@@ -25,7 +25,7 @@ services:
       target: development # Use development stage with hot-reload
     container_name: rpg-backend
     ports:
-      - '8080:8080'
+      - '8181:8080'
     environment:
       - 'SPRING_PROFILES_ACTIVE=dev'
       - 'SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/rpg_fichas'
@@ -56,8 +56,8 @@ services:
       target: development # Use development stage
     container_name: rpg-frontend
     ports:
-      - '4200:4200' # Angular dev server
-      - '49153:49153' # Angular live reload
+      - '4201:4200' # Angular dev server
+      - '49173:49153' # Angular live reload
     environment:
       - 'NODE_ENV=development'
     volumes:

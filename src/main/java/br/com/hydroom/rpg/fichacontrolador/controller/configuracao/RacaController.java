@@ -1,12 +1,22 @@
 package br.com.hydroom.rpg.fichacontrolador.controller.configuracao;
 
 import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.CreateRacaRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.RacaPontosConfigRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.RacaVantagemPreDefinidaRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.UpdateRacaRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.RacaPontosConfigResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.RacaResponse;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.RacaVantagemPreDefinidaResponse;
 import br.com.hydroom.rpg.fichacontrolador.mapper.configuracao.RacaMapper;
+import br.com.hydroom.rpg.fichacontrolador.mapper.configuracao.RacaPontosConfigMapper;
+import br.com.hydroom.rpg.fichacontrolador.mapper.configuracao.RacaVantagemPreDefinidaMapper;
 import br.com.hydroom.rpg.fichacontrolador.model.Raca;
+import br.com.hydroom.rpg.fichacontrolador.model.RacaPontosConfig;
+import br.com.hydroom.rpg.fichacontrolador.model.RacaVantagemPreDefinida;
 import br.com.hydroom.rpg.fichacontrolador.service.JogoService;
 import br.com.hydroom.rpg.fichacontrolador.service.configuracao.RacaConfiguracaoService;
+import br.com.hydroom.rpg.fichacontrolador.service.configuracao.RacaPontosConfigService;
+import br.com.hydroom.rpg.fichacontrolador.service.configuracao.RacaVantagemPreDefinidaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,6 +41,10 @@ public class RacaController {
     private final RacaConfiguracaoService configuracaoService;
     private final JogoService jogoService;
     private final RacaMapper mapper;
+    private final RacaPontosConfigService racaPontosConfigService;
+    private final RacaVantagemPreDefinidaService racaVantagemPreDefinidaService;
+    private final RacaPontosConfigMapper racaPontosConfigMapper;
+    private final RacaVantagemPreDefinidaMapper racaVantagemPreDefinidaMapper;
 
     @GetMapping
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
@@ -69,6 +83,82 @@ public class RacaController {
     @Operation(summary = "Deletar raça (Apenas MESTRE)")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         configuracaoService.deletar(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // ===== SUB-RECURSO: PONTOS POR NÍVEL =====
+
+    @GetMapping("/{id}/pontos-config")
+    @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
+    @Operation(summary = "Listar configurações de pontos por nível de uma raça")
+    public ResponseEntity<List<RacaPontosConfigResponse>> listarPontosConfig(@PathVariable Long id) {
+        List<RacaPontosConfig> pontos = racaPontosConfigService.listarPorRaca(id);
+        return ResponseEntity.ok(racaPontosConfigMapper.toResponseList(pontos));
+    }
+
+    @PostMapping("/{id}/pontos-config")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Criar configuração de pontos para um nível da raça (Apenas MESTRE)")
+    public ResponseEntity<RacaPontosConfigResponse> criarPontosConfig(
+            @PathVariable Long id,
+            @Valid @RequestBody RacaPontosConfigRequest request) {
+        RacaPontosConfig entity = racaPontosConfigMapper.toEntity(request);
+        RacaPontosConfig salvo = racaPontosConfigService.criar(id, entity);
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(racaPontosConfigMapper.toResponse(salvo));
+    }
+
+    @PutMapping("/{id}/pontos-config/{pontosConfigId}")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Atualizar configuração de pontos de uma raça (Apenas MESTRE)")
+    public ResponseEntity<RacaPontosConfigResponse> atualizarPontosConfig(
+            @PathVariable Long id,
+            @PathVariable Long pontosConfigId,
+            @Valid @RequestBody RacaPontosConfigRequest request) {
+        RacaPontosConfig entity = racaPontosConfigMapper.toEntity(request);
+        RacaPontosConfig atualizado = racaPontosConfigService.atualizar(id, pontosConfigId, entity);
+        return ResponseEntity.ok(racaPontosConfigMapper.toResponse(atualizado));
+    }
+
+    @DeleteMapping("/{id}/pontos-config/{pontosConfigId}")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Deletar configuração de pontos de uma raça (Apenas MESTRE)")
+    public ResponseEntity<Void> deletarPontosConfig(
+            @PathVariable Long id,
+            @PathVariable Long pontosConfigId) {
+        racaPontosConfigService.deletar(id, pontosConfigId);
+        return ResponseEntity.noContent().build();
+    }
+
+    // ===== SUB-RECURSO: VANTAGENS PRÉ-DEFINIDAS =====
+
+    @GetMapping("/{id}/vantagens-predefinidas")
+    @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
+    @Operation(summary = "Listar vantagens pré-definidas de uma raça")
+    public ResponseEntity<List<RacaVantagemPreDefinidaResponse>> listarVantagensPreDefinidas(
+            @PathVariable Long id) {
+        List<RacaVantagemPreDefinida> vantagens = racaVantagemPreDefinidaService.listarPorRaca(id);
+        return ResponseEntity.ok(racaVantagemPreDefinidaMapper.toResponseList(vantagens));
+    }
+
+    @PostMapping("/{id}/vantagens-predefinidas")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Adicionar vantagem pré-definida a uma raça (Apenas MESTRE)")
+    public ResponseEntity<RacaVantagemPreDefinidaResponse> criarVantagemPreDefinida(
+            @PathVariable Long id,
+            @Valid @RequestBody RacaVantagemPreDefinidaRequest request) {
+        RacaVantagemPreDefinida salvo = racaVantagemPreDefinidaService.criar(id, request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(racaVantagemPreDefinidaMapper.toResponse(salvo));
+    }
+
+    @DeleteMapping("/{id}/vantagens-predefinidas/{predefinidaId}")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Remover vantagem pré-definida de uma raça (Apenas MESTRE)")
+    public ResponseEntity<Void> deletarVantagemPreDefinida(
+            @PathVariable Long id,
+            @PathVariable Long predefinidaId) {
+        racaVantagemPreDefinidaService.deletar(id, predefinidaId);
         return ResponseEntity.noContent().build();
     }
 }

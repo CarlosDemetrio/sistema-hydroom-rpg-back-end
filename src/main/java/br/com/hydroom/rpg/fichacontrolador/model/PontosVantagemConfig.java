@@ -4,9 +4,10 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  * Configuração de pontos de vantagem ganhos por nível.
@@ -14,13 +15,14 @@ import lombok.Setter;
  */
 @Entity
 @Table(name = "pontos_vantagem_config", uniqueConstraints = {
-        @UniqueConstraint(name = "uk_pontos_vantagem_nivel_jogo", columnNames = {"jogo_id", "nivel"})
+    @UniqueConstraint(name = "uk_pontos_vantagem_nivel_jogo", columnNames = {"jogo_id", "nivel"})
 })
-@Getter
-@Setter
+@Data
+@EqualsAndHashCode(callSuper = true)
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PontosVantagemConfig extends BaseEntity {
+public class PontosVantagemConfig extends BaseEntity implements ConfiguracaoEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,6 +42,7 @@ public class PontosVantagemConfig extends BaseEntity {
      * Quantidade de pontos de vantagem ganhos ao atingir este nível.
      * No sistema legado: 1 ponto por nível.
      */
+    @Builder.Default
     @Column(name = "pontos_ganhos", nullable = false)
     @NotNull(message = "Pontos ganhos são obrigatórios")
     @Min(value = 0, message = "Pontos ganhos não podem ser negativos")

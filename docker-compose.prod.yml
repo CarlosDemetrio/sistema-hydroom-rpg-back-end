@@ -1,0 +1,72 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: rpg-postgres-prod
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-rpg_fichas}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - rpg-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${POSTGRES_DB:-rpg_fichas}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    # Não expor porta externamente — apenas rede interna Docker
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+
+  backend:
+    image: ghcr.io/${GHCR_OWNER:-carlosdemetrio}/ficha-controlador:${IMAGE_TAG:-latest}
+    container_name: rpg-backend-prod
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8081:8081"  # Apenas localhost — Caddy faz o proxy externo
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-rpg_fichas}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      FRONTEND_URL: ${FRONTEND_URL}
+      BACKEND_URL: ${BACKEND_URL}
+      SERVER_FORWARD_HEADERS_STRATEGY: framework
+      # Placeholder para futuro Cloudinary
+      CLOUDINARY_URL: ${CLOUDINARY_URL:-}
+      # JVM otimizada para free tier (512MB limit)
+      JAVA_TOOL_OPTIONS: >-
+        -Xms256m
+        -Xmx384m
+        -XX:+UseZGC
+        -XX:+ZGenerational
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - rpg-internal
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health/liveness"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+
+volumes:
+  pgdata:
+    driver: local
+
+networks:
+  rpg-internal:
+    driver: bridge

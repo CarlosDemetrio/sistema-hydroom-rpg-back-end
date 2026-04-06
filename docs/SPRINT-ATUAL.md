@@ -2,7 +2,7 @@
 
 # Sprint Atual — Sprint 2: "Motor Correto + Ficha Funcional"
 
-> Atualizado: 2026-04-05 [15:30] (sessao 12, rodada 8 parcial — S006-T7, S005-P2T1 concluidas, 581B+459F testes, 25/35)
+> Atualizado: 2026-04-06 [07:10] (sessao 13, rodada 10 concluida — 33/35 tasks, 581B+603F testes)
 > PM: Scrum Orchestrator
 > Objetivo: Corrigir bugs de calculo, integrar VantagemEfeito no motor, entregar wizard de ficha funcional e gestao de participantes
 > Duracao estimada: 3-4 semanas
@@ -31,12 +31,12 @@
 | Metrica | Valor |
 |---------|-------|
 | Tasks totais Sprint 2 | **35** (13 Spec 007 + 13 Spec 006 + 6 Spec 005 + 1 bug XP + 1 fix testes + 1 T-QW frontend) |
-| Concluidas | **23** (S007-T0, T1, T2, T3+T4+T5, T7, T8, **T9**, S015-T5, T1, T2, T3, **T4**, S006-T1, T2, T4, T5, **T6**, S005-P1T1, P1T2, **P1T3**, URG-01, URG-02, QW-Bug3) |
+| Concluidas | **33** (S007-T0, T1, T2, T3+T4+T5, T7, T8, T9, T11, **T12**, S015-T5, T1, T2, T3, T4, S006-T1, T2, T4, T5, T6, T7, T8, **T9**, **T10**, S005-P1T1, P1T2, P1T3, P2T1, P2T2, **P2T3**, URG-01, URG-02, QW-Bug3) |
 | Em andamento | 0 |
-| Pendentes | 11 |
-| Bloqueadas | 1 (S007-T5alt: FORMULA_CUSTOMIZADA — PA-004) |
-| Testes backend | **581 passando**, 0 falhas (+10 da rodada 7) |
-| Testes frontend | **424 passando**, 0 falhas (+65 da rodada 7) |
+| Pendentes | 1 (S006-T11) + 1 bloqueada (S007-T10) |
+| Bloqueadas | 2 (S007-T5alt FORMULA_CUSTOMIZADA, S007-T10 FormulaEditorEfeito — ambas PA-004) |
+| Testes backend | **581 passando**, 0 falhas |
+| Testes frontend | **603 passando**, 0 falhas (+113 da rodada 10) |
 | Gaps resolvidos pelo PO | **TODOS** (GAP-01 a GAP-08, INCONS-02, P-03, PA-001/002, Q14-Q17) |
 
 **Novas decisoes do PO (Q14-Q17):**
@@ -140,9 +140,9 @@ TRACK F — Documentacao e Qualidade (apos TODAS as specs funcionais):
 | ID | Spec Task | Tipo | Descricao | Dependencia | Status |
 |----|-----------|------|-----------|-------------|--------|
 | S007-T9 | 007/T9 | Frontend | VantagensConfigComponent — secao de efeitos (31 testes) | S007-T8 | **[CONCLUIDO]** (rodada 7 — commit `f19c213`, EfeitoFormComponent standalone, formulario dinamico, preview calculado, aba "Efeitos" com badge) |
-| S007-T10 | 007/T10 | Frontend | FormulaEditor integrado para FORMULA_CUSTOMIZADA | S007-T9 | **[DESBLOQUEADO]** |
-| S007-T11 | 007/T11 | Frontend | Seletor de dado para DADO_UP | S007-T9 | **[DESBLOQUEADO]** |
-| S007-T12 | 007/T12 | Frontend | UI de concessao de Insolitus pelo Mestre | S007-T9 | **[DESBLOQUEADO]** |
+| S007-T10 | 007/T10 | Frontend | FormulaEditor integrado para FORMULA_CUSTOMIZADA | S007-T9 | **[BLOQUEADO]** (PA-004 nao resolvido — sem alvo definido) |
+| S007-T11 | 007/T11 | Frontend | Seletor de dado para DADO_UP (progressao visual) | S007-T9 | **[CONCLUIDO]** (rodada 9 — commit `0c5fb29`, seletor dado base + slider nivel + dado resultante calculado) |
+| S007-T12 | 007/T12 | Frontend | UI de concessao de Insolitus pelo Mestre | S007-T9 | **[CONCLUIDO]** (rodada 10 — commit `d23a3cf`, dialog Mestre, busca por nome filtrando vantagens INSOLITUS, botoes Conceder/Revogar, 17 testes) |
 
 **Pontos em Aberto (confirmar antes de iniciar T6/T7):**
 - PA-001: RESOLVIDO — MESTRE pode revogar QUALQUER vantagem (incluindo Insolitus)
@@ -171,13 +171,13 @@ TRACK F — Documentacao e Qualidade (apos TODAS as specs funcionais):
 | ID | Spec Task | Tipo | Descricao | Dependencia | Status |
 |----|-----------|------|-----------|-------------|--------|
 | S006-T6 | 006/T6 | Frontend | Passo 1: Identificacao (rewrite do wizard) (34 testes) | S006-T1 | **[CONCLUIDO]** (rodada 7 — commit `064d648`, FichaWizardComponent + StepIdentificacaoComponent, rotas criar/criar-npc, retomada rascunho, classesFiltradas) |
-| S006-T7 | 006/T7 | Frontend | Passo 2: Descricao fisica | S006-T6 | **[DESBLOQUEADO]** |
-| S006-T8 | 006/T8 | Frontend | Passo 3: Distribuicao de atributos | S006-T5, S006-T6 | **[DESBLOQUEADO]** |
-| S006-T9 | 006/T9 | Frontend | Passo 4: Distribuicao de aptidoes | S006-T5, S006-T6 | **[DESBLOQUEADO]** |
-| S006-T10 | 006/T10 | Frontend | Passo 5: Compra de vantagens iniciais | S006-T5, S006-T6 | **[DESBLOQUEADO]** |
-| S006-T11 | 006/T11 | Frontend | Passo 6: Revisao e confirmacao | S006-T1, S006-T6 | **[DESBLOQUEADO]** |
-| S006-T12 | 006/T12 | Frontend | Auto-save visual (indicador de salvamento) | S006-T6 | **[DESBLOQUEADO]** |
-| S006-T13 | 006/T13 | Frontend | Badge "incompleta" na listagem de fichas | S006-T1 | **[DESBLOQUEADO]** |
+| S006-T7 | 006/T7 | Frontend | Passo 2: Descricao fisica (21 testes) | S006-T6 | **[CONCLUIDO]** (rodada 8 — StepDescricaoComponent, formPasso2, salvarPasso2 via PUT /fichas/{id}, campo descricao em ficha.model.ts + UpdateFichaDto. 11 testes step + 10 wizard) |
+| S006-T8 | 006/T8 | Frontend | Passo 3: Distribuicao de atributos (17 testes) | S006-T7 | **[CONCLUIDO]** (rodada 9 — commit `dd2677d`, StepAtributosComponent, UI distribuicao pontos, forkJoin dados, 9 testes step + 8 wizard) |
+| S006-T9 | 006/T9 | Frontend | Passo 4: Distribuicao de aptidoes | S006-T5, S006-T6 | **[CONCLUIDO]** (rodada 10 — commit `1895648`, StepAptidoesComponent, pool de NivelConfig.pontosAptidao, formPasso4 + carregarDadosPasso4 + salvarPasso4 PUT /fichas/{id}/aptidoes, 22 testes. Agente A sem tokens, bugfixes manuais pelo PM) |
+| S006-T10 | 006/T10 | Frontend | Passo 5: Compra de vantagens iniciais | S006-T5, S006-T6 | **[CONCLUIDO]** (rodada 10 — commit `0702b03`, StepVantagensComponent smart, filtro categoria + busca, agrupamento por categoria, estadoBotao comprar/comprada/sem-pontos/comprando, POST /fichas/{id}/vantagens + GET /fichas/{id}/resumo, 40 testes) |
+| S006-T11 | 006/T11 | Frontend | Passo 6: Revisao e confirmacao | S006-T1, S006-T6 | **[DESBLOQUEADO]** (Rodada 11) |
+| S006-T12 | 006/T12 | Frontend | Auto-save visual (indicador de salvamento) | S006-T6 | **[DESBLOQUEADO]** (Rodada 11 bonus) |
+| S006-T13 | 006/T13 | Frontend | Badge "incompleta" na listagem de fichas | S006-T1 | **[DESBLOQUEADO]** (Rodada 11 bonus) |
 
 ### P0: Spec 005 — Gestao de Participantes (6 tasks)
 
@@ -195,9 +195,9 @@ TRACK F — Documentacao e Qualidade (apos TODAS as specs funcionais):
 
 | ID | Spec Task | Tipo | Descricao | Dependencia | Status |
 |----|-----------|------|-----------|-------------|--------|
-| S005-P2T1 | 005/P2-T1 | Frontend | Alinhar API service e Business service com novos endpoints | S005-P1T2 | **[DESBLOQUEADO]** |
-| S005-P2T2 | 005/P2-T2 | Frontend | JogoDetail do Mestre (semantica remover/banir/desbanir + filtro + badge) | S005-P2T1 | [PENDENTE] |
-| S005-P2T3 | 005/P2-T3 | Frontend | JogosDisponiveis do Jogador (solicitar, status, cancelar) | S005-P2T1 | [PENDENTE] |
+| S005-P2T1 | 005/P2-T1 | Frontend | Alinhar API service e Business service com novos endpoints | S005-P1T2 | **[CONCLUIDO]** (rodada 8→R9 — commit `d6c3b34`, testes API completos) |
+| S005-P2T2 | 005/P2-T2 | Frontend | JogoDetail do Mestre (semantica remover/banir/desbanir + filtro + badge) | S005-P2T1 | **[CONCLUIDO]** (rodada 9 — commit `f3637e9`, bug critico corrigido: remover chamava banir. 11 testes, OnPush, filtro status) |
+| S005-P2T3 | 005/P2-T3 | Frontend | JogosDisponiveis do Jogador (solicitar, status, cancelar) | S005-P2T1 | **[CONCLUIDO]** (rodada 10 — commit `d2c262c`, statusPorJogo signal, helpers podeEntrar/podeSolicitar/podeCancelar, badges p-tag, 34 testes) |
 
 ### Spec 015 — ConfigPontos + DefaultProvider (rodada 2: T5 CONCLUIDA)
 
@@ -303,20 +303,39 @@ RODADA 6 CONCLUIDA [14:01]:
   [Backend]  S006-T4: XP acumulativo + motivo ................ **[CONCLUIDO]** (commit d37b227 [11:19])
   [Backend]  S007-T8: testes integracao 7 efeitos ............ **[CONCLUIDO]** (commit e1bbe50 [13:20])
 
-PROXIMA RODADA (rodada 7):
-  [Backend]  S015-T4 (auto-concessao vantagens pre-definidas)  [DESBLOQUEADO]
-  [Backend]  S005-P1T3 (testes integracao participantes) ..... [DESBLOQUEADO]
-  [Frontend] S007-T9 (frontend efeitos UI) ................... [DESBLOQUEADO]
-  [Frontend] S006-T6 (wizard passo 1 identificacao) .......... [DESBLOQUEADO]
+RODADA 7 CONCLUIDA [14:54]:
+  [Backend]  S015-T4: auto-concessao vantagens ............... **[CONCLUIDO]** (commit 1dec7db)
+  [Backend]  S005-P1T3: testes integracao participantes ...... **[CONCLUIDO]** (commit 32d4b94)
+  [Frontend] S007-T9: frontend efeitos UI .................... **[CONCLUIDO]** (commit f19c213)
+  [Frontend] S006-T6: wizard passo 1 identificacao ........... **[CONCLUIDO]** (commit 064d648)
 
-RODADA 8+:
-  [Frontend] S007-T10-T12 (frontend efeitos, 3 tasks) ....... [PENDENTE]
-  [Frontend] S006-T7-T13 (wizard passos 2-6 + auto-save) .... [PENDENTE]
-  [Frontend] S005-P2T1 a P2T3 (participantes frontend) ...... [PENDENTE]
-  [Backend]  S015-T6/T7 (frontend ConfigPontos) .............. [PENDENTE]
+RODADA 8 CONCLUIDA [15:30] (commits formalizados R9):
+  [Frontend] S006-T7: wizard passo 2 descricao ............... **[CONCLUIDO]** (commit dd2677d)
+  [Frontend] S005-P2T1: participantes frontend API/service ... **[CONCLUIDO]** (commit d6c3b34)
+
+RODADA 9 CONCLUIDA [21:05] (5 tasks, +31F testes, 581B+490F):
+  [Frontend] S005-P2T1: participantes API testes ............. **[CONCLUIDO]** (commit d6c3b34)
+  [Frontend] S006-T7: wizard passo 2 descricao ............... **[CONCLUIDO]** (commit dd2677d)
+  [Frontend] S006-T8: wizard passo 3 atributos ............... **[CONCLUIDO]** (commit dd2677d)
+  [Frontend] S005-P2T2: JogoDetail Mestre remover/banir ...... **[CONCLUIDO]** (commit f3637e9)
+  [Frontend] S007-T11: DadoUp seletor progressao ............. **[CONCLUIDO]** (commit 0c5fb29)
+
+RODADA 10 CONCLUIDA [07:10] (4 tasks, +113F testes, 581B+603F):
+  [Frontend] S006-T9: wizard passo 4 aptidoes ................ **[CONCLUIDO]** (commit 1895648, 22 testes)
+  [Frontend] S006-T10: wizard passo 5 vantagens .............. **[CONCLUIDO]** (commit 0702b03, 40 testes)
+  [Frontend] S005-P2T3: JogosDisponiveis jogador ............. **[CONCLUIDO]** (commit d2c262c, 34 testes)
+  [Frontend] S007-T12: UI concessao Insolitus ................ **[CONCLUIDO]** (commit d23a3cf, 17 testes)
+
+PROXIMA RODADA (rodada 11):
+  [Frontend] S006-T11 (wizard passo 6 revisao) ............... [DESBLOQUEADO] - critico
+  [Frontend] S006-T12 (auto-save visual) ..................... [DESBLOQUEADO] - bonus
+  [Frontend] S006-T13 (badge incompleta listagem) ............ [DESBLOQUEADO] - bonus
+
+NAO AGENDADO (depende PA-004):
+  [Frontend] S007-T10 (FormulaEditorEfeito) .................. [BLOQUEADO]
 ```
 
-**Gargalo principal ATUALIZADO (R6):** Backend Spec 007 100% concluido (exceto T5alt bloqueado por PA-004). 7/8 TipoEfeito + 20 testes de integracao. Participantes backend (P1T1+P1T2) concluidos, XP refatorado. Caminho critico agora: frontend (S007-T9..T12 + S006-T6..T13 + S005-P2T1..P2T3) + S015-T4 (auto-concessao). Sprint 2 a 54% (19/35).
+**Gargalo principal ATUALIZADO (R10):** Backend 100% concluido para Sprint 2 (exceto T5alt bloqueado por PA-004). Frontend avancou de 29/35 (R9) para 33/35 (R10) em 1 rodada — +113 testes (490 → 603). Restam apenas 2 tasks do escopo original (S006-T11 e S007-T10 bloqueada). Sprint 2 a 94% (33/35). S006-T12/T13 sao bonus opcionais para Rodada 11.
 
 ---
 
@@ -331,7 +350,7 @@ RODADA 8+:
 | Spec 007 impacta ~20-30 arquivos | Risco de regressao nos calculos existentes | Spec 007 T8 cobre com testes de integracao extensivos |
 | PA-004 nao resolvido | FORMULA_CUSTOMIZADA sem alvo definido bloqueia T6 | Escalar ao PO antes de T6 |
 | PA-006 nao resolvido | VIG/SAB hardcoded por abreviacao (GAP-CALC-09) | Fora do escopo de T0; escalar ao PO |
-| Sprint 2 e denso (35 tasks, 19 concluidas) | 16 tasks restantes (maioria frontend) | Backend quase completo; frontend desbloqueado em 3 tracks (007, 006, 005); modelo 1 task/agente |
+| Sprint 2 reta final (35 tasks, 33 concluidas) | 1 task restante (S006-T11) + 1 bloqueada (S007-T10) | Wizard passo 6 fecha o fluxo end-to-end; S007-T10 escalar PA-004 ao PO |
 
 ---
 
@@ -372,4 +391,4 @@ RODADA 8+:
 
 ---
 
-*Atualizado: 2026-04-05 (rodada 5: 15/35, 523B+359F testes, S007-T7+S006-T2+S006-T5+S015-T3 concluidas, merge main) | PM/Scrum Master*
+*Atualizado: 2026-04-06 [07:10] (rodada 10 concluida: 33/35, 581B+603F testes) | PM/Scrum Master*

@@ -1,22 +1,29 @@
-# Handoff de Sessao -- 2026-04-05 (pos-sessao 12, rodada 8 parcial)
+# Handoff de Sessao -- 2026-04-06 (pos-sessao 13, rodada 10 concluida)
 
 > Documento de transferencia de contexto para a proxima sessao de trabalho.
 > Branch atual: `main`
-> Backend: **581 testes** passando, 0 falhas | Frontend: **459 testes** passando, 0 falhas
-> Sprint 2: **25/35 tasks concluidas** (71%)
-> Ultima atualizacao: 2026-04-05 [15:30]
+> Backend: **581 testes** passando, 0 falhas | Frontend: **603 testes** passando, 0 falhas
+> Sprint 2: **33/35 tasks concluidas** (94%) — 2 tasks restantes (todas frontend)
+> Ultima atualizacao: 2026-04-06 [07:10]
 
 ---
 
 ## Resumo Executivo
 
-A Rodada 8 (parcial) concluiu 2 tasks frontend, elevando o Sprint 2 para 71% (25/35). Destaques: Wizard Passo 2 Descricao com StepDescricaoComponent e 21 testes (11 step + 10 wizard) (S006-T7), e Participantes API/Service com endpoints banir/desbanir/remover/meu-status/cancelarSolicitacao alinhados ao backend (S005-P2T1).
+A Rodada 10 concluiu com **todos os 4 agentes entregando com sucesso**, elevando o Sprint 2 para 94% (33/35) com **603 testes frontend** (+113 vs Rodada 9). Entregas: S006-T9 (wizard passo 4 aptidoes, commit `1895648`, 22 testes), S006-T10 (wizard passo 5 vantagens, commit `0702b03`, 40 testes), S005-P2T3 (JogosDisponiveis Jogador com solicitar/cancelar/status, commit `d2c262c`, 34 testes), e S007-T12 (UI concessao Insolitus pelo Mestre, commit `d23a3cf`, 17 testes).
 
-**Proximo foco (Rodada 9):** S006-T8 (wizard passo 3 atributos, complexidade alta 6-8h), S007-T11 (DadoUp preview seletor, 2-3h), S005-P2T2 (JogoDetail do Mestre semantica remover/banir), S006-T9 ou T10 (wizard passo 4 aptidoes ou passo 5 vantagens).
+**Restam apenas 2 tasks do escopo original Sprint 2 (todas frontend):** S006-T11 (wizard passo 6 revisao + completar) e S007-T10 (FormulaEditorEfeito — bloqueado por PA-004, opcao mockar/pular). Tasks bonus disponiveis: S006-T12 (auto-save visual) e S006-T13 (badge incompleta na listagem).
+
+**Proximo foco (Rodada 11):** S006-T11 (wizard passo 6 revisao — fechamento do wizard), S006-T12 (auto-save visual), S006-T13 (badge incompleta) — todas em paralelo. S007-T10 fica para tratamento de PA-004 com PO.
+
+**Observacoes da Rodada 10:**
+- Agente A ficou sem tokens antes de concluir S006-T9; trabalho foi finalizado e bugfixes aplicados manualmente pelo PM
+- `ficha-wizard.component.spec.ts` e `ficha-wizard-passo4.component.spec.ts` tem timeout de worker pre-existente (setTimeout 3s) — testes passam mas worker crasha no shutdown. Nao bloqueia build.
+- Build: 0 erros TypeScript, apenas budget warning pre-existente (bundle 1.14MB vs limite 1MB)
 
 ---
 
-## O que Foi Feito (acumulado Sprint 2: 25/35)
+## O que Foi Feito (acumulado Sprint 2: 33/35)
 
 ### Backend -- 581 testes (+10 desde Rodada 6)
 
@@ -42,12 +49,19 @@ A Rodada 8 (parcial) concluiu 2 tasks frontend, elevando o Sprint 2 para 71% (25
 | S015-T5 | DefaultProvider: 8 bugs + defaults | R2 | -- | BUG-DC-02..09 (exceto DC-03). 9 BonusConfig, 8 PontosVantagem, 8 CategoriaVantagem, 22 vantagens canonicas. |
 | URG-01 | Bug XP verificado | R2 | -- | PUT /fichas/{id}/xp ja tinha @PreAuthorize. |
 
-### Frontend -- 459/459 testes (+35 desde Rodada 7, +188 desde Sprint 1)
+### Frontend -- 603 testes (+113 desde Rodada 9, +332 desde Sprint 1)
 
 | ID | Descricao | Rodada | Detalhes |
 |----|-----------|--------|----------|
-| S006-T7 | Wizard Passo 2 Descricao | R8 | `StepDescricaoComponent` criado, `formPasso2` no wizard, labels atualizados (Descricao/Atributos/Aptidoes), `salvarPasso2` via PUT /fichas/{id}, `ficha.model.ts` + `UpdateFichaDto` atualizados com campo `descricao`. 11 testes no step + 10 no wizard. |
-| S005-P2T1 | Participantes API/Service | R8 | `JogosApiService`: banirParticipante PUT /banir, removerParticipante DELETE /{pid}, desbanirParticipante PUT /desbanir, meuStatusParticipacao GET /meu-status (404->null), cancelarSolicitacao DELETE /minha-solicitacao, listParticipantes com filtro status. `ParticipanteBusinessService`: banir/desbanir/remover/meuStatus/cancelarSolicitacao. Testes atualizados. |
+| S007-T12 | UI concessao Insolitus pelo Mestre | R10 | `tipoVantagem` adicionado em VantagemConfig + FichaVantagemResponse. `concederInsolitus()` + `revogarVantagem()` em fichas-api.service e ficha-business.service. UI no `FichaVantagensTabComponent` (dumb): botao "Conceder Insolitus" (apenas Mestre) abre dialog com busca por nome filtrando vantagens INSOLITUS, tag "Insolitus" e label "Concedida pelo Mestre", botao revogar (trash) para todas vantagens (Mestre). `viewChild(FichaVantagensTabComponent)` no smart `FichaDetailComponent` para chamar `resetarConcedendo`. 17 testes em ficha-vantagens-tab.spec.ts. Commit `d23a3cf`. |
+| S005-P2T3 | JogosDisponiveis do Jogador | R10 | `statusPorJogo = signal<Map<number, StatusParticipante \| null>>(new Map())` carregado para cada jogo. `solicitandoJogo` signal para loading individual. `carregarStatusParticipacao()` em paralelo, 404 = null. Helpers `getMeuStatus`/`podeEntrar`/`podeSolicitar`/`podeCancelar`. `solicitarEntrada` + `cancelarSolicitacao` atualizam statusPorJogo localmente sem re-fetch. Template com `@switch` no status, badges p-tag, TooltipModule. 34 testes. Commit `d2c262c`. |
+| S006-T10 | Wizard Passo 5 Vantagens | R10 | `StepVantagensComponent` (Smart) em `steps/step-vantagens/`. `vantagensAgrupadasPorCategoria` computed por categoria. `estadoBotao(id, formulaCusto)` retorna 'comprar'/'comprada'/'sem-pontos'/'comprando'. `comprar()` chama POST /fichas/{id}/vantagens + GET /fichas/{id}/resumo. `pontosAtualizados` output. `filtroCategoria + termoBusca` signals. `idsComprados` computed Set O(1). Wizard: `pontosVantagemDisponiveis` signal + effect ao entrar passo 5. Passo 5 nao salva no avancar (compras persistidas individualmente). 40 testes em step-vantagens.component.spec.ts. Commit `0702b03`. |
+| S006-T9 | Wizard Passo 4 Aptidoes | R10 | `StepAptidoesComponent` (dumb) com distribuicao de pontos pool vindo de NivelConfig.pontosAptidao, agrupamento por TipoAptidao. Wizard: `formPasso4` + `carregarDadosPasso4` (forkJoin getAptidoes+getFichaResumo+listAptidoesConfig) + `salvarPasso4` via PUT /fichas/{id}/aptidoes. 22 testes em step-aptidoes.spec.ts. Bugfixes manuais aplicados pelo PM apos exhaust de tokens do agente. Commit `1895648`. |
+| S005-P2T2 | JogoDetail Mestre remover/banir | R9 | Bug critico corrigido: `removerParticipante()` chamava `banirParticipante()` — corrigido para `service.removerParticipante()` (soft delete). Botao Banir (confirmacao) para APROVADO, Desbanir para BANIDO. Filtro por status com SelectButton. 11 testes. Commit `f3637e9`. |
+| S007-T11 | DadoUp seletor visual progressao | R9 | EfeitoFormComponent DADO_UP: seletor de dado base + slider de nivel + dado resultante calculado. VantagensConfigComponent carrega `DadoProspeccaoConfig[]` e repassa via `dadosDisponiveis` input. Commit `0c5fb29`. |
+| S006-T8 | Wizard Passo 3 Atributos | R9 | `StepAtributosComponent` (dumb) com UI distribuicao de pontos (incremento/decremento, limites min/max, limitadorAtributo). Wizard: `carregarDadosPasso3` (forkJoin getAtributos+getFichaResumo+listNiveis), `salvarPasso3` via PUT /fichas/{id}/atributos. `FichaAtributoEditavel` e `AtualizarAtributoDto` no modelo. 9 testes step + 8 wizard. Commit `dd2677d`. |
+| S005-P2T1 | Participantes API testes | R8→R9 | `jogos-api.service.spec.ts` atualizado com testes para banir/desbanir/remover/meu-status/cancelarSolicitacao. Cobertura completa dos endpoints S005-P1T2. Pendente de commit desde R8, formalizado R9. Commit `d6c3b34`. |
+| S006-T7 | Wizard Passo 2 Descricao | R8→R9 | `StepDescricaoComponent` criado, `formPasso2` no wizard, labels atualizados (Descricao/Atributos/Aptidoes), `salvarPasso2` via PUT /fichas/{id}, `ficha.model.ts` + `UpdateFichaDto` atualizados com campo `descricao`. 11 testes no step + 10 no wizard. Pendente de commit desde R8, formalizado R9. Commit `dd2677d`. |
 | S007-T9 | VantagensConfig secao de efeitos | R7 | `vantagem-efeito.model.ts`, `vantagem-efeito.service.ts`, `EfeitoFormComponent` standalone com formulario dinamico por tipo, preview calculado, validacao client-side, nova aba "Efeitos" com badge de contagem. FORMULA_CUSTOMIZADA bloqueada (PA-004) com aviso "em breve". 31 testes novos em `efeito-form.component.spec.ts`. Commit `f19c213`. |
 | S006-T6 | Wizard Passo 1 Identificacao | R7 | `FichaWizardComponent` (orquestrador), `StepIdentificacaoComponent` (dumb), tipos `EstadoSalvamento`/`FormPasso1`, rotas `criar`/`criar-npc`, retomada de rascunho via `?fichaId=`, classesFiltradas computed por raca, toggle isNpc para MESTRE, placeholders passos 2-6. FichaFormComponent antigo substituido (re-exporta). 34 testes novos em `ficha-wizard.component.spec.ts`. Commit `064d648`. |
 | QW-Bug1/2 | Barras vida/essencia + pontos vantagem | R3 | Ja estavam corrigidos (da rodada 2). |
@@ -56,7 +70,7 @@ A Rodada 8 (parcial) concluiu 2 tasks frontend, elevando o Sprint 2 para 71% (25
 
 ---
 
-## O que Esta Pendente (10 tasks restantes)
+## O que Esta Pendente (2 tasks restantes do escopo Sprint 2 + 2 bonus opcionais)
 
 ### Caminho Critico: Spec 007 (VantagemEfeito + Motor)
 
@@ -68,9 +82,9 @@ A Rodada 8 (parcial) concluiu 2 tasks frontend, elevando o Sprint 2 para 71% (25
 | S007-T7 | Backend | Insolitus + endpoint concessao/revogacao | T1 | **CONCLUIDA** (R5) |
 | S007-T8 | Backend | Testes integracao todos efeitos | T3-T7 | **CONCLUIDA** (R6) |
 | S007-T9 | Frontend | VantagensConfig secao de efeitos | T8 | **CONCLUIDA** (R7) |
-| S007-T10 | Frontend | FormulaEditorEfeito | T9 | **DESBLOQUEADO** |
-| S007-T11 | Frontend | DadoUp seletor | T9 | **DESBLOQUEADO** |
-| S007-T12 | Frontend | UI concessao Insolitus pelo Mestre | T9 | **DESBLOQUEADO** |
+| S007-T10 | Frontend | FormulaEditorEfeito | T9 | **PENDENTE** (afetado por PA-004) |
+| S007-T11 | Frontend | DadoUp seletor (progressao visual) | T9 | **CONCLUIDA** (R9, commit `0c5fb29`) |
+| S007-T12 | Frontend | UI concessao Insolitus pelo Mestre | T9 | **CONCLUIDA** (R10, commit `d23a3cf`) |
 
 **NOTA:** 7 de 8 TipoEfeito implementados no motor. Falta apenas FORMULA_CUSTOMIZADA (bloqueado por PA-004). Insolitus completo com concessao + revogacao. Testes de integracao (T8) CONCLUIDOS com 20 testes. Frontend efeitos (T9) CONCLUIDO com 31 testes.
 
@@ -95,13 +109,13 @@ A Rodada 8 (parcial) concluiu 2 tasks frontend, elevando o Sprint 2 para 71% (25
 | S006-T4 | Backend | PUT /fichas/{id}/xp acumulativo + motivo | Nenhuma | **CONCLUIDA** (R6) |
 | S006-T5 | Backend | pontosDisponiveis no response | Nenhuma | **CONCLUIDA** (R5) |
 | S006-T6 | Frontend | Passo 1: Identificacao (rewrite wizard) | S006-T1 | **CONCLUIDA** (R7) |
-| S006-T7 | Frontend | Passo 2: Descricao fisica | S006-T6 | **CONCLUIDA** (R8) |
-| S006-T8 | Frontend | Passo 3: Distribuicao de atributos | S006-T7 | **DESBLOQUEADO** |
-| S006-T9 | Frontend | Passo 4: Distribuicao de aptidoes | S006-T5, T6 | **DESBLOQUEADO** |
-| S006-T10 | Frontend | Passo 5: Compra de vantagens iniciais | S006-T5, T6 | **DESBLOQUEADO** |
-| S006-T11 | Frontend | Passo 6: Revisao e confirmacao | S006-T1, T6 | **DESBLOQUEADO** |
-| S006-T12 | Frontend | Auto-save visual (indicador) | S006-T6 | **DESBLOQUEADO** |
-| S006-T13 | Frontend | Badge "incompleta" na listagem | S006-T1 | **DESBLOQUEADO** |
+| S006-T7 | Frontend | Passo 2: Descricao fisica | S006-T6 | **CONCLUIDA** (R8→R9, commit `dd2677d`) |
+| S006-T8 | Frontend | Passo 3: Distribuicao de atributos (17 testes) | S006-T7 | **CONCLUIDA** (R9, commit `dd2677d`) |
+| S006-T9 | Frontend | Passo 4: Distribuicao de aptidoes | S006-T5, T6 | **CONCLUIDA** (R10, commit `1895648`) |
+| S006-T10 | Frontend | Passo 5: Compra de vantagens iniciais | S006-T5, T6 | **CONCLUIDA** (R10, commit `0702b03`) |
+| S006-T11 | Frontend | Passo 6: Revisao e confirmacao | S006-T1, T6 | **PENDENTE** (proximo - R11) |
+| S006-T12 | Frontend | Auto-save visual (indicador) | S006-T6 | **DESBLOQUEADO** (bonus R11) |
+| S006-T13 | Frontend | Badge "incompleta" na listagem | S006-T1 | **DESBLOQUEADO** (bonus R11) |
 
 ### Track D: Spec 005 (Participantes)
 
@@ -110,11 +124,56 @@ A Rodada 8 (parcial) concluiu 2 tasks frontend, elevando o Sprint 2 para 71% (25
 | S005-P1T1 | Backend | Re-solicitacao strategy Reactivate | Nenhuma | **CONCLUIDA** (R6) |
 | S005-P1T2 | Backend | Endpoints faltantes (banir, desbanir, remover, meu-status, filtro) | S005-P1T1 | **CONCLUIDA** (R6) |
 | S005-P1T3 | Backend | Testes de integracao completos | S005-P1T1, P1T2 | **CONCLUIDA** (R7) |
-| S005-P2T1 | Frontend | API service + business service | S005-P1T2 | **CONCLUIDA** (R8) |
-| S005-P2T2 | Frontend | JogoDetail do Mestre (semantica remover/banir) | S005-P2T1 | **DESBLOQUEADO** |
-| S005-P2T3 | Frontend | JogosDisponiveis do Jogador (solicitar, status) | S005-P2T1 | [PENDENTE] |
+| S005-P2T1 | Frontend | API service testes completos | S005-P1T2 | **CONCLUIDA** (R8→R9, commit `d6c3b34`) |
+| S005-P2T2 | Frontend | JogoDetail do Mestre (semantica remover/banir) | S005-P2T1 | **CONCLUIDA** (R9, commit `f3637e9`) |
+| S005-P2T3 | Frontend | JogosDisponiveis do Jogador (solicitar, status) | S005-P2T1 | **CONCLUIDA** (R10, commit `d2c262c`) |
 
 ### Quick Wins Frontend -- 0 bugs restantes (todos corrigidos)
+
+---
+
+## Rodada 10 -- CONCLUIDA [07:00] (4 tasks concluidas, +113F testes, 581B+603F testes)
+
+### Resultado da Rodada 10
+
+| Agente | Task | Resultado |
+|--------|------|-----------|
+| Agente A (S006-T9) | Wizard Passo 4 Aptidoes | **CONCLUIDO** -- StepAptidoesComponent (dumb), distribuicao de pontos pool de NivelConfig.pontosAptidao, formPasso4 + carregarDadosPasso4 + salvarPasso4 via PUT /fichas/{id}/aptidoes. 22 testes em step-aptidoes.spec.ts. Agente A ficou sem tokens; bugfixes finais aplicados manualmente pelo PM. Commit `1895648`. |
+| Agente B (S006-T10) | Wizard Passo 5 Vantagens | **CONCLUIDO** -- StepVantagensComponent (smart, ConfigApiService + FichasApiService), filtro categoria + busca, vantagensAgrupadasPorCategoria computed, estadoBotao (comprar/comprada/sem-pontos/comprando), POST /fichas/{id}/vantagens, GET /fichas/{id}/resumo para saldo, pontosAtualizados output. 40 testes em step-vantagens.component.spec.ts. Commit `0702b03`. |
+| Agente C (S005-P2T3) | JogosDisponiveis Jogador | **CONCLUIDO** -- statusPorJogo signal carregado para cada jogo, helpers podeEntrar/podeSolicitar/podeCancelar, badges p-tag por status, solicitarEntrada + cancelarSolicitacao com atualizacao local sem re-fetch. 34 testes em jogos-disponiveis.spec.ts. Commit `d2c262c`. |
+| Agente D (S007-T12) | UI Concessao Insolitus Mestre | **CONCLUIDO** -- Botao "Conceder Insolitus" (Mestre only) + dialog com busca, filtra vantagens INSOLITUS via ConfigApiService, tag "Insolitus" + label "Concedida pelo Mestre", botao revogar (trash) para todas vantagens (Mestre), endpoints concederInsolitus + revogarVantagem. 17 testes em ficha-vantagens-tab.spec.ts. Commit `d23a3cf`. |
+
+**Pontos de atencao:**
+- Agente A (S006-T9) ficou sem tokens antes de concluir; trabalho foi finalizado e bugfixes aplicados manualmente pelo PM
+- `ficha-wizard.component.spec.ts` (61 testes) e `ficha-wizard-passo4.component.spec.ts` (14 testes) tem worker timeout pre-existente (setTimeout 3s nos testes de salvamento) — testes passam mas worker crasha no shutdown. Nao bloqueia build.
+- Build: 0 erros TypeScript, apenas budget warning pre-existente (bundle 1.14MB vs limite 1MB)
+
+---
+
+## Rodada 9 -- CONCLUIDA [21:05] (5 tasks concluidas, +31F testes, 581B+490F testes)
+
+### Resultado da Rodada 9
+
+| Agente | Task | Resultado |
+|--------|------|-----------|
+| Agente A (S005-P2T1) | Participantes API testes | **CONCLUIDO** -- `jogos-api.service.spec.ts` com testes banir/desbanir/remover/meu-status/cancelarSolicitacao. Pendente de commit desde R8, formalizado R9. Commit `d6c3b34`. |
+| Agente B (S006-T7) | Wizard Passo 2 Descricao | **CONCLUIDO** -- StepDescricaoComponent, formPasso2, salvarPasso2 via PUT /fichas/{id}. Pendente de commit desde R8, formalizado R9. Commit `dd2677d`. |
+| Agente C (S006-T8) | Wizard Passo 3 Atributos | **CONCLUIDO** -- StepAtributosComponent (dumb), UI distribuicao pontos (incremento/decremento, min/max, limitadorAtributo), carregarDadosPasso3 (forkJoin), salvarPasso3 via PUT /fichas/{id}/atributos. FichaAtributoEditavel + AtualizarAtributoDto. 9 testes step + 8 wizard. Commit `dd2677d`. |
+| Agente D (S005-P2T2) | JogoDetail Mestre remover/banir | **CONCLUIDO** -- Bug critico corrigido: `removerParticipante()` chamava `banirParticipante()`. Botoes Banir/Desbanir adicionados, filtro por status implementado. Commit `f3637e9`. |
+| Agente E (S007-T11) | DadoUp Preview Seletor | **CONCLUIDO** -- Seletor de dado base + preview visual de progressao de dado no EfeitoFormComponent. Commit `0c5fb29`. |
+
+**NOTA:** S005-P2T1 e S006-T7 estavam com implementacao pronta mas sem commit desde R8. Nesta rodada foram commitados (formalizados) junto com as entregas novas S006-T8, S005-P2T2 e S007-T11. Todos os 5 agentes entregaram com sucesso.
+
+---
+
+## Rodada 8 -- CONCLUIDA [15:30] (implementacao de 2 tasks, commits formalizados na R9)
+
+### Resultado da Rodada 8
+
+| Agente | Task | Resultado |
+|--------|------|-----------|
+| Agente A (S006-T7) | Wizard Passo 2 Descricao | **CONCLUIDO** -- Implementacao pronta R8, commit formalizado R9 (`dd2677d`). |
+| Agente B (S005-P2T1) | Participantes API/Service | **CONCLUIDO** -- Implementacao pronta R8, commit formalizado R9 (`d6c3b34`). |
 
 ---
 
@@ -144,31 +203,80 @@ A Rodada 8 (parcial) concluiu 2 tasks frontend, elevando o Sprint 2 para 71% (25
 
 ---
 
-## Proxima Rodada (Rodada 8) -- Planejamento
+## Rodada 10 -- CONCLUIDA [2026-04-06 07:10] (4 tasks, +113F testes, 581B+603F)
 
-### Agente 1 -- Frontend: S006-T7 (Wizard Passo 2 -- Descricao Fisica)
+### Resultado da Rodada 10
 
-**Task:** Passo 2 do wizard de criacao de ficha: descricao fisica do personagem (peso, altura, cor dos olhos, cabelo, pele, etc.)
-**Estimativa:** 3-4 horas
-**Dependencia:** S006-T6 (CONCLUIDA R7) -- DESBLOQUEADA
+| Agente | Task | Resultado |
+|--------|------|-----------|
+| Agente A (S006-T9) | Wizard Passo 4 Aptidoes | **CONCLUIDO** -- StepAptidoesComponent (dumb), distribuicao de pontos pool de NivelConfig.pontosAptidao, agrupamento por TipoAptidao. Wizard: formPasso4 + carregarDadosPasso4 (forkJoin) + salvarPasso4 via PUT /fichas/{id}/aptidoes. 22 testes em step-aptidoes.spec.ts. Bugfixes manuais aplicados pelo PM apos exhaust de tokens do agente. Commit `1895648`. |
+| Agente B (S006-T10) | Wizard Passo 5 Vantagens | **CONCLUIDO** -- StepVantagensComponent (Smart), filtro por categoria + busca, comprar vantagem via POST /fichas/{id}/vantagens, estadoBotao (comprar/comprada/sem-pontos/comprando), pontosVantagemDisponiveis signal no wizard, idsComprados Set O(1). 40 testes em step-vantagens.component.spec.ts. Commit `0702b03`. |
+| Agente C (S005-P2T3) | JogosDisponiveis Jogador | **CONCLUIDO** -- statusPorJogo signal Map, carregarStatusParticipacao em paralelo (404=null), badges p-tag por status (PENDENTE/APROVADO/REJEITADO/BANIDO), botoes Solicitar/Cancelar/Entrar, atualizacao local sem re-fetch. 34 testes. Commit `d2c262c`. |
+| Agente D (S007-T12) | UI Concessao Insolitus Mestre | **CONCLUIDO** -- tipoVantagem em VantagemConfig + FichaVantagemResponse. concederInsolitus + revogarVantagem em api+business. FichaVantagensTabComponent: botao "Conceder Insolitus" + dialog busca + tag "Insolitus" + botao revogar (todas vantagens). FichaDetailComponent orquestra via viewChild. 17 testes. Commit `d23a3cf`. |
 
-### Agente 2 -- Frontend: S006-T8 (Wizard Passo 3 -- Distribuicao de Atributos)
+**Pontos de atencao da Rodada 10:**
+- Agente A (S006-T9) ficou sem tokens antes de concluir; trabalho foi finalizado e bugfixes aplicados manualmente pelo PM
+- `ficha-wizard.component.spec.ts` (61 testes) e `ficha-wizard-passo4.component.spec.ts` (14 testes) tem worker timeout pre-existente (setTimeout 3s) — testes passam mas worker crasha no shutdown. Nao bloqueia build.
+- Build: 0 erros TypeScript, apenas budget warning pre-existente (bundle 1.14MB vs limite 1MB)
 
-**Task:** Passo 3 do wizard: distribuicao de pontos de atributo com validacao de limites (min/max, limitadorAtributo por nivel)
-**Estimativa:** 4-6 horas
-**Dependencia:** S006-T5 (CONCLUIDA R5), S006-T6 (CONCLUIDA R7) -- DESBLOQUEADA
+---
 
-### Agente 3 -- Frontend: S007-T10 ou S007-T11 (FormulaEditorEfeito ou DadoUp Seletor)
+## Proxima Rodada (Rodada 11) -- Planejamento
 
-**Task:** Componente frontend para editar formulas de efeito customizado OU seletor de dado para DADO_UP
-**Estimativa:** 3-4 horas
-**Dependencia:** S007-T9 (CONCLUIDA R7) -- DESBLOQUEADA
+> **Foco:** Fechar Sprint 2 finalizando o wizard de criacao de ficha (passo 6 + auto-save + badge).
+> S007-T10 (FormulaEditorEfeito) permanece pendente porque depende de PA-004 — sera tratado em rodada separada apos resposta do PO.
 
-### Agente 4 -- Frontend: S005-P2T1 (Participantes API/Service)
+### Agente 1 -- Frontend: S006-T11 (Wizard Passo 6 -- Revisao e Confirmacao)
 
-**Task:** Alinhar API service e business service Angular com novos endpoints backend (banir, desbanir, remover, meu-status, filtro)
-**Estimativa:** 2-3 horas
-**Dependencia:** S005-P1T3 (CONCLUIDA R7) -- DESBLOQUEADA
+**Task:** Componente dumb mostrando resumo de todos os passos anteriores (identificacao, descricao, atributos, aptidoes, vantagens compradas). Botao "Completar Ficha" que chama PUT /fichas/{id}/completar — endpoint backend ja existente desde S006-T1.
+**Critérios de aceitação:**
+- Layout em cards/sections, um por passo do wizard
+- Edicao via botao "Voltar para passo X" navega para o passo correspondente sem perder dados
+- Botao "Completar" desabilitado se algum passo obrigatorio tiver erro
+- Apos completar, redirecionar para FichaDetail (rota apropriada Mestre/Jogador)
+- Auto-save de rascunho continua funcionando (componente readonly, nao precisa salvar)
+- Testes >= 15 (visualizacao de cada secao + interacao botao Completar + redirect)
+**Estimativa:** 4-5 horas
+**Dependencia:** S006-T6 (concluida) e S006-T1 (backend, concluida)
+
+### Agente 2 -- Frontend: S006-T12 (Auto-save Visual -- Indicador de Salvamento)
+
+**Task:** Indicador visual no header do wizard mostrando estado de salvamento (rascunho salvo, salvando, erro). Usar o signal `EstadoSalvamento` ja presente no FichaWizardComponent.
+**Critérios de aceitação:**
+- Componente pequeno no canto superior direito do wizard
+- Estados: "Salvo", "Salvando...", "Erro ao salvar - tentar novamente"
+- Icone correspondente (check, spinner, alert)
+- Tooltip com timestamp do ultimo salvamento bem-sucedido
+- Testes >= 8
+**Estimativa:** 2 horas
+**Dependencia:** S006-T6 (concluida) — independente das demais
+
+### Agente 3 -- Frontend: S006-T13 (Badge "Incompleta" na Listagem de Fichas)
+
+**Task:** Adicionar badge p-tag "Incompleta" no FichaCardComponent (ou listagem equivalente) quando `ficha.status === 'INCOMPLETA'`. Click no card de ficha incompleta deve navegar de volta ao wizard com `?fichaId=` para continuar de onde parou.
+**Critérios de aceitação:**
+- Badge visivel apenas para fichas com status INCOMPLETA
+- Click navega para rota do wizard com fichaId
+- Cor distinta (warning/secondary) para destacar do estado normal
+- Testes >= 5 (renderizacao + click)
+**Estimativa:** 1-2 horas
+**Dependencia:** S006-T1 (backend status, concluida) — independente
+
+### NAO AGENDADO -- S007-T10 (FormulaEditorEfeito)
+
+**Task:** Editor de formulas customizadas para FORMULA_CUSTOMIZADA no EfeitoFormComponent.
+**Bloqueador:** PA-004 (FORMULA_CUSTOMIZADA sem alvo definido). Antes de implementar, precisa de decisao do PO sobre onde o resultado da formula sera aplicado (atributo? aptidao? bonus arbitrario?).
+**Acao do PM:** Escalar PA-004 ao PO antes de iniciar Rodada 12. Se PO bloquear definitivamente, considerar mockar com aviso "em breve" para fechar Sprint 2.
+
+### Plano Anti-Conflito da Rodada 11
+
+| Agente | Pacotes/arquivos exclusivos | NAO TOCAR |
+|--------|-------------------------------|-----------|
+| 1 (S006-T11) | `steps/step-revisao/`, `ficha-wizard.component.ts` (metodo `completar()`) | nenhum auto-save, nenhum indicador |
+| 2 (S006-T12) | novo componente `wizard-save-indicator/`, `ficha-wizard.component.html` (header) | passos individuais |
+| 3 (S006-T13) | `ficha-card.component.*`, listagens de ficha | wizard inteiro |
+
+Conflitos minimos: apenas o template do wizard pode ser tocado por agentes 1 e 2 — coordenar via merge sequencial (Agente 1 primeiro, Agente 2 depois).
 
 ---
 
@@ -203,17 +311,30 @@ RODADA 7 -- CONCLUIDA [14:54]:
   [CONCLUIDO] S007-T9: frontend efeitos UI .................. commit f19c213
   [CONCLUIDO] S006-T6: wizard passo 1 identificacao ......... commit 064d648
 
-RODADA 8 (proxima):
-  S006-T7 (wizard passo 2 -- descricao fisica) .............. 3-4h
-  S006-T8 (wizard passo 3 -- atributos) .................... 4-6h
-  S007-T10 ou T11 (frontend efeitos formula/dado) ........... 3-4h
-  S005-P2T1 (participantes frontend API/service) ............ 2-3h
+RODADA 8 -- CONCLUIDA [15:30] (implementacoes prontas, commits formalizados R9):
+  [CONCLUIDO] S006-T7: wizard passo 2 descricao ............. commit dd2677d
+  [CONCLUIDO] S005-P2T1: participantes frontend API/service . commit d6c3b34
 
-RODADA 9+:
-  [Frontend] S007-T10-T12 restantes (frontend efeitos) ...... [PENDENTE]
-  [Frontend] S006-T9-T13 (wizard passos 4-6 + auto-save) .... [PENDENTE]
-  [Frontend] S005-P2T2/P2T3 (participantes frontend) ........ [PENDENTE]
-  [Frontend] S015-T6/T7 (frontend ConfigPontos) .............. [PENDENTE]
+RODADA 9 -- CONCLUIDA [21:05] (5 tasks, +31F testes, 581B+490F):
+  [CONCLUIDO] S005-P2T1: participantes API testes ........... commit d6c3b34
+  [CONCLUIDO] S006-T7: wizard passo 2 descricao ............. commit dd2677d
+  [CONCLUIDO] S006-T8: wizard passo 3 atributos ............. commit dd2677d
+  [CONCLUIDO] S005-P2T2: JogoDetail Mestre remover/banir .... commit f3637e9
+  [CONCLUIDO] S007-T11: DadoUp seletor progressao ........... commit 0c5fb29
+
+RODADA 10 -- CONCLUIDA [07:10] (4 tasks, +113F testes, 581B+603F):
+  [CONCLUIDO] S006-T9: wizard passo 4 aptidoes .............. commit 1895648
+  [CONCLUIDO] S006-T10: wizard passo 5 vantagens ............ commit 0702b03
+  [CONCLUIDO] S005-P2T3: JogosDisponiveis jogador ........... commit d2c262c
+  [CONCLUIDO] S007-T12: UI concessao Insolitus .............. commit d23a3cf
+
+RODADA 11 (proxima):
+  S006-T11 (wizard passo 6 revisao + completar) ............. 4-5h
+  S006-T12 (auto-save visual indicator) ..................... 2h
+  S006-T13 (badge incompleta listagem) ...................... 1-2h
+
+NAO AGENDADO:
+  [Frontend] S007-T10 (FormulaEditorEfeito) ................. [BLOQUEADO PA-004]
 ```
 
 ---
@@ -250,5 +371,5 @@ RODADA 9+:
 
 ---
 
-*Produzido por: PM/Scrum Orchestrator | 2026-04-05 [14:54] (pos-rodada 7: 23/35, 581B+424F testes)*
-*Proxima revisao: inicio da rodada 8*
+*Produzido por: PM/Scrum Orchestrator | 2026-04-06 [07:10] (rodada 10 concluida: 33/35, 581B+603F testes)*
+*Proxima revisao: inicio da rodada 11*

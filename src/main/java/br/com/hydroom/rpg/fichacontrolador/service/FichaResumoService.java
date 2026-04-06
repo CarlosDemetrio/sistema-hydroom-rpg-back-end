@@ -6,6 +6,7 @@ import br.com.hydroom.rpg.fichacontrolador.exception.ResourceNotFoundException;
 import br.com.hydroom.rpg.fichacontrolador.model.*;
 import br.com.hydroom.rpg.fichacontrolador.model.enums.RoleJogo;
 import br.com.hydroom.rpg.fichacontrolador.repository.*;
+import br.com.hydroom.rpg.fichacontrolador.repository.FichaVisibilidadeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,6 +37,7 @@ public class FichaResumoService {
     private final PontosVantagemConfigRepository pontosVantagemConfigRepository;
     private final ClassePontosConfigRepository classePontosConfigRepository;
     private final RacaPontosConfigRepository racaPontosConfigRepository;
+    private final FichaVisibilidadeRepository fichaVisibilidadeRepository;
     private final JogoParticipanteRepository jogoParticipanteRepository;
     private final UsuarioRepository usuarioRepository;
 
@@ -177,9 +179,13 @@ public class FichaResumoService {
             return;
         }
 
-        // NPCs só são visíveis para o Mestre
+        // NPCs: Jogadores com FichaVisibilidade ativa podem acessar o resumo
         if (ficha.isNpc()) {
-            throw new ForbiddenException("Acesso negado: NPCs só são acessíveis pelo Mestre.");
+            if (!fichaVisibilidadeRepository.existsByFichaIdAndJogadorId(
+                    ficha.getId(), usuarioAtual.getId())) {
+                throw new ForbiddenException("Acesso negado: você não tem acesso às estatísticas deste NPC.");
+            }
+            return;
         }
 
         if (!usuarioAtual.getId().equals(ficha.getJogadorId())) {

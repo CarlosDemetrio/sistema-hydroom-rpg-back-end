@@ -52,6 +52,7 @@ public class FichaService {
     private final FichaProspeccaoRepository fichaProspeccaoRepository;
     private final FichaDescricaoFisicaRepository fichaDescricaoFisicaRepository;
     private final FichaVantagemRepository fichaVantagemRepository;
+    private final FichaVisibilidadeRepository fichaVisibilidadeRepository;
 
     // Repositories de configuração
     private final ConfiguracaoAtributoRepository atributoConfigRepository;
@@ -914,7 +915,7 @@ public class FichaService {
 
     /**
      * Verifica se o usuário atual pode LER a ficha.
-     * NPCs só podem ser lidos pelo Mestre.
+     * Para NPCs: Mestre vê tudo; Jogadores precisam de FichaVisibilidade ativa.
      */
     private void verificarAcessoLeitura(Ficha ficha) {
         Usuario usuarioAtual = getUsuarioAtual();
@@ -927,9 +928,13 @@ public class FichaService {
             return; // Mestre vê tudo
         }
 
-        // NPCs só são visíveis para o Mestre
+        // NPCs: apenas Jogadores com FichaVisibilidade ativa podem acessar stats
         if (ficha.isNpc()) {
-            throw new ForbiddenException("Acesso negado: NPCs só são acessíveis pelo Mestre.");
+            if (!fichaVisibilidadeRepository.existsByFichaIdAndJogadorId(
+                    ficha.getId(), usuarioAtual.getId())) {
+                throw new ForbiddenException("Acesso negado: você não tem acesso às estatísticas deste NPC.");
+            }
+            return;
         }
 
         // Jogador só vê suas próprias fichas

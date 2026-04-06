@@ -16,6 +16,7 @@ import br.com.hydroom.rpg.fichacontrolador.repository.FichaProspeccaoRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.FichaRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.FichaVidaMembroRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.FichaVidaRepository;
+import br.com.hydroom.rpg.fichacontrolador.repository.FichaVisibilidadeRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.JogoParticipanteRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +45,7 @@ public class FichaVidaService {
     private final FichaVidaMembroRepository fichaVidaMembroRepository;
     private final FichaEssenciaRepository fichaEssenciaRepository;
     private final FichaProspeccaoRepository fichaProspeccaoRepository;
+    private final FichaVisibilidadeRepository fichaVisibilidadeRepository;
     private final JogoParticipanteRepository jogoParticipanteRepository;
     private final UsuarioRepository usuarioRepository;
 
@@ -142,6 +144,54 @@ public class FichaVidaService {
         return fichaProspeccaoRepository.findByFichaId(fichaId);
     }
 
+    /**
+     * Reseta o estado de combate da ficha ao estado base em uma operação atômica.
+     *
+     * <p>Campos resetados:</p>
+     * <ul>
+     *   <li>FichaVida.vidaAtual → FichaVida.vidaTotal</li>
+     *   <li>FichaEssencia.essenciaAtual → FichaEssencia.total</li>
+     *   <li>FichaVidaMembro.danoRecebido → 0 (todos os membros)</li>
+     * </ul>
+     *
+     * <p>Não resetado: FichaProspeccao.quantidade, atributos, XP, nível.</p>
+     */
+    @Transactional
+    public Ficha resetarEstado(Long fichaId) {
+        Ficha ficha = fichaRepository.findById(fichaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ficha não encontrada: " + fichaId));
+
+        verificarAcessoMestre(ficha);
+
+        FichaVida fichaVida = fichaVidaRepository.findByFichaId(fichaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Dados de vida não encontrados para ficha: " + fichaId));
+        fichaVida.setVidaAtual(fichaVida.getVidaTotal());
+        fichaVidaRepository.save(fichaVida);
+
+        FichaEssencia fichaEssencia = fichaEssenciaRepository.findByFichaId(fichaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Dados de essência não encontrados para ficha: " + fichaId));
+        fichaEssencia.setEssenciaAtual(fichaEssencia.getTotal());
+        fichaEssenciaRepository.save(fichaEssencia);
+
+        List<FichaVidaMembro> membros = fichaVidaMembroRepository.findByFichaId(fichaId);
+        membros.forEach(m -> m.setDanoRecebido(0));
+        fichaVidaMembroRepository.saveAll(membros);
+
+        log.info("Estado resetado para ficha {}: vidaAtual={}, essenciaAtual={}",
+                fichaId, fichaVida.getVidaTotal(), fichaEssencia.getTotal());
+
+        return ficha;
+    }
+
+    private void verificarAcessoMestre(Ficha ficha) {
+        Usuario usuarioAtual = getUsuarioAtual();
+        boolean isMestre = jogoParticipanteRepository.existsByJogoIdAndUsuarioIdAndRole(
+                ficha.getJogo().getId(), usuarioAtual.getId(), RoleJogo.MESTRE);
+        if (!isMestre) {
+            throw new ForbiddenException("Apenas o Mestre pode resetar o estado de uma ficha.");
+        }
+    }
+
     private void verificarAcessoEscrita(Ficha ficha) {
         Usuario usuarioAtual = getUsuarioAtual();
         Long jogoId = ficha.getJogo().getId();
@@ -174,9 +224,13 @@ public class FichaVidaService {
             return;
         }
 
-        // NPCs só são visíveis para o Mestre
+        // NPCs: apenas Jogadores com FichaVisibilidade ativa podem acessar stats
         if (ficha.isNpc()) {
-            throw new ForbiddenException("Acesso negado: NPCs só são acessíveis pelo Mestre.");
+            if (!fichaVisibilidadeRepository.existsByFichaIdAndJogadorId(
+                    ficha.getId(), usuarioAtual.getId())) {
+                throw new ForbiddenException("Acesso negado: você não tem acesso às estatísticas deste NPC.");
+            }
+            return;
         }
 
         if (!usuarioAtual.getId().equals(ficha.getJogadorId())) {

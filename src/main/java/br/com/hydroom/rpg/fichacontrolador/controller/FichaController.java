@@ -4,6 +4,8 @@ import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarAptidaoRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarAtributoRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarProspeccaoRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarVidaRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarVisibilidadeGlobalRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarVisibilidadeRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.ComprarVantagemRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.ConcederXpRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.CreateFichaRequest;
@@ -18,15 +20,18 @@ import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaPreviewResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaResumoResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaVantagemResponse;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaVisibilidadeResponse;
 import br.com.hydroom.rpg.fichacontrolador.mapper.FichaAptidaoMapper;
 import br.com.hydroom.rpg.fichacontrolador.mapper.FichaAtributoMapper;
 import br.com.hydroom.rpg.fichacontrolador.mapper.FichaMapper;
 import br.com.hydroom.rpg.fichacontrolador.mapper.FichaVantagemMapper;
+import br.com.hydroom.rpg.fichacontrolador.model.Ficha;
 import br.com.hydroom.rpg.fichacontrolador.service.FichaPreviewService;
 import br.com.hydroom.rpg.fichacontrolador.service.FichaResumoService;
 import br.com.hydroom.rpg.fichacontrolador.service.FichaService;
 import br.com.hydroom.rpg.fichacontrolador.service.FichaVantagemService;
 import br.com.hydroom.rpg.fichacontrolador.service.FichaVidaService;
+import br.com.hydroom.rpg.fichacontrolador.service.FichaVisibilidadeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -57,10 +62,11 @@ public class FichaController {
     private final FichaAtributoMapper fichaAtributoMapper;
     private final FichaAptidaoMapper fichaAptidaoMapper;
     private final FichaVidaService fichaVidaService;
+    private final FichaVisibilidadeService fichaVisibilidadeService;
 
     @GetMapping("/api/v1/jogos/{jogoId}/fichas")
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
-    @Operation(summary = "Listar fichas do jogo", description = "Mestre vê todas as fichas; Jogador vê apenas as suas. Suporta filtros opcionais.")
+    @Operation(summary = "Listar fichas do jogo", description = "Mestre vê todas as fichas; Jogador vê as suas e NPCs com visivelGlobalmente=true. Suporta filtros opcionais.")
     public ResponseEntity<List<FichaResponse>> listar(
             @PathVariable Long jogoId,
             @RequestParam(required = false) String nome,
@@ -68,7 +74,9 @@ public class FichaController {
             @RequestParam(required = false) Long racaId,
             @RequestParam(required = false) Integer nivel) {
         var fichas = fichaService.listarComFiltros(jogoId, nome, classeId, racaId, nivel);
-        var response = fichas.stream().map(fichaMapper::toResponse).toList();
+        var response = fichas.stream()
+                .map(ficha -> enriquecerComVisibilidade(ficha))
+                .toList();
         return ResponseEntity.ok(response);
     }
 
@@ -361,5 +369,82 @@ public class FichaController {
             @Valid @RequestBody ConcederXpRequest request) {
         var resumo = fichaService.concederXp(id, request);
         return ResponseEntity.ok(resumo);
+    }
+
+    // ==================== VISIBILIDADE NPC ====================
+
+    @GetMapping("/api/v1/fichas/{id}/visibilidade")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Listar jogadores com acesso aos stats do NPC (Apenas MESTRE)")
+    public ResponseEntity<FichaVisibilidadeResponse> listarVisibilidade(@PathVariable Long id) {
+        var visibilidade = fichaVisibilidadeService.listar(id);
+        return ResponseEntity.ok(visibilidade);
+    }
+
+    @PostMapping("/api/v1/fichas/{id}/visibilidade")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Revelar stats do NPC para jogadores específicos (Apenas MESTRE)",
+               description = "Idempotente: revelar para jogador que já tem acesso não duplica o registro.")
+    public ResponseEntity<FichaVisibilidadeResponse> atualizarVisibilidade(
+            @PathVariable Long id,
+            @Valid @RequestBody AtualizarVisibilidadeRequest request) {
+        var visibilidade = fichaVisibilidadeService.atualizar(id, request);
+        return ResponseEntity.ok(visibilidade);
+    }
+
+    @DeleteMapping("/api/v1/fichas/{id}/visibilidade/{jogadorId}")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Revogar acesso de jogador ao NPC (Apenas MESTRE)")
+    public ResponseEntity<Void> revogarVisibilidade(
+            @PathVariable Long id,
+            @PathVariable Long jogadorId) {
+        fichaVisibilidadeService.revogar(id, jogadorId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/api/v1/fichas/{id}/visibilidade/global")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Atualizar visibilidade global do NPC (Apenas MESTRE)",
+               description = "Define se o NPC aparece na listagem de fichas para todos os Jogadores.")
+    public ResponseEntity<FichaResponse> atualizarVisibilidadeGlobal(
+            @PathVariable Long id,
+            @Valid @RequestBody AtualizarVisibilidadeGlobalRequest request) {
+        var ficha = fichaService.atualizarVisivelGlobalmente(id, request.visivelGlobalmente());
+        return ResponseEntity.ok(fichaMapper.toResponse(ficha));
+    }
+
+    // ==================== ESTADO RESET ====================
+
+    @PostMapping("/api/v1/fichas/{id}/resetar-estado")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(
+        summary = "Resetar estado de combate da ficha (Apenas MESTRE)",
+        description = "Restaura vidaAtual, essenciaAtual e danoRecebido de todos os membros ao estado base. " +
+                      "Não altera atributos, nível, xp ou prospecção. Operação irreversível.")
+    public ResponseEntity<FichaResumoResponse> resetarEstado(@PathVariable Long id) {
+        fichaVidaService.resetarEstado(id);
+        var resumo = fichaResumoService.getResumo(id);
+        return ResponseEntity.ok(resumo);
+    }
+
+    /**
+     * Enriquece o FichaResponse com o campo jogadorTemAcessoStats para NPCs.
+     * Para fichas de jogadores, jogadorTemAcessoStats fica null.
+     */
+    private FichaResponse enriquecerComVisibilidade(Ficha ficha) {
+        FichaResponse base = fichaMapper.toResponse(ficha);
+        if (!ficha.isNpc()) {
+            return base;
+        }
+        boolean temAcesso = fichaVisibilidadeService.temAcessoUsuarioAtual(ficha.getId());
+        return new FichaResponse(
+                base.id(), base.jogoId(), base.nome(), base.jogadorId(),
+                base.racaId(), base.racaNome(), base.classeId(), base.classeNome(),
+                base.generoId(), base.generoNome(), base.indoleId(), base.indoleNome(),
+                base.presencaId(), base.presencaNome(), base.nivel(), base.xp(),
+                base.renascimentos(), base.isNpc(), base.descricao(), base.status(),
+                base.visivelGlobalmente(), temAcesso,
+                base.dataCriacao(), base.dataUltimaAtualizacao()
+        );
     }
 }

@@ -70,10 +70,12 @@ public class FichaResumoService {
         // Vida
         FichaVida vida = fichaVidaRepository.findByFichaId(fichaId).orElse(null);
         int vidaTotal = vida != null && vida.getVidaTotal() != null ? vida.getVidaTotal() : 0;
+        int vidaAtual = vida != null && vida.getVidaAtual() != null ? vida.getVidaAtual() : 0;
 
         // Essência
         FichaEssencia essencia = fichaEssenciaRepository.findByFichaId(fichaId).orElse(null);
         int essenciaTotal = essencia != null && essencia.getTotal() != null ? essencia.getTotal() : 0;
+        int essenciaAtual = essencia != null && essencia.getEssenciaAtual() != null ? essencia.getEssenciaAtual() : 0;
 
         // Ameaça
         FichaAmeaca ameaca = fichaAmeacaRepository.findByFichaId(fichaId).orElse(null);
@@ -159,7 +161,9 @@ public class FichaResumoService {
                 classeNome,
                 atributosTotais,
                 bonusTotais,
+                vidaAtual,
                 vidaTotal,
+                essenciaAtual,
                 essenciaTotal,
                 ameacaTotal,
                 pontosAtributoDisponiveis,

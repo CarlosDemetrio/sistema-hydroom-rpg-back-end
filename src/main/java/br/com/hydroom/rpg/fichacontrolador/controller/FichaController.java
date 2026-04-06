@@ -7,12 +7,14 @@ import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarVidaRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarVisibilidadeGlobalRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarVisibilidadeRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.ComprarVantagemRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.ConcederProspeccaoRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.ConcederXpRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.CreateFichaRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.DuplicarFichaRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.FichaPreviewRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.NpcCreateRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.UpdateFichaRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.UsarProspeccaoRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.DuplicarFichaResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaAptidaoResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaAtributoResponse;
@@ -21,6 +23,7 @@ import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaResumoResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaVantagemResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaVisibilidadeResponse;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.ProspeccaoUsoResponse;
 import br.com.hydroom.rpg.fichacontrolador.mapper.FichaAptidaoMapper;
 import br.com.hydroom.rpg.fichacontrolador.mapper.FichaAtributoMapper;
 import br.com.hydroom.rpg.fichacontrolador.mapper.FichaMapper;
@@ -32,6 +35,7 @@ import br.com.hydroom.rpg.fichacontrolador.service.FichaService;
 import br.com.hydroom.rpg.fichacontrolador.service.FichaVantagemService;
 import br.com.hydroom.rpg.fichacontrolador.service.FichaVidaService;
 import br.com.hydroom.rpg.fichacontrolador.service.FichaVisibilidadeService;
+import br.com.hydroom.rpg.fichacontrolador.service.ProspeccaoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -63,6 +67,7 @@ public class FichaController {
     private final FichaAptidaoMapper fichaAptidaoMapper;
     private final FichaVidaService fichaVidaService;
     private final FichaVisibilidadeService fichaVisibilidadeService;
+    private final ProspeccaoService prospeccaoService;
 
     @GetMapping("/api/v1/jogos/{jogoId}/fichas")
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
@@ -343,6 +348,71 @@ public class FichaController {
         fichaVidaService.atualizarProspeccao(id, request);
         var resumo = fichaResumoService.getResumo(id);
         return ResponseEntity.ok(resumo);
+    }
+
+    // ==================== PROSPECÇÃO (SEMÂNTICA) ====================
+
+    @PostMapping("/api/v1/fichas/{id}/prospeccao/conceder")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Conceder dados de prospecção (Apenas MESTRE)",
+               description = "Incrementa a quantidade de um dado de prospecção na ficha. Cria o registro se não existir.")
+    public ResponseEntity<FichaResumoResponse> concederProspeccao(
+            @PathVariable Long id,
+            @Valid @RequestBody ConcederProspeccaoRequest request) {
+        var resumo = prospeccaoService.conceder(id, request);
+        return ResponseEntity.ok(resumo);
+    }
+
+    @PostMapping("/api/v1/fichas/{id}/prospeccao/usar")
+    @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Registrar uso de dado de prospecção",
+               description = "Decrementa a quantidade e cria registro PENDENTE. Jogador só pode usar dados das próprias fichas.")
+    public ProspeccaoUsoResponse usarProspeccao(
+            @PathVariable Long id,
+            @Valid @RequestBody UsarProspeccaoRequest request) {
+        return prospeccaoService.usar(id, request);
+    }
+
+    @PatchMapping("/api/v1/fichas/{id}/prospeccao/usos/{usoId}/confirmar")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Confirmar uso de prospecção (Apenas MESTRE)",
+               description = "Confirma o uso. Apenas usos PENDENTES podem ser confirmados.")
+    public ResponseEntity<ProspeccaoUsoResponse> confirmarUso(
+            @PathVariable Long id,
+            @PathVariable Long usoId) {
+        var response = prospeccaoService.confirmar(id, usoId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/api/v1/fichas/{id}/prospeccao/usos/{usoId}/reverter")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Reverter uso de prospecção (Apenas MESTRE)",
+               description = "Reverte o uso e restaura a quantidade. Apenas usos PENDENTES podem ser revertidos.")
+    public ResponseEntity<ProspeccaoUsoResponse> reverterUso(
+            @PathVariable Long id,
+            @PathVariable Long usoId) {
+        var response = prospeccaoService.reverter(id, usoId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/api/v1/fichas/{id}/prospeccao/usos")
+    @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
+    @Operation(summary = "Listar usos de prospecção da ficha",
+               description = "Mestre vê todos os usos; Jogador vê apenas os usos da própria ficha.")
+    public ResponseEntity<List<ProspeccaoUsoResponse>> listarUsos(@PathVariable Long id) {
+        var usos = prospeccaoService.listarUsos(id);
+        return ResponseEntity.ok(usos);
+    }
+
+    @GetMapping("/api/v1/jogos/{jogoId}/prospeccao/pendentes")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Listar usos pendentes de prospecção do jogo (Apenas MESTRE)",
+               description = "Retorna todos os usos com status PENDENTE do jogo para o painel do Mestre.")
+    public ResponseEntity<List<ProspeccaoUsoResponse>> listarPendentesJogo(
+            @PathVariable Long jogoId) {
+        var pendentes = prospeccaoService.listarPendentesJogo(jogoId);
+        return ResponseEntity.ok(pendentes);
     }
 
     // ==================== STATUS ====================

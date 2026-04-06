@@ -25,7 +25,7 @@ services:
       target: development # Use development stage with hot-reload
     container_name: rpg-backend
     ports:
-      - '8181:8080'
+      - '8081:8081'
     environment:
       - 'SPRING_PROFILES_ACTIVE=dev'
       - 'SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/rpg_fichas'
@@ -56,7 +56,7 @@ services:
       target: development # Use development stage
     container_name: rpg-frontend
     ports:
-      - '4201:4200' # Angular dev server
+      - '4201:4201'
       - '49173:49153' # Angular live reload
     environment:
       - 'NODE_ENV=development'
@@ -77,7 +77,7 @@ services:
     networks:
       - rpg-network
     restart: unless-stopped
-    command: npm start -- --host 0.0.0.0 --poll=2000
+    command: npm start -- --host 0.0.0.0 --port 4201 --poll=2000
 
 volumes:
   postgres_data:

@@ -17,7 +17,13 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-    # Não expor porta externamente — apenas rede interna Docker
+    # Security: prevent privilege escalation, read-only filesystem
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run/postgresql
     deploy:
       resources:
         limits:
@@ -28,7 +34,7 @@ services:
     container_name: rpg-backend-prod
     restart: unless-stopped
     ports:
-      - "127.0.0.1:8081:8081"  # Apenas localhost — Caddy faz o proxy externo
+      - "127.0.0.1:8081:8081"  # Apenas localhost - Caddy faz o proxy externo
     environment:
       SPRING_PROFILES_ACTIVE: prod
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-rpg_fichas}
@@ -52,6 +58,12 @@ services:
         condition: service_healthy
     networks:
       - rpg-internal
+    # Security: prevent privilege escalation, read-only filesystem
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health/liveness"]
       interval: 30s
@@ -70,3 +82,4 @@ volumes:
 networks:
   rpg-internal:
     driver: bridge
+    internal: true

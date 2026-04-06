@@ -10,3 +10,4 @@
 - [feedback_default_provider_patterns.md](feedback_default_provider_patterns.md) — Spec-015 T5: defaults canônicos Klayrah, ordem de inicialização, BonusConfig no initializer
 - [feedback_mapstruct_base_entity.md](feedback_mapstruct_base_entity.md) — Nunca ignorar campos de BaseEntity em toEntity MapStruct — causa falha de compilação
 - [project_spec015_t2_sub_resources.md](project_spec015_t2_sub_resources.md) — Spec-015 T2: 4 services standalone + 14 endpoints + padrão para sub-recursos com PUT
+- [feedback_prospeccao_service_patterns.md](feedback_prospeccao_service_patterns.md) — ProspeccaoService, armadilha temAcessoUsuarioAtual em testes, FichaResumoResponse estendido

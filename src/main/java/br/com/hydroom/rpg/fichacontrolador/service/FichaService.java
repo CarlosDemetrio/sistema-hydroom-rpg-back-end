@@ -239,7 +239,7 @@ public class FichaService {
 
     /**
      * Lista fichas de um jogo com filtros opcionais.
-     * Mestre vê todas (isNpc=false); Jogador vê apenas as suas.
+     * Mestre vê todas (isNpc=false); Jogador vê as suas e NPCs com visivelGlobalmente=true.
      * Usa JOIN FETCH para carregar relacionamentos ManyToOne e evitar N+1 no mapper.
      */
     public List<Ficha> listarComFiltros(Long jogoId, String nome, Long classeId, Long racaId, Integer nivel) {
@@ -253,8 +253,15 @@ public class FichaService {
         if (isMestre) {
             return fichaRepository.findByJogoIdWithFiltersAndRelationships(jogoId, nome, classeId, racaId, nivel);
         } else {
-            return fichaRepository.findByJogoIdAndJogadorIdWithFiltersAndRelationships(
+            // Fichas próprias do jogador
+            List<Ficha> fichasJogador = fichaRepository.findByJogoIdAndJogadorIdWithFiltersAndRelationships(
                     jogoId, usuarioAtual.getId(), nome, classeId, racaId, nivel);
+            // NPCs revelados globalmente pelo Mestre
+            List<Ficha> npcsVisiveis = fichaRepository.findNpcsVisivelGlobalmenteByJogoId(jogoId);
+
+            List<Ficha> resultado = new java.util.ArrayList<>(fichasJogador);
+            resultado.addAll(npcsVisiveis);
+            return resultado;
         }
     }
 
@@ -457,6 +464,22 @@ public class FichaService {
                 .orElseThrow(() -> new ResourceNotFoundException("Ficha não encontrada: " + fichaId));
         verificarAcessoEscrita(ficha);
         ficha.setDescricao(descricao);
+        return fichaRepository.save(ficha);
+    }
+
+    /**
+     * Atualiza o campo visivelGlobalmente de um NPC.
+     * Apenas MESTRE pode alterar visibilidade.
+     */
+    @Transactional
+    public Ficha atualizarVisivelGlobalmente(Long fichaId, boolean visivelGlobalmente) {
+        Ficha ficha = fichaRepository.findById(fichaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ficha não encontrada: " + fichaId));
+        if (!ficha.isNpc()) {
+            throw new ValidationException("visivelGlobalmente é aplicável apenas a NPCs.");
+        }
+        verificarAcessoEscrita(ficha);
+        ficha.setVisivelGlobalmente(visivelGlobalmente);
         return fichaRepository.save(ficha);
     }
 

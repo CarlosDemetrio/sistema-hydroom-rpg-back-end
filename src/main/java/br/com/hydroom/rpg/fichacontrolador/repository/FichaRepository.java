@@ -182,4 +182,18 @@ public interface FichaRepository extends JpaRepository<Ficha, Long> {
     List<Ficha> findByJogoIdAndJogadorIdAndIsNpcFalseWithRelationships(
             @Param("jogoId") Long jogoId,
             @Param("jogadorId") Long jogadorId);
+
+    /**
+     * Busca NPCs com visivelGlobalmente=true de um jogo com JOIN FETCH nos relacionamentos.
+     * Usado para Jogadores verem NPCs revelados globalmente pelo Mestre.
+     */
+    @Query("SELECT f FROM Ficha f " +
+           "LEFT JOIN FETCH f.jogo " +
+           "LEFT JOIN FETCH f.raca " +
+           "LEFT JOIN FETCH f.classe " +
+           "LEFT JOIN FETCH f.genero " +
+           "LEFT JOIN FETCH f.indole " +
+           "LEFT JOIN FETCH f.presenca " +
+           "WHERE f.jogo.id = :jogoId AND f.isNpc = true AND f.visivelGlobalmente = true AND f.deletedAt IS NULL")
+    List<Ficha> findNpcsVisivelGlobalmenteByJogoId(@Param("jogoId") Long jogoId);
 }

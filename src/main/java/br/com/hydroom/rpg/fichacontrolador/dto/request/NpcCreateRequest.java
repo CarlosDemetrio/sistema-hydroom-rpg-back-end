@@ -15,5 +15,8 @@ public record NpcCreateRequest(
     Long presencaId,
 
     @Size(max = 2000, message = "Descrição deve ter no máximo 2000 caracteres")
-    String descricao
+    String descricao,
+
+    /** Null é interpretado como false no service. */
+    Boolean visivelGlobalmente
 ) {}

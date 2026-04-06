@@ -25,6 +25,8 @@ public interface FichaMapper {
     @Mapping(target = "presencaId", source = "presenca.id")
     @Mapping(target = "presencaNome", source = "presenca.nome")
     @Mapping(target = "status", expression = "java(ficha.getStatus() != null ? ficha.getStatus().name() : null)")
+    @Mapping(target = "visivelGlobalmente", expression = "java(ficha.isNpc() ? ficha.isVisivelGlobalmente() : null)")
+    @Mapping(target = "jogadorTemAcessoStats", ignore = true)
     @Mapping(target = "dataCriacao", source = "createdAt")
     @Mapping(target = "dataUltimaAtualizacao", source = "updatedAt")
     FichaResponse toResponse(Ficha ficha);
@@ -41,6 +43,7 @@ public interface FichaMapper {
     @Mapping(target = "renascimentos", constant = "0")
     @Mapping(target = "descricao", ignore = true)
     @Mapping(target = "status", ignore = true)
+    @Mapping(target = "visivelGlobalmente", ignore = true)
     Ficha toEntity(CreateFichaRequest request);
 
     @Mapping(target = "id", ignore = true)
@@ -55,5 +58,6 @@ public interface FichaMapper {
     @Mapping(target = "npc", ignore = true)
     @Mapping(target = "descricao", ignore = true)
     @Mapping(target = "status", ignore = true)
+    @Mapping(target = "visivelGlobalmente", ignore = true)
     void updateEntity(UpdateFichaRequest request, @MappingTarget Ficha ficha);
 }

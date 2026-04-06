@@ -26,6 +26,13 @@ public record FichaResponse(
     boolean isNpc,
     String descricao,
     String status,
+    /** Null para fichas de jogadores; true/false para NPCs. */
+    Boolean visivelGlobalmente,
+    /**
+     * Null para fichas de jogadores. Para NPCs: true se o Jogador atual tem acesso
+     * aos stats via FichaVisibilidade, false caso contrário. Preenchido no service.
+     */
+    Boolean jogadorTemAcessoStats,
     LocalDateTime dataCriacao,
     LocalDateTime dataUltimaAtualizacao
 ) {}

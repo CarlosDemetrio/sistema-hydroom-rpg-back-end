@@ -97,6 +97,15 @@ public class Ficha extends BaseEntity {
     private String descricao;
 
     /**
+     * Indica se este NPC está visível na listagem de fichas para os Jogadores.
+     * Relevante apenas quando isNpc=true.
+     * Visibilidade de stats completos é controlada por FichaVisibilidade.
+     */
+    @Builder.Default
+    @Column(name = "visivel_globalmente", nullable = false)
+    private boolean visivelGlobalmente = false;
+
+    /**
      * Status da ficha.
      * RASCUNHO = criada mas incompleta; COMPLETA = todos os campos obrigatórios preenchidos.
      */

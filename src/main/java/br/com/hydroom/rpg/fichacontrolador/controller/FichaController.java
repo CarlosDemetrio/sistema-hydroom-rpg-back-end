@@ -163,6 +163,9 @@ public class FichaController {
         if (request.descricao() != null) {
             ficha = fichaService.atualizarDescricao(ficha.getId(), request.descricao());
         }
+        if (Boolean.TRUE.equals(request.visivelGlobalmente())) {
+            ficha = fichaService.atualizarVisivelGlobalmente(ficha.getId(), true);
+        }
         return fichaMapper.toResponse(ficha);
     }
 

@@ -1,12 +1,56 @@
 > Para navegacao rapida e indice completo, ver `docs/MASTER.md`.
 
-# Sprint Atual — Sprint 2: "Motor Correto + Ficha Funcional"
+# Sprint Atual — Sprint 3: "NPC Visibility + Progressao + RC"
 
-> Atualizado: 2026-04-06 [07:10] (sessao 13, rodada 10 concluida — 33/35 tasks, 581B+603F testes)
+> Atualizado: 2026-04-06 (sessao 15, rodada 13 concluida — Spec 009-ext 100%, 613B+848F testes)
 > PM: Scrum Orchestrator
-> Objetivo: Corrigir bugs de calculo, integrar VantagemEfeito no motor, entregar wizard de ficha funcional e gestao de participantes
-> Duracao estimada: 3-4 semanas
+> Objetivo: Completar Spec 009-ext (NPC/Essencia/Prospeccao), Spec 008 e 012 frontend, entregar RC da primeira parte
+> Duracao estimada: 2-3 semanas
 > Indice mestre: `docs/MASTER.md` | Cronologia: `docs/CRONOLOGIA.md`
+
+---
+
+## Sprint 3 — Progresso Geral
+
+| Metrica | Valor |
+|---------|-------|
+| Rodadas concluidas | 2 (R12 + R13) |
+| Tasks entregues | 20 (16 em R12 + 4 em R13) |
+| Tasks restantes para RC | 8 frontend (Spec 012 T6-T11 + Spec 015 T6/T7) |
+| Testes backend | **613 passando**, 0 falhas |
+| Testes frontend | **848 passando**, 0 falhas |
+| Specs 100% concluidas | Spec 008 (sub-recursos frontend), Spec 009-ext (NPC/Prospeccao/Essencia) |
+| Specs em andamento | Spec 012 (fase 2 pendente) |
+| Stand-by (decisao 2026-04-06) | Spec 010, 011, 013, 014, 016 |
+
+### Entregas da Rodada 12 (16 tasks)
+- Spec 009-ext backend T1-T6: visivelGlobalmente, FichaVisibilidade, ProspeccaoUso, resetar-estado, essenciaAtual/vidaAtual, 32 testes
+- Spec 008 frontend T1-T4: sub-recursos Classes/Racas, 41 testes service
+- Spec 012 fase 1 T1-T4+T14: PontosVantagem, CategoriaVantagem, NiveisConfig UX, rotas/sidebar
+
+### Entregas da Rodada 13 (4 tasks)
+- S009-T7: NpcVisibilidadeComponent + FichaVisibilidadeApiService (40 testes)
+- S009-T8: Barra essencia reativa + FichaHeaderComponent.spec (14 testes)
+- S009-T9: ProspeccaoApiService + ProspeccaoComponent Jogador+Mestre (~30 testes)
+- S009-T10: resetarEstado() + botao reset + podeResetar computed (10 testes)
+
+### Restante para RC (Spec 012 fase 2 + Spec 015 T6/T7)
+| Task | Descricao | Status |
+|------|-----------|--------|
+| S012-T6 | Modelo FichaResumo com 3 campos pontosDisponiveis | PENDENTE |
+| S012-T7 | Painel XP Mestre + deteccao level up (badge/toast) | PENDENTE (depende T6) |
+| S012-T8 | LevelUpDialogComponent + Step 1 atributos | PENDENTE (depende T7) |
+| S012-T9 | Step 2 — distribuicao de aptidoes | PENDENTE (depende T8) |
+| S012-T10 | Step 3 — vantagens informativo + fechar | PENDENTE (depende T9) |
+| S012-T11 | Saldo vantagens em FichaVantagensTab | PENDENTE (depende T6) |
+| S015-T6 | ClassePontosConfig frontend | PENDENTE |
+| S015-T7 | RacaPontosConfig frontend | PENDENTE |
+
+### Bloqueados
+- S007-T10: FormulaEditorEfeito — PA-004 aguarda decisao PO
+- S015-T4: Auto-concessao vantagens — depende S007-T6 (bloqueado)
+
+---
 
 ---
 
@@ -16,7 +60,7 @@
 |---------|-------------|
 | Tasks totais | 31 |
 | Concluidas | 29 (94%) |
-| Nao concluidas | 2 (SP1-T13 barras HP membro, SP1-T27 DDL producao) |
+| Nao concluidas | 1 (SP1-T13 barras HP membro) — SP1-T27 DDL cancelado (Hibernate ddl-auto suficiente para RC) |
 | Testes backend ao fechar | **457 passando**, 0 falhas |
 | Testes frontend ao fechar | 271 passando, ~34 falhando |
 | Frontend build | 0 erros, 0 warnings |
@@ -31,12 +75,12 @@
 | Metrica | Valor |
 |---------|-------|
 | Tasks totais Sprint 2 | **35** (13 Spec 007 + 13 Spec 006 + 6 Spec 005 + 1 bug XP + 1 fix testes + 1 T-QW frontend) |
-| Concluidas | **33** (S007-T0, T1, T2, T3+T4+T5, T7, T8, T9, T11, **T12**, S015-T5, T1, T2, T3, T4, S006-T1, T2, T4, T5, T6, T7, T8, **T9**, **T10**, S005-P1T1, P1T2, P1T3, P2T1, P2T2, **P2T3**, URG-01, URG-02, QW-Bug3) |
+| Concluidas | **34** + 2 bonus (S007-T0, T1, T2, T3+T4+T5, T7, T8, T9, T11, **T12**, S015-T5, T1, T2, T3, T4, S006-T1, T2, T4, T5, T6, T7, T8, T9, T10, **T11**, **T12b**, **T13**, S005-P1T1, P1T2, P1T3, P2T1, P2T2, P2T3, URG-01, URG-02, QW-Bug3) |
 | Em andamento | 0 |
-| Pendentes | 1 (S006-T11) + 1 bloqueada (S007-T10) |
+| Pendentes | 0 do escopo original |
 | Bloqueadas | 2 (S007-T5alt FORMULA_CUSTOMIZADA, S007-T10 FormulaEditorEfeito — ambas PA-004) |
 | Testes backend | **581 passando**, 0 falhas |
-| Testes frontend | **603 passando**, 0 falhas (+113 da rodada 10) |
+| Testes frontend | **624 passando**, 0 falhas (+21 da rodada 11) |
 | Gaps resolvidos pelo PO | **TODOS** (GAP-01 a GAP-08, INCONS-02, P-03, PA-001/002, Q14-Q17) |
 
 **Novas decisoes do PO (Q14-Q17):**
@@ -175,9 +219,9 @@ TRACK F — Documentacao e Qualidade (apos TODAS as specs funcionais):
 | S006-T8 | 006/T8 | Frontend | Passo 3: Distribuicao de atributos (17 testes) | S006-T7 | **[CONCLUIDO]** (rodada 9 — commit `dd2677d`, StepAtributosComponent, UI distribuicao pontos, forkJoin dados, 9 testes step + 8 wizard) |
 | S006-T9 | 006/T9 | Frontend | Passo 4: Distribuicao de aptidoes | S006-T5, S006-T6 | **[CONCLUIDO]** (rodada 10 — commit `1895648`, StepAptidoesComponent, pool de NivelConfig.pontosAptidao, formPasso4 + carregarDadosPasso4 + salvarPasso4 PUT /fichas/{id}/aptidoes, 22 testes. Agente A sem tokens, bugfixes manuais pelo PM) |
 | S006-T10 | 006/T10 | Frontend | Passo 5: Compra de vantagens iniciais | S006-T5, S006-T6 | **[CONCLUIDO]** (rodada 10 — commit `0702b03`, StepVantagensComponent smart, filtro categoria + busca, agrupamento por categoria, estadoBotao comprar/comprada/sem-pontos/comprando, POST /fichas/{id}/vantagens + GET /fichas/{id}/resumo, 40 testes) |
-| S006-T11 | 006/T11 | Frontend | Passo 6: Revisao e confirmacao | S006-T1, S006-T6 | **[DESBLOQUEADO]** (Rodada 11) |
-| S006-T12 | 006/T12 | Frontend | Auto-save visual (indicador de salvamento) | S006-T6 | **[DESBLOQUEADO]** (Rodada 11 bonus) |
-| S006-T13 | 006/T13 | Frontend | Badge "incompleta" na listagem de fichas | S006-T1 | **[DESBLOQUEADO]** (Rodada 11 bonus) |
+| S006-T11 | 006/T11 | Frontend | Passo 6: Revisao e confirmacao | S006-T1, S006-T6 | **[CONCLUIDO]** (rodada 11 — commit `bc4cb06`, StepRevisaoComponent 5 secoes, confirmarCriacao() + completar(), 27 testes) |
+| S006-T12 | 006/T12 | Frontend | Auto-save visual (indicador de salvamento) | S006-T6 | **[CONCLUIDO]** (rodada 11 — commit `bc4cb06`, WizardRodapeComponent standalone shared, 4 estados, 17 testes) |
+| S006-T13 | 006/T13 | Frontend | Badge "incompleta" na listagem de fichas | S006-T1 | **[CONCLUIDO]** (rodada 11 — commit `6c6ccda`, FichasListComponent badge p-tag severity=warn, retomar() navega para wizard com fichaId, FichaStatus 4 valores, 14 testes) |
 
 ### P0: Spec 005 — Gestao de Participantes (6 tasks)
 
@@ -234,7 +278,7 @@ TRACK F — Documentacao e Qualidade (apos TODAS as specs funcionais):
 | P1 | 010 | 9 | Roles ADMIN/MESTRE/JOGADOR refactor — IMPLEMENTAR POR ULTIMO |
 | P2 | 011 | 8 | Galeria e Anotacoes |
 | Tech Debt | SP1-T13 | 1 | Membros do corpo em VidaSectionComponent (barras HP) |
-| Tech Debt | SP1-T27 | 1 | DDL producao (3 ALTER TABLE) |
+| ~~Tech Debt~~ | ~~SP1-T27~~ | ~~1~~ | ~~DDL producao~~ — **CANCELADO** (Hibernate ddl-auto para RC) |
 | Tech Debt | C1 | 1 | handleReorder wiring para 13 componentes (12/13 feito) |
 | Tech Debt | INCONS-01 | 1 | API-CONTRACT.md desatualizado |
 | Tech Debt | DT-FE-01/02/03 | 3 | Divida tecnica frontend |
@@ -326,16 +370,21 @@ RODADA 10 CONCLUIDA [07:10] (4 tasks, +113F testes, 581B+603F):
   [Frontend] S005-P2T3: JogosDisponiveis jogador ............. **[CONCLUIDO]** (commit d2c262c, 34 testes)
   [Frontend] S007-T12: UI concessao Insolitus ................ **[CONCLUIDO]** (commit d23a3cf, 17 testes)
 
-PROXIMA RODADA (rodada 11):
-  [Frontend] S006-T11 (wizard passo 6 revisao) ............... [DESBLOQUEADO] - critico
-  [Frontend] S006-T12 (auto-save visual) ..................... [DESBLOQUEADO] - bonus
-  [Frontend] S006-T13 (badge incompleta listagem) ............ [DESBLOQUEADO] - bonus
+RODADA 11 CONCLUIDA (3 tasks, +21F testes, 581B+624F):
+  [Frontend] S006-T11: wizard passo 6 revisao ................ **[CONCLUIDO]** (commit bc4cb06, 27 testes)
+  [Frontend] S006-T12: auto-save visual WizardRodape ......... **[CONCLUIDO]** (commit bc4cb06, 17 testes)
+  [Frontend] S006-T13: badge incompleta listagem ............. **[CONCLUIDO]** (commit 6c6ccda, 14 testes)
+
+PROXIMA RODADA (rodada 12 — Sprint 3):
+  Spec 008 T1-T4 (sub-recursos Classes/Racas frontend)
+  Spec 012 T1-T4, T14 (PontosVantagem/CategoriaVantagem)
+  Spec 009 T1-T8 (NPC visibility + essencia + prospeccao)
 
 NAO AGENDADO (depende PA-004):
   [Frontend] S007-T10 (FormulaEditorEfeito) .................. [BLOQUEADO]
 ```
 
-**Gargalo principal ATUALIZADO (R10):** Backend 100% concluido para Sprint 2 (exceto T5alt bloqueado por PA-004). Frontend avancou de 29/35 (R9) para 33/35 (R10) em 1 rodada — +113 testes (490 → 603). Restam apenas 2 tasks do escopo original (S006-T11 e S007-T10 bloqueada). Sprint 2 a 94% (33/35). S006-T12/T13 sao bonus opcionais para Rodada 11.
+**Sprint 2 ENCERRADO (R11):** 34/35 tasks (97%) + 2 bonus concluidas. Wizard de criacao de ficha 100% completo (6 passos). Backend 100% (exceto T5alt bloqueado PA-004). Frontend: 624 testes (vs 271 do Sprint 1). S007-T10 bloqueada por PA-004 — aguarda decisao do PO.
 
 ---
 
@@ -350,7 +399,7 @@ NAO AGENDADO (depende PA-004):
 | Spec 007 impacta ~20-30 arquivos | Risco de regressao nos calculos existentes | Spec 007 T8 cobre com testes de integracao extensivos |
 | PA-004 nao resolvido | FORMULA_CUSTOMIZADA sem alvo definido bloqueia T6 | Escalar ao PO antes de T6 |
 | PA-006 nao resolvido | VIG/SAB hardcoded por abreviacao (GAP-CALC-09) | Fora do escopo de T0; escalar ao PO |
-| Sprint 2 reta final (35 tasks, 33 concluidas) | 1 task restante (S006-T11) + 1 bloqueada (S007-T10) | Wizard passo 6 fecha o fluxo end-to-end; S007-T10 escalar PA-004 ao PO |
+| Sprint 2 encerrado (35 tasks, 34+2bonus concluidas) | S007-T10 bloqueada por PA-004 — aguarda PO | PA-004 escalar ao PO antes de iniciar Sprint 3 |
 
 ---
 
@@ -375,7 +424,7 @@ NAO AGENDADO (depende PA-004):
 | ID | Descricao | Motivo |
 |----|-----------|--------|
 | SP1-T13 | Barras HP por membro do corpo | Prioridade rebaixada — Sprint 3 |
-| SP1-T27 | DDL producao (3 ALTER TABLE) | Nao bloqueia desenvolvimento, apenas deploy |
+| ~~SP1-T27~~ | ~~DDL producao~~ | **CANCELADO** — Hibernate ddl-auto suficiente para 0.0.1-RC |
 
 ### Commits Finais do Sprint 1
 

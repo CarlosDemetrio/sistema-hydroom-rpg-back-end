@@ -1,7 +1,7 @@
 # ficha-controlador — MASTER INDEX
 
 > Fonte unica de verdade para navegacao e estado do projeto.
-> Ultima atualizacao: 2026-04-05 [14:01] (rev.10 — pos-rodada 6: 19/35 Sprint 2, 571B+359F testes) | Branch: `main`
+> Ultima atualizacao: 2026-04-06 (rev.13 — pos-rodada 13: Sprint 3 em andamento, Spec 009-ext 100%, 613B+848F testes) | Branch: `main`
 
 ---
 
@@ -9,11 +9,12 @@
 
 | Metrica | Valor |
 |---------|-------|
-| Backend testes | **571 passando**, 0 falhas |
-| Frontend testes | **359 passando**, 0 falhas |
+| Backend testes | **613 passando**, 0 falhas |
+| Frontend testes | **848 passando**, 0 falhas |
 | Frontend build | 0 erros, 0 warnings |
 | Sprint 1 | **CONCLUIDO** (94%, 29/31 tasks) |
-| Sprint 2 | **EM ANDAMENTO** — 35 tasks (**19/35 concluidas** (54%): S007-T0/T1/T2/T3+T4+T5/T7/T8, S015-T1/T2/T3/T5, S006-T1/T2/T4/T5, S005-P1T1/P1T2, URG-01/02, QW-Bug3) |
+| Sprint 2 | **ENCERRADO** — 34/35 tasks (97%) + 2 bonus. S007-T10 bloqueada PA-004. Wizard criacao de ficha 100% completo (6 passos). |
+| Sprint 3 | **EM ANDAMENTO** — Rodada 12 + 13 concluidas. Spec 009-ext 100% (backend+frontend), Spec 008 100% frontend, Spec 012 fase 1 OK. Falta Spec 012 fase 2 + Spec 015 T6/T7 para RC. |
 | Specs com spec+plan+tasks | 005, 006, 007, 008, 009-ext, 010, 011, 012, 013, 014, **015** |
 | Specs em especificacao | Nenhuma — **016** (Sistema de Itens) ja 100% especificada |
 | Decisoes PO | **TODAS RESOLVIDAS** (GAP-01 a GAP-08, INCONS-02, P-03, PA-001/002, Q14-Q17) |
@@ -31,17 +32,17 @@
 | 003 | Refactor: DTOs, validacoes, exceptions | — | — | — | CONCLUIDO |
 | 004 | Siglas, formulas, relacionamentos | `specs/004-*/` | — | 17 | CONCLUIDO |
 | **015** | **ConfigPontos Classe/Raca + DefaultProvider** | [`specs/015-config-pontos-classe-raca/`](specs/015-config-pontos-classe-raca/) | **P0** | 5B / 2F / **7** | **T1/T2/T3/T5 CONCLUIDOS** (5/7). T4 PENDENTE (depende S007-T6), T6/T7 frontend PENDENTES |
-| **007** | **VantagemEfeito + Motor de Calculos** | [`specs/007-vantagem-efeito/`](specs/007-vantagem-efeito/) | **P0-ABSOLUTA** | 9B / 4F / **13** | **T0/T1/T2/T3+T4+T5/T7/T8 CONCLUIDOS** (8/9 backend, 571 testes). T5alt BLOQUEADO (PA-004). Frontend T9-T12 DESBLOQUEADO |
-| **006** | **Wizard de Criacao de Ficha** | [`specs/006-ficha-wizard/`](specs/006-ficha-wizard/) | **P0** | 5B / 8F / **13** | **T1/T2/T4/T5 CONCLUIDOS** (4/13). T3 absorvida. Frontend T6-T13 DESBLOQUEADO |
-| **005** | **Gestao de Participantes** | [`specs/005-participantes/`](specs/005-participantes/) | **P0** | 3B / 3F / **6** | **P1T1/P1T2 CONCLUIDOS** (2/6). P1T3 DESBLOQUEADO, frontend P2T1-P2T3 DESBLOQUEADO |
-| **008** | **Sub-recursos Classes/Racas (frontend)** | [`specs/008-sub-recursos-classes-racas/`](specs/008-sub-recursos-classes-racas/) | **P1** | 0B / 4F / **4** | spec+plan+tasks PRONTOS, implementacao PENDENTE |
-| **009-ext** | **NPC Visibility + Prospeccao + Essencia** | [`specs/009-npc-visibility/`](specs/009-npc-visibility/) | **P1** | 6B / 4F+QW / **11** | spec+plan+tasks PRONTOS, T-QW adicionada, implementacao PENDENTE |
-| **010** | **Roles ADMIN/MESTRE/JOGADOR refactor** | [`specs/010-roles-refactor/`](specs/010-roles-refactor/) | **P1** | 5B / 3F+1T / **9** | spec+plan+tasks PRONTOS, implementacao PENDENTE |
-| **012** | **Niveis e Progressao (frontend)** | [`specs/012-niveis-progressao-frontend/`](specs/012-niveis-progressao-frontend/) | **P1** | 1B / 11F / **12** | spec+plan+tasks PRONTOS (T12/T13 fora MVP), implementacao PENDENTE |
+| **007** | **VantagemEfeito + Motor de Calculos** | [`specs/007-vantagem-efeito/`](specs/007-vantagem-efeito/) | **P0-ABSOLUTA** | 9B / 4F / **13** | **T0/T1/T2/T3+T4+T5/T7/T8/T9/T11/T12 CONCLUIDOS** (12/13). T5alt BLOQUEADO (PA-004). **T10 BLOQUEADO (PA-004)** |
+| **006** | **Wizard de Criacao de Ficha** | [`specs/006-ficha-wizard/`](specs/006-ficha-wizard/) | **P0** | 5B / 8F / **13** | **TODOS CONCLUIDOS** (13/13 — T3 absorvida por URG-01). Wizard 6 passos completo. |
+| **005** | **Gestao de Participantes** | [`specs/005-participantes/`](specs/005-participantes/) | **P0** | 3B / 3F / **6** | **TODOS CONCLUIDOS** (6/6). P1T1/P1T2/P1T3 + P2T1/P2T2/P2T3. |
+| **008** | **Sub-recursos Classes/Racas (frontend)** | [`specs/008-sub-recursos-classes-racas/`](specs/008-sub-recursos-classes-racas/) | **P1** | 0B / 4F / **4** | **CONCLUIDO** (T1-T4 entregues, rodada 12) |
+| **009-ext** | **NPC Visibility + Prospeccao + Essencia** | [`specs/009-npc-visibility/`](specs/009-npc-visibility/) | **P1** | 6B / 4F+QW / **11** | **CONCLUIDO** (T1-T10 entregues; backend rodada 12, frontend rodada 13) |
+| **010** | **Roles ADMIN/MESTRE/JOGADOR refactor** | [`specs/010-roles-refactor/`](specs/010-roles-refactor/) | **STAND-BY** | 5B / 3F+1T / **9** | STAND-BY pos-homologacao (decisao 2026-04-06) |
+| **012** | **Niveis e Progressao (frontend)** | [`specs/012-niveis-progressao-frontend/`](specs/012-niveis-progressao-frontend/) | **P1** | 1B / 11F / **12** | Fase 1 CONCLUIDA (T1-T4+T14, rodada 12). Fase 2 PENDENTE (T6-T11 — RC). T12/T13 fora MVP. |
 | **016** | **Sistema de Itens/Equipamentos** | [`specs/016-sistema-itens/`](specs/016-sistema-itens/) | **P1** | 7B / 4F / **11** | spec+plan+tasks+dataset **100% PRONTOS**, implementacao PENDENTE |
-| **011** | **Galeria e Anotacoes** | [`specs/011-galeria-anotacoes/`](specs/011-galeria-anotacoes/) | **P2** | 4B / 4F / **8** | spec+plan+tasks PRONTOS, implementacao PENDENTE |
-| **013** | **Documentacao Tecnica** | [`specs/013-documentacao-tecnica/`](specs/013-documentacao-tecnica/) | **P3** | 3B / 2F / 1S / **6** | spec+plan+tasks PRONTOS, executar APOS specs funcionais |
-| **014** | **Cobertura de Testes** | [`specs/014-cobertura-testes/`](specs/014-cobertura-testes/) | **P3** | 4B / 2F / **6** | spec+plan+tasks PRONTOS, executar APOS specs funcionais |
+| **011** | **Galeria e Anotacoes** | [`specs/011-galeria-anotacoes/`](specs/011-galeria-anotacoes/) | **STAND-BY** | 4B / 4F / **8** | STAND-BY pos-homologacao (decisao 2026-04-06) |
+| **013** | **Documentacao Tecnica** | [`specs/013-documentacao-tecnica/`](specs/013-documentacao-tecnica/) | **STAND-BY** | ~15-20 tasks | STAND-BY pos-homologacao (decisao 2026-04-06) |
+| **014** | **Cobertura de Testes** | [`specs/014-cobertura-testes/`](specs/014-cobertura-testes/) | **STAND-BY** | 4B / 2F / **6** | STAND-BY pos-homologacao (decisao 2026-04-06) |
 | 008-old | Utilidade e Fluidez (dashboard, export/import) | — | — | — | Backend ~100% implementado (pre-existente) |
 | 009-old | NPC backend (fichas mestre, duplicacao) | — | — | — | Backend ~100% (457 testes, pre-existente) |
 
@@ -98,7 +99,7 @@ P3 — DOCUMENTACAO E QUALIDADE (apos todas as specs funcionais)
      6 tasks: 4 backend + 2 frontend
 ```
 
-**Caminho critico:** `~~007-T0~~ -> ~~007-T1~~ -> ~~007-T2~~ -> ~~T3+T4+T5~~ -> ~~T7~~ -> ~~T8~~ -> 006-frontend -> 005-frontend` (8/9 backend concluidos; T5alt BLOQUEADO PA-004; frontend DESBLOQUEADO em 3 tracks)
+**Caminho critico:** `~~007-T0~~ -> ~~007-T1~~ -> ~~007-T2~~ -> ~~T3+T4+T5~~ -> ~~T7~~ -> ~~T8~~ -> ~~006-frontend~~ -> ~~005-frontend~~` — Sprint 2 ENCERRADO. T5alt/T10 BLOQUEADOS PA-004. Sprint 3: 008, 012, 009-ext.
 **Paralelo possivel:** Track B (015-T1, 006/005 backend), Track C (frontend: QWs, 008, 012-config)
 **ULTIMO:** Spec 010 (Roles) deve ser implementada por ultimo — impacto transversal em ~50+ @PreAuthorize
 
@@ -187,11 +188,23 @@ APOS TODAS AS SPECS FUNCIONAIS:
 ## Sprint 1 — "Ficha Jogavel" — CONCLUIDO (94%)
 
 **Resultado:** 29/31 tasks. 457 testes backend. FichaDetail funcional end-to-end.
-**Tasks movidas para backlog:** SP1-T13 (barras HP membro), SP1-T27 (DDL producao)
+**Tasks movidas para backlog:** SP1-T13 (barras HP membro). SP1-T27 DDL cancelado — Hibernate ddl-auto suficiente para 0.0.1-RC.
 
-## Sprint 2 — "Motor Correto + Ficha Funcional" (EM ANDAMENTO — 15/35)
+## Criterio de Fechamento — Versao 0.0.1-RC
 
-**Progresso:** 19/35 concluidas (54%). S007-T0/T1/T2/T3+T4+T5/T7/T8, S015-T1/T2/T3/T5, S006-T1/T2/T4/T5, S005-P1T1/P1T2, URG-01/02, QW-Bug3 entregues. 571 testes backend, 359 testes frontend.
+> **Decisao (2026-04-06):** Ao concluir todo o backlog funcional (Specs 005-016), fechar `v0.0.1-RC` em ambos os repos. Acoes nesse momento:
+> - Tag `v0.0.1-RC` no backend e frontend
+> - Configuracao de deploy (Docker Compose prod, secrets, CORS, Cloudinary para imagens)
+> - Schema: Hibernate `ddl-auto=update` para RC; Flyway apenas em producao real futura
+> - Documentacao migrada para GitHub nativo: README com badges, Wiki (dominio/guias), GitHub Pages (Swagger/OpenAPI), Releases com changelog, Issues/Projects para roadmap publico
+>
+> **Nao ha tasks de deploy no backlog atual.** Entram apenas ao fechar o backlog funcional.
+
+---
+
+## Sprint 2 — "Motor Correto + Ficha Funcional" — ENCERRADO (97%)
+
+**Progresso:** 34/35 concluidas (97%) + 2 bonus. S007-T10 bloqueada por PA-004. 581 testes backend, 624 testes frontend. Wizard de criacao de ficha 100% completo (6 passos). Participantes com maquina de estados completa (6/6). ConfigPontos backend 100%.
 **Detalhes completos:** [`SPRINT-ATUAL.md`](SPRINT-ATUAL.md)
 
 | Prio | Descricao | Spec/Task | Tasks |
@@ -218,9 +231,9 @@ APOS TODAS AS SPECS FUNCIONAIS:
 | ~~GAP-02 vuln XP~~ | ~~Jogador altera propria XP~~ | **RESOLVIDO** (rodada 2) |
 | ~~6 bugs motor (GAP-CALC-01..08)~~ | ~~Calculos incorretos~~ | **RESOLVIDO** (rodada 1) |
 | ~~VantagemEfeito desconectado do motor~~ | ~~Calculos de vantagem incorretos~~ | **RESOLVIDO** (R2-R6: 7/8 tipos + 20 testes integracao, 571 testes) |
-| FichaForm envia apenas {nome} | Criacao de ficha quebrada | Spec 006 (T6-T11) wizard rewrite |
+| ~~FichaForm envia apenas {nome}~~ | ~~Criacao de ficha quebrada~~ | **RESOLVIDO** (Sprint 2 — wizard 6 passos completo) |
 | Spec 010 e transversal | ~50+ @PreAuthorize a revisar, pode quebrar todo o auth | Implementar POR ULTIMO, branch dedicada, testes extensivos |
-| DDL producao pendente | Bloqueia deploy | SP1-T27 -- backlog Sprint 3+ |
+| ~~DDL producao pendente~~ | ~~Bloqueia deploy~~ | **CANCELADO** — Hibernate ddl-auto gerencia schema para 0.0.1-RC |
 | PA-004 nao resolvido | FORMULA_CUSTOMIZADA sem alvo bloqueia T6 | Escalar ao PO antes de T6 |
 | PA-006 nao resolvido | VIG/SAB hardcoded (GAP-CALC-09) | Fora do escopo T0; escalar ao PO |
 
@@ -330,3 +343,4 @@ APOS TODAS AS SPECS FUNCIONAIS:
 ---
 
 *Este documento e a fonte unica de verdade para navegacao do projeto. Atualizar a cada sessao.*
+*Ultima revisao: 2026-04-06 (rev.11 — Sprint 2 encerrado 34/35+2bonus, 581B+624F testes)*

@@ -1,3 +1,4 @@
 - [Frontend Stack e Projeto Angular](project_frontend_stack.md) — Stack Angular 21/PrimeNG 21, Vitest (não Jest), padrão de testes para Smart Components de Config, mock CurrentGameService
 - [Perfil do usuário — Carlos Demétrio](user_role.md) — Tech Lead full-stack, domínio Spring Boot + Angular, não precisa de contextualização sobre o domínio RPG
 - [Padrões críticos de testes JIT Angular](feedback_jit_test_patterns.md) — 4 armadilhas JIT: ɵSIGNAL para input(), overrideTemplate para smart components, static attrs não propagam, fake timers antes de whenStable() travam
+- [Wizard de Ficha — estrutura e padrões](project_wizard_ficha.md) — Passos 1-2 implementados, auto-save por passo, determinarPassoInicial, FormPassoN, contrato dumb/smart

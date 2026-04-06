@@ -79,6 +79,28 @@ it('deve disparar validação após 600ms', async () => {
 ```
 O `afterEach` global com `vi.useRealTimers()` garante limpeza.
 
-**Why:** Descoberto em 2026-04-04 ao corrigir 38 testes falhando em URG-02. Padrões validados e funcionando em 359 testes.
+## Armadilha 5: `p-button` não propaga `aria-label` para o `<button>` interno no JSDOM
 
-**How to apply:** Toda vez que criar ou editar specs Angular neste projeto, verificar qual das 4 armadilhas se aplica ANTES de escrever o teste.
+**Sintoma:** `getByRole('button', { name: /meu-label/i })` não encontra o botão mesmo ele estando visível no DOM.
+**Causa:** O componente PrimeNG `<p-button [attr.aria-label]="...">` coloca o aria-label no host element `<p-button>`, mas o `<button>` nativo interno não herda esse atributo no JSDOM.
+
+**Solução:** Usar `querySelector` no `nativeElement` para buscar via atributo no host:
+```typescript
+// Verificar presença:
+const botoes = fixture.nativeElement.querySelectorAll('p-button[aria-label^="Texto"]');
+
+// Clicar no botao nativo interno:
+const pButton = fixture.nativeElement.querySelector('p-button[aria-label="Texto exato"]') as HTMLElement;
+const botaoNativo = pButton.querySelector('button') as HTMLButtonElement;
+fireEvent.click(botaoNativo);
+```
+
+**Why:** Descoberto em 2026-04-05 (Rodada 10, S007-T12) ao testar botoes de revogar vantagem.
+
+**How to apply:** Toda vez que um teste falha com "Unable to find accessible element" para um `p-button` com `aria-label`, usar querySelector no host ao invés de getByRole.
+
+---
+
+**Why (geral):** Descoberto em 2026-04-04 ao corrigir 38 testes falhando em URG-02. Padrões validados e funcionando em 560 testes.
+
+**How to apply:** Toda vez que criar ou editar specs Angular neste projeto, verificar qual das 5 armadilhas se aplica ANTES de escrever o teste.

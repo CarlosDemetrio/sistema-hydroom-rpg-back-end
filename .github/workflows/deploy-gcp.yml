@@ -19,7 +19,7 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/ficha-controlador
   CLOUD_RUN_SERVICE: rpg-api
-  CLOUD_RUN_REGION: us-central1
+  CLOUD_RUN_REGION: us-east1
 
 jobs:
   # -----------------------------------------------
@@ -127,6 +127,23 @@ jobs:
             --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.sha_tag }} \
             --region ${{ env.CLOUD_RUN_REGION }} \
             --platform managed \
+            --service-account cloud-run-sa@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com \
+            --vpc-egress all-traffic \
+            --network default \
+            --subnet default \
+            --set-env-vars SPRING_PROFILES_ACTIVE=prod \
+            --set-env-vars SPRING_DATASOURCE_URL=jdbc:postgresql://10.142.0.2:5432/rpg_fichas \
+            --set-secrets DB_USERNAME=rpg-db-username:latest \
+            --set-secrets DB_PASSWORD=rpg-db-password:latest \
+            --set-secrets GOOGLE_CLIENT_ID=rpg-google-client-id:latest \
+            --set-secrets GOOGLE_CLIENT_SECRET=rpg-google-client-secret:latest \
+            --set-secrets FRONTEND_URL=rpg-frontend-url:latest \
+            --set-secrets BACKEND_URL=rpg-backend-url:latest \
+            --min-instances 0 \
+            --max-instances 2 \
+            --memory 512Mi \
+            --cpu 1 \
+            --timeout 60 \
             --quiet
 
       - name: Verificar deploy (health check)

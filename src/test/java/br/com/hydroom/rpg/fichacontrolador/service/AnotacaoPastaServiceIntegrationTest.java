@@ -1,6 +1,8 @@
 package br.com.hydroom.rpg.fichacontrolador.service;
 
+import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarAnotacaoRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarPastaRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.CriarAnotacaoRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.CriarJogoRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.CreateFichaRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.CriarPastaRequest;
@@ -9,6 +11,7 @@ import br.com.hydroom.rpg.fichacontrolador.exception.BusinessException;
 import br.com.hydroom.rpg.fichacontrolador.exception.ConflictException;
 import br.com.hydroom.rpg.fichacontrolador.exception.ForbiddenException;
 import br.com.hydroom.rpg.fichacontrolador.model.*;
+import br.com.hydroom.rpg.fichacontrolador.model.enums.TipoAnotacao;
 import br.com.hydroom.rpg.fichacontrolador.model.enums.RoleJogo;
 import br.com.hydroom.rpg.fichacontrolador.model.enums.StatusParticipante;
 import br.com.hydroom.rpg.fichacontrolador.repository.*;
@@ -49,6 +52,9 @@ class AnotacaoPastaServiceIntegrationTest {
 
     @Autowired
     private AnotacaoPastaService anotacaoPastaService;
+
+    @Autowired
+    private FichaAnotacaoService fichaAnotacaoService;
 
     @Autowired
     private AnotacaoPastaRepository anotacaoPastaRepository;
@@ -420,6 +426,139 @@ class AnotacaoPastaServiceIntegrationTest {
                         new CriarPastaRequest("Tentativa Indevida", null, 0),
                         jogador.getId())
         );
+    }
+
+    // =========================================================
+    // TESTES DE INTEGRAÇÃO COM ANOTAÇÕES (Spec 011 T4)
+    // =========================================================
+
+    @Test
+    @DisplayName("Deve criar anotação vinculada a uma pasta existente")
+    void deveCriarAnotacaoNaPasta() {
+        // Arrange
+        autenticarComo(jogador);
+        AnotacaoPastaResponse pasta = anotacaoPastaService.criar(
+                fichaDoJogador.getId(),
+                new CriarPastaRequest("Missões", null, 0),
+                jogador.getId());
+
+        var request = new CriarAnotacaoRequest(
+                "Objetivo principal",
+                "Investigar a torre norte",
+                TipoAnotacao.JOGADOR,
+                false,
+                pasta.id(),
+                false);
+
+        // Act
+        FichaAnotacao anotacao = fichaAnotacaoService.criar(
+                fichaDoJogador.getId(), request, jogador.getId());
+
+        // Assert
+        assertThat(anotacao.getId()).isNotNull();
+        assertThat(anotacao.getPastaPai()).isNotNull();
+        assertThat(anotacao.getPastaPai().getId()).isEqualTo(pasta.id());
+    }
+
+    @Test
+    @DisplayName("Deve mover anotação de uma pasta para outra")
+    void deveMoverAnotacaoEntrePastas() {
+        // Arrange
+        autenticarComo(jogador);
+        AnotacaoPastaResponse pasta1 = anotacaoPastaService.criar(
+                fichaDoJogador.getId(),
+                new CriarPastaRequest("Pasta Origem", null, 0),
+                jogador.getId());
+
+        AnotacaoPastaResponse pasta2 = anotacaoPastaService.criar(
+                fichaDoJogador.getId(),
+                new CriarPastaRequest("Pasta Destino", null, 1),
+                jogador.getId());
+
+        FichaAnotacao anotacao = fichaAnotacaoService.criar(
+                fichaDoJogador.getId(),
+                new CriarAnotacaoRequest("Nota movível", "Conteúdo", TipoAnotacao.JOGADOR, false, pasta1.id(), false),
+                jogador.getId());
+
+        assertThat(anotacao.getPastaPai().getId()).isEqualTo(pasta1.id());
+
+        // Act
+        FichaAnotacao anotacaoAtualizada = fichaAnotacaoService.atualizar(
+                fichaDoJogador.getId(),
+                anotacao.getId(),
+                new AtualizarAnotacaoRequest(null, null, null, null, pasta2.id()),
+                jogador.getId());
+
+        // Assert
+        assertThat(anotacaoAtualizada.getPastaPai()).isNotNull();
+        assertThat(anotacaoAtualizada.getPastaPai().getId()).isEqualTo(pasta2.id());
+    }
+
+    @Test
+    @DisplayName("Deve listar apenas as anotações da pasta informada")
+    void deveListarAnotacoesFiltrandoPorPasta() {
+        // Arrange
+        autenticarComo(jogador);
+        AnotacaoPastaResponse pasta = anotacaoPastaService.criar(
+                fichaDoJogador.getId(),
+                new CriarPastaRequest("Missões", null, 0),
+                jogador.getId());
+
+        fichaAnotacaoService.criar(fichaDoJogador.getId(),
+                new CriarAnotacaoRequest("Nota na pasta 1", "Conteúdo", TipoAnotacao.JOGADOR, false, pasta.id(), false),
+                jogador.getId());
+
+        fichaAnotacaoService.criar(fichaDoJogador.getId(),
+                new CriarAnotacaoRequest("Nota na pasta 2", "Conteúdo", TipoAnotacao.JOGADOR, false, pasta.id(), false),
+                jogador.getId());
+
+        fichaAnotacaoService.criar(fichaDoJogador.getId(),
+                new CriarAnotacaoRequest("Nota raiz", "Sem pasta", TipoAnotacao.JOGADOR, false, null, false),
+                jogador.getId());
+
+        // Act — filtrar por pastaPaiId: apenas anotações dentro da pasta
+        autenticarComo(mestre);
+        List<FichaAnotacao> anotacoesDaPasta = fichaAnotacaoService.listar(
+                fichaDoJogador.getId(), pasta.id());
+
+        // Assert
+        assertThat(anotacoesDaPasta).hasSize(2);
+        assertThat(anotacoesDaPasta).allMatch(a -> a.getPastaPai() != null
+                && pasta.id().equals(a.getPastaPai().getId()));
+    }
+
+    @Test
+    @DisplayName("Deve retornar todas as anotações quando pastaPaiId é nulo (sem filtro de pasta)")
+    void deveListarAnotacoesRaiz() {
+        // Arrange
+        autenticarComo(jogador);
+        AnotacaoPastaResponse pasta = anotacaoPastaService.criar(
+                fichaDoJogador.getId(),
+                new CriarPastaRequest("Pasta Qualquer", null, 0),
+                jogador.getId());
+
+        fichaAnotacaoService.criar(fichaDoJogador.getId(),
+                new CriarAnotacaoRequest("Nota raiz 1", "Conteúdo", TipoAnotacao.JOGADOR, false, null, false),
+                jogador.getId());
+
+        fichaAnotacaoService.criar(fichaDoJogador.getId(),
+                new CriarAnotacaoRequest("Nota raiz 2", "Conteúdo", TipoAnotacao.JOGADOR, false, null, false),
+                jogador.getId());
+
+        fichaAnotacaoService.criar(fichaDoJogador.getId(),
+                new CriarAnotacaoRequest("Nota na pasta", "Conteúdo", TipoAnotacao.JOGADOR, false, pasta.id(), false),
+                jogador.getId());
+
+        // Act — pastaPaiId=null: comportamento atual do service retorna todas as anotações
+        // (sem filtro de pasta aplicado ao resultado; filtragem de raiz requer implementação futura)
+        autenticarComo(mestre);
+        List<FichaAnotacao> todasAnotacoes = fichaAnotacaoService.listar(
+                fichaDoJogador.getId(), null);
+
+        // Assert — retorna todas as 3 anotações (raiz e com pasta), pois null = sem filtro
+        assertThat(todasAnotacoes).hasSize(3);
+        assertThat(todasAnotacoes).extracting(FichaAnotacao::getTitulo)
+                .containsExactlyInAnyOrder("Nota raiz 1", "Nota raiz 2", "Nota na pasta");
     }
 
     // =========================================================

@@ -1,9 +1,12 @@
 package br.com.hydroom.rpg.fichacontrolador.service.configuracao;
 
 import br.com.hydroom.rpg.fichacontrolador.exception.ConflictException;
+import br.com.hydroom.rpg.fichacontrolador.exception.ValidationException;
 import br.com.hydroom.rpg.fichacontrolador.model.RaridadeItemConfig;
+import br.com.hydroom.rpg.fichacontrolador.repository.ItemConfigRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.RaridadeItemConfigRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +21,11 @@ import java.util.List;
 @Transactional(readOnly = true)
 @Slf4j
 public class RaridadeItemConfigService extends AbstractConfiguracaoService<RaridadeItemConfig, RaridadeItemConfigRepository> {
+
+    private static final String COR_REGEX = "^#[0-9A-Fa-f]{6}$";
+
+    @Autowired
+    private ItemConfigRepository itemConfigRepository;
 
     public RaridadeItemConfigService(RaridadeItemConfigRepository repository) {
         super(repository, "RaridadeItemConfig");
@@ -34,6 +42,25 @@ public class RaridadeItemConfigService extends AbstractConfiguracaoService<Rarid
         if (repository.existsByJogoIdAndNomeIgnoreCase(configuracao.getJogo().getId(), configuracao.getNome())) {
             throw new ConflictException("Já existe uma raridade com o nome '" + configuracao.getNome() + "' neste jogo");
         }
+        // RAR-01: validar formato hexadecimal da cor
+        if (configuracao.getCor() != null && !configuracao.getCor().matches(COR_REGEX)) {
+            throw new ValidationException("Cor deve ser hexadecimal no formato #RRGGBB (ex: #9d9d9d). Valor inválido: '"
+                    + configuracao.getCor() + "'");
+        }
+        // RAR-02: validar ordemExibicao único por jogo
+        if (repository.existsByJogoIdAndOrdemExibicao(configuracao.getJogo().getId(), configuracao.getOrdemExibicao())) {
+            throw new ConflictException("Já existe uma raridade com ordemExibicao "
+                    + configuracao.getOrdemExibicao() + " neste jogo");
+        }
+        // RAR-05: validar ranges de bônus
+        if (configuracao.getBonusAtributoMin() != null && configuracao.getBonusAtributoMax() != null
+                && configuracao.getBonusAtributoMin() > configuracao.getBonusAtributoMax()) {
+            throw new ValidationException("bonusAtributoMin não pode ser maior que bonusAtributoMax");
+        }
+        if (configuracao.getBonusDerivadoMin() != null && configuracao.getBonusDerivadoMax() != null
+                && configuracao.getBonusDerivadoMin() > configuracao.getBonusDerivadoMax()) {
+            throw new ValidationException("bonusDerivadoMin não pode ser maior que bonusDerivadoMax");
+        }
     }
 
     @Override
@@ -48,12 +75,10 @@ public class RaridadeItemConfigService extends AbstractConfiguracaoService<Rarid
     @Override
     @Transactional
     public void deletar(Long id) {
-        // TODO RN-T1-05: Antes de deletar, verificar se esta raridade está sendo usada em ItemConfig.
-        // Quando ItemConfig for implementada (Spec 016 T3+), adicionar:
-        // if (itemConfigRepository.existsByRaridadeId(id)) {
-        //     long count = itemConfigRepository.countByRaridadeId(id);
-        //     throw new ConflictException("Raridade usada em " + count + " itens e não pode ser removida");
-        // }
+        // RAR-03: verificar se raridade está sendo usada em ItemConfig
+        if (itemConfigRepository.existsByRaridadeId(id)) {
+            throw new ConflictException("Raridade está em uso em itens do catálogo e não pode ser removida");
+        }
         super.deletar(id);
     }
 

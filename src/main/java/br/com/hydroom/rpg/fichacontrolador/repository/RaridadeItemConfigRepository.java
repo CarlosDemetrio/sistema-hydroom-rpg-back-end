@@ -17,4 +17,6 @@ public interface RaridadeItemConfigRepository extends JpaRepository<RaridadeItem
     boolean existsByJogoIdAndNomeIgnoreCase(Long jogoId, String nome);
 
     boolean existsByJogoIdAndNomeAndIdNot(Long jogoId, String nome, Long id);
+
+    boolean existsByJogoIdAndOrdemExibicao(Long jogoId, int ordemExibicao);
 }

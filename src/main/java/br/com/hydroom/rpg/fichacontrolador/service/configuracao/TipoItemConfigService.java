@@ -2,8 +2,10 @@ package br.com.hydroom.rpg.fichacontrolador.service.configuracao;
 
 import br.com.hydroom.rpg.fichacontrolador.exception.ConflictException;
 import br.com.hydroom.rpg.fichacontrolador.model.TipoItemConfig;
+import br.com.hydroom.rpg.fichacontrolador.repository.ItemConfigRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.TipoItemConfigRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,9 @@ import java.util.List;
 @Transactional(readOnly = true)
 @Slf4j
 public class TipoItemConfigService extends AbstractConfiguracaoService<TipoItemConfig, TipoItemConfigRepository> {
+
+    @Autowired
+    private ItemConfigRepository itemConfigRepository;
 
     public TipoItemConfigService(TipoItemConfigRepository repository) {
         super(repository, "TipoItemConfig");
@@ -48,12 +53,10 @@ public class TipoItemConfigService extends AbstractConfiguracaoService<TipoItemC
     @Override
     @Transactional
     public void deletar(Long id) {
-        // TODO RN-T1-06: Antes de deletar, verificar se este tipo está sendo usado em ItemConfig.
-        // Quando ItemConfig for implementada (Spec 016 T3+), adicionar:
-        // if (itemConfigRepository.existsByTipoItemConfigId(id)) {
-        //     long count = itemConfigRepository.countByTipoItemConfigId(id);
-        //     throw new ConflictException("Tipo usado em " + count + " itens e não pode ser removido");
-        // }
+        // TIPO-03: verificar se tipo está sendo usado em ItemConfig
+        if (itemConfigRepository.existsByTipoId(id)) {
+            throw new ConflictException("Tipo de item está em uso em itens do catálogo e não pode ser removido");
+        }
         super.deletar(id);
     }
 

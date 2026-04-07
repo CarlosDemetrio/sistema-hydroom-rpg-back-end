@@ -56,6 +56,10 @@ public interface ItemConfigRepository extends JpaRepository<ItemConfig, Long> {
         @Param("raridadeId") Long raridadeId,
         @Param("categoriaItem") CategoriaItem categoriaItem,
         Pageable pageable);
+    boolean existsByRaridadeId(Long raridadeId);
+
+    boolean existsByTipoId(Long tipoId);
+
     /**
      * Deleta fisicamente TODOS os ItemConfig (incluindo soft-deleted) de um jogo.
      * Usado apenas em testes para garantir limpeza completa de FKs.

@@ -21,3 +21,15 @@ Thumbs.db
 
 # Ignore Docker volumes
 postgres_data/
+
+# Docs and specs (not needed for build)
+docs/
+specs/
+infra/
+*.md
+!README.md
+
+# Other Dockerfiles (not needed in build context)
+Dockerfile.native
+Dockerfile.jvm-cloudrun
+docker-compose*.yml

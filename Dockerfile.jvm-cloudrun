@@ -1,0 +1,39 @@
+# =====================================================================
+# Dockerfile.jvm-cloudrun — JVM tradicional para Cloud Run (Plano B)
+# =====================================================================
+# Usar SE o build nativo (Dockerfile.native) falhar por incompatibilidade.
+# Tamanho final: ~300MB (com JRE)
+# Cold start: ~15-30s (mitigar com Cloud Scheduler keepalive - ver T5)
+# =====================================================================
+
+# ----- Stage 1: Build com Maven -----
+FROM maven:3.9-eclipse-temurin-25 AS build
+WORKDIR /app
+COPY pom.xml .
+RUN mvn dependency:go-offline -B -q
+COPY src ./src
+RUN mvn clean package -DskipTests -q
+
+# ----- Stage 2: Runtime JRE minimo -----
+FROM eclipse-temurin:25-jre AS production
+WORKDIR /app
+
+# Copiar JAR
+COPY --from=build /app/target/*.jar app.jar
+
+# Cloud Run injeta PORT via env var
+ENV PORT=8081
+EXPOSE ${PORT}
+
+# Criar usuario non-root
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+USER appuser
+
+# JVM otimizada para serverless:
+# - Menos memoria (128-256m adequado para e2-micro/Cloud Run 256Mi)
+# - ZGC generacional para GC eficiente com baixa latencia
+# - TieredStopAtLevel=1 para startup mais rapido (interprete apenas)
+ENV JAVA_TOOL_OPTIONS="-Xms128m -Xmx256m -XX:+UseZGC -XX:+ZGenerational -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
+
+# Cloud Run faz health check via HTTP — sem HEALTHCHECK no Dockerfile
+ENTRYPOINT ["java", "-jar", "app.jar"]

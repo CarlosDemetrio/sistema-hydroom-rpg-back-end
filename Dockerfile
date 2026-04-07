@@ -1,3 +1,11 @@
+# =====================================================================
+# Dockerfile — Desenvolvimento local com hot-reload
+# =====================================================================
+# Para producao no Cloud Run, use:
+#   - Dockerfile.native (recomendado — Native Image, ~100ms cold start)
+#   - Dockerfile.jvm-cloudrun (fallback — JVM, ~15-30s cold start)
+# =====================================================================
+#
 # Development stage with hot-reload
 FROM maven:3.9-eclipse-temurin-25 AS development
 WORKDIR /app

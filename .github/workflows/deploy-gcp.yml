@@ -1,0 +1,154 @@
+name: Deploy Backend to Cloud Run
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'pom.xml'
+      - 'Dockerfile.native'
+      - 'Dockerfile.jvm-cloudrun'
+  workflow_dispatch:
+    inputs:
+      skip_tests:
+        description: 'Pular testes?'
+        type: boolean
+        default: false
+      build_mode:
+        description: 'Modo de build'
+        type: choice
+        options:
+          - native
+          - jvm
+        default: native
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/ficha-controlador
+  CLOUD_RUN_SERVICE: rpg-api
+  CLOUD_RUN_REGION: us-central1
+
+jobs:
+  # -----------------------------------------------
+  # Job 1: Testes
+  # -----------------------------------------------
+  test:
+    name: 🧪 Testes
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' || !inputs.skip_tests }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Executar testes
+        run: ./mvnw test -B
+
+  # -----------------------------------------------
+  # Job 2: Build Docker + Push GHCR
+  # -----------------------------------------------
+  build:
+    name: 🐳 Build & Push
+    needs: [test]
+    if: always() && (needs.test.result == 'success' || needs.test.result == 'skipped')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tags }}
+      sha_tag: ${{ steps.sha_tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login no GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Determinar Dockerfile
+        id: dockerfile
+        run: |
+          MODE="${{ inputs.build_mode || 'native' }}"
+          if [ "$MODE" = "jvm" ]; then
+            echo "file=Dockerfile.jvm-cloudrun" >> $GITHUB_OUTPUT
+          else
+            echo "file=Dockerfile.native" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Docker metadata (tags e labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Extrair SHA curto para deploy
+        id: sha_tag
+        run: echo "tag=sha-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+
+      - name: Build & Push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./${{ steps.dockerfile.outputs.file }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64
+
+  # -----------------------------------------------
+  # Job 3: Deploy Cloud Run
+  # -----------------------------------------------
+  deploy:
+    name: 🚀 Deploy Cloud Run
+    needs: [build]
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Autenticar no GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Configurar gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Deploy no Cloud Run
+        run: |
+          gcloud run deploy ${{ env.CLOUD_RUN_SERVICE }} \
+            --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.sha_tag }} \
+            --region ${{ env.CLOUD_RUN_REGION }} \
+            --platform managed \
+            --quiet
+
+      - name: Verificar deploy (health check)
+        run: |
+          URL=$(gcloud run services describe ${{ env.CLOUD_RUN_SERVICE }} \
+            --region ${{ env.CLOUD_RUN_REGION }} \
+            --format='value(status.url)')
+          echo "Service URL: $URL"
+          sleep 10
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${URL}/actuator/health")
+          if [ "$STATUS" != "200" ]; then
+            echo "❌ Health check falhou! Status: $STATUS"
+            echo "Para rollback manual:"
+            echo "  gcloud run revisions list --service=${{ env.CLOUD_RUN_SERVICE }} --region=${{ env.CLOUD_RUN_REGION }}"
+            echo "  gcloud run services update-traffic ${{ env.CLOUD_RUN_SERVICE }} --region=${{ env.CLOUD_RUN_REGION }} --to-revisions=REVISION=100"
+            exit 1
+          fi
+          echo "✅ Health check passou! Serviço disponível em: $URL"

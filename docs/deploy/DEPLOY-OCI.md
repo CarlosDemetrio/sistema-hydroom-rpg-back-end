@@ -1,3 +1,10 @@
+> ⚠️ **DESCONTINUADO** — Este documento descreve o deploy na OCI (Oracle Cloud Infrastructure),
+> que foi abandonado por falta de máquinas disponíveis no free tier.
+> O deploy atual usa **GCP Free Tier (Cloud Run + VM e2-micro)**.
+> Consulte: [`DEPLOY-GCP-BACKEND.md`](./DEPLOY-GCP-BACKEND.md)
+
+---
+
 # Deploy OCI Free Tier — Infraestrutura Compartilhada
 
 > Setup e configuração da VM OCI compartilhada por backend e frontend.

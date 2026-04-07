@@ -1,0 +1,39 @@
+# =====================================================================
+# Dockerfile.native — Build nativo GraalVM para Cloud Run
+# =====================================================================
+# Uso: docker build -f Dockerfile.native -t rpg-api:native .
+# Tamanho final esperado: ~80-120MB (sem JVM)
+# Cold start esperado: ~100-300ms
+# =====================================================================
+
+# ----- Stage 1: Build Nativo com GraalVM Community 25 -----
+FROM ghcr.io/graalvm/native-image-community:25 AS build
+WORKDIR /app
+
+# Cache de dependencias Maven (layer separado para rebuild rapido)
+COPY pom.xml .
+COPY .mvn .mvn
+COPY mvnw .
+RUN chmod +x mvnw && ./mvnw dependency:go-offline -B -q
+
+# Copiar codigo fonte e compilar native image
+COPY src ./src
+RUN ./mvnw clean package -Pnative -DskipTests -q
+
+# ----- Stage 2: Runtime Distroless (sem JVM, sem shell) -----
+FROM gcr.io/distroless/base-debian12 AS production
+
+WORKDIR /app
+
+# Copiar APENAS o executavel nativo (nada mais)
+COPY --from=build /app/target/ficha-controlador /app/ficha-controlador
+
+# Cloud Run injeta a variavel PORT em runtime
+ENV PORT=8081
+EXPOSE ${PORT}
+
+# Distroless usa nonroot (UID 65534) por padrao — sem root
+USER nonroot:nonroot
+
+# Executar o binario nativo diretamente (sem java -jar)
+ENTRYPOINT ["/app/ficha-controlador"]

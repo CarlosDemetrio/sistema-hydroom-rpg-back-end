@@ -19,5 +19,8 @@ public record CriarAnotacaoRequest(
     @NotNull(message = "Tipo de anotação é obrigatório")
     TipoAnotacao tipoAnotacao,
 
-    Boolean visivelParaJogador
+    Boolean visivelParaJogador,
+
+    Long pastaPaiId,
+    Boolean visivelParaTodos
 ) {}

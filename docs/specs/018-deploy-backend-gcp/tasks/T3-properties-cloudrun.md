@@ -33,7 +33,7 @@ Ajustar `application-prod.properties` para funcionar no modelo serverless do Clo
 server.port=${PORT:8081}
 ```
 
-### 2. Datasource aponta para IP externo da VM
+### 2. Datasource aponta para IP INTERNO da VM (via Direct VPC Egress)
 
 ```properties
 # ANTES:
@@ -43,7 +43,7 @@ spring.datasource.url=${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres:5432/rp
 spring.datasource.url=${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/rpg_fichas}
 ```
 
-> **NOTA:** O default muda de `postgres` (hostname Docker) para `localhost` (dev local). Em producao, `SPRING_DATASOURCE_URL` e definido no Cloud Run com o IP da VM.
+> **NOTA:** O default muda de `postgres` (hostname Docker) para `localhost` (dev local). Em producao, `SPRING_DATASOURCE_URL` e definido no Cloud Run com o IP **INTERNO** da VM (ex: `jdbc:postgresql://10.128.0.2:5432/rpg_fichas`). O Cloud Run acessa via Direct VPC Egress — **NUNCA** usar IP publico.
 
 ### 3. Pool HikariCP reduzido (serverless)
 
@@ -91,6 +91,19 @@ server.servlet.session.timeout=30m
 server.forward-headers-strategy=framework
 ```
 
+### 7. CORS — Configuracao CRITICA para seguranca
+
+```properties
+# Ja existe — verificar que esta presente e correto:
+app.cors.allowed-origins=${FRONTEND_URL:https://seu-dominio.com}
+```
+
+> **O que isso garante:**
+> - Apenas `https://seu-dominio.com` pode fazer requests a API via navegador
+> - Qualquer outro site que tente consumir a API recebe bloqueio CORS
+> - `FRONTEND_URL` e injetado via Secret Manager — se mudar dominio, atualizar o secret
+> - Credentials=true e necessario para cookies de sessao cross-origin (frontend e backend em dominios diferentes)
+
 ---
 
 ## application-prod.properties Final
@@ -106,7 +119,10 @@ server.port=${PORT:8081}
 server.forward-headers-strategy=framework
 
 # -----------------------------------------------
-# Database PostgreSQL (VM e2-micro com IP externo)
+# Database PostgreSQL (VM e2-micro via IP INTERNO VPC)
+# Cloud Run acessa via Direct VPC Egress
+# Ex: jdbc:postgresql://10.128.0.2:5432/rpg_fichas
+# NUNCA usar IP publico!
 # -----------------------------------------------
 spring.datasource.url=${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/rpg_fichas}
 spring.datasource.username=${DB_USERNAME}

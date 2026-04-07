@@ -95,7 +95,7 @@ docker run -p 8081:8081 rpg-api:native
 
 **Mudancas:**
 1. `server.port=${PORT:8081}` — Cloud Run injeta PORT
-2. `spring.datasource.url=${SPRING_DATASOURCE_URL}` — IP externo da VM
+2. `spring.datasource.url=${SPRING_DATASOURCE_URL}` — IP **interno** da VM via Direct VPC Egress
 3. `spring.datasource.hikari.maximum-pool-size=3` — pool menor para serverless
 4. `spring.datasource.hikari.minimum-idle=1` — serverless nao precisa de muitas idle
 5. `springdoc.api-docs.enabled=false` — desabilitar Swagger em prod (seguranca + compat)
@@ -124,7 +124,12 @@ docker run -p 8081:8081 rpg-api:native
 3. Subir PostgreSQL 16 via Docker Compose
 4. Configurar backup diario (cron + pg_dump)
 5. Hardening basico: fail2ban, SSH key-only
-6. Configurar firewall para aceitar 5432 apenas de IPs necessarios
+6. UFW: PostgreSQL (5432) APENAS da rede VPC interna (`10.128.0.0/20`)
+
+**Firewall GCP (regras manuais via gcloud):**
+- Porta 5432: `source-ranges=10.128.0.0/20` (APENAS VPC interna — Cloud Run via Direct VPC Egress)
+- Porta 22: `source-ranges=SEU_IP/32` (APENAS IP do desenvolvedor)
+- PostgreSQL fica **INVISIVEL** para a internet
 
 **Comandos GCP (documentados, execucao manual):**
 ```bash
@@ -147,11 +152,13 @@ gcloud compute firewall-rules create allow-postgres --rules=tcp:5432 ...
    - `rpg-db-username`, `rpg-db-password`
    - `rpg-google-client-id`, `rpg-google-client-secret`
    - `rpg-frontend-url`, `rpg-backend-url`
-2. Deploy inicial do servico Cloud Run
-3. Mapear dominio customizado `api.seu-dominio.com`
-4. Configurar DNS (registro CNAME para `ghs.googlehosted.com`)
-5. Verificar SSL automatico
-6. (Plano B) Criar Cloud Scheduler job para keepalive
+2. Deploy inicial do servico Cloud Run **com Direct VPC Egress** (`--network default --vpc-egress private-ranges-only`)
+3. Datasource URL usa IP **interno** da VM (ex: `10.128.0.2`), NAO IP publico
+4. Mapear dominio customizado `api.seu-dominio.com`
+5. Configurar DNS (registro CNAME para `ghs.googlehosted.com`)
+6. Verificar SSL automatico
+7. Verificar CORS: requests de `https://seu-dominio.com` aceitos, outros bloqueados
+8. (Plano B) Criar Cloud Scheduler job para keepalive
 
 ---
 

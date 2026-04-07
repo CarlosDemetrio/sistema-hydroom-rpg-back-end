@@ -58,4 +58,19 @@ public class FichaAnotacao extends BaseEntity {
     @Builder.Default
     @Column(name = "visivel_para_jogador", nullable = false)
     private Boolean visivelParaJogador = false;
+
+    /**
+     * Pasta organizadora à qual esta anotação pertence.
+     * Nulo = anotação na raiz (sem pasta).
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pasta_pai_id")
+    private AnotacaoPasta pastaPai;
+
+    /**
+     * Controla se a anotação é visível para todos os participantes do jogo.
+     */
+    @Builder.Default
+    @Column(name = "visivel_para_todos", nullable = false)
+    private Boolean visivelParaTodos = false;
 }

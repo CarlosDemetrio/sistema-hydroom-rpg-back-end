@@ -1,13 +1,17 @@
 package br.com.hydroom.rpg.fichacontrolador.service;
 
+import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarAnotacaoRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.CriarAnotacaoRequest;
 import br.com.hydroom.rpg.fichacontrolador.exception.ForbiddenException;
 import br.com.hydroom.rpg.fichacontrolador.exception.ResourceNotFoundException;
+import br.com.hydroom.rpg.fichacontrolador.mapper.FichaAnotacaoMapper;
+import br.com.hydroom.rpg.fichacontrolador.model.AnotacaoPasta;
 import br.com.hydroom.rpg.fichacontrolador.model.Ficha;
 import br.com.hydroom.rpg.fichacontrolador.model.FichaAnotacao;
 import br.com.hydroom.rpg.fichacontrolador.model.Usuario;
 import br.com.hydroom.rpg.fichacontrolador.model.enums.RoleJogo;
 import br.com.hydroom.rpg.fichacontrolador.model.enums.TipoAnotacao;
+import br.com.hydroom.rpg.fichacontrolador.repository.AnotacaoPastaRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.FichaAnotacaoRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.FichaRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.JogoParticipanteRepository;
@@ -40,16 +44,19 @@ public class FichaAnotacaoService {
     private final FichaRepository fichaRepository;
     private final JogoParticipanteRepository jogoParticipanteRepository;
     private final UsuarioRepository usuarioRepository;
+    private final AnotacaoPastaRepository anotacaoPastaRepository;
+    private final FichaAnotacaoMapper fichaAnotacaoMapper;
 
     /**
      * Lista anotações de uma ficha respeitando o controle de acesso.
      *
      * <p>MESTRE: vê todas as anotações. JOGADOR: vê as próprias + as do Mestre visíveis.</p>
      *
-     * @param fichaId ID da ficha
+     * @param fichaId    ID da ficha
+     * @param pastaPaiId ID da pasta para filtrar (null = retorna todas sem filtro de pasta)
      * @return lista de anotações visíveis para o usuário atual
      */
-    public List<FichaAnotacao> listar(Long fichaId) {
+    public List<FichaAnotacao> listar(Long fichaId, Long pastaPaiId) {
         Ficha ficha = fichaRepository.findById(fichaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ficha não encontrada: " + fichaId));
 
@@ -60,7 +67,9 @@ public class FichaAnotacaoService {
                 jogoId, usuarioAtual.getId(), RoleJogo.MESTRE);
 
         if (isMestre) {
-            // Mestre vê todas as anotações
+            if (pastaPaiId != null) {
+                return fichaAnotacaoRepository.findByFichaIdAndPastaPaiIdOrderByCreatedAtDesc(fichaId, pastaPaiId);
+            }
             return fichaAnotacaoRepository.findByFichaIdOrderByCreatedAtDesc(fichaId);
         }
 
@@ -86,7 +95,15 @@ public class FichaAnotacaoService {
         List<FichaAnotacao> mestrevisiveis = fichaAnotacaoRepository
                 .findByFichaIdAndVisivelParaJogadorTrueOrderByCreatedAtDesc(fichaId);
 
-        return mergeOrdenado(proprias, mestrevisiveis);
+        List<FichaAnotacao> merged = mergeOrdenado(proprias, mestrevisiveis);
+
+        if (pastaPaiId != null) {
+            merged = merged.stream()
+                    .filter(a -> a.getPastaPai() != null && pastaPaiId.equals(a.getPastaPai().getId()))
+                    .toList();
+        }
+
+        return merged;
     }
 
     /**
@@ -127,6 +144,17 @@ public class FichaAnotacaoService {
         }
 
         boolean visivelParaJogador = Boolean.TRUE.equals(request.visivelParaJogador());
+        boolean visivelParaTodos = Boolean.TRUE.equals(request.visivelParaTodos());
+
+        AnotacaoPasta pastaPai = null;
+        if (request.pastaPaiId() != null) {
+            pastaPai = anotacaoPastaRepository.findById(request.pastaPaiId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Pasta não encontrada: " + request.pastaPaiId()));
+            if (!pastaPai.getFicha().getId().equals(fichaId)) {
+                throw new ForbiddenException("Pasta não pertence a esta ficha.");
+            }
+        }
 
         FichaAnotacao anotacao = FichaAnotacao.builder()
                 .ficha(ficha)
@@ -135,6 +163,8 @@ public class FichaAnotacaoService {
                 .conteudo(request.conteudo())
                 .tipoAnotacao(request.tipoAnotacao())
                 .visivelParaJogador(visivelParaJogador)
+                .visivelParaTodos(visivelParaTodos)
+                .pastaPai(pastaPai)
                 .build();
 
         anotacao = fichaAnotacaoRepository.save(anotacao);
@@ -143,7 +173,74 @@ public class FichaAnotacaoService {
     }
 
     /**
-     * Deleta uma anotação (soft delete).
+     * Atualiza parcialmente uma anotação existente.
+     *
+     * <p>Regras de autorização:</p>
+     * <ul>
+     *   <li>MESTRE pode editar qualquer anotação da ficha</li>
+     *   <li>JOGADOR só pode editar as próprias anotações em fichas não-NPC</li>
+     *   <li>{@code visivelParaJogador} só pode ser alterado pelo MESTRE</li>
+     *   <li>{@code pastaPaiId} move a anotação para a pasta indicada</li>
+     * </ul>
+     *
+     * @param fichaId     ID da ficha (para validação de pertencimento)
+     * @param anotacaoId  ID da anotação a atualizar
+     * @param request     campos a atualizar (null = não alterar)
+     * @param autorId     ID do usuário solicitante (não usado diretamente — usa SecurityContext)
+     * @return anotação atualizada
+     */
+    @Transactional
+    public FichaAnotacao atualizar(Long fichaId, Long anotacaoId, AtualizarAnotacaoRequest request, Long autorId) {
+        FichaAnotacao anotacao = fichaAnotacaoRepository.findById(anotacaoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Anotação não encontrada: " + anotacaoId));
+
+        if (!anotacao.getFicha().getId().equals(fichaId)) {
+            throw new ForbiddenException("Anotação não pertence a esta ficha.");
+        }
+
+        Usuario usuarioAtual = getUsuarioAtual();
+        Long jogoId = anotacao.getFicha().getJogo().getId();
+        boolean isMestre = jogoParticipanteRepository.existsByJogoIdAndUsuarioIdAndRole(
+                jogoId, usuarioAtual.getId(), RoleJogo.MESTRE);
+
+        if (!isMestre) {
+            if (anotacao.getFicha().isNpc()) {
+                throw new ForbiddenException("Jogador não pode editar anotações de fichas de NPC.");
+            }
+            if (anotacao.getAutor() == null || !usuarioAtual.getId().equals(anotacao.getAutor().getId())) {
+                throw new ForbiddenException("Jogador só pode editar as próprias anotações.");
+            }
+        }
+
+        // Aplica titulo, conteudo, visivelParaTodos (com IGNORE para nulos)
+        // pastaPai e visivelParaJogador são gerenciados manualmente abaixo
+        fichaAnotacaoMapper.atualizarEntidade(request, anotacao);
+
+        // visivelParaJogador: somente MESTRE pode alterar
+        if (isMestre && request.visivelParaJogador() != null) {
+            anotacao.setVisivelParaJogador(request.visivelParaJogador());
+        }
+        // se JOGADOR enviou visivelParaJogador, ignora silenciosamente
+
+        // pastaPaiId: mover para pasta
+        if (request.pastaPaiId() != null) {
+            AnotacaoPasta pasta = anotacaoPastaRepository.findById(request.pastaPaiId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Pasta não encontrada: " + request.pastaPaiId()));
+            if (!pasta.getFicha().getId().equals(fichaId)) {
+                throw new ForbiddenException("Pasta não pertence a esta ficha.");
+            }
+            anotacao.setPastaPai(pasta);
+        }
+        // null = não alterar pasta atual
+        // TODO: Para mover para raiz (sem pasta), implementar endpoint dedicado ou campo sentinel.
+
+        anotacao = fichaAnotacaoRepository.save(anotacao);
+        log.info("Anotação {} atualizada na ficha {} por usuário {}", anotacaoId, fichaId, usuarioAtual.getEmail());
+        return anotacao;
+    }
+
+    /**
      *
      * <p>MESTRE pode deletar qualquer anotação da ficha. JOGADOR só pode deletar as próprias.</p>
      *

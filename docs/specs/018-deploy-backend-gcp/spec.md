@@ -64,20 +64,76 @@ Firebase Hosting (CDN)     → Frontend Angular (Spec 019 — separada)
 ```
 Internet (Usuarios)
    |
+   +-- [Frontend] --> https://seu-dominio.com
+   |       Firebase Hosting (CDN Global) — DDoS/SSL gerenciados pelo Google
+   |
    +-- [API] ------> https://api.seu-dominio.com
-           Servico: Google Cloud Run (Serverless)
-           Imagem: ghcr.io/carlosdemetrio/ficha-controlador:latest (Native)
-           Custo: Gratis (ate 2 milhoes de req/mes)
-           Cold Start: ~100-300ms (Spring Native / GraalVM)
+           Google Cloud Run (Serverless)
+           SSL automatico pelo Google
+           Spring Security: OAuth2 + CORS (aceita APENAS https://seu-dominio.com)
+           |
+           | Direct VPC Egress (rede interna Google — SEM internet publica)
            |
            v
-      [Banco de Dados] -> IP Estatico Publico (Porta 5432 protegida)
-           Servico: Google Compute Engine (e2-micro)
-           SO: Ubuntu 24.04 LTS (1 vCPU, 1GB RAM, 30GB Disco)
-           Tecnologia: PostgreSQL 16 (via Docker Compose)
-           Custo: Gratis (~740h/mes inclusas no Free Tier)
-           Swap: 2GB obrigatorio (protecao OOM)
+      [Banco de Dados] -> IP Interno VPC (ex: 10.128.0.2:5432)
+           Google Compute Engine (e2-micro)
+           PostgreSQL 16 (Docker Compose)
+           Porta 5432 INVISIVEL para internet
+           Firewall: aceita trafego APENAS da VPC interna
+           SSH (porta 22): aceita APENAS do IP do desenvolvedor
 ```
+
+### Modelo de Seguranca (Defense in Depth)
+
+| Fronteira | Quem protege | Como |
+|-----------|-------------|------|
+| **Frontend (Firebase)** | Google | CDN global, DDoS automatico, HTTPS forcado, headers de seguranca |
+| **API (Cloud Run)** | Google + Spring | SSL automatico, container isolado (sem SSH), Spring Security OAuth2, CORS restritivo, rate limiting (Bucket4j) |
+| **Banco (VM e2-micro)** | VPC + Firewall | PostgreSQL acessivel APENAS via IP interno VPC. Porta 5432 **fechada** para internet. Senha forte via Secret Manager |
+| **SSH (VM)** | Firewall GCP | Porta 22 aberta APENAS para IP residencial do desenvolvedor |
+| **Secrets** | GCP Secret Manager | Senhas/tokens NUNCA no codigo ou GitHub. Cloud Run puxa do Secret Manager no startup |
+
+#### Ponto Critico: Direct VPC Egress
+
+O Cloud Run, por padrao, nao tem acesso a rede interna (VPC) do GCP. Para que o Spring Boot conecte ao PostgreSQL via IP interno, e necessario configurar **Direct VPC Egress**:
+
+```bash
+gcloud run services update rpg-api \
+  --network=default \
+  --subnet=default \
+  --vpc-egress=private-ranges-only \
+  --region=us-central1
+```
+
+Com isso:
+- Cloud Run envia trafego para IPs privados (`10.x.x.x`) via rede interna
+- O trafego para a internet (Google OAuth, etc.) continua normal
+- A VM e2-micro nao precisa de IP publico para receber conexoes do Cloud Run
+- PostgreSQL escuta APENAS na interface interna da VM
+
+---
+
+## 3.1 CORS — Configuracao Critica
+
+O CORS e a primeira linha de defesa da API contra uso indevido. Com frontend e backend em dominios diferentes, a configuracao deve ser **explicita e restritiva**.
+
+**No `application-prod.properties`:**
+```properties
+app.cors.allowed-origins=${FRONTEND_URL:https://seu-dominio.com}
+```
+
+**O que isso garante:**
+- Apenas `https://seu-dominio.com` pode fazer requests a API
+- Qualquer outro site que tente usar a API recebe bloqueio CORS no navegador
+- Requests server-to-server (curl, Postman) nao sao bloqueados por CORS (isso e normal), mas precisam de autenticacao OAuth2
+
+**O que ja existe no Spring Security (`SecurityConfig`):**
+- CORS configurado via `app.cors.allowed-origins`
+- Metodos permitidos: GET, POST, PUT, DELETE, OPTIONS
+- Credentials: `true` (necessario para cookies de sessao cross-origin)
+- Headers: Authorization, Content-Type, X-XSRF-TOKEN
+
+> **IMPORTANTE:** O `FRONTEND_URL` e injetado via Secret Manager no Cloud Run. Se mudar o dominio, basta atualizar o secret — sem redeploy.
 
 ---
 
@@ -279,30 +335,44 @@ gcloud compute instances add-access-config rpg-db \
   --address=$(gcloud compute addresses describe rpg-db-ip --region=us-central1 --format='value(address)')
 ```
 
-### 7.2 Firewall
+### 7.2 Firewall (Defense in Depth)
 
 ```bash
-# Liberar porta 5432 APENAS para IPs de saida do Cloud Run
-# (ou 0.0.0.0/0 com senha forte como fallback)
-gcloud compute firewall-rules create allow-postgres \
+# ⚠️ REGRA 1: PostgreSQL — APENAS trafego VPC interno (NÃO expor para internet!)
+gcloud compute firewall-rules create allow-postgres-vpc \
   --direction=INGRESS \
   --action=ALLOW \
   --rules=tcp:5432 \
   --target-tags=postgres-server \
-  --source-ranges=0.0.0.0/0 \
-  --description="PostgreSQL - protegido por senha forte"
+  --source-ranges=10.128.0.0/20 \
+  --description="PostgreSQL - APENAS rede interna VPC (Cloud Run via Direct VPC Egress)"
+
+# ⚠️ REGRA 2: SSH — APENAS o IP do desenvolvedor
+gcloud compute firewall-rules create allow-ssh-admin \
+  --direction=INGRESS \
+  --action=ALLOW \
+  --rules=tcp:22 \
+  --target-tags=postgres-server \
+  --source-ranges=SEU_IP_RESIDENCIAL/32 \
+  --description="SSH - APENAS IP do desenvolvedor em Brasilia"
+
+# ⚠️ REGRA 3: NEGAR todo o resto (default deny ja e o padrao do GCP)
+# GCP nega ingress por padrao — nao precisa criar regra explicita
 ```
+
+> **CRITICO:** A porta 5432 fica INVISIVEL para a internet. Robos de scan NUNCA encontram o banco.
+> Cloud Run acessa via IP interno (ex: `10.128.0.2`) usando Direct VPC Egress.
 
 ### 7.3 Script de Setup (gcp/setup-db-vm.sh)
 
 Ver arquivo `infra/gcp/setup-db-vm.sh` para o script completo que:
 1. Cria swap de 2GB (protecao OOM na e2-micro de 1GB)
 2. Instala Docker
-3. Sobe PostgreSQL via Docker Compose
+3. Sobe PostgreSQL via Docker Compose (bind na interface interna APENAS)
 4. Configura backup automatico
-5. Hardening basico (fail2ban, firewall)
+5. Hardening basico (fail2ban, UFW)
 
-### 7.4 Docker Compose (apenas PostgreSQL)
+### 7.4 Docker Compose (apenas PostgreSQL — bind interno)
 
 ```yaml
 services:
@@ -317,12 +387,17 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      # Bind APENAS na interface interna da VPC — NAO expor para 0.0.0.0!
+      # O IP interno e atribuido pela VPC (ex: 10.128.0.2)
+      - "${DB_BIND_IP:-0.0.0.0}:5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${POSTGRES_DB:-rpg_fichas}"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
     deploy:
       resources:
         limits:
@@ -333,6 +408,8 @@ volumes:
     driver: local
 ```
 
+> **NOTA:** O bind `0.0.0.0` no Docker e seguro porque a firewall GCP ja bloqueia acesso externo na porta 5432. Apenas trafego da VPC interna (source `10.128.0.0/20`) e permitido.
+
 ---
 
 ## 8. Cloud Run — Configuracao
@@ -340,7 +417,7 @@ volumes:
 ### 8.1 Deploy Inicial (manual)
 
 ```bash
-# Primeiro deploy: criar o servico
+# Primeiro deploy: criar o servico com Direct VPC Egress
 gcloud run deploy rpg-api \
   --image ghcr.io/carlosdemetrio/ficha-controlador:latest \
   --region us-central1 \
@@ -352,13 +429,25 @@ gcloud run deploy rpg-api \
   --max-instances 3 \
   --timeout 300 \
   --allow-unauthenticated \
+  --network default \
+  --subnet default \
+  --vpc-egress private-ranges-only \
   --set-env-vars "SPRING_PROFILES_ACTIVE=prod" \
-  --set-env-vars "SPRING_DATASOURCE_URL=jdbc:postgresql://<DB_VM_IP>:5432/rpg_fichas" \
+  --set-env-vars "SPRING_DATASOURCE_URL=jdbc:postgresql://<DB_VM_INTERNAL_IP>:5432/rpg_fichas" \
   --set-secrets "DB_USERNAME=rpg-db-username:latest" \
   --set-secrets "DB_PASSWORD=rpg-db-password:latest" \
   --set-secrets "GOOGLE_CLIENT_ID=rpg-google-client-id:latest" \
-  --set-secrets "GOOGLE_CLIENT_SECRET=rpg-google-client-secret:latest"
+  --set-secrets "GOOGLE_CLIENT_SECRET=rpg-google-client-secret:latest" \
+  --set-secrets "FRONTEND_URL=rpg-frontend-url:latest" \
+  --set-secrets "BACKEND_URL=rpg-backend-url:latest"
 ```
+
+> **CRITICO:** `<DB_VM_INTERNAL_IP>` e o IP **interno** da VM (ex: `10.128.0.2`), NAO o IP publico!
+> Obter via: `gcloud compute instances describe rpg-db --zone=us-central1-a --format='value(networkInterfaces[0].networkIP)'`
+>
+> Os flags `--network`, `--subnet` e `--vpc-egress` habilitam Direct VPC Egress.
+> Com `private-ranges-only`, o Cloud Run envia trafego para IPs privados via VPC interna,
+> mas trafego para a internet (Google OAuth, etc.) continua normal.
 
 ### 8.2 Dominio Customizado
 
@@ -393,7 +482,9 @@ server.forward-headers-strategy=framework
 # Cloud Run define a porta via variavel PORT
 server.port=${PORT:8081}
 
-# Datasource aponta para IP externo da VM
+# Datasource aponta para IP INTERNO da VM via Direct VPC Egress
+# Ex: jdbc:postgresql://10.128.0.2:5432/rpg_fichas
+# NUNCA usar IP publico — o banco nao esta exposto para internet!
 spring.datasource.url=${SPRING_DATASOURCE_URL}
 spring.datasource.username=${DB_USERNAME}
 spring.datasource.password=${DB_PASSWORD}
@@ -402,6 +493,10 @@ spring.datasource.password=${DB_PASSWORD}
 spring.datasource.hikari.maximum-pool-size=3
 spring.datasource.hikari.minimum-idle=1
 spring.datasource.hikari.connection-timeout=5000
+
+# CORS — CRITICO: aceitar APENAS requests do frontend
+# Bloqueia qualquer outro site de usar a API via navegador
+app.cors.allowed-origins=${FRONTEND_URL:https://seu-dominio.com}
 
 # Session: Cloud Run nao garante sticky sessions — avaliar
 # Para MVP com 50 usuarios, session in-memory funciona se min-instances=1

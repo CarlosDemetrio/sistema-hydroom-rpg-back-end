@@ -16,6 +16,8 @@ public record AnotacaoResponse(
     String conteudo,
     TipoAnotacao tipoAnotacao,
     Boolean visivelParaJogador,
+    Long pastaPaiId,
+    Boolean visivelParaTodos,
     LocalDateTime dataCriacao,
     LocalDateTime dataUltimaAtualizacao
 ) {}

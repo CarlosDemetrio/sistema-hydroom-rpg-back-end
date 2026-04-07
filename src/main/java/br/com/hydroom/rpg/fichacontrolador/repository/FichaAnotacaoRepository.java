@@ -15,4 +15,8 @@ public interface FichaAnotacaoRepository extends JpaRepository<FichaAnotacao, Lo
     List<FichaAnotacao> findByFichaIdAndTipoAnotacaoOrderByCreatedAtDesc(Long fichaId, TipoAnotacao tipo);
 
     List<FichaAnotacao> findByFichaIdAndVisivelParaJogadorTrueOrderByCreatedAtDesc(Long fichaId);
+
+    List<FichaAnotacao> findByFichaIdAndPastaPaiIdOrderByCreatedAtDesc(Long fichaId, Long pastaPaiId);
+
+    List<FichaAnotacao> findByPastaPaiId(Long pastaPaiId);
 }

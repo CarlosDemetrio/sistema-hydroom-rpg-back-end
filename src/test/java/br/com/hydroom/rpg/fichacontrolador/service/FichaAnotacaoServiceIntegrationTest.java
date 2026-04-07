@@ -1,9 +1,12 @@
 package br.com.hydroom.rpg.fichacontrolador.service;
 
+import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarAnotacaoRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.CriarAnotacaoRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.CriarPastaRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.CriarJogoRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.CreateFichaRequest;
 import br.com.hydroom.rpg.fichacontrolador.exception.ForbiddenException;
+import br.com.hydroom.rpg.fichacontrolador.exception.ResourceNotFoundException;
 import br.com.hydroom.rpg.fichacontrolador.model.*;
 import br.com.hydroom.rpg.fichacontrolador.model.enums.RoleJogo;
 import br.com.hydroom.rpg.fichacontrolador.model.enums.StatusParticipante;
@@ -52,7 +55,13 @@ class FichaAnotacaoServiceIntegrationTest {
     private JogoService jogoService;
 
     @Autowired
+    private AnotacaoPastaService anotacaoPastaService;
+
+    @Autowired
     private FichaAnotacaoRepository fichaAnotacaoRepository;
+
+    @Autowired
+    private AnotacaoPastaRepository anotacaoPastaRepository;
 
     @Autowired
     private FichaRepository fichaRepository;
@@ -105,6 +114,7 @@ class FichaAnotacaoServiceIntegrationTest {
     void setUp() {
         // Limpar na ordem correta (dependências primeiro)
         fichaAnotacaoRepository.deleteAll();
+        anotacaoPastaRepository.deleteAll();
         fichaDescricaoFisicaRepository.deleteAll();
         fichaProspeccaoRepository.deleteAll();
         fichaAmeacaRepository.deleteAll();
@@ -183,20 +193,18 @@ class FichaAnotacaoServiceIntegrationTest {
         // Arrange - criar anotação do JOGADOR
         autenticarComo(jogador);
         fichaAnotacaoService.criar(fichaDoJogador.getId(),
-                new CriarAnotacaoRequest("Nota do Jogador", "Conteúdo do jogador", TipoAnotacao.JOGADOR, false),
+                new CriarAnotacaoRequest("Nota do Jogador", "Conteúdo do jogador", TipoAnotacao.JOGADOR, false, null, null),
                 jogador.getId());
 
         // Criar anotação do MESTRE (não visível para jogador)
         autenticarComo(mestre);
         fichaAnotacaoService.criar(fichaDoJogador.getId(),
-                new CriarAnotacaoRequest("Nota Secreta do Mestre", "Estratégia secreta", TipoAnotacao.MESTRE, false),
+                new CriarAnotacaoRequest("Nota Secreta do Mestre", "Estratégia secreta", TipoAnotacao.MESTRE, false, null, null),
                 mestre.getId());
 
         // Act - listar como MESTRE
         autenticarComo(mestre);
-        List<FichaAnotacao> anotacoes = fichaAnotacaoService.listar(fichaDoJogador.getId());
-
-        // Assert - Mestre vê as 2 anotações
+        List<FichaAnotacao> anotacoes = fichaAnotacaoService.listar(fichaDoJogador.getId(), null);
         assertThat(anotacoes).hasSize(2);
         assertThat(anotacoes).extracting(FichaAnotacao::getTipoAnotacao)
                 .containsExactlyInAnyOrder(TipoAnotacao.JOGADOR, TipoAnotacao.MESTRE);
@@ -208,23 +216,23 @@ class FichaAnotacaoServiceIntegrationTest {
         // Arrange - anotação do próprio jogador
         autenticarComo(jogador);
         fichaAnotacaoService.criar(fichaDoJogador.getId(),
-                new CriarAnotacaoRequest("Minha Nota", "Conteúdo pessoal", TipoAnotacao.JOGADOR, false),
+                new CriarAnotacaoRequest("Minha Nota", "Conteúdo pessoal", TipoAnotacao.JOGADOR, false, null, null),
                 jogador.getId());
 
         // Anotação do Mestre VISÍVEL para jogador
         autenticarComo(mestre);
         fichaAnotacaoService.criar(fichaDoJogador.getId(),
-                new CriarAnotacaoRequest("Dica do Mestre", "Dica útil", TipoAnotacao.MESTRE, true),
+                new CriarAnotacaoRequest("Dica do Mestre", "Dica útil", TipoAnotacao.MESTRE, true, null, null),
                 mestre.getId());
 
         // Anotação do Mestre INVISÍVEL para jogador
         fichaAnotacaoService.criar(fichaDoJogador.getId(),
-                new CriarAnotacaoRequest("Nota Secreta", "Ninguém pode ver", TipoAnotacao.MESTRE, false),
+                new CriarAnotacaoRequest("Nota Secreta", "Ninguém pode ver", TipoAnotacao.MESTRE, false, null, null),
                 mestre.getId());
 
         // Act - listar como JOGADOR
         autenticarComo(jogador);
-        List<FichaAnotacao> anotacoes = fichaAnotacaoService.listar(fichaDoJogador.getId());
+        List<FichaAnotacao> anotacoes = fichaAnotacaoService.listar(fichaDoJogador.getId(), null);
 
         // Assert - Jogador vê 2: a própria + a do Mestre marcada como visível
         assertThat(anotacoes).hasSize(2);
@@ -245,7 +253,7 @@ class FichaAnotacaoServiceIntegrationTest {
         // Anotação do próprio jogador na SUA ficha
         autenticarComo(jogador);
         fichaAnotacaoService.criar(fichaDoJogador.getId(),
-                new CriarAnotacaoRequest("Nota Própria", "Conteúdo", TipoAnotacao.JOGADOR, false),
+                new CriarAnotacaoRequest("Nota Própria", "Conteúdo", TipoAnotacao.JOGADOR, false, null, null),
                 jogador.getId());
 
         // Act - jogador tenta listar a ficha de outro jogador
@@ -253,7 +261,7 @@ class FichaAnotacaoServiceIntegrationTest {
 
         // Assert - deve lançar ForbiddenException
         assertThrows(ForbiddenException.class,
-                () -> fichaAnotacaoService.listar(fichaOutroJogador.getId()));
+                () -> fichaAnotacaoService.listar(fichaOutroJogador.getId(), null));
     }
 
     // =========================================================
@@ -269,7 +277,9 @@ class FichaAnotacaoServiceIntegrationTest {
                 "Observação do Personagem",
                 "O personagem observou algo interessante",
                 TipoAnotacao.JOGADOR,
-                false);
+                false,
+                null,
+                null);
 
         // Act
         FichaAnotacao anotacao = fichaAnotacaoService.criar(fichaDoJogador.getId(), request, jogador.getId());
@@ -291,7 +301,9 @@ class FichaAnotacaoServiceIntegrationTest {
                 "Missão Secreta",
                 "O personagem deve investigar a torre",
                 TipoAnotacao.MESTRE,
-                true);
+                true,
+                null,
+                null);
 
         // Act
         FichaAnotacao anotacao = fichaAnotacaoService.criar(fichaDoJogador.getId(), request, mestre.getId());
@@ -313,7 +325,9 @@ class FichaAnotacaoServiceIntegrationTest {
                 "Tentativa Indevida",
                 "Tentando criar anotação de Mestre",
                 TipoAnotacao.MESTRE,
-                false);
+                false,
+                null,
+                null);
 
         // Act & Assert
         assertThrows(ForbiddenException.class,
@@ -331,7 +345,7 @@ class FichaAnotacaoServiceIntegrationTest {
 
         // Act - jogador tenta criar anotação em ficha que não é dele
         autenticarComo(jogador);
-        var request = new CriarAnotacaoRequest("Nota Invasiva", "Conteúdo", TipoAnotacao.JOGADOR, false);
+        var request = new CriarAnotacaoRequest("Nota Invasiva", "Conteúdo", TipoAnotacao.JOGADOR, false, null, null);
 
         // Assert
         assertThrows(ForbiddenException.class,
@@ -354,7 +368,7 @@ class FichaAnotacaoServiceIntegrationTest {
         // outroJogador cria uma anotação na sua ficha
         autenticarComo(outroJogador);
         FichaAnotacao anotacaoDoOutro = fichaAnotacaoService.criar(fichaOutroJogador.getId(),
-                new CriarAnotacaoRequest("Nota do Outro", "Conteúdo", TipoAnotacao.JOGADOR, false),
+                new CriarAnotacaoRequest("Nota do Outro", "Conteúdo", TipoAnotacao.JOGADOR, false, null, null),
                 outroJogador.getId());
 
         // Act - jogador tenta deletar anotação de outroJogador
@@ -371,7 +385,7 @@ class FichaAnotacaoServiceIntegrationTest {
         // Arrange - jogador cria anotação
         autenticarComo(jogador);
         FichaAnotacao anotacaoDoJogador = fichaAnotacaoService.criar(fichaDoJogador.getId(),
-                new CriarAnotacaoRequest("Nota do Jogador", "Conteúdo", TipoAnotacao.JOGADOR, false),
+                new CriarAnotacaoRequest("Nota do Jogador", "Conteúdo", TipoAnotacao.JOGADOR, false, null, null),
                 jogador.getId());
 
         // Act - Mestre deleta a anotação do jogador
@@ -392,7 +406,7 @@ class FichaAnotacaoServiceIntegrationTest {
         // Arrange - jogador cria uma anotação
         autenticarComo(jogador);
         FichaAnotacao anotacao = fichaAnotacaoService.criar(fichaDoJogador.getId(),
-                new CriarAnotacaoRequest("Anotação Própria", "Conteúdo", TipoAnotacao.JOGADOR, false),
+                new CriarAnotacaoRequest("Anotação Própria", "Conteúdo", TipoAnotacao.JOGADOR, false, null, null),
                 jogador.getId());
 
         // Act - jogador deleta sua própria anotação
@@ -403,6 +417,236 @@ class FichaAnotacaoServiceIntegrationTest {
         if (deletada != null) {
             assertThat(deletada.getDeletedAt()).isNotNull();
         }
+    }
+
+    // =========================================================
+    // TESTES DE ATUALIZAÇÃO (T1)
+    // =========================================================
+
+    @Test
+    @DisplayName("Jogador deve atualizar título e conteúdo da própria anotação")
+    void deveAtualizarTituloEConteudoComoJogador() {
+        // Arrange
+        autenticarComo(jogador);
+        FichaAnotacao anotacao = fichaAnotacaoService.criar(fichaDoJogador.getId(),
+                new CriarAnotacaoRequest("Título Original", "Conteúdo Original", TipoAnotacao.JOGADOR, false, null, null),
+                jogador.getId());
+
+        // Act
+        var update = new AtualizarAnotacaoRequest("Título Atualizado", "Conteúdo Atualizado", null, null, null);
+        FichaAnotacao atualizada = fichaAnotacaoService.atualizar(fichaDoJogador.getId(), anotacao.getId(), update, jogador.getId());
+
+        // Assert
+        assertThat(atualizada.getTitulo()).isEqualTo("Título Atualizado");
+        assertThat(atualizada.getConteudo()).isEqualTo("Conteúdo Atualizado");
+    }
+
+    @Test
+    @DisplayName("Mestre deve editar anotação do Jogador")
+    void deveMestreEditarAnotacaoDoJogador() {
+        // Arrange
+        autenticarComo(jogador);
+        FichaAnotacao anotacao = fichaAnotacaoService.criar(fichaDoJogador.getId(),
+                new CriarAnotacaoRequest("Nota do Jogador", "Conteúdo", TipoAnotacao.JOGADOR, false, null, null),
+                jogador.getId());
+
+        // Act
+        autenticarComo(mestre);
+        var update = new AtualizarAnotacaoRequest("Corrigido pelo Mestre", null, null, null, null);
+        FichaAnotacao atualizada = fichaAnotacaoService.atualizar(fichaDoJogador.getId(), anotacao.getId(), update, mestre.getId());
+
+        // Assert
+        assertThat(atualizada.getTitulo()).isEqualTo("Corrigido pelo Mestre");
+    }
+
+    @Test
+    @DisplayName("Mestre deve alterar campo visivelParaJogador")
+    void deveMestreAlterarVisivelParaJogador() {
+        // Arrange
+        autenticarComo(mestre);
+        FichaAnotacao anotacao = fichaAnotacaoService.criar(fichaDoJogador.getId(),
+                new CriarAnotacaoRequest("Dica Secreta", "Conteúdo", TipoAnotacao.MESTRE, false, null, null),
+                mestre.getId());
+        assertThat(anotacao.getVisivelParaJogador()).isFalse();
+
+        // Act
+        var update = new AtualizarAnotacaoRequest(null, null, true, null, null);
+        FichaAnotacao atualizada = fichaAnotacaoService.atualizar(fichaDoJogador.getId(), anotacao.getId(), update, mestre.getId());
+
+        // Assert
+        assertThat(atualizada.getVisivelParaJogador()).isTrue();
+    }
+
+    @Test
+    @DisplayName("Jogador não deve editar anotação de outro jogador")
+    void deveJogadorNaoEditarAnotacaoDeOutro() {
+        // Arrange — criar ficha para outroJogador e uma anotação
+        autenticarComo(mestre);
+        Ficha fichaOutroJogador = fichaService.criar(
+                new CreateFichaRequest(jogo.getId(), "Personagem do Outro",
+                        outroJogador.getId(), null, null, null, null, null, false));
+
+        autenticarComo(outroJogador);
+        FichaAnotacao anotacaoDoOutro = fichaAnotacaoService.criar(fichaOutroJogador.getId(),
+                new CriarAnotacaoRequest("Nota do Outro", "Conteúdo", TipoAnotacao.JOGADOR, false, null, null),
+                outroJogador.getId());
+
+        // Act — jogador tenta editar anotação de outroJogador
+        autenticarComo(jogador);
+        var update = new AtualizarAnotacaoRequest("Tentativa de invasão", null, null, null, null);
+
+        // Assert
+        assertThrows(ForbiddenException.class,
+                () -> fichaAnotacaoService.atualizar(fichaOutroJogador.getId(), anotacaoDoOutro.getId(), update, jogador.getId()));
+    }
+
+    @Test
+    @DisplayName("Jogador deve ter campo visivelParaJogador ignorado silenciosamente")
+    void deveJogadorIgnorarVisivelParaJogador() {
+        // Arrange
+        autenticarComo(mestre);
+        FichaAnotacao anotacao = fichaAnotacaoService.criar(fichaDoJogador.getId(),
+                new CriarAnotacaoRequest("Nota Mestre", "Conteúdo", TipoAnotacao.MESTRE, false, null, null),
+                mestre.getId());
+        assertThat(anotacao.getVisivelParaJogador()).isFalse();
+
+        // Act — Mestre edita a anotação mas como jogador (autenticado como jogador)
+        // Reautenticar como jogador e tentar alterar visivelParaJogador
+        autenticarComo(jogador);
+        FichaAnotacao anotacaoJogador = fichaAnotacaoService.criar(fichaDoJogador.getId(),
+                new CriarAnotacaoRequest("Minha Nota", "Conteúdo", TipoAnotacao.JOGADOR, false, null, null),
+                jogador.getId());
+
+        var update = new AtualizarAnotacaoRequest(null, null, true, null, null);
+        FichaAnotacao atualizada = fichaAnotacaoService.atualizar(
+                fichaDoJogador.getId(), anotacaoJogador.getId(), update, jogador.getId());
+
+        // Assert — visivelParaJogador permanece false (ignorado silenciosamente)
+        // Verificar diretamente na lista para evitar problema de cache L1
+        List<FichaAnotacao> lista = fichaAnotacaoService.listar(fichaDoJogador.getId(), null);
+        FichaAnotacao recarregada = lista.stream()
+                .filter(a -> a.getId().equals(anotacaoJogador.getId()))
+                .findFirst().orElseThrow();
+        assertThat(recarregada.getVisivelParaJogador()).isFalse();
+    }
+
+    @Test
+    @DisplayName("Jogador não deve editar anotações de fichas de NPC")
+    void deveJogadorNaoEditarAnotacaoDeNpc() {
+        // Arrange — criar ficha NPC
+        autenticarComo(mestre);
+        Ficha fichaNpc = fichaService.criar(
+                new CreateFichaRequest(jogo.getId(), "Goblin Arqueiro", null, null, null, null, null, null, true));
+        FichaAnotacao anotacaoNpc = fichaAnotacaoService.criar(fichaNpc.getId(),
+                new CriarAnotacaoRequest("Nota do NPC", "Segredo", TipoAnotacao.MESTRE, false, null, null),
+                mestre.getId());
+
+        // Act — jogador tenta editar
+        autenticarComo(jogador);
+        var update = new AtualizarAnotacaoRequest("Invasão", null, null, null, null);
+
+        // Assert
+        assertThrows(ForbiddenException.class,
+                () -> fichaAnotacaoService.atualizar(fichaNpc.getId(), anotacaoNpc.getId(), update, jogador.getId()));
+    }
+
+    @Test
+    @DisplayName("Campo null no request não deve sobrescrever título original")
+    void deveCampoNullNaoSobrescrever() {
+        // Arrange
+        autenticarComo(jogador);
+        FichaAnotacao anotacao = fichaAnotacaoService.criar(fichaDoJogador.getId(),
+                new CriarAnotacaoRequest("Título Preservado", "Conteúdo Preservado", TipoAnotacao.JOGADOR, false, null, null),
+                jogador.getId());
+
+        // Act — enviar título null (não deve sobrescrever)
+        var update = new AtualizarAnotacaoRequest(null, "Novo Conteúdo", null, null, null);
+        FichaAnotacao atualizada = fichaAnotacaoService.atualizar(fichaDoJogador.getId(), anotacao.getId(), update, jogador.getId());
+
+        // Assert
+        assertThat(atualizada.getTitulo()).isEqualTo("Título Preservado");
+        assertThat(atualizada.getConteudo()).isEqualTo("Novo Conteúdo");
+    }
+
+    @Test
+    @DisplayName("PUT com pastaPaiId válido deve mover anotação para a pasta")
+    void deveMoverAnotacaoParaPastaValida() {
+        // Arrange — criar pasta e anotação
+        autenticarComo(mestre);
+        var pastaResponse = anotacaoPastaService.criar(
+                fichaDoJogador.getId(),
+                new CriarPastaRequest("Pasta Destino", null, 0),
+                mestre.getId());
+
+        autenticarComo(jogador);
+        FichaAnotacao anotacao = fichaAnotacaoService.criar(fichaDoJogador.getId(),
+                new CriarAnotacaoRequest("Anotação Sem Pasta", "Conteúdo", TipoAnotacao.JOGADOR, false, null, null),
+                jogador.getId());
+        assertThat(anotacao.getPastaPai()).isNull();
+
+        // Act
+        var update = new AtualizarAnotacaoRequest(null, null, null, null, pastaResponse.id());
+        FichaAnotacao atualizada = fichaAnotacaoService.atualizar(fichaDoJogador.getId(), anotacao.getId(), update, jogador.getId());
+
+        // Assert
+        assertThat(atualizada.getPastaPai()).isNotNull();
+        assertThat(atualizada.getPastaPai().getId()).isEqualTo(pastaResponse.id());
+    }
+
+    @Test
+    @DisplayName("Mover anotação para pasta de outra ficha deve lançar ForbiddenException")
+    void deveMoverParaPastaDeOutraFichaFalhar() {
+        // Arrange — criar segunda ficha e uma pasta nela
+        autenticarComo(mestre);
+        Ficha outraFicha = fichaService.criar(
+                new CreateFichaRequest(jogo.getId(), "Outra Ficha",
+                        outroJogador.getId(), null, null, null, null, null, false));
+        var pastaDeOutraFicha = anotacaoPastaService.criar(
+                outraFicha.getId(),
+                new CriarPastaRequest("Pasta da Outra Ficha", null, 0),
+                mestre.getId());
+
+        autenticarComo(jogador);
+        FichaAnotacao anotacao = fichaAnotacaoService.criar(fichaDoJogador.getId(),
+                new CriarAnotacaoRequest("Minha Anotação", "Conteúdo", TipoAnotacao.JOGADOR, false, null, null),
+                jogador.getId());
+
+        // Act — tentar mover para pasta de outra ficha como mestre (sem restrição de jogador)
+        autenticarComo(mestre);
+        var update = new AtualizarAnotacaoRequest(null, null, null, null, pastaDeOutraFicha.id());
+
+        // Assert
+        assertThrows(ForbiddenException.class,
+                () -> fichaAnotacaoService.atualizar(fichaDoJogador.getId(), anotacao.getId(), update, mestre.getId()));
+    }
+
+    @Test
+    @DisplayName("GET com pastaPaiId deve retornar apenas anotações da pasta especificada")
+    void deveListarAnotacoesFiltrandoPorPasta() {
+        // Arrange — criar pasta e anotações (dentro e fora da pasta)
+        autenticarComo(mestre);
+        var pasta = anotacaoPastaService.criar(
+                fichaDoJogador.getId(),
+                new CriarPastaRequest("Pasta Filtro", null, 0),
+                mestre.getId());
+
+        // Anotação dentro da pasta
+        fichaAnotacaoService.criar(fichaDoJogador.getId(),
+                new CriarAnotacaoRequest("Na Pasta", "Conteúdo", TipoAnotacao.MESTRE, true, pasta.id(), null),
+                mestre.getId());
+
+        // Anotação fora da pasta (na raiz)
+        fichaAnotacaoService.criar(fichaDoJogador.getId(),
+                new CriarAnotacaoRequest("Fora da Pasta", "Conteúdo", TipoAnotacao.MESTRE, true, null, null),
+                mestre.getId());
+
+        // Act
+        autenticarComo(mestre);
+        List<FichaAnotacao> filtradas = fichaAnotacaoService.listar(fichaDoJogador.getId(), pasta.id());
+
+        // Assert — apenas a anotação dentro da pasta
+        assertThat(filtradas).hasSize(1);
+        assertThat(filtradas.get(0).getTitulo()).isEqualTo("Na Pasta");
     }
 
     // =========================================================

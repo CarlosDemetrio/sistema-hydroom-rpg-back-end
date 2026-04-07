@@ -1,5 +1,6 @@
 package br.com.hydroom.rpg.fichacontrolador.controller;
 
+import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarAnotacaoRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.CriarAnotacaoRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.AnotacaoResponse;
 import br.com.hydroom.rpg.fichacontrolador.exception.ForbiddenException;
@@ -39,8 +40,10 @@ public class FichaAnotacaoController {
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
     @Operation(summary = "Listar anotações da ficha",
                description = "Mestre vê todas as anotações. Jogador vê apenas as próprias e as do Mestre marcadas como visíveis.")
-    public ResponseEntity<List<AnotacaoResponse>> listar(@PathVariable Long fichaId) {
-        var anotacoes = fichaAnotacaoService.listar(fichaId);
+    public ResponseEntity<List<AnotacaoResponse>> listar(
+            @PathVariable Long fichaId,
+            @RequestParam(required = false) Long pastaPaiId) {
+        var anotacoes = fichaAnotacaoService.listar(fichaId, pastaPaiId);
         var response = anotacoes.stream().map(fichaAnotacaoMapper::toResponse).toList();
         return ResponseEntity.ok(response);
     }
@@ -56,6 +59,19 @@ public class FichaAnotacaoController {
         var anotacao = fichaAnotacaoService.criar(fichaId, request, autorId);
         var response = fichaAnotacaoMapper.toResponse(anotacao);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
+    @Operation(summary = "Editar anotação",
+               description = "Atualiza parcialmente uma anotação. Campos nulos são ignorados. Jogador só edita as próprias anotações.")
+    public ResponseEntity<AnotacaoResponse> atualizar(
+            @PathVariable Long fichaId,
+            @PathVariable Long id,
+            @Valid @RequestBody AtualizarAnotacaoRequest request) {
+        Long autorId = getUsuarioAtualId();
+        var anotacao = fichaAnotacaoService.atualizar(fichaId, id, request, autorId);
+        return ResponseEntity.ok(fichaAnotacaoMapper.toResponse(anotacao));
     }
 
     @DeleteMapping("/{id}")

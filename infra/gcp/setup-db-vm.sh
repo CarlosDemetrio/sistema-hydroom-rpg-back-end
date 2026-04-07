@@ -289,15 +289,17 @@ systemctl restart fail2ban
 log "Fail2Ban ativo (ban SSH: 3 tentativas = 2h bloqueio)"
 
 # =====================================================================
-# 11. UFW Firewall
+# 11. UFW Firewall (Defense in Depth — segunda camada apos firewall GCP)
 # =====================================================================
 section "11/12 - UFW Firewall"
 ufw default deny incoming
 ufw default allow outgoing
-ufw allow 22/tcp comment "SSH"
-ufw allow 5432/tcp comment "PostgreSQL"
+ufw allow 22/tcp comment "SSH (GCP firewall ja restringe por IP)"
+# PostgreSQL APENAS da rede interna VPC (Cloud Run via Direct VPC Egress)
+ufw allow from 10.128.0.0/20 to any port 5432 comment "PostgreSQL - VPC interna APENAS"
 ufw --force enable
-log "UFW ativo: SSH (22) + PostgreSQL (5432)"
+log "UFW ativo: SSH (22) + PostgreSQL (5432 — APENAS rede VPC interna 10.128.0.0/20)"
+warn "PostgreSQL NAO esta acessivel da internet publica (defense in depth)"
 
 # =====================================================================
 # 12. Resumo final
@@ -316,8 +318,9 @@ echo " SEGURANCA ATIVA:"
 echo "  [x] Swap 2GB (protecao OOM)"
 echo "  [x] SSH hardened (root off, password off)"
 echo "  [x] Fail2Ban (ban SSH: 3 falhas = 2h)"
-echo "  [x] UFW (apenas 22 + 5432)"
+echo "  [x] UFW (SSH: 22, PostgreSQL: 5432 APENAS VPC interna)"
 echo "  [x] Docker com log rotation"
+echo "  [x] PostgreSQL INVISIVEL para internet (acesso apenas via VPC)"
 echo ""
 echo " ACOES MANUAIS:"
 echo ""

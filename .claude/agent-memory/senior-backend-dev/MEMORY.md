@@ -11,3 +11,5 @@
 - [feedback_mapstruct_base_entity.md](feedback_mapstruct_base_entity.md) — Nunca ignorar campos de BaseEntity em toEntity MapStruct — causa falha de compilação
 - [project_spec015_t2_sub_resources.md](project_spec015_t2_sub_resources.md) — Spec-015 T2: 4 services standalone + 14 endpoints + padrão para sub-recursos com PUT
 - [feedback_prospeccao_service_patterns.md](feedback_prospeccao_service_patterns.md) — ProspeccaoService, armadilha temAcessoUsuarioAtual em testes, FichaResumoResponse estendido
+- [feedback_soft_delete_test_cleanup.md](feedback_soft_delete_test_cleanup.md) — Cleanup de testes com soft-delete + FK deps: usar native delete + entityManager.clear()
+- [project_spec016_t2_item_config.md](project_spec016_t2_item_config.md) — Spec 016 T2: ItemConfig + ItemEfeito + ItemRequisito implementados (24 arquivos, 16 testes)

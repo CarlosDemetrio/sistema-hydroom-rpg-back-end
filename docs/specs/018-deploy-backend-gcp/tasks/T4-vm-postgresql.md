@@ -49,19 +49,34 @@ IP=$(gcloud compute addresses describe rpg-db-ip --region=us-central1 --format='
 echo "IP Estatico: $IP"
 ```
 
-### 3. Regra de Firewall
+### 3. Regras de Firewall (Defense in Depth)
 
 ```bash
-gcloud compute firewall-rules create allow-postgres \
+# ⚠️ REGRA 1: PostgreSQL — APENAS rede interna VPC
+# O Cloud Run acessa a VM via Direct VPC Egress (IP interno ex: 10.128.0.2)
+# A porta 5432 fica INVISIVEL para a internet publica!
+gcloud compute firewall-rules create allow-postgres-vpc \
   --direction=INGRESS \
   --action=ALLOW \
   --rules=tcp:5432 \
   --target-tags=postgres-server \
-  --source-ranges=0.0.0.0/0 \
-  --description="PostgreSQL - acesso protegido por senha forte"
+  --source-ranges=10.128.0.0/20 \
+  --description="PostgreSQL - APENAS rede interna VPC (Cloud Run via Direct VPC Egress)"
+
+# ⚠️ REGRA 2: SSH — APENAS o IP do desenvolvedor
+# Substituir SEU_IP pelo seu IP residencial (https://ifconfig.me)
+gcloud compute firewall-rules create allow-ssh-admin \
+  --direction=INGRESS \
+  --action=ALLOW \
+  --rules=tcp:22 \
+  --target-tags=postgres-server \
+  --source-ranges=SEU_IP/32 \
+  --description="SSH - APENAS IP do desenvolvedor"
 ```
 
-> **NOTA:** Idealmente restringir `source-ranges` aos IPs de saida do Cloud Run. Mas Cloud Run usa IPs dinamicos. Senha forte no PostgreSQL e o controle primario.
+> **CRITICO:** NAO criar regra com `0.0.0.0/0` na porta 5432!
+> Em 5 minutos, robos do mundo inteiro estariam tentando adivinhar a senha.
+> O Cloud Run acessa via rede interna (VPC), nao precisa de acesso publico.
 
 ### 4. SSH na VM e executar setup
 
@@ -82,12 +97,14 @@ sudo bash setup-db-vm.sh
 5. **Estrutura de diretorios** (`/opt/db`, `/opt/backups`)
 6. **Docker Compose** (`docker-compose-db.yml` copiado para `/opt/db/`)
 7. **Template .env** (se nao existir)
-8. **Subir PostgreSQL**
+8. **Subir PostgreSQL** (escuta em todas as interfaces — firewall GCP controla acesso)
 9. **Backup automatico** (cron diario as 3h, retencao 7 dias)
 10. **Hardening SSH** (root off, password off, key-only)
 11. **Fail2Ban** (protecao brute-force SSH)
-12. **UFW firewall** (permitir apenas 22 + 5432)
+12. **UFW firewall** (permitir apenas 22 + 5432 da rede interna)
 13. **Resumo final** com acoes manuais
+
+> **NOTA sobre UFW:** Mesmo que a firewall GCP ja bloqueie trafego externo, o UFW na VM serve como camada adicional (defense in depth). Configurar: `ufw allow from 10.128.0.0/20 to any port 5432`.
 
 ---
 
@@ -163,10 +180,13 @@ echo "[$(date)] Backup: rpg_fichas_${TIMESTAMP}.sql.gz"
 ## Criterios de Aceitacao
 
 - [ ] VM e2-micro criada em regiao dos EUA (us-central1, us-east1 ou us-west1)
-- [ ] IP externo fixado como estatico
+- [ ] IP externo fixado como estatico (necessario APENAS para SSH administrativo)
 - [ ] Swap de 2GB ativo (`free -h` mostra swap)
-- [ ] PostgreSQL rodando e acessivel remotamente: `psql -h <IP> -U rpg_prod_user -d rpg_fichas`
-- [ ] Firewall permite porta 5432
+- [ ] PostgreSQL rodando: `docker exec rpg-postgres pg_isready -U rpg_prod_user`
+- [ ] Firewall GCP: porta 5432 aceita APENAS rede VPC interna (`10.128.0.0/20`)
+- [ ] Firewall GCP: porta 22 aceita APENAS IP do desenvolvedor
+- [ ] PostgreSQL NAO acessivel da internet: `psql -h <IP_PUBLICO>` deve falhar (timeout)
+- [ ] IP interno da VM anotado para uso no Cloud Run (ex: `10.128.0.2`)
 - [ ] Backup diario configurado no cron
 - [ ] SSH hardened (key-only, root off)
 - [ ] `setup-db-vm.sh` e idempotente (rodar 2x nao quebra)

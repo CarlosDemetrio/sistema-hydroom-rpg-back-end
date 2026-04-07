@@ -13,6 +13,7 @@ import br.com.hydroom.rpg.fichacontrolador.model.Ficha;
 import br.com.hydroom.rpg.fichacontrolador.model.Usuario;
 import br.com.hydroom.rpg.fichacontrolador.model.enums.RoleJogo;
 import br.com.hydroom.rpg.fichacontrolador.repository.AnotacaoPastaRepository;
+import br.com.hydroom.rpg.fichacontrolador.repository.FichaAnotacaoRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.FichaRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.JogoParticipanteRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.UsuarioRepository;
@@ -55,6 +56,7 @@ public class AnotacaoPastaService {
     private final JogoParticipanteRepository jogoParticipanteRepository;
     private final UsuarioRepository usuarioRepository;
     private final AnotacaoPastaMapper anotacaoPastaMapper;
+    private final FichaAnotacaoRepository fichaAnotacaoRepository;
 
     /**
      * Lista as pastas de uma ficha como árvore hierárquica.
@@ -176,8 +178,11 @@ public class AnotacaoPastaService {
             anotacaoPastaRepository.save(sub);
         }
 
-        // TODO (T1): Desvincular FichaAnotacao que referenciam esta pasta quando o campo pastaPai
-        //            for adicionado à entidade FichaAnotacao.
+        // Desvincular anotações que referenciam esta pasta (pastaPai → null)
+        fichaAnotacaoRepository.findByPastaPaiId(pastaId).forEach(a -> {
+            a.setPastaPai(null);
+            fichaAnotacaoRepository.save(a);
+        });
 
         pasta.delete();
         anotacaoPastaRepository.save(pasta);

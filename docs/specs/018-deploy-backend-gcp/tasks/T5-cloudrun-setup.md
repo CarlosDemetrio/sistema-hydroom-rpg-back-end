@@ -49,7 +49,13 @@ done
 ## Passo 2 — Deploy Inicial do Cloud Run
 
 ```bash
-# Primeiro deploy (cria o servico)
+# Obter IP INTERNO da VM (NÃO o IP publico!)
+DB_INTERNAL_IP=$(gcloud compute instances describe rpg-db \
+  --zone=us-central1-a \
+  --format='value(networkInterfaces[0].networkIP)')
+echo "IP Interno da VM: $DB_INTERNAL_IP"
+
+# Primeiro deploy (cria o servico com Direct VPC Egress)
 gcloud run deploy rpg-api \
   --image ghcr.io/carlosdemetrio/ficha-controlador:latest \
   --region us-central1 \
@@ -61,8 +67,11 @@ gcloud run deploy rpg-api \
   --max-instances 3 \
   --timeout 300 \
   --allow-unauthenticated \
+  --network default \
+  --subnet default \
+  --vpc-egress private-ranges-only \
   --set-env-vars "SPRING_PROFILES_ACTIVE=prod" \
-  --set-env-vars "SPRING_DATASOURCE_URL=jdbc:postgresql://<DB_VM_IP>:5432/rpg_fichas" \
+  --set-env-vars "SPRING_DATASOURCE_URL=jdbc:postgresql://${DB_INTERNAL_IP}:5432/rpg_fichas" \
   --set-secrets "DB_USERNAME=rpg-db-username:latest" \
   --set-secrets "DB_PASSWORD=rpg-db-password:latest" \
   --set-secrets "GOOGLE_CLIENT_ID=rpg-google-client-id:latest" \
@@ -71,7 +80,14 @@ gcloud run deploy rpg-api \
   --set-secrets "BACKEND_URL=rpg-backend-url:latest"
 ```
 
-> **NOTA:** Substituir `<DB_VM_IP>` pelo IP estatico da VM e2-micro criada na T4.
+> **CRITICO — Direct VPC Egress:**
+> Os flags `--network default`, `--subnet default` e `--vpc-egress private-ranges-only` habilitam
+> o Cloud Run a acessar a rede VPC interna. Com isso:
+> - O Spring Boot conecta ao PostgreSQL via IP interno (ex: `10.128.0.2`)
+> - A porta 5432 da VM fica INVISIVEL para a internet
+> - Trafego para a internet (Google OAuth, etc.) continua normal
+>
+> **DATASOURCE_URL usa o IP INTERNO** (ex: `10.128.0.2`), **NAO** o IP publico!
 
 ---
 
@@ -160,13 +176,18 @@ set -euo pipefail
 #   - VM e2-micro com PostgreSQL rodando (T4)
 # =====================================================================
 
-DB_VM_IP=${1:?"Uso: ./cloud-run-deploy.sh <DB_VM_IP>"}
-REGION=${2:-"us-central1"}
+REGION=${1:-"us-central1"}
+ZONE=${2:-"us-central1-a"}
 SERVICE_NAME="rpg-api"
 IMAGE="ghcr.io/carlosdemetrio/ficha-controlador:latest"
 
+# Obter IP INTERNO da VM automaticamente (NAO o IP publico!)
+DB_INTERNAL_IP=$(gcloud compute instances describe rpg-db \
+  --zone=${ZONE} \
+  --format='value(networkInterfaces[0].networkIP)')
+
 echo "Deploying ${SERVICE_NAME} na regiao ${REGION}..."
-echo "DB VM IP: ${DB_VM_IP}"
+echo "DB VM IP Interno: ${DB_INTERNAL_IP}"
 
 gcloud run deploy ${SERVICE_NAME} \
   --image ${IMAGE} \
@@ -179,8 +200,11 @@ gcloud run deploy ${SERVICE_NAME} \
   --max-instances 3 \
   --timeout 300 \
   --allow-unauthenticated \
+  --network default \
+  --subnet default \
+  --vpc-egress private-ranges-only \
   --set-env-vars "SPRING_PROFILES_ACTIVE=prod" \
-  --set-env-vars "SPRING_DATASOURCE_URL=jdbc:postgresql://${DB_VM_IP}:5432/rpg_fichas" \
+  --set-env-vars "SPRING_DATASOURCE_URL=jdbc:postgresql://${DB_INTERNAL_IP}:5432/rpg_fichas" \
   --set-secrets "DB_USERNAME=rpg-db-username:latest" \
   --set-secrets "DB_PASSWORD=rpg-db-password:latest" \
   --set-secrets "GOOGLE_CLIENT_ID=rpg-google-client-id:latest" \
@@ -198,9 +222,12 @@ gcloud run services describe ${SERVICE_NAME} --region=${REGION} --format='value(
 ## Criterios de Aceitacao
 
 - [ ] Secrets criados no GCP Secret Manager (6 secrets)
-- [ ] Servico Cloud Run criado e respondendo
+- [ ] Servico Cloud Run criado com Direct VPC Egress (`--network default --vpc-egress private-ranges-only`)
+- [ ] Cloud Run conecta ao PostgreSQL via IP **interno** da VPC (nao IP publico)
 - [ ] Dominio `api.seu-dominio.com` mapeado com SSL automatico
 - [ ] `curl https://api.seu-dominio.com/actuator/health` → `{"status":"UP"}`
+- [ ] CORS funcional: request de `https://seu-dominio.com` retorna `Access-Control-Allow-Origin` correto
+- [ ] CORS bloqueado: request de `https://outro-site.com` NAO tem `Access-Control-Allow-Origin`
 - [ ] OAuth2 redirect URI atualizado no Google Console
 - [ ] (Plano B) Cloud Scheduler job criado e funcional
 - [ ] Scripts `cloud-run-deploy.sh` e `setup-secrets.sh` versionados em `infra/gcp/`

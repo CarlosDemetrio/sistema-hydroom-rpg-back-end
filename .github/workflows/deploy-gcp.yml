@@ -108,6 +108,7 @@ jobs:
   deploy:
     name: 🚀 Deploy Cloud Run
     needs: [build]
+    if: always() && needs.build.result == 'success'
     runs-on: ubuntu-latest
     environment: production
     steps:

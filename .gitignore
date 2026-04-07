@@ -34,3 +34,4 @@ build/
 
 # JaCoCo
 target/site/jacoco/
+.claude/

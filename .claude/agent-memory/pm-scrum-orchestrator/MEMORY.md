@@ -6,9 +6,10 @@
 - [Backend Audit](project_backend_audit.md) — 581 testes, 7/8 TipoEfeito, ConfigPontos integrado, branch main
 - [Frontend Debt](project_frontend_debt.md) — 490 testes (0 falhas), QW-Bug1/Bug2 CONCLUIDOS (R3), 23 gaps parcialmente resolvidos
 - [Agent Roster](project_agent_roster.md) — Regra 1 task/agente, roster historico, gargalo patterns
-- [Docs Reorganization](project_docs_reorg.md) — MASTER.md + CRONOLOGIA.md created, 3 files absorbed, 6 BA analyses annotated
+- [Docs Reorganization](project_docs_reorg.md) — 2026-04-07 deep reorg: tracking/rodadas/, historico/{arquivado,backlogs-iniciais}, deploy/, README.md
 - [MVP Reprioritization](project_reprioritization_2026_04_03.md) — PO repriorized: 007>006>005>008>009>010>012, 75 tasks confirmed
 - [Specs 013+014](project_specs_013_014.md) — Documentacao Tecnica (6T) + Cobertura Testes (6T), P3, AFTER all functional specs
 - [Spec 015](project_spec015.md) — ConfigPontos Classe/Raca, 5/7 concluidas, T4 DESBLOQUEADO, 2F pendentes
 - [Spec 016](project_spec016.md) — Sistema Itens 11T, 100% ESPECIFICADA, dataset SRD 40 itens, 10 PA pendentes PO
+- [Spec 017](project_spec017.md) — Correcoes Pre-RC (auditorias 2026-04-07), 22 tasks (P0 bloqueante, T10 apos Spec 012 T11)
 - [GAPs MVP Pendentes](project_gaps_pendentes.md) — 3 GAPs sem spec: FichaStatus MORTA, polling, NPC form (GAP-MVP-05 RESOLVIDO R5)

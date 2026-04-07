@@ -1,12 +1,16 @@
-> Para navegacao rapida e indice completo, ver `docs/MASTER.md`.
-
 # Sprint Atual — Sprint 3: "NPC Visibility + Progressao + RC"
 
-> Atualizado: 2026-04-06 (sessao 15, rodada 13 concluida — Spec 009-ext 100%, 613B+848F testes)
+> **Papel deste arquivo:** tracking ativo da sprint corrente — tasks em
+> andamento, restante para RC, bloqueios, sequenciamento de rodadas.
+> Para visao mais macro, ver `MASTER.md`.
+> Para detalhes por area e historico, ver `PM.md`.
+> Para estado da ultima sessao, ver `HANDOFF-SESSAO.md`.
+>
+> Atualizado: 2026-04-07 (sessao 16, auditoria + Spec 017 criada; Rodada 14 aberta em planejamento)
 > PM: Scrum Orchestrator
-> Objetivo: Completar Spec 009-ext (NPC/Essencia/Prospeccao), Spec 008 e 012 frontend, entregar RC da primeira parte
+> Objetivo: Completar Spec 009-ext (NPC/Essencia/Prospeccao), Spec 008 e 012 frontend, **+ Spec 017 P0 (correcoes pre-RC)**, entregar RC da primeira parte
 > Duracao estimada: 2-3 semanas
-> Indice mestre: `docs/MASTER.md` | Cronologia: `docs/CRONOLOGIA.md`
+> Cronologia: `docs/historico/CRONOLOGIA.md` | Rodadas: `docs/tracking/rodadas/`
 
 ---
 
@@ -15,12 +19,14 @@
 | Metrica | Valor |
 |---------|-------|
 | Rodadas concluidas | 2 (R12 + R13) |
+| Rodadas em andamento | 1 (R14 — sessao de auditoria + planejamento Spec 017, sem codigo) |
 | Tasks entregues | 20 (16 em R12 + 4 em R13) |
-| Tasks restantes para RC | 8 frontend (Spec 012 T6-T11 + Spec 015 T6/T7) |
+| Tasks restantes para RC | 8 frontend (Spec 012 T6-T11 + Spec 015 T6/T7) **+ 7 Spec 017 P0** |
 | Testes backend | **613 passando**, 0 falhas |
 | Testes frontend | **848 passando**, 0 falhas |
 | Specs 100% concluidas | Spec 008 (sub-recursos frontend), Spec 009-ext (NPC/Prospeccao/Essencia) |
-| Specs em andamento | Spec 012 (fase 2 pendente) |
+| Specs em andamento | Spec 012 (fase 2 pendente), Spec 015 (T6/T7 frontend pendentes), **Spec 017 (planejamento)** |
+| Novas specs | **Spec 017 — Correcoes Pre-RC** (22 tasks, auditorias 2026-04-07) |
 | Stand-by (decisao 2026-04-06) | Spec 010, 011, 013, 014, 016 |
 
 ### Entregas da Rodada 12 (16 tasks)

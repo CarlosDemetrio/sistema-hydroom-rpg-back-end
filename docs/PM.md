@@ -1,10 +1,14 @@
-> Para navegacao rapida e indice completo, ver `docs/MASTER.md`. Este arquivo contem detalhes de status e tracking.
-
 # PM.md — Klayrah RPG: Ficha Controlador
 
-> Fonte de status detalhado do projeto.
+> **Papel deste arquivo:** tracking detalhado por area (backend, frontend,
+> testes, motor de formulas) + **historico consolidado das sprints encerradas**.
+> Complementa `MASTER.md` (indice) e `SPRINT-ATUAL.md` (sprint corrente).
+>
+> Ponto de entrada rapido: `HANDOFF-SESSAO.md` → `MASTER.md` → `PM.md`.
+> Mapa completo de docs: `README.md`.
+>
 > Gerado em: 2026-04-01 | Atualizado: 2026-04-06 (sessao 15, rodada 13 concluida, rev.13 — Sprint 3 em andamento: Spec 009-ext 100%, 613B+848F testes) | Branch: `main`
-> Indice mestre: `docs/MASTER.md` | Cronologia: `docs/CRONOLOGIA.md`
+> Cronologia: `docs/historico/CRONOLOGIA.md`
 
 ---
 

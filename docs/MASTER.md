@@ -1,6 +1,14 @@
 # ficha-controlador — MASTER INDEX
 
-> Fonte unica de verdade para navegacao e estado do projeto.
+> **Papel deste arquivo:** indice mestre do projeto — tabela de specs, status
+> geral, sequenciamento de implementacao, decisoes do PO. E o ponto de partida
+> para entender o estado macro do projeto.
+>
+> Para ver detalhes da sprint corrente: `SPRINT-ATUAL.md`.
+> Para ver tracking detalhado por area: `PM.md`.
+> Para ver o estado da ultima sessao: `HANDOFF-SESSAO.md`.
+> Para ver o mapa completo de docs/: `README.md`.
+>
 > Ultima atualizacao: 2026-04-06 (rev.13 — pos-rodada 13: Sprint 3 em andamento, Spec 009-ext 100%, 613B+848F testes) | Branch: `main`
 
 ---
@@ -244,10 +252,13 @@ APOS TODAS AS SPECS FUNCIONAIS:
 ### Tracking e Status
 | Documento | Descricao |
 |-----------|-----------|
-| [`CRONOLOGIA.md`](CRONOLOGIA.md) | Cronologia reversa completa |
-| [`SPRINT-ATUAL.md`](SPRINT-ATUAL.md) | Sprint 2 tracking detalhado com tracks paralelos |
-| [`PM.md`](PM.md) | Status geral do projeto |
-| [`EPICS-BACKLOG.md`](EPICS-BACKLOG.md) | 9+ epicos backend com tasks detalhadas |
+| [`HANDOFF-SESSAO.md`](HANDOFF-SESSAO.md) | Estado da ultima sessao (ativo — primeiro a ler) |
+| [`SPRINT-ATUAL.md`](SPRINT-ATUAL.md) | Sprint corrente tracking detalhado |
+| [`PM.md`](PM.md) | Status detalhado por area + historico de sprints encerradas |
+| [`tracking/rodadas/`](tracking/rodadas/) | Tracking das rodadas (10, 11, 12, 13, 14) |
+| [`README.md`](README.md) | Mapa de navegacao completo de docs/ |
+| [`historico/CRONOLOGIA.md`](historico/CRONOLOGIA.md) | Cronologia reversa completa |
+| [`historico/backlogs-iniciais/EPICS-BACKLOG.md`](historico/backlogs-iniciais/EPICS-BACKLOG.md) | Backlog de epicos (fase descoberta — Specs tomaram o lugar) |
 
 ### Roadmap
 | Documento | Descricao |
@@ -259,8 +270,8 @@ APOS TODAS AS SPECS FUNCIONAIS:
 ### Produto e Negocio
 | Documento | Descricao |
 |-----------|-----------|
-| [`PRODUCT-BACKLOG.md`](PRODUCT-BACKLOG.md) | 93 User Stories detalhadas (11 epicos) |
-| [`UX-BACKLOG.md`](UX-BACKLOG.md) | Auditoria UX completa (26 componentes) |
+| [`historico/backlogs-iniciais/PRODUCT-BACKLOG.md`](historico/backlogs-iniciais/PRODUCT-BACKLOG.md) | 93 User Stories (fase descoberta — Specs tomaram o lugar) |
+| [`historico/backlogs-iniciais/UX-BACKLOG.md`](historico/backlogs-iniciais/UX-BACKLOG.md) | Auditoria UX completa (fase descoberta) |
 | [`API-CONTRACT.md`](API-CONTRACT.md) | Contrato REST completo backend-frontend |
 | [`gaps/BA-GAPS-2026-04-02.md`](gaps/BA-GAPS-2026-04-02.md) | Dossie de gaps com respostas do PO |
 
@@ -336,9 +347,11 @@ APOS TODAS AS SPECS FUNCIONAIS:
 |-----------|-----------|
 | [`AI_GUIDELINES_BACKEND.md`](AI_GUIDELINES_BACKEND.md) | Guidelines backend para agentes AI |
 | [`testes/CENARIOS-TESTE.md`](testes/CENARIOS-TESTE.md) | Cenarios de teste detalhados |
-| [`TEAM-PLAN.md`](TEAM-PLAN.md) | Plano de time com 7 fases e 20+ issues |
-| [`INDEX.md`](INDEX.md) | Indice antigo de documentos |
-| [`PROXIMA-SESSAO.md`](PROXIMA-SESSAO.md) | Planejamento da proxima sessao |
+| [`deploy/DEPLOY-BACKEND.md`](deploy/DEPLOY-BACKEND.md) | Deploy do backend |
+| [`deploy/DEPLOY-OCI.md`](deploy/DEPLOY-OCI.md) | Deploy OCI (infra) |
+| [`historico/arquivado/TEAM-PLAN.md`](historico/arquivado/TEAM-PLAN.md) | Plano de time original (absorvido pelo MASTER) |
+| [`historico/arquivado/INDEX.md`](historico/arquivado/INDEX.md) | Indice antigo (absorvido pelo MASTER) |
+| [`historico/arquivado/PROXIMA-SESSAO.md`](historico/arquivado/PROXIMA-SESSAO.md) | Planejamento antigo (substituido pelo HANDOFF) |
 
 ---
 

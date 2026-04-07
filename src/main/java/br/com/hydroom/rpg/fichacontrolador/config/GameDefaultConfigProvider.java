@@ -180,4 +180,26 @@ public interface GameDefaultConfigProvider {
      * @return Mapa de nome da raça → lista de pontos por nível
      */
     Map<String, List<?>> getDefaultRacaPontos();
+
+    /**
+     * Retorna as 7 raridades de itens padrão (Comum → Único).
+     *
+     * @return Lista de RaridadeItemConfigDefault com cores e limites de bônus
+     */
+    List<RaridadeItemConfigDefault> getDefaultRaridades();
+
+    /**
+     * Retorna os 20 tipos de itens padrão (Armas, Armaduras, Acessórios, Consumíveis, Aventura).
+     *
+     * @return Lista de TipoItemConfigDefault com categoria e subcategoria
+     */
+    List<TipoItemConfigDefault> getDefaultTipos();
+
+    /**
+     * Retorna os 40 itens SRD adaptados ao sistema Klayrah.
+     * Inclui: 15 armas, 10 armaduras/escudos, 5 acessórios, 5 consumíveis, 5 aventura.
+     *
+     * @return Lista de ItemConfigDefault com efeitos inline
+     */
+    List<ItemConfigDefault> getDefaultItens();
 }

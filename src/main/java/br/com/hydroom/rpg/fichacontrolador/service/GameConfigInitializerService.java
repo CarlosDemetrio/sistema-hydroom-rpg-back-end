@@ -3,6 +3,7 @@ package br.com.hydroom.rpg.fichacontrolador.service;
 import br.com.hydroom.rpg.fichacontrolador.config.GameDefaultConfigProvider;
 import br.com.hydroom.rpg.fichacontrolador.dto.defaults.*;
 import br.com.hydroom.rpg.fichacontrolador.model.*;
+import br.com.hydroom.rpg.fichacontrolador.model.enums.TipoItemEfeito;
 import br.com.hydroom.rpg.fichacontrolador.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Service responsável por inicializar configurações padrão de um jogo.
@@ -52,6 +54,9 @@ public class GameConfigInitializerService {
     private final BonusConfigRepository bonusConfigRepository;
     private final PontosVantagemConfigRepository pontosVantagemRepository;
     private final CategoriaVantagemRepository categoriaVantagemRepository;
+    private final RaridadeItemConfigRepository raridadeItemConfigRepository;
+    private final TipoItemConfigRepository tipoItemConfigRepository;
+    private final ItemConfigRepository itemConfigRepository;
 
     // Provider de dados default
     private final GameDefaultConfigProvider defaultProvider;
@@ -77,6 +82,9 @@ public class GameConfigInitializerService {
      *   <li>PresencaConfig</li>
      *   <li>MembroCorpoConfig</li>
      *   <li>VantagemConfig</li>
+     *   <li>RaridadeItemConfig</li>
+     *   <li>TipoItemConfig</li>
+     *   <li>ItemConfig (com efeitos cascaded)</li>
      * </ol>
      *
      * @param jogoId ID do jogo a ser inicializado
@@ -113,7 +121,7 @@ public class GameConfigInitializerService {
 
         // 6. Criar bônus calculados (antes de ClasseBonus para que ClasseBonus possa referenciar)
         log.debug("Criando bônus calculados...");
-        createBonus(jogo, defaultProvider.getDefaultBonus());
+        Map<String, BonusConfig> bonusMap = createBonus(jogo, defaultProvider.getDefaultBonus());
 
         // 7. Criar níveis
         log.debug("Criando níveis...");
@@ -162,6 +170,20 @@ public class GameConfigInitializerService {
         // 18. Criar vantagens (após CategoriaVantagem)
         log.debug("Criando vantagens...");
         createVantagens(jogo, categorias, defaultProvider.getDefaultVantagens());
+
+        // 19. Criar raridades de itens
+        log.debug("Criando raridades de itens...");
+        Map<String, RaridadeItemConfig> raridadeMap = createRaridades(jogo, defaultProvider.getDefaultRaridades());
+
+        // 20. Criar tipos de itens
+        log.debug("Criando tipos de itens...");
+        Map<String, TipoItemConfig> tipoMap = createTipos(jogo, defaultProvider.getDefaultTipos());
+
+        // 21. Criar itens (com efeitos cascaded) — referencia bônus e atributos já criados
+        log.debug("Criando itens...");
+        Map<String, AtributoConfig> atributoMap = atributos.stream()
+                .collect(Collectors.toMap(AtributoConfig::getAbreviacao, a -> a));
+        createItens(jogo, raridadeMap, tipoMap, bonusMap, atributoMap, defaultProvider.getDefaultItens());
 
         log.info("Configuracoes padrao criadas com sucesso para jogo '{}'", jogo.getNome());
     }
@@ -251,8 +273,10 @@ public class GameConfigInitializerService {
     /**
      * Cria bônus calculados padrão para o jogo (B.B.A, B.B.M, Defesa, etc.).
      * Deve ser chamado ANTES de criar classes (para ClasseBonus poder referenciar BonusConfig).
+     *
+     * @return Mapa nome → BonusConfig salvo (usado por createItens para resolver efeitos)
      */
-    private void createBonus(Jogo jogo, List<BonusConfigDTO> dtos) {
+    private Map<String, BonusConfig> createBonus(Jogo jogo, List<BonusConfigDTO> dtos) {
         List<BonusConfig> entities = dtos.stream()
                 .map(dto -> BonusConfig.builder()
                         .jogo(jogo)
@@ -263,8 +287,9 @@ public class GameConfigInitializerService {
                         .build())
                 .toList();
 
-        bonusConfigRepository.saveAll(entities);
-        log.debug("{} bônus criados", entities.size());
+        List<BonusConfig> saved = bonusConfigRepository.saveAll(entities);
+        log.debug("{} bônus criados", saved.size());
+        return saved.stream().collect(Collectors.toMap(BonusConfig::getNome, b -> b));
     }
 
     /**
@@ -527,5 +552,151 @@ public class GameConfigInitializerService {
 
         vantagemRepository.saveAll(entities);
         log.debug("{} vantagens criadas", entities.size());
+    }
+
+    /**
+     * Cria raridades de itens padrão para o jogo.
+     *
+     * @return Mapa nome → RaridadeItemConfig salvo (para uso em createItens)
+     */
+    private Map<String, RaridadeItemConfig> createRaridades(Jogo jogo, List<RaridadeItemConfigDefault> dtos) {
+        List<RaridadeItemConfig> entities = dtos.stream()
+                .map(dto -> RaridadeItemConfig.builder()
+                        .jogo(jogo)
+                        .nome(dto.nome())
+                        .cor(dto.cor())
+                        .ordemExibicao(dto.ordemExibicao())
+                        .podeJogadorAdicionar(dto.podeJogadorAdicionar())
+                        .bonusAtributoMin(dto.bonusAtributoMin())
+                        .bonusAtributoMax(dto.bonusAtributoMax())
+                        .bonusDerivadoMin(dto.bonusDerivadoMin())
+                        .bonusDerivadoMax(dto.bonusDerivadoMax())
+                        .descricao(dto.descricao())
+                        .build())
+                .toList();
+
+        List<RaridadeItemConfig> saved = raridadeItemConfigRepository.saveAll(entities);
+        log.debug("{} raridades de itens criadas", saved.size());
+        return saved.stream().collect(Collectors.toMap(RaridadeItemConfig::getNome, r -> r));
+    }
+
+    /**
+     * Cria tipos de itens padrão para o jogo.
+     *
+     * @return Mapa nome → TipoItemConfig salvo (para uso em createItens)
+     */
+    private Map<String, TipoItemConfig> createTipos(Jogo jogo, List<TipoItemConfigDefault> dtos) {
+        List<TipoItemConfig> entities = dtos.stream()
+                .map(dto -> TipoItemConfig.builder()
+                        .jogo(jogo)
+                        .nome(dto.nome())
+                        .categoria(dto.categoria())
+                        .subcategoria(dto.subcategoria())
+                        .requerDuasMaos(dto.requerDuasMaos())
+                        .ordemExibicao(dto.ordemExibicao())
+                        .build())
+                .toList();
+
+        List<TipoItemConfig> saved = tipoItemConfigRepository.saveAll(entities);
+        log.debug("{} tipos de itens criados", saved.size());
+        return saved.stream().collect(Collectors.toMap(TipoItemConfig::getNome, t -> t));
+    }
+
+    /**
+     * Cria itens padrão para o jogo, resolvendo referências por nome a raridades, tipos, bônus e atributos.
+     *
+     * <p>Para efeitos do tipo BONUS_DERIVADO, busca o BonusConfig pelo nome no mapa de bônus.
+     * Para efeitos do tipo BONUS_ATRIBUTO, busca o AtributoConfig pela abreviação no mapa de atributos.
+     * Para BONUS_VIDA e BONUS_ESSENCIA, não há FK de alvo — apenas valorFixo.</p>
+     *
+     * @param raridadeMap  Mapa nome → RaridadeItemConfig (criado por createRaridades)
+     * @param tipoMap      Mapa nome → TipoItemConfig (criado por createTipos)
+     * @param bonusMap     Mapa nome → BonusConfig (criado por createBonus)
+     * @param atributoMap  Mapa abreviação → AtributoConfig (construído de createAtributos)
+     */
+    private void createItens(Jogo jogo,
+                              Map<String, RaridadeItemConfig> raridadeMap,
+                              Map<String, TipoItemConfig> tipoMap,
+                              Map<String, BonusConfig> bonusMap,
+                              Map<String, AtributoConfig> atributoMap,
+                              List<ItemConfigDefault> dtos) {
+        List<ItemConfig> items = new ArrayList<>();
+
+        for (ItemConfigDefault dto : dtos) {
+            RaridadeItemConfig raridade = raridadeMap.get(dto.raridadeNome());
+            if (raridade == null) {
+                log.warn("Raridade '{}' não encontrada para item '{}'. Pulando.", dto.raridadeNome(), dto.nome());
+                continue;
+            }
+
+            TipoItemConfig tipo = tipoMap.get(dto.tipoNome());
+            if (tipo == null) {
+                log.warn("Tipo '{}' não encontrado para item '{}'. Pulando.", dto.tipoNome(), dto.nome());
+                continue;
+            }
+
+            ItemConfig item = ItemConfig.builder()
+                    .jogo(jogo)
+                    .nome(dto.nome())
+                    .raridade(raridade)
+                    .tipo(tipo)
+                    .peso(dto.peso())
+                    .valor(dto.valor())
+                    .duracaoPadrao(dto.duracaoPadrao())
+                    .nivelMinimo(dto.nivelMinimo())
+                    .propriedades(dto.propriedades())
+                    .ordemExibicao(dto.ordemExibicao())
+                    .build();
+
+            List<ItemEfeito> efeitos = new ArrayList<>();
+            for (ItemEfeitoDefault efDto : dto.efeitos()) {
+                ItemEfeito efeito = buildItemEfeito(efDto, item, bonusMap, atributoMap);
+                if (efeito != null) {
+                    efeitos.add(efeito);
+                }
+            }
+            item.setEfeitos(efeitos);
+            items.add(item);
+        }
+
+        List<ItemConfig> saved = itemConfigRepository.saveAll(items);
+        log.debug("{} itens criados", saved.size());
+    }
+
+    /**
+     * Constrói um ItemEfeito resolvendo as FKs de alvo por nome/abreviação.
+     *
+     * @return ItemEfeito construído, ou null se o alvo obrigatório não for encontrado
+     */
+    private ItemEfeito buildItemEfeito(ItemEfeitoDefault dto,
+                                        ItemConfig itemConfig,
+                                        Map<String, BonusConfig> bonusMap,
+                                        Map<String, AtributoConfig> atributoMap) {
+        ItemEfeito.ItemEfeitoBuilder builder = ItemEfeito.builder()
+                .itemConfig(itemConfig)
+                .tipoEfeito(dto.tipoEfeito())
+                .valorFixo(dto.valorFixo());
+
+        if (dto.tipoEfeito() == TipoItemEfeito.BONUS_DERIVADO) {
+            BonusConfig bonus = bonusMap.get(dto.bonusAlvoNome());
+            if (bonus == null) {
+                log.warn("BonusConfig '{}' não encontrado para efeito de '{}'. Pulando efeito.",
+                         dto.bonusAlvoNome(), itemConfig.getNome());
+                return null;
+            }
+            builder.bonusAlvo(bonus);
+
+        } else if (dto.tipoEfeito() == TipoItemEfeito.BONUS_ATRIBUTO) {
+            AtributoConfig atributo = atributoMap.get(dto.atributoAlvoNome());
+            if (atributo == null) {
+                log.warn("AtributoConfig com abreviação '{}' não encontrado para efeito de '{}'. Pulando efeito.",
+                         dto.atributoAlvoNome(), itemConfig.getNome());
+                return null;
+            }
+            builder.atributoAlvo(atributo);
+        }
+        // BONUS_VIDA e BONUS_ESSENCIA não têm FK de alvo — apenas valorFixo já setado
+
+        return builder.build();
     }
 }

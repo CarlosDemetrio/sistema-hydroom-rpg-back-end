@@ -1,9 +1,10 @@
 # Rodada 14 — Sessao de Auditoria + Spec 017 Planejamento
 
 > Iniciada: 2026-04-07
+> Concluida: 2026-04-07
 > Branch: `main`
-> Base: 613B + 848F testes, 0 falhas
-> Status: **EM ANDAMENTO** (planejamento — sem codigo de producao alterado)
+> Base: 723B + 879F testes (pos Copilot R04)
+> Status: **CONCLUIDA** — Spec 017 P0 100% + Spec 012 fase 2 100% + Spec 015 T6/T7 pre-existentes
 
 ---
 
@@ -179,12 +180,33 @@ verificar se o painel renderiza completo).
 
 ---
 
-## Progresso (sera preenchido na execucao)
+## Progresso — Fase de Execucao (Claude R14)
 
-| Task | Tipo | Agente | Status | Horario | Commit | Testes |
-|------|------|--------|--------|---------|--------|--------|
-| — | — | — | — | — | — | — |
+| Task | Tipo | Status | Commit | Testes |
+|------|------|--------|--------|--------|
+| Spec 017 T7 — verFicha Mestre rota | FE | ✅ | `2d54886` | +2 |
+| Spec 017 T3 — SKIP_ERROR_INTERCEPTOR token | FE | ✅ | `e0cadb7` | — |
+| Spec 017 T5 — auth.guard REDIRECT_URL | FE | ✅ | `57dd3ff` | +4 |
+| Spec 017 T4 — error.interceptor refactor | FE | ✅ | `8b2def4` | — |
+| Spec 012 T6 — modelo FichaResumo | FE | ✅ pre-existente | `2cb0245` | — |
+| Spec 012 T7 — painel XP + dialog + level up | FE | ✅ | `1251045` | — |
+| Spec 012 T8 — LevelUpDialog + Step 1 atributos | FE | ✅ | `1d73fd7` | +15 |
+| Spec 012 T9 — Step 2 aptidoes | FE | ✅ | `6f30b6d` | +5 |
+| Spec 012 T10 — Step 3 vantagens | FE | ✅ | `406cb95` | +2 |
+| Spec 012 T11 — saldo vantagens tab | FE | ✅ pre-existente | — | — |
+| Spec 015 T6+T7 — ClassePontos+RacaPontos | FE | ✅ pre-existentes | `2cb0245` | — |
+
+**Total testes novos: +28** (879 → 901 passando + 4 do guard spec)
+
+## Observacoes
+
+- Spec 017 T6 (hasBothRoles) e T22 (overlay) ja estavam feitos pelo Copilot R04
+- T6 (modelo FichaResumo) e T11 (saldo vantagens) ja estavam implementados em `2cb0245`
+- Spec 015 T6+T7 tambem pre-existentes no mesmo commit (rodada anterior ao R04)
+- PA-017-01 resolvido: Estrategia A (nova rota) implementada
+- `ficha-vantagens-tab` 2 falhas pre-existentes (PA-R04-03) — area DO NOT TOUCH, refatorar pos Spec 012 T11 merged
+- `ficha-wizard-passo4` OOM pre-existente (PA-R04-04) — aumentar heap Node.js
 
 ---
 
-*Rodada 14 aberta em 2026-04-07 apos a sessao de auditoria. PM/Scrum Master.*
+*Rodada 14 concluida em 2026-04-07. Claude Code (Sonnet 4.6).*

@@ -6,9 +6,9 @@
 > Para detalhes por area e historico, ver `PM.md`.
 > Para estado da ultima sessao, ver `HANDOFF-SESSAO.md`.
 >
-> Atualizado: 2026-04-07 (sessao 16, auditoria + Spec 017 criada; Rodada 14 em andamento; **+ Copilot R01-R04 paralelo**)
+> Atualizado: 2026-04-07 (sessao 16 Claude, Rodada 14 CONCLUIDA; + Copilot R01-R04 paralelo)
 > PM: Scrum Orchestrator
-> Objetivo: Completar Spec 012 fase 2 + Spec 017 P0 restante (T3+T4+T5+T7), entregar RC da primeira parte
+> Objetivo: **RC — Spec 017 P0 100% + Spec 012 fase 2 100% — homologacao pode comecar**
 > Duracao estimada: 2-3 semanas
 > Cronologia: `docs/historico/CRONOLOGIA.md` | Rodadas: `docs/tracking/rodadas/` | Copilot: `docs/tracking/rodadas-copilot/`
 
@@ -19,15 +19,15 @@
 | Metrica | Valor |
 |---------|-------|
 | Rodadas Claude concluidas | 2 (R12 + R13) |
-| Rodadas Claude em andamento | 1 (R14 — Spec 012 T6-T8 + Spec 017 T7+T3+T4+T5) |
+| Rodadas Claude concluidas | 3 (R12 + R13 + **R14**) |
 | **Rodadas Copilot concluidas** | **4 (R01+R02+R03+R04 — paralelo, zero merge conflicts)** |
-| Tasks entregues (Claude) | 20 (16 em R12 + 4 em R13) |
-| **Tasks entregues (Copilot)** | **Spec 017 T1+T2+T6+T22; Spec 015 T6+T7 pre-existentes; Spec 014 T1+T5; Spec 016 T1-T4+T6+T7; Spec 011 T0-T2+T4; Spec 018+019 deploy** |
-| Tasks restantes para RC | **Spec 012 T6-T11** + **Spec 017 T3+T4+T5+T7** |
+| Tasks entregues (Claude R14) | **8** (Spec 017 T3+T4+T5+T7 + Spec 012 T7+T8+T9+T10) + 2 pre-existentes (T6+T11) |
+| **Tasks entregues (Copilot total)** | **Spec 017 T1+T2+T6+T22; Spec 015 T6+T7; Spec 014 T1+T5; Spec 016 T1-T4+T6+T7; Spec 011 T0-T2+T4; Spec 018+019 deploy** |
+| Tasks restantes para RC | **Spec 017 P1** (T8-T12, desejavel) + smoke test overlay (PA-R04-02) |
 | Testes backend | **723 passando**, 0 falhas |
-| Testes frontend | **950 total** (881 passando, 2 falhas pre-existentes ficha-vantagens-tab, 2 OOM ficha-wizard-passo4) |
-| Specs 100% concluidas | Spec 008, Spec 009-ext, **Spec 015 (T1-T3+T5-T7, falta T4 bloqueado)**, **Spec 018**, **Spec 019** |
-| Specs em andamento | Spec 012 (fase 2), **Spec 017 (P0 parcial — T1+T2+T6+T22 OK, falta T3-T5+T7)**, Spec 011 (~50%), Spec 014 (~28%), Spec 016 (~85% backend) |
+| Testes frontend | **901 passando** + 2 falhas pre-existentes + 2 OOM pre-existentes |
+| Specs 100% concluidas | Spec 008, Spec 009-ext, **Spec 012 (todas as fases)**, **Spec 015 (T4 bloqueado, resto OK)**, Spec 018, Spec 019 |
+| Specs em andamento | **Spec 017 (P0 100% — P1 desejavel pre-RC)**, Spec 011 (~50%), Spec 014 (~28%), Spec 016 (~85% backend) |
 | Novas specs | Spec 017 (correcoes pre-RC) + Spec 018 (deploy GCP) + Spec 019 (deploy Firebase) |
 | Stand-by remanescente | Spec 010, Spec 013, Spec 011 T3+frontend, Spec 014 T2-T4+T6, Spec 016 T5+frontend |
 
@@ -42,17 +42,30 @@
 - S009-T9: ProspeccaoApiService + ProspeccaoComponent Jogador+Mestre (~30 testes)
 - S009-T10: resetarEstado() + botao reset + podeResetar computed (10 testes)
 
-### Restante para RC (Spec 012 fase 2 + Spec 015 T6/T7)
+### Spec 012 fase 2 — CONCLUIDO (Claude R14)
+| Task | Status | Commit |
+|------|--------|--------|
+| S012-T6 | ✅ Pre-existente | `2cb0245` |
+| S012-T7 | ✅ Claude R14 | `1251045` |
+| S012-T8 | ✅ Claude R14 | `1d73fd7` |
+| S012-T9 | ✅ Claude R14 | `6f30b6d` |
+| S012-T10 | ✅ Claude R14 | `406cb95` |
+| S012-T11 | ✅ Pre-existente | — |
+
+### Spec 015 T6/T7 — CONCLUIDO (pre-existentes)
+| Task | Status |
+|------|--------|
+| S015-T6 | ✅ Pre-existente `2cb0245` |
+| S015-T7 | ✅ Pre-existente `2cb0245` |
+
+### Desejavel pre-RC (Spec 017 P1)
 | Task | Descricao | Status |
 |------|-----------|--------|
-| S012-T6 | Modelo FichaResumo com 3 campos pontosDisponiveis | PENDENTE |
-| S012-T7 | Painel XP Mestre + deteccao level up (badge/toast) | PENDENTE (depende T6) |
-| S012-T8 | LevelUpDialogComponent + Step 1 atributos | PENDENTE (depende T7) |
-| S012-T9 | Step 2 — distribuicao de aptidoes | PENDENTE (depende T8) |
-| S012-T10 | Step 3 — vantagens informativo + fechar | PENDENTE (depende T9) |
-| S012-T11 | Saldo vantagens em FichaVantagensTab | PENDENTE (depende T6) |
-| S015-T6 | ClassePontosConfig frontend | PENDENTE |
-| S015-T7 | RacaPontosConfig frontend | PENDENTE |
+| S017-T8 | Criar PageHeaderComponent reutilizavel | PENDENTE (PA-017-02: simples, sem breadcrumb) |
+| S017-T9 | Aplicar PageHeader telas Mestre | PENDENTE |
+| S017-T10 | Aplicar PageHeader telas Jogador | PENDENTE |
+| S017-T11 | jogo-form adicionar p-toast | PENDENTE |
+| S017-T12 | Remover double-toast em 19 componentes | PENDENTE |
 
 ### Bloqueados
 - S007-T10: FormulaEditorEfeito — PA-004 aguarda decisao PO

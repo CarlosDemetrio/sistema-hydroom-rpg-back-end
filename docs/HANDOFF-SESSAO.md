@@ -1,10 +1,10 @@
-# Handoff de Sessao — 2026-04-07 (sessao 16 + Copilot R01-R04 paralelo)
+# Handoff de Sessao — 2026-04-07 (sessao 16 + Copilot R01-R04 paralelo + Claude R14 execucao)
 
 > Branch atual: `main`
-> Backend: **723 testes** passando, 0 falhas (0 skipped)
-> Frontend: **950 testes** (881 passando + 2 falhas pre-existentes ficha-vantagens-tab + 2 OOM ficha-wizard-passo4)
-> Sprint 3: Rodada 14 em andamento; **4 rodadas Copilot executadas em paralelo** (R01-R04)
-> Ultima atualizacao: 2026-04-07 [pos Copilot R04 — Spec 017 T1+T2+T6+T22 concluidos; Spec 015 T6+T7 pre-existentes em 2cb0245]
+> Backend: **723 testes** passando, 0 falhas
+> Frontend: **901 testes passando** + 2 falhas pre-existentes ficha-vantagens-tab + 2 OOM ficha-wizard-passo4
+> Sprint 3: **Rodada 14 CONCLUIDA** (Spec 017 P0 100% + Spec 012 fase 2 100%); 4 rodadas Copilot paralelo (R01-R04)
+> Ultima atualizacao: 2026-04-07 [Claude R14 — Spec 017 T3+T4+T5+T7 + Spec 012 T7+T8+T9+T10; T6+T11 pre-existentes]
 
 ---
 
@@ -39,33 +39,33 @@ Enquanto Claude Code trabalhava na Spec 017 (planejamento bloqueante para RC), o
 
 ## Priorizacao PRE-RC (bloqueante)
 
-### Spec 017 P0 (8 tasks) — STATUS ATUALIZADO pos Copilot R04
-| Task | Descricao | Tipo | Status |
-|------|-----------|------|--------|
-| T1 | Backend: `SecurityConfig` HttpStatusEntryPoint 401 | BE | **CONCLUIDO R04** (`4a97f7f`) |
-| T2 | Backend: Teste integracao 401 vs 302 | BE | **CONCLUIDO R04** (`116e5e8`) |
-| T3 | Frontend: Criar `SKIP_ERROR_INTERCEPTOR` token | FE | PENDENTE (Claude R14/R15) |
-| T4 | Frontend: Refatorar `error.interceptor` (401/403/0/500) | FE | PENDENTE (Claude R14/R15) |
-| T5 | Frontend: `auth.guard` salva `state.url` + `getUserInfo` skip | FE | PENDENTE (Claude R14/R15) |
-| T6 | Frontend: Fix bug `hasBothRoles()` (`\|\|` → `&&`) | FE | **CONCLUIDO R04** (`18fd0e3`) |
-| T7 | Frontend: Fix bug `verFicha()` Mestre + nova rota | FE | PENDENTE (PA-017-01 decidida: Estrategia A) |
-| **T22** | **Fix overlay clipping (`appendTo: 'body'` global)** | **FE** | **CONCLUIDO R04** (`e5d31a0`) |
+### Spec 017 P0 — CONCLUIDO 8/8 (Copilot R04 + Claude R14)
+| Task | Descricao | Tipo | Status | Commit |
+|------|-----------|------|--------|--------|
+| T1 | Backend: SecurityConfig HttpStatusEntryPoint 401 | BE | ✅ Copilot R04 | `4a97f7f` |
+| T2 | Backend: Teste integracao 401 vs 302 | BE | ✅ Copilot R04 | `116e5e8` |
+| T3 | Frontend: SKIP_ERROR_INTERCEPTOR token | FE | ✅ Claude R14 | `e0cadb7` |
+| T4 | Frontend: Refatorar error.interceptor | FE | ✅ Claude R14 | `8b2def4` |
+| T5 | Frontend: auth.guard REDIRECT_URL + getUserInfo skip | FE | ✅ Claude R14 | `57dd3ff` |
+| T6 | Frontend: Fix hasBothRoles() || → && | FE | ✅ Copilot R04 | `18fd0e3` |
+| T7 | Frontend: Fix verFicha() Mestre + rota /mestre/fichas/:id | FE | ✅ Claude R14 | `2d54886` |
+| T22 | Frontend: overlay clipping appendTo body global | FE | ✅ Copilot R04 | `e5d31a0` |
 
-### Spec 012 fase 2 (T6-T11) — MANTIDA
-| Task | Descricao |
-|------|-----------|
-| T6  | Modelo TypeScript FichaResumo com 3 campos pontosDisponiveis |
-| T7  | Painel XP do Mestre + deteccao de level up (badge/toast) |
-| T8  | LevelUpDialogComponent + Step 1 (distribuicao de atributos) |
-| T9  | Step 2 — distribuicao de aptidoes |
-| T10 | Step 3 — vantagens (informativo) + fechar com confirmacao |
-| T11 | Conectar saldo de vantagens em FichaVantagensTab |
+### Spec 012 fase 2 — CONCLUIDO 6/6 (Claude R14)
+| Task | Descricao | Status | Commit |
+|------|-----------|--------|--------|
+| T6 | Modelo FichaResumo 3 campos pontosDisponiveis | ✅ Pre-existente | `2cb0245` |
+| T7 | Painel XP + dialog conceder XP + deteccao level up + badge | ✅ Claude R14 | `1251045` |
+| T8 | LevelUpDialogComponent + Step 1 atributos (+15 testes) | ✅ Claude R14 | `1d73fd7` |
+| T9 | Step 2 distribuicao de aptidoes (+5 testes) | ✅ Claude R14 | `6f30b6d` |
+| T10 | Step 3 saldo vantagens + navegar aba (+2 testes) | ✅ Claude R14 | `406cb95` |
+| T11 | Saldo vantagens FichaVantagensTab | ✅ Pre-existente | — |
 
-### Spec 015 T6/T7 — MANTIDA
-| Task | Descricao | Depende de |
-|------|-----------|-----------|
-| T6 | ClassePontosConfig frontend | backend T2 OK |
-| T7 | RacaPontosConfig frontend | backend T2 OK |
+### Spec 015 T6/T7 — CONCLUIDO (pre-existentes)
+| Task | Descricao | Status |
+|------|-----------|--------|
+| T6 | ClassePontosConfig frontend | ✅ Pre-existente `2cb0245` |
+| T7 | RacaPontosConfig frontend | ✅ Pre-existente `2cb0245` |
 
 ---
 
@@ -142,29 +142,25 @@ Enquanto Claude Code trabalhava na Spec 017 (planejamento bloqueante para RC), o
 
 ---
 
-## Sequenciamento sugerido das proximas rodadas
+## Rodada 14 — CONCLUIDA (Claude)
 
-### Rodada 14 oficial (proxima execucao Claude)
-- Spec 012 T6-T8 (modelo, painel XP, level up step 1)
-- **Spec 017 T1+T2** (backend SecurityConfig + teste)
-- **Spec 017 T6** (hasBothRoles fix — 30min)
-- **Spec 017 T7** (verFicha Mestre fix)
-- **Spec 017 T22** (overlay clipping fix global em `app.config.ts` — 2h, independente)
+**Spec 017 P0**: T3+T4+T5+T7 entregues. P0 100% concluido.
+**Spec 012 fase 2**: T7+T8+T9+T10 entregues; T6+T11 pre-existentes. Fase 2 100% concluida.
+**+22 testes frontend** (875 → 901 passando).
 
-### Rodada 15
-- Spec 012 T9-T11 (level up steps)
-- **Spec 017 T3+T4+T5** (interceptor refactor + guard)
+## Proximas rodadas (desejavel pre-RC)
 
-### Rodada 16
-- Spec 015 T6 (UI ClassePontos)
-- Spec 015 T7 (UI RacaPontos)
-- **Spec 017 T8** (criar PageHeader)
-- **Spec 017 T9** (aplicar PageHeader Mestre)
+### Rodada 15 — Spec 017 P1 (PageHeader + toast cleanup)
+- **Spec 017 T8** (criar `PageHeaderComponent` reutilizavel — decisao PA-017-02: simples)
+- **Spec 017 T9** (aplicar PageHeader em telas Mestre)
+- **Spec 017 T10** (aplicar PageHeader em telas Jogador)
+- **Spec 017 T11** (jogo-form adicionar p-toast)
+- **Spec 017 T12** (remover double-toast em 19 componentes)
 
-### Rodada 17 (RC pronta apos esta)
-- **Spec 017 T10** (PageHeader Jogador — apos Spec 012 T11 mergeada!)
-- **Spec 017 T11** (jogo-form toast)
-- **Spec 017 T12** (double-toast cleanup)
+### Rodada 16 — RC (homologacao pode comecar apos R15 ou em paralelo)
+- Smoke test manual PA-R04-02 (overlay clipping em 5 telas)
+- Fixar ficha-vantagens-tab badge severity (PA-R04-03 — 2 falhas pre-existentes)
+- Fixar OOM ficha-wizard-passo4 (PA-R04-04)
 
 ---
 
@@ -195,7 +191,7 @@ Apos aprovacao da homologacao, retomar nesta ordem:
 
 ## Bloqueados / Pontos em Aberto
 - S007-T10: FormulaEditorEfeito — PA-004 aguarda decisao PO
-- **PA-017-01**: `verFicha` Mestre — criar rota nova `/mestre/fichas/:id` ou adaptar guard? (bloqueia Spec 017 T7) — **Recomendacao PM: Estrategia A (nova rota)**
+- **PA-017-01**: ~~verFicha Mestre~~ RESOLVIDO — Estrategia A implementada (`2d54886`)
 - **PA-017-02**: `PageHeaderComponent` com Breadcrumb ou simples? (bloqueia Spec 017 T8) — **Recomendacao PM: simples**
 - **PA-017-03**: Reativar `SidebarComponent`? (Spec 017 T15, P3, pos-RC)
 - **PA-017-04**: Exportar/Importar config — formato? (Spec 017 T18, P3, pos-RC)

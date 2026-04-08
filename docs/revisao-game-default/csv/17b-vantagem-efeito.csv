@@ -2,18 +2,67 @@
 # Campos: vantagem_nome;tipo_efeito;atributo_sigla;aptidao_nome;bonus_nome;membro_nome;valor_fixo;valor_por_nivel;formula;descricao_efeito
 # vantagem_nome → referencia 'nome' de 17-vantagem-config.csv
 # tipo_efeito: BONUS_ATRIBUTO, BONUS_APTIDAO, BONUS_DERIVADO, BONUS_VIDA, BONUS_VIDA_MEMBRO, BONUS_ESSENCIA, DADO_UP, FORMULA_CUSTOMIZADA
-# atributo_sigla → referencia 'sigla' de 08-atributo-config.csv (apenas para BONUS_ATRIBUTO)
-# aptidao_nome → referencia 'nome' de 13-aptidao-config.csv (apenas para BONUS_APTIDAO)
 # bonus_nome → referencia 'nome' de 09-bonus-config.csv (apenas para BONUS_DERIVADO)
-# membro_nome → referencia 'nome' de 10-membro-corpo-config.csv (apenas para BONUS_VIDA_MEMBRO)
-# valor_fixo: bônus fixo independente do nível da vantagem
 # valor_por_nivel: bônus × nivel_vantagem
-# formula: expressão exp4j (apenas para FORMULA_CUSTOMIZADA; variável: nivel_vantagem)
-# ATENÇÃO: preencha apenas os campos relevantes para o tipo_efeito
+# formula: expressão exp4j (variável: nivel)
 vantagem_nome;tipo_efeito;atributo_sigla;aptidao_nome;bonus_nome;membro_nome;valor_fixo;valor_por_nivel;formula;descricao_efeito
-# TODO: preencher efeitos para todas as vantagens
-# Exemplos de referência:
-# Saúde de Ferro;BONUS_VIDA;;;;;;;;5;+5 PV por nível da vantagem
-# Fortitude;BONUS_ATRIBUTO;VIG;;;;;2;;Aumenta VIG em +2 por nível
-# Ataque Aprimorado;BONUS_DERIVADO;;;BBA;;;1;;+1 BBA por nível da vantagem
-# Destreza Física;BONUS_ATRIBUTO;AGI;;;;1;;Aumenta AGI em +1 por nível
+# === Treinamento Físico ===
+Treinamento em Combate Ofensivo;BONUS_DERIVADO;;;B.B.A;;;1;;+1 B.B.A por nível de vantagem
+Treinamento em Combate Ofensivo;DADO_UP;;;;;;;;1 dado de dano ofensivo: D3→D4→D5→D6→D7→D8→D9→D10 reinicia no D3 apos D10
+Treinamento em Combate Defensivo;BONUS_DERIVADO;;;Bloqueio;;;1;;+1 Bloqueio por nível de vantagem
+Treinamento em Combate Defensivo;DADO_UP;;;;;;;;1 dado de RD natural (contusão): D3→D4→D5→D6→D7→D8→D9→D10 reinicia no D3 apos D10
+Treinamento em Combate Evasivo;BONUS_DERIVADO;;;Reflexo;;;2;;+2 Reflexo por nível (bônus dobrado em relação aos outros treinamentos)
+# === Treinamento Mental ===
+Treinamento Mágico;BONUS_DERIVADO;;;B.B.M;;;1;;+1 B.B.M por nível de vantagem
+Treinamento Mágico;DADO_UP;;;;;;;;1 dado de dano mágico: D3→D4→D5→D6→D7→D8→D9→D10 reinicia no D3 apos D10
+Treinamento em Percepção Mágica;BONUS_DERIVADO;;;Percepção;;;2;;+2 Percepção por nível (P.M mapeado para Percepção - confirmar se há bônus separado)
+Treinamento Lógico;DADO_UP;;;;;;;;[TODO] Tipo de dado e progressão a confirmar com o Mestre do sistema
+Treinamento Lógico;FORMULA_CUSTOMIZADA;;;;;;;;[TODO] Bônus de raciocínio ou aptidão lógica a confirmar
+Treinamento em Manipulação;FORMULA_CUSTOMIZADA;;;;;;2;nivel * 2;+2 em Aptidões Mentais por nível (jogador escolhe qual aptidão mental)
+# === Ação ===
+Ataque Adicional;FORMULA_CUSTOMIZADA;;;;;;;;Garante 1 ataque adicional após a ação ofensiva principal por turno
+Ataque Sentai;FORMULA_CUSTOMIZADA;;;;;;;;Em ataque conjunto força percepção do alvo e usa maior soma dos participantes
+# === Reação ===
+Contra-Ataque;FORMULA_CUSTOMIZADA;;;;;;;;Reação: pode atacar de volta com dificuldade +5 ao ser atacado
+Interceptação;FORMULA_CUSTOMIZADA;;;;;;;;Reação: interrompe ação do oponente antes de ela acontecer
+Reflexos Especiais;FORMULA_CUSTOMIZADA;;;;;;;;Reações padrão podem ser executadas com habilidades especiais por nível
+Instinto Heroico;FORMULA_CUSTOMIZADA;;;;;;;;Usa ação padrão para salvar um aliado de perigo iminente
+Deflexão Heroica;FORMULA_CUSTOMIZADA;;;;;;;;Usa ação padrão para salvar a si mesmo e outro com dificuldade +5
+Instinto de Sobrevivência;FORMULA_CUSTOMIZADA;;;;;;;nivel * -1;-1 por nível na soma de dificuldade ao desviar de ataques de múltiplos alvos
+Reflexos Aprimorados;FORMULA_CUSTOMIZADA;;;;;;;nivel * -1;-1 por nível na soma de dificuldade ao tentar reduzir dano pela metade
+# === Vantagem de Atributo ===
+Capacidade de Força Máxima;FORMULA_CUSTOMIZADA;;;;;;;;Concede 1D3 de dano por contusão ao atacar com Força máxima (base para Domínio de Força)
+Domínio de Força;DADO_UP;;;;;;;;Eleva dado de CFM 1x por nível: D3→D4→D5→D6→D7→D8 (max 6 elevações)
+Tenacidade;FORMULA_CUSTOMIZADA;;;;;;;;Concede 1D3 de RD por contusão ao usar Vigor máximo (base para Domínio de Vigor)
+Domínio de Vigor;DADO_UP;;;;;;;;Eleva dado de Tenacidade 1x por nível: D3→D4→D5 (max 2 elevações)
+Destreza Felina;FORMULA_CUSTOMIZADA;;;;;;;;-1 em penalidade de local ou terreno difícil (por cada 10 em Agilidade)
+Sabedoria de Gamaiel;FORMULA_CUSTOMIZADA;;;;;;;;Por nível: eleva 1 aspecto mágico em 1 grau (Dano, Defesa, Bônus, Duração ou Área - escolha)
+Sentidos Aguçados;FORMULA_CUSTOMIZADA;;;;;;2;nivel * 2;+2 de Percepção em 1 sentido específico por nível (audição, visão, olfato, tato ou paladar)
+Inteligência de Nyck;FORMULA_CUSTOMIZADA;;;;;;;;Por nível: +0.5x no multiplicador de Raciocínio (nv1=1.5x, nv2=2.0x, nv3=2.5x)
+# === Vantagem Geral ===
+Saúde de Ferro;BONUS_VIDA;;;;;;5;;+5 pontos de Vida por nível
+Concentração;BONUS_ESSENCIA;;;;;;5;;+5 pontos de Animus por nível
+Saque Rápido;FORMULA_CUSTOMIZADA;;;;;;;;Saca armas sem custo de Ponto de Ação — 1 saque gratuito por nível por turno
+Ambidestria;FORMULA_CUSTOMIZADA;;;;;;;;Remove penalidade por usar mão não dominante — domínio bilateral de armas e ações
+Memória Fotográfica;FORMULA_CUSTOMIZADA;;;;;;;;Memória visual fotográfica plena de tudo que foi visto (requer Raciocínio 10+)
+# === Vantagem Histórica ===
+Herança;FORMULA_CUSTOMIZADA;;;;;;;;Rola 1D3 e aplica resultado como Grade de Riqueza inicial do personagem
+Riqueza;FORMULA_CUSTOMIZADA;;;;;;1;nivel;+1 Grade de Riqueza por nível de vantagem (max 7 graus) [AMBIGUIDADE custo 3 ou 5 PN]
+Índole Aplicada;FORMULA_CUSTOMIZADA;;;;;;1;nivel;Permite mudar índole com 1 alvo adicional por nível de vantagem
+Ofícios;FORMULA_CUSTOMIZADA;;;;;;1;nivel;+1 Profissão ou Ofício conhecido por nível
+Treino de Ofício;FORMULA_CUSTOMIZADA;;;;;;1;nivel;+1 por nível em testes para exercer ofícios e profissões
+Vínculo com Organização;FORMULA_CUSTOMIZADA;;;;;;;;Por nível: influência em organização com dezenas de membros
+Capangas;FORMULA_CUSTOMIZADA;;;;;;1;nivel;+1 aliado ou capanga leal por nível (total = nível da vantagem)
+# === Vantagem de Renascimento ===
+Controle de Dano;FORMULA_CUSTOMIZADA;;;;;;;;Após rolar dano decide quanto do resultado efetivamente aplicar ao alvo
+Último Sigilo;FORMULA_CUSTOMIZADA;;;;;;;;Oculta completamente a manifestação visual e sensorial de habilidades mágicas
+Escaramuça;FORMULA_CUSTOMIZADA;;;;;;;;Por nível: técnicas de ataque falso e manobras avançadas de combate
+Previsão em Combate;FORMULA_CUSTOMIZADA;;;;;;;;Por nível: +1 em Defesa, Ofensiva ou Reatividade (escolha na compra de cada nível)
+Armas Improvisadas;BONUS_DERIVADO;;;B.B.A;;;1;;+1 B.B.A por nível com armas improvisadas [TODO: confirmar se BM = B.B.A ou B.B.M]
+Armas Improvisadas;DADO_UP;;;;;;;;1 dado de dano com armas improvisadas: D3→D4→D5→D6→D7→D8→D9→D10 reinicia no D3 apos D10
+Dano Não Letal;FORMULA_CUSTOMIZADA;;;;;;;;Todos os danos causados são convertidos para tipo contusão (não letal)
+Ação em Cadeia;FORMULA_CUSTOMIZADA;;;;;;;;Permite realizar uma ação e atacar durante o Ataque Adicional no mesmo turno
+Atenção Difusa;FORMULA_CUSTOMIZADA;;;;;;1;nivel;+1 metro de raio de atenção ao redor por nível (até 10 metros no nv10)
+Senso Numérico;FORMULA_CUSTOMIZADA;;;;;;;;Cálculos e estimativas numéricas com precisão absoluta e instantânea
+Pensamento Bifurcado;FORMULA_CUSTOMIZADA;;;;;;;;Executa uma ação Independente e uma ação Padrão simultaneamente no mesmo turno
+Memória Eidética;FORMULA_CUSTOMIZADA;;;;;;;;Memória completa e precisa de experiências passadas com todos os sentidos

@@ -1,51 +1,61 @@
 # VantagemConfig
 # Campos: nome;sigla;descricao;nivel_maximo;formula_custo;descricao_efeito;tipo_vantagem;categoria_nome;ordem_exibicao
-# sigla: 2-5 chars, ÚNICA cross-entity por jogo (opcional mas necessária para refs em fórmulas)
+# sigla: 2-5 chars, ÚNICA cross-entity por jogo
 # tipo_vantagem: VANTAGEM (comprada) ou INSOLITUS (concedida pelo Mestre)
-# categoria_nome → referencia 'nome' de 06-categoria-vantagem.csv
-# formula_custo: ATENÇÃO — "custo_base * nivel_vantagem" usa variável 'custo_base' que NÃO EXISTE no FormulaEvaluatorService
-#   Variáveis disponíveis: nivel, base, total, e siglas de atributos (FOR, AGI, VIG, SAB, INTU, INT, AST)
-#   Sugestão de correção: trocar para expressão válida como "nivel * 3" em vez de "custo_base * nivel_vantagem"
+# formula_custo: variáveis disponíveis: nivel, base, total, FOR, AGI, VIG, SAB, INTU, INT, AST
 nome;sigla;descricao;nivel_maximo;formula_custo;descricao_efeito;tipo_vantagem;categoria_nome;ordem_exibicao
 # === Treinamento Físico ===
-Treinamento de Combate Ofensivo;;Treinamento especializado em técnicas ofensivas de combate;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Treinamento Físico;1
-Treinamento de Combate Defensivo;;Treinamento especializado em técnicas defensivas de combate;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Treinamento Físico;2
-Treinamento de Combate com Escudo;;Treinamento especializado no uso de escudo em combate;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Treinamento Físico;3
+Treinamento em Combate Ofensivo;TCO;Treinamento especializado em técnicas ofensivas de combate físico. O dado é elevado até D10 onde um novo dado se inicia no D3.;10;4;+1 B.B.A e 1 dado de dano (D3→D.UP) por nível;VANTAGEM;Treinamento Físico;1
+Treinamento em Combate Defensivo;TCD;Treinamento especializado em técnicas defensivas. Os dados geram RD natural resistente a danos por contusão.;10;4;+1 Bloqueio e 1 dado de RD natural (D3→D.UP) por nível;VANTAGEM;Treinamento Físico;2
+Treinamento em Combate Evasivo;TCE;Treinamento especializado em evasão. Recebe 2 de bônus de Reflexo por nível ao invés de 1.;10;2;+2 Reflexo por nível;VANTAGEM;Treinamento Físico;3
 # === Treinamento Mental ===
-Treinamento Mágico;;Treinamento especializado em técnicas mágicas;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Treinamento Mental;4
-Treinamento de Poder Mental;;Treinamento especializado em poderes mentais;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Treinamento Mental;5
-Treinamento de Liderança;;Treinamento especializado em técnicas de liderança e comando;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Treinamento Mental;6
-Treinamento de Meditação;;Treinamento especializado em técnicas de meditação e foco mental;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Treinamento Mental;7
+Treinamento Mágico;TM;Treinamento especializado em técnicas mágicas. O dado é elevado até D10 onde um novo dado se inicia no D3.;10;4;+1 B.B.M e 1 dado de dano mágico (D3→D.UP) por nível;VANTAGEM;Treinamento Mental;4
+Treinamento em Percepção Mágica;TPM;Treinamento em percepção de auras e manifestações mágicas. Recebe 2 de bônus por nível.;10;2;+2 Percepção por nível;VANTAGEM;Treinamento Mental;5
+Treinamento Lógico;TL;Treinamento especializado em raciocínio lógico e dedutivo. Requer B.RAC 5+.;5;4;[TODO] Dado e bônus a confirmar com o Mestre;VANTAGEM;Treinamento Mental;6
+Treinamento em Manipulação;T.M;Treinamento em técnicas mentais de manipulação. Requer B.MENT 8+.;3;3;+2 em Aptidões Mentais por nível;VANTAGEM;Treinamento Mental;7
 # === Ação ===
-Ataque Adicional;;Permite realizar um ataque adicional por turno;3;custo_base * nivel_vantagem;TODO;VANTAGEM;Ação;8
-Ataque Sentai;;Permite atacar múltiplos alvos em área;5;custo_base * nivel_vantagem;TODO;VANTAGEM;Ação;9
+Ataque Adicional;AA;Permite realizar um ataque extra após a ação ofensiva principal. Requer Bônus Ofensivo 15+.;1;10;Um ataque adicional após a ação ofensiva;VANTAGEM;Ação;8
+Ataque Sentai;AS;Em ataque conjunto força percepção do alvo usando a maior soma dos atacantes. Requer Raciocínio 5+.;1;10;Ataque conjunto usa maior soma e força percepção do alvo;VANTAGEM;Ação;9
 # === Reação ===
-Contra-Ataque;;Permite realizar um contra-ataque ao ser atacado;5;custo_base * nivel_vantagem;TODO;VANTAGEM;Reação;10
-Interceptação;;Permite interceptar ataques direcionados a aliados;5;custo_base * nivel_vantagem;TODO;VANTAGEM;Reação;11
+Contra-Ataque;CA;Pode reagir a um ataque atacando de volta com dificuldade +5. Requer Bônus Base 10+.;1;5;Reação: atacar de volta com dificuldade +5;VANTAGEM;Reação;10
+Interceptação;ITC;Interrompe uma ação antes dela de fato acontecer. Requer Bônus Base 10+.;1;5;Reação: interrompe ação do oponente antes de ocorrer;VANTAGEM;Reação;11
+Reflexos Especiais;RE;Reações padrão podem ser executadas utilizando habilidades especiais. Requer B.REF ou P.MAG 30+.;3;5;Reações padrão executadas com habilidades por nível;VANTAGEM;Reação;12
+Instinto Heroico;IH;Usar a ação padrão para salvar um aliado em perigo iminente. Requer Bônus Ofensivo 18+.;1;5;Ação padrão usada para salvar um aliado;VANTAGEM;Reação;13
+Deflexão Heroica;DH;Usar a ação padrão para salvar a si mesmo e outro com dificuldade +5. Requer Bônus Ofensivo 18+.;1;5;Ação padrão para salvar a si e outro com dificuldade +5;VANTAGEM;Reação;14
+Instinto de Sobrevivência;ISB;Reduz somas de dificuldade para desviar ataques de múltiplos alvos. Requer Base Reflexos 7+.;3;3;-1 por nível na dificuldade ao desviar de ataques múltiplos;VANTAGEM;Reação;15
+Reflexos Aprimorados;RA;Reduz somas de dificuldade para reduzir dano pela metade. Requer Base Reflexos 7+.;3;3;-1 por nível na dificuldade ao reduzir dano pela metade;VANTAGEM;Reação;16
 # === Vantagem de Atributo ===
-Corpo Fechado;;Proteção mágica que reduz danos recebidos;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Vantagem de Atributo;12
-Destreza Mental;;Aumenta a capacidade de processamento mental;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Vantagem de Atributo;13
-Destreza Física;;Aumenta a agilidade e reflexos físicos;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Vantagem de Atributo;14
-Determinação Vital;;Aumenta a resistência física e pontos de vida;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Vantagem de Atributo;15
-Sexto Sentido;;TODO;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Vantagem de Atributo;16
-Inspiração Natural;;TODO;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Vantagem de Atributo;17
+Capacidade de Força Máxima;CFM;Desbloqueia uso da Força máxima em danos por contusão. Desbloqueada a cada 10 em Força.;1;6;Concede 1D3 de dano por contusão com Força máxima;VANTAGEM;Vantagem de Atributo;17
+Domínio de Força;DM;Eleva o dado de dano por contusão concedido pela Capacidade de Força Máxima. Requer CFM.;6;2;Eleva dado de dano por contusão 1x por nível (D3→D4→...→D8);VANTAGEM;Vantagem de Atributo;18
+Tenacidade;TEN;Desbloqueia uso do Vigor máximo em RD por contusão. Desbloqueada a cada 10 em Vigor.;1;6;Concede 1D3 de RD por contusão com Vigor máximo;VANTAGEM;Vantagem de Atributo;19
+Domínio de Vigor;DV;Eleva o dado de RD por contusão concedido pela Tenacidade. Requer Tenacidade.;2;2;Eleva dado de RD por contusão 1x por nível (D3→D4→D5);VANTAGEM;Vantagem de Atributo;20
+Destreza Felina;DF;Reduz penalidades em locais e terrenos difíceis. Desbloqueada a cada 10 em Agilidade.;1;5;-1 em penalidade de local ou terreno difícil;VANTAGEM;Vantagem de Atributo;21
+Sabedoria de Gamaiel;SG;Aumenta um aspecto mágico por nível. Aspectos: Dano, Defesa, Bônus, Duração ou Área. Desbloqueada a cada 10 em SAB.;3;3;+1 nível em aspecto mágico por nível de vantagem;VANTAGEM;Vantagem de Atributo;22
+Sentidos Aguçados;SAG;Aguça um sentido específico concedendo bônus de percepção. Requer Sabedoria 3+.;5;3;+2 de Percepção em 1 sentido específico por nível;VANTAGEM;Vantagem de Atributo;23
+Inteligência de Nyck;IN;Aumenta o multiplicador de raciocínio em 0.5x por nível. Requer Base de RAC 7+.;3;2;+0.5x no multiplicador de Raciocínio por nível;VANTAGEM;Vantagem de Atributo;24
 # === Vantagem Geral ===
-Saúde de Ferro;;Constituição excepcional que aumenta pontos de vida;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Vantagem Geral;18
-Ambidestria;;Remove penalidades de usar armas com a mão inábil;1;custo_base;TODO;VANTAGEM;Vantagem Geral;19
+Saúde de Ferro;SFE;Aumenta os pontos de vida do personagem. Requer Vigor 3+.;4;3;+5 de Vida por nível;VANTAGEM;Vantagem Geral;25
+Concentração;CONC;Aumenta os pontos de animus (essência) do personagem.;4;3;+5 de Animus por nível;VANTAGEM;Vantagem Geral;26
+Saque Rápido;SRQ;Permite sacar armas sem gastar Ponto de Ação. Requer Agilidade 10+.;2;3;Saca armas sem custo de P.A por nível;VANTAGEM;Vantagem Geral;27
+Ambidestria;AMB;Remove penalidade de usar mão não dominante. Domínio bilateral de armas e ações.;1;5;Domínio bilateral sem penalidade para mão não dominante;VANTAGEM;Vantagem Geral;28
+Memória Fotográfica;MF;Possibilita memória visual plena de tudo que foi visto. Requer Raciocínio 10+.;1;10;Memória visual completa e fotográfica;VANTAGEM;Vantagem Geral;29
 # === Vantagem Histórica ===
-Riqueza;;Personagem possui recursos financeiros consideráveis;5;custo_base * nivel_vantagem;TODO;VANTAGEM;Vantagem Histórica;20
-Capangas;;Personagem possui aliados leais que podem ser convocados;5;custo_base * nivel_vantagem;TODO;VANTAGEM;Vantagem Histórica;21
+Herança;HER;O personagem herdou bens e recursos de família ou mentor. Rola 1D3 de Riqueza aplicada.;1;5;Rola 1D3 de Riqueza inicial aplicada;VANTAGEM;Vantagem Histórica;30
+Riqueza;RIQ;Representa acumulação de bens materiais. [AMBIGUIDADE: custo 3 ou 5 PN no PDF - 5x7=35 é mais consistente];7;5;+1 Grade de Riqueza por nível;VANTAGEM;Vantagem Histórica;31
+Índole Aplicada;IA;Permite alterar a índole do personagem em relação a um alvo adicional por nível.;5;2;Muda índole com 1 alvo adicional por nível;VANTAGEM;Vantagem Histórica;32
+Ofícios;OFI;O personagem conhece profissões e ofícios variados do mundo.;2;2;+1 Profissão ou Ofício conhecida por nível;VANTAGEM;Vantagem Histórica;33
+Treino de Ofício;TOF;Aprimora a performance do personagem no exercício de ofícios e profissões.;10;4;+1 por nível em testes para exercer ofícios;VANTAGEM;Vantagem Histórica;34
+Vínculo com Organização;VO;O personagem possui influência e contatos em uma organização com dezenas de membros.;3;7;Influência em organização com dezenas de membros por nível;VANTAGEM;Vantagem Histórica;35
+Capangas;CAP;O personagem possui aliados ou capangas leais que o seguem.;5;5;+1 aliado ou capanga leal por nível;VANTAGEM;Vantagem Histórica;36
 # === Vantagem de Renascimento ===
-Último Sigilo;;Proteção divina que pode prevenir a morte uma vez por sessão;1;custo_base;TODO;VANTAGEM;Vantagem de Renascimento;22
-Pensamento Bifurcado;;Capacidade de processar duas linhas de pensamento simultaneamente;1;custo_base;TODO;VANTAGEM;Vantagem de Renascimento;23
-# === Legadas (sem categoria definida) ===
-Fortitude;;Aumenta o atributo Vigor permanentemente;10;custo_base * nivel_vantagem;TODO;VANTAGEM;;24
-Força Aprimorada;;Aumenta o atributo Força permanentemente;10;custo_base * nivel_vantagem;TODO;VANTAGEM;;25
-Agilidade Aprimorada;;Aumenta o atributo Agilidade permanentemente;10;custo_base * nivel_vantagem;TODO;VANTAGEM;;26
-Ataque Aprimorado;;Aumenta BBA em +1 por nível da vantagem;;custo_base * nivel_vantagem;TODO;VANTAGEM;;27
-Defesa Mágica;;Aumenta BBM em +1 por nível da vantagem;;custo_base * nivel_vantagem;TODO;VANTAGEM;;28
-Golpe Crítico;;Aumenta chance de crítico em combate;5;custo_base * nivel_vantagem;TODO;VANTAGEM;;29
-Vida Extra;;Aumenta pontos de vida em +5 por nível da vantagem;;custo_base * nivel_vantagem;TODO;VANTAGEM;;30
-Essência Ampliada;;Aumenta pontos de essência/mana em +10 por nível da vantagem;;custo_base * nivel_vantagem;TODO;VANTAGEM;;31
-Visão no Escuro;;Permite enxergar no escuro até 18 metros;1;custo_base;TODO;VANTAGEM;;32
-Resistência a Veneno;;Adiciona +4 em testes contra venenos;1;custo_base;TODO;VANTAGEM;;33
+Controle de Dano;CDA;Permite rolar o dado de dano e decidir quanto efetivamente aplicar. Requer 1 Renascimento.;1;5;Decide quanto do dano rolado aplicar ao alvo;VANTAGEM;Vantagem de Renascimento;37
+Último Sigilo;USI;Oculta completamente a manifestação visual e sensorial de habilidades mágicas. Requer 1 Renascimento.;1;5;Oculta manifestação mágica de habilidades;VANTAGEM;Vantagem de Renascimento;38
+Escaramuça;ESC;Permite realizar ataques falsos e manobras avançadas de combate. Requer 1 Renascimento. [PDF grafia: ESCARAMURCA];3;3;Ataques falsos e manobras avançadas de combate por nível;VANTAGEM;Vantagem de Renascimento;39
+Previsão em Combate;PCO;Antecipa ações em combate afetando Defesa, Ofensiva ou Reatividade. Requer 2 Renascimentos.;3;15;Por nível: +1 em Defesa, Ofensiva ou Reatividade (escolha);VANTAGEM;Vantagem de Renascimento;40
+Armas Improvisadas;AI;Permite usar armas improvisadas com eficácia crescente. Requer 1 Renascimento. [TODO: BM no PDF pode ser B.B.A ou B.B.M - confirmar];10;4;+1 B.B.A e 1 dado (D3→D.UP) por nível com armas improvisadas;VANTAGEM;Vantagem de Renascimento;41
+Dano Não Letal;DNL;Converte todos os danos causados em danos não letais por contusão. Requer 1 Renascimento.;1;5;Converte danos para tipo contusão (não letal);VANTAGEM;Vantagem de Renascimento;42
+Ação em Cadeia;AEC;Permite agir e atacar durante o Ataque Adicional no mesmo turno. Requer 1 Renascimento e Ataque Adicional.;1;10;Agir e atacar durante o Ataque Adicional;VANTAGEM;Vantagem de Renascimento;43
+Atenção Difusa;ATD;Expande o raio de atenção ao redor do personagem em 1 metro por nível. Requer 1 Renascimento.;10;5;+1 metro de raio de atenção ao redor por nível;VANTAGEM;Vantagem de Renascimento;44
+Senso Numérico;SNM;Habilidade de precisão numérica excepcional para cálculos instantâneos. Requer 1 Renascimento.;1;10;Precisão numérica instantânea em qualquer cálculo;VANTAGEM;Vantagem de Renascimento;45
+Pensamento Bifurcado;PBF;Permite executar ações Independente e Padrão simultaneamente no mesmo turno. Requer 1 Renascimento.;1;10;Executa ações Independente e Padrão ao mesmo tempo;VANTAGEM;Vantagem de Renascimento;46
+Memória Eidética;MEI;Lembra de experiências com detalhes completos de todos os sentidos. Requer 1 Renascimento.;1;10;Memória completa e precisa com todos os sentidos;VANTAGEM;Vantagem de Renascimento;47

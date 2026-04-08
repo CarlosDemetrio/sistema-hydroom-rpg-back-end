@@ -17,6 +17,7 @@ Sistema de gerenciamento de fichas de personagens para RPG, com suporte a config
 - [Pré-requisitos](#pré-requisitos)
 - [Instalação](#instalação)
 - [Execução](#execução)
+- [Deploy (Produção)](#deploy-produção)
 - [Estrutura do Banco de Dados](#estrutura-do-banco-de-dados)
 - [Documentação](#documentação)
 - [Testes](#testes)
@@ -155,6 +156,61 @@ docker-compose up
 ### API Documentation
 - **Swagger UI**: http://localhost:8080/swagger-ui.html
 - **OpenAPI JSON**: http://localhost:8080/v3/api-docs
+
+---
+
+## 🚀 Deploy (Produção)
+
+O backend é deployado no **Google Cloud Run** via GitHub Actions.
+
+| Recurso | Detalhes |
+|---------|----------|
+| Plataforma | GCP Cloud Run |
+| Projeto GCP | `hydroon-rpg` |
+| Região | `us-east1` |
+| Serviço | `rpg-api` |
+| URL temporária | `https://rpg-api-5tmcgowd3a-ue.a.run.app` |
+| URL customizada | `https://api.hydroon.com.br` |
+| Docker Registry | Artifact Registry (`us-east1-docker.pkg.dev/hydroon-rpg/ficha-controlador/backend`) |
+| CI/CD | `.github/workflows/deploy-gcp.yml` |
+| Trigger | Manual via `workflow_dispatch` (GitHub Actions) |
+| Memória | 2Gi (JVM: `-Xmx1536m`, ZGC) |
+| Dockerfile | `Dockerfile.jvm-cloudrun` |
+
+### Secrets (Secret Manager)
+Todos os segredos são injetados via GCP Secret Manager como variáveis de ambiente no Cloud Run:
+
+| Secret | Descrição |
+|--------|-----------|
+| `rpg-db-url` | URL JDBC do PostgreSQL |
+| `rpg-db-username` | Usuário do banco |
+| `rpg-db-password` | Senha do banco |
+| `rpg-oauth-client-id` | Google OAuth2 Client ID |
+| `rpg-oauth-client-secret` | Google OAuth2 Client Secret |
+| `rpg-backend-url` | URL pública do backend |
+| `rpg-frontend-url` | URL pública do frontend |
+
+### Deploy manual
+```bash
+# Build e push da imagem
+docker build -f Dockerfile.jvm-cloudrun \
+  -t us-east1-docker.pkg.dev/hydroon-rpg/ficha-controlador/backend:latest .
+docker push us-east1-docker.pkg.dev/hydroon-rpg/ficha-controlador/backend:latest
+
+# Deploy no Cloud Run
+gcloud run deploy rpg-api \
+  --image us-east1-docker.pkg.dev/hydroon-rpg/ficha-controlador/backend:latest \
+  --region us-east1 \
+  --project hydroon-rpg
+```
+
+### Rollback
+```bash
+gcloud run services update-traffic rpg-api \
+  --to-revisions PREVIOUS_REVISION=100 \
+  --region us-east1 \
+  --project hydroon-rpg
+```
 
 ---
 

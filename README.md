@@ -28,14 +28,14 @@ Sistema de gerenciamento de fichas de personagens para RPG, com suporte a config
 
 O **Ficha Controlador** é uma API RESTful para gerenciamento completo de fichas de personagens de RPG, com foco em flexibilidade e customização. O Mestre pode configurar TODAS as regras do jogo:
 
-✅ **Atributos personalizados** (Força, Agilidade, etc) com fórmulas configuráveis  
-✅ **Aptidões** físicas e mentais  
-✅ **Classes e Raças** com bônus específicos  
-✅ **Sistema de Níveis e XP** totalmente configurável  
-✅ **Vantagens compráveis** com sistema de evolução  
-✅ **Limitadores de atributos** por nível  
-✅ **Sistema de Vida e Essência** com integridade de membros  
-✅ **Soft Delete** em todas tabelas principais  
+✅ **Atributos personalizados** (Força, Agilidade, etc) com fórmulas configuráveis
+✅ **Aptidões** físicas e mentais
+✅ **Classes e Raças** com bônus específicos
+✅ **Sistema de Níveis e XP** totalmente configurável
+✅ **Vantagens compráveis** com sistema de evolução
+✅ **Limitadores de atributos** por nível
+✅ **Sistema de Vida e Essência** com integridade de membros
+✅ **Soft Delete** em todas tabelas principais
 
 **Princípio Fundamental**: **TUDO CONFIGURÁVEL - NADA HARDCODED**
 
@@ -219,7 +219,3 @@ src/
 ```
 
 ---
-
-<p align="center">
-  Feito com ❤️ para a comunidade de RPG
-</p>

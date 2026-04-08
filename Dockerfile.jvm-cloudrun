@@ -29,11 +29,11 @@ EXPOSE ${PORT}
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 USER appuser
 
-# JVM otimizada para serverless:
-# - Menos memoria (128-256m adequado para e2-micro/Cloud Run 256Mi)
-# - ZGC generacional para GC eficiente com baixa latencia
+# JVM otimizada para serverless (768Mi Cloud Run):
+# - Xmx512m deixa ~256m para overhead da JVM (metaspace, threads, stack, etc.)
+# - ZGC: generacional tornou-se padrao no Java 25, nao precisa de flag
 # - TieredStopAtLevel=1 para startup mais rapido (interprete apenas)
-ENV JAVA_TOOL_OPTIONS="-Xms128m -Xmx256m -XX:+UseZGC -XX:+ZGenerational -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
+ENV JAVA_TOOL_OPTIONS="-Xms256m -Xmx1536m -XX:+UseZGC -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
 
 # Cloud Run faz health check via HTTP — sem HEALTHCHECK no Dockerfile
 ENTRYPOINT ["java", "-jar", "app.jar"]

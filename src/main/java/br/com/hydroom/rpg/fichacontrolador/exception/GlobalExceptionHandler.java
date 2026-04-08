@@ -1,6 +1,8 @@
 package br.com.hydroom.rpg.fichacontrolador.exception;
 
 import br.com.hydroom.rpg.fichacontrolador.constants.ValidationMessages;
+import br.com.hydroom.rpg.fichacontrolador.exception.ExternalServiceException;
+import br.com.hydroom.rpg.fichacontrolador.exception.ForbiddenException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -255,5 +257,49 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.badRequest().body(response);
+    }
+
+    /**
+     * Trata acesso proibido lançado programaticamente (403 Forbidden).
+     * Diferente de {@link AccessDeniedException} do Spring Security,
+     * este handler trata a exceção de domínio usada nos services.
+     */
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErrorResponse> handleForbiddenException(
+            ForbiddenException ex,
+            HttpServletRequest request) {
+
+        log.warn("Acesso proibido: {} - {}", request.getRequestURI(), ex.getMessage());
+
+        ErrorResponse response = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.FORBIDDEN.value(),
+                ex.getMessage() != null ? ex.getMessage() : ValidationMessages.Seguranca.ACESSO_NEGADO,
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    }
+
+    /**
+     * Trata falhas de comunicação com serviços externos (502 Bad Gateway).
+     * Lançada pelo CloudinaryUploadService quando o upload falha.
+     */
+    @ExceptionHandler(ExternalServiceException.class)
+    public ResponseEntity<ErrorResponse> handleExternalServiceException(
+            ExternalServiceException ex,
+            HttpServletRequest request) {
+
+        log.error("Falha de comunicação com serviço externo: {} - Erro: {}",
+                request.getRequestURI(), ex.getMessage(), ex);
+
+        ErrorResponse response = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_GATEWAY.value(),
+                "Falha ao comunicar com serviço externo. Tente novamente em instantes.",
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(response);
     }
 }

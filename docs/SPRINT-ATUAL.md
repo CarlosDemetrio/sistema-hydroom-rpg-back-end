@@ -6,11 +6,11 @@
 > Para detalhes por area e historico, ver `PM.md`.
 > Para estado da ultima sessao, ver `HANDOFF-SESSAO.md`.
 >
-> Atualizado: 2026-04-07 (sessao 16, auditoria + Spec 017 criada; Rodada 14 aberta em planejamento)
+> Atualizado: 2026-04-07 (sessao 16, auditoria + Spec 017 criada; Rodada 14 em andamento; **+ Copilot R01-R04 paralelo**)
 > PM: Scrum Orchestrator
-> Objetivo: Completar Spec 009-ext (NPC/Essencia/Prospeccao), Spec 008 e 012 frontend, **+ Spec 017 P0 (correcoes pre-RC)**, entregar RC da primeira parte
+> Objetivo: Completar Spec 012 fase 2 + Spec 017 P0 restante (T3+T4+T5+T7), entregar RC da primeira parte
 > Duracao estimada: 2-3 semanas
-> Cronologia: `docs/historico/CRONOLOGIA.md` | Rodadas: `docs/tracking/rodadas/`
+> Cronologia: `docs/historico/CRONOLOGIA.md` | Rodadas: `docs/tracking/rodadas/` | Copilot: `docs/tracking/rodadas-copilot/`
 
 ---
 
@@ -18,16 +18,18 @@
 
 | Metrica | Valor |
 |---------|-------|
-| Rodadas concluidas | 2 (R12 + R13) |
-| Rodadas em andamento | 1 (R14 — sessao de auditoria + planejamento Spec 017, sem codigo) |
-| Tasks entregues | 20 (16 em R12 + 4 em R13) |
-| Tasks restantes para RC | 8 frontend (Spec 012 T6-T11 + Spec 015 T6/T7) **+ 7 Spec 017 P0** |
-| Testes backend | **613 passando**, 0 falhas |
-| Testes frontend | **848 passando**, 0 falhas |
-| Specs 100% concluidas | Spec 008 (sub-recursos frontend), Spec 009-ext (NPC/Prospeccao/Essencia) |
-| Specs em andamento | Spec 012 (fase 2 pendente), Spec 015 (T6/T7 frontend pendentes), **Spec 017 (planejamento)** |
-| Novas specs | **Spec 017 — Correcoes Pre-RC** (22 tasks, auditorias 2026-04-07) |
-| Stand-by (decisao 2026-04-06) | Spec 010, 011, 013, 014, 016 |
+| Rodadas Claude concluidas | 2 (R12 + R13) |
+| Rodadas Claude em andamento | 1 (R14 — Spec 012 T6-T8 + Spec 017 T7+T3+T4+T5) |
+| **Rodadas Copilot concluidas** | **4 (R01+R02+R03+R04 — paralelo, zero merge conflicts)** |
+| Tasks entregues (Claude) | 20 (16 em R12 + 4 em R13) |
+| **Tasks entregues (Copilot)** | **Spec 017 T1+T2+T6+T22; Spec 015 T6+T7 pre-existentes; Spec 014 T1+T5; Spec 016 T1-T4+T6+T7; Spec 011 T0-T2+T4; Spec 018+019 deploy** |
+| Tasks restantes para RC | **Spec 012 T6-T11** + **Spec 017 T3+T4+T5+T7** |
+| Testes backend | **723 passando**, 0 falhas |
+| Testes frontend | **950 total** (881 passando, 2 falhas pre-existentes ficha-vantagens-tab, 2 OOM ficha-wizard-passo4) |
+| Specs 100% concluidas | Spec 008, Spec 009-ext, **Spec 015 (T1-T3+T5-T7, falta T4 bloqueado)**, **Spec 018**, **Spec 019** |
+| Specs em andamento | Spec 012 (fase 2), **Spec 017 (P0 parcial — T1+T2+T6+T22 OK, falta T3-T5+T7)**, Spec 011 (~50%), Spec 014 (~28%), Spec 016 (~85% backend) |
+| Novas specs | Spec 017 (correcoes pre-RC) + Spec 018 (deploy GCP) + Spec 019 (deploy Firebase) |
+| Stand-by remanescente | Spec 010, Spec 013, Spec 011 T3+frontend, Spec 014 T2-T4+T6, Spec 016 T5+frontend |
 
 ### Entregas da Rodada 12 (16 tasks)
 - Spec 009-ext backend T1-T6: visivelGlobalmente, FichaVisibilidade, ProspeccaoUso, resetar-estado, essenciaAtual/vidaAtual, 32 testes

@@ -350,26 +350,6 @@ public class FichaCalculationService {
         recalcularEstado(ficha, vida, membros, essencia, ameaca, vigorTotal, sabedoriaTotal);
     }
 
-    /**
-     * Sobrecarga retrocompatível sem aptidoes, racaBonusAtributos, classeBonus, classeAptidaoBonus, vantagens,
-     * dadosOrdenados e prospeccoes. Mantida para não quebrar chamadas existentes.
-     *
-     * @deprecated Prefira a sobrecarga completa para garantir cálculos corretos.
-     */
-    @Deprecated(since = "Spec-007-T0", forRemoval = true)
-    public void recalcular(
-            Ficha ficha,
-            List<FichaAtributo> atributos,
-            List<FichaBonus> bonus,
-            FichaVida vida,
-            List<FichaVidaMembro> membros,
-            FichaEssencia essencia,
-            FichaAmeaca ameaca) {
-
-        recalcular(ficha, atributos, List.of(), bonus, vida, membros, essencia, ameaca,
-                List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
-    }
-
     // ==================== PROSPECÇÃO ====================
 
     /**

@@ -33,6 +33,12 @@ public class FichaPreviewService {
     private final FichaRepository fichaRepository;
     private final FichaAtributoRepository fichaAtributoRepository;
     private final FichaAptidaoRepository fichaAptidaoRepository;
+    private final FichaVantagemRepository fichaVantagemRepository;
+    private final FichaProspeccaoRepository fichaProspeccaoRepository;
+    private final DadoProspeccaoConfigRepository dadoProspeccaoConfigRepository;
+    private final ClasseBonusRepository classeBonusRepository;
+    private final ClasseAptidaoBonusRepository classeAptidaoBonusRepository;
+    private final RacaBonusAtributoRepository racaBonusAtributoRepository;
     private final FichaBonusRepository fichaBonusRepository;
     private final FichaVidaRepository fichaVidaRepository;
     private final FichaVidaMembroRepository fichaVidaMembroRepository;
@@ -61,6 +67,7 @@ public class FichaPreviewService {
 
         // 3. Carregar sub-registros (JOIN FETCH para evitar N+1 ao acessar configs)
         List<FichaAtributo> atributos = fichaAtributoRepository.findByFichaIdWithConfig(fichaId);
+        List<FichaAptidao> aptidoes = fichaAptidaoRepository.findByFichaIdWithConfig(fichaId);
         List<FichaBonus> bonus = fichaBonusRepository.findByFichaIdWithConfig(fichaId);
         FichaVida vida = fichaVidaRepository.findByFichaId(fichaId)
                 .orElseThrow(() -> new ResourceNotFoundException("FichaVida não encontrada para ficha: " + fichaId));
@@ -69,15 +76,32 @@ public class FichaPreviewService {
                 .orElseThrow(() -> new ResourceNotFoundException("FichaEssencia não encontrada para ficha: " + fichaId));
         FichaAmeaca ameaca = fichaAmeacaRepository.findByFichaId(fichaId)
                 .orElseThrow(() -> new ResourceNotFoundException("FichaAmeaca não encontrada para ficha: " + fichaId));
+        List<FichaVantagem> vantagens = fichaVantagemRepository.findByFichaIdWithEfeitos(fichaId);
+        List<FichaProspeccao> prospeccoes = fichaProspeccaoRepository.findByFichaIdWithConfig(fichaId);
+        Long jogoId = ficha.getJogo().getId();
+        List<DadoProspeccaoConfig> dadosOrdenados = dadoProspeccaoConfigRepository.findByJogoIdOrderByOrdemExibicao(jogoId);
+        List<RacaBonusAtributo> racaBonusAtributos = ficha.getRaca() != null
+                ? racaBonusAtributoRepository.findByRacaIdWithAtributo(ficha.getRaca().getId())
+                : List.of();
+        List<ClasseBonus> classeBonus = ficha.getClasse() != null
+                ? classeBonusRepository.findByClasseIdWithBonusConfig(ficha.getClasse().getId())
+                : List.of();
+        List<ClasseAptidaoBonus> classeAptidaoBonus = ficha.getClasse() != null
+                ? classeAptidaoBonusRepository.findByClasseIdWithAptidao(ficha.getClasse().getId())
+                : List.of();
 
         // 4. Criar cópias em memória para não contaminar o contexto JPA
+        // FichaVantagem, RacaBonusAtributo, ClasseBonus, ClasseAptidaoBonus e DadoProspeccaoConfig
+        // são lidas mas não modificadas pelo cálculo — não precisam de clone.
         Ficha fichaSimulada = clonarFicha(ficha);
         List<FichaAtributo> atributosSimulados = atributos.stream().map(this::clonarAtributo).toList();
+        List<FichaAptidao> aptidoesSimuladas = aptidoes.stream().map(this::clonarAptidao).toList();
         List<FichaBonus> bonusSimulados = bonus.stream().map(this::clonarBonus).toList();
         FichaVida vidaSimulada = clonarVida(vida);
         List<FichaVidaMembro> membrosSimulados = membros.stream().map(this::clonarVidaMembro).toList();
         FichaEssencia essenciaSimulada = clonarEssencia(essencia);
         FichaAmeaca ameacaSimulada = clonarAmeaca(ameaca);
+        List<FichaProspeccao> prospeccoesSimuladas = prospeccoes.stream().map(this::clonarProspeccao).toList();
 
         // 5. Aplicar mudanças da request em memória
         if (request != null) {
@@ -92,8 +116,16 @@ public class FichaPreviewService {
                 }
             }
 
-            // Atualizar bases de aptidões (não afetam cálculos de vida/essência/ameaça diretamente)
-            // mas afetam validações - tratado na validação, não no preview de cálculo
+            // Atualizar bases de aptidões
+            Map<Long, Integer> aptidaoBase = request.aptidaoBase();
+            if (aptidaoBase != null && !aptidaoBase.isEmpty()) {
+                for (FichaAptidao aptidao : aptidoesSimuladas) {
+                    Integer novaBase = aptidaoBase.get(aptidao.getId());
+                    if (novaBase != null) {
+                        aptidao.setBase(novaBase);
+                    }
+                }
+            }
 
             // Atualizar XP e nível
             if (request.xp() != null) {
@@ -107,8 +139,10 @@ public class FichaPreviewService {
 
         // 6. Recalcular tudo em memória
         calculationService.recalcular(
-                fichaSimulada, atributosSimulados, bonusSimulados,
-                vidaSimulada, membrosSimulados, essenciaSimulada, ameacaSimulada);
+                fichaSimulada, atributosSimulados, aptidoesSimuladas, bonusSimulados,
+                vidaSimulada, membrosSimulados, essenciaSimulada, ameacaSimulada,
+                racaBonusAtributos, classeBonus, classeAptidaoBonus, vantagens,
+                dadosOrdenados, prospeccoesSimuladas);
 
         // 7. Montar resposta
         return montarResposta(fichaSimulada, atributosSimulados, bonusSimulados,
@@ -203,6 +237,29 @@ public class FichaPreviewService {
                 .renascimentos(original.getRenascimentos())
                 .outros(original.getOutros())
                 .total(original.getTotal())
+                .build();
+    }
+
+    private FichaAptidao clonarAptidao(FichaAptidao original) {
+        return FichaAptidao.builder()
+                .id(original.getId())
+                .ficha(original.getFicha())
+                .aptidaoConfig(original.getAptidaoConfig())
+                .base(original.getBase())
+                .sorte(original.getSorte())
+                .classe(original.getClasse())
+                .outros(original.getOutros())
+                .total(original.getTotal())
+                .build();
+    }
+
+    private FichaProspeccao clonarProspeccao(FichaProspeccao original) {
+        return FichaProspeccao.builder()
+                .id(original.getId())
+                .ficha(original.getFicha())
+                .dadoProspeccaoConfig(original.getDadoProspeccaoConfig())
+                .quantidade(original.getQuantidade())
+                .dadoDisponivel(original.getDadoDisponivel())
                 .build();
     }
 

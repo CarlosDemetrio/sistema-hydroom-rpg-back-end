@@ -334,11 +334,13 @@ class FichaCalculationServiceTest {
         calculationService.recalcular(
                 ficha,
                 List.of(vigAtributo, sabAtributo),
+                List.of(),
                 List.of(fichaBonus),
                 vida,
                 List.of(),
                 essencia,
-                ameaca
+                ameaca,
+                List.of(), List.of(), List.of(), List.of(), List.of(), List.of()
         );
 
         // Assert - atributos calculados
@@ -371,8 +373,9 @@ class FichaCalculationServiceTest {
 
         // Act - deve completar sem erro
         calculationService.recalcular(
-                ficha, List.of(forAtributo), List.of(),
-                vida, List.of(), essencia, ameaca);
+                ficha, List.of(forAtributo), List.of(), List.of(),
+                vida, List.of(), essencia, ameaca,
+                List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
 
         // Assert - vigorTotal=0, sabedoriaTotal=0 usados como padrão
         // vida: 0 + 5 + 0 + 1 + 0 = 6

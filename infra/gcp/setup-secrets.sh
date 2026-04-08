@@ -42,6 +42,10 @@ read -rsp "GOOGLE_CLIENT_ID: " GOOGLE_CLIENT_ID; echo
 read -rsp "GOOGLE_CLIENT_SECRET: " GOOGLE_CLIENT_SECRET; echo
 read -rsp "FRONTEND_URL (ex: https://seu-dominio.com): " FRONTEND_URL; echo
 read -rsp "BACKEND_URL (ex: https://api.seu-dominio.com): " BACKEND_URL; echo
+read -rp  "CORS_ALLOWED_ORIGINS (multiplas URLs separadas por virgula, ex: https://seu-dominio.com,https://www.seu-dominio.com): " CORS_ALLOWED_ORIGINS; echo
+read -rsp "CLOUDINARY_CLOUD_NAME: " CLOUDINARY_CLOUD_NAME; echo
+read -rsp "CLOUDINARY_API_KEY: " CLOUDINARY_API_KEY; echo
+read -rsp "CLOUDINARY_API_SECRET: " CLOUDINARY_API_SECRET; echo
 
 echo ""
 echo "=== Criando secrets no Secret Manager ==="
@@ -51,6 +55,10 @@ create_secret "rpg-google-client-id" "${GOOGLE_CLIENT_ID}"
 create_secret "rpg-google-client-secret" "${GOOGLE_CLIENT_SECRET}"
 create_secret "rpg-frontend-url" "${FRONTEND_URL}"
 create_secret "rpg-backend-url" "${BACKEND_URL}"
+create_secret "rpg-cors-allowed-origins" "${CORS_ALLOWED_ORIGINS}"
+create_secret "rpg-cloudinary-cloud-name" "${CLOUDINARY_CLOUD_NAME}"
+create_secret "rpg-cloudinary-api-key" "${CLOUDINARY_API_KEY}"
+create_secret "rpg-cloudinary-api-secret" "${CLOUDINARY_API_SECRET}"
 
 echo ""
 echo "=== Configurando permissoes para o Cloud Run Service Account ==="
@@ -58,7 +66,7 @@ PROJECT_NUMBER=$(gcloud projects describe "$(gcloud config get-value project)" -
 SA_EMAIL="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
 echo "Service Account: ${SA_EMAIL}"
 
-for SECRET in rpg-db-username rpg-db-password rpg-google-client-id rpg-google-client-secret rpg-frontend-url rpg-backend-url; do
+for SECRET in rpg-db-username rpg-db-password rpg-google-client-id rpg-google-client-secret rpg-frontend-url rpg-backend-url rpg-cors-allowed-origins rpg-cloudinary-cloud-name rpg-cloudinary-api-key rpg-cloudinary-api-secret; do
     gcloud secrets add-iam-policy-binding "${SECRET}" \
         --member="serviceAccount:${SA_EMAIL}" \
         --role="roles/secretmanager.secretAccessor" \

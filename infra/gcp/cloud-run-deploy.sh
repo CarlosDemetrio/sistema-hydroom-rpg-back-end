@@ -55,7 +55,11 @@ gcloud run deploy "${SERVICE_NAME}" \
   --set-secrets "GOOGLE_CLIENT_ID=rpg-google-client-id:latest" \
   --set-secrets "GOOGLE_CLIENT_SECRET=rpg-google-client-secret:latest" \
   --set-secrets "FRONTEND_URL=rpg-frontend-url:latest" \
-  --set-secrets "BACKEND_URL=rpg-backend-url:latest"
+  --set-secrets "BACKEND_URL=rpg-backend-url:latest" \
+  --set-secrets "CORS_ALLOWED_ORIGINS=rpg-cors-allowed-origins:latest" \
+  --set-secrets "CLOUDINARY_CLOUD_NAME=rpg-cloudinary-cloud-name:latest" \
+  --set-secrets "CLOUDINARY_API_KEY=rpg-cloudinary-api-key:latest" \
+  --set-secrets "CLOUDINARY_API_SECRET=rpg-cloudinary-api-secret:latest"
 
 echo ""
 echo "[3/3] Deploy concluido!"

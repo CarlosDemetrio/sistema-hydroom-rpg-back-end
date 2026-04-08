@@ -19,7 +19,7 @@ Internet → Cloud Run (rpg-api) ──[Direct VPC Egress]──→ VM e2-micro 
 | Backend API | Cloud Run (us-central1) | 2M req/mês grátis |
 | Banco de dados | VM e2-micro + PostgreSQL 16 | 1 VM e2-micro/mês grátis |
 | Imagens Docker | GHCR (GitHub Container Registry) | Grátis |
-| Secrets | Secret Manager | 6 secrets × 10k acessos/mês |
+| Secrets | Secret Manager | 10 secrets × 10k acessos/mês |
 | CI/CD | GitHub Actions | 2000 min/mês grátis |
 
 > **CRITICAL:** Cloud Run acessa PostgreSQL via **IP INTERNO da VPC** (Direct VPC Egress).
@@ -112,7 +112,47 @@ cd infra/gcp
 ./setup-secrets.sh
 ```
 
-Cria 6 secrets no Secret Manager: `rpg-db-username`, `rpg-db-password`, `rpg-google-client-id`, `rpg-google-client-secret`, `rpg-frontend-url`, `rpg-backend-url`.
+Cria 10 secrets no Secret Manager:
+
+| Secret | Descrição | Exemplo |
+|---|---|---|
+| `rpg-db-username` | Usuário PostgreSQL | `rpg_prod_user` |
+| `rpg-db-password` | Senha PostgreSQL | (senha forte) |
+| `rpg-google-client-id` | OAuth2 Google Client ID | `123.apps.googleusercontent.com` |
+| `rpg-google-client-secret` | OAuth2 Google Client Secret | `GOCSPX-...` |
+| `rpg-frontend-url` | URL principal do frontend (OAuth2 redirect) | `https://hydrooon.com.br` |
+| `rpg-backend-url` | URL pública da API | `https://api.hydrooon.com.br` |
+| `rpg-cors-allowed-origins` | Origens CORS permitidas (CSV) | `https://hydrooon.com.br,https://www.hydrooon.com.br` |
+| `rpg-cloudinary-cloud-name` | Nome da conta Cloudinary | (ver dashboard Cloudinary) |
+| `rpg-cloudinary-api-key` | API Key Cloudinary | (ver dashboard Cloudinary) |
+| `rpg-cloudinary-api-secret` | API Secret Cloudinary | (ver dashboard Cloudinary) |
+
+> **CORS:** use `rpg-cors-allowed-origins` para listar **todas** as origens do frontend separadas por vírgula (ex: domínio com e sem `www.`). Sem este secret, o backend cai no fallback `FRONTEND_URL`, que aceita apenas uma origem.
+
+> **Cloudinary:** obtenha as credenciais em https://console.cloudinary.com → Dashboard → "API Environment variable". Necessário para a Galeria de Imagens (Spec 011).
+
+**Como adicionar/rotacionar secrets individualmente:**
+
+```bash
+# Criar novo valor para um secret existente
+echo -n "https://hydrooon.com.br,https://www.hydrooon.com.br" | \
+  gcloud secrets versions add rpg-cors-allowed-origins --data-file=-
+
+# Criar secret do zero
+echo -n "meu-cloud-name" | \
+  gcloud secrets create rpg-cloudinary-cloud-name --data-file=-
+
+# Conceder acesso ao Cloud Run Service Account
+gcloud secrets add-iam-policy-binding rpg-cloudinary-cloud-name \
+  --member="serviceAccount:PROJECT_NUMBER-compute@developer.gserviceaccount.com" \
+  --role="roles/secretmanager.secretAccessor"
+```
+
+**Após rotacionar um secret, force um novo deploy** (Cloud Run precisa reler a versão `:latest`):
+
+```bash
+gcloud run services update rpg-api --region us-east1
+```
 
 ---
 
@@ -242,7 +282,7 @@ curl https://api.seu-dominio.com/actuator/health
 - [ ] VM e2-micro criada em região Free Tier (us-central1/us-east1/us-west1)
 - [ ] PostgreSQL rodando: `docker exec rpg-postgres pg_isready`
 - [ ] IP interno da VM anotado (ex: 10.128.0.2)
-- [ ] 6 secrets criados no Secret Manager
+- [ ] 10 secrets criados no Secret Manager (DB, OAuth2, URLs, CORS, Cloudinary)
 - [ ] `GCP_SA_KEY` e `GCP_PROJECT_ID` configurados no GitHub
 - [ ] Environment `production` criado no GitHub
 - [ ] DNS CNAME configurado no registrador
@@ -258,7 +298,7 @@ curl https://api.seu-dominio.com/actuator/health
 | Cloud Run | 2M req/mês, 360k GB-s | <50k req/mês | ✅ Gratuito |
 | VM e2-micro | 1 instância/mês | 1 VM | ✅ Gratuito |
 | Disco VM | 30GB HDD | 10-15GB utilizado | ✅ Gratuito |
-| Secret Manager | 6 secrets, 10k acessos/mês | <1k acessos/mês | ✅ Gratuito |
+| Secret Manager | 6 secrets, 10k acessos/mês | 10 secrets, <1k acessos/mês | ✅ Gratuito |
 | GHCR | 500MB grátis | ~150MB (native) | ✅ Gratuito |
 
 > ⚠️ Cloud Run requer faturamento habilitado, mas não gera cobranças dentro dos limites do Free Tier.

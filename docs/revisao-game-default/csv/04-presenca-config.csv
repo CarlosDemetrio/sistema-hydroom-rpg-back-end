@@ -1,7 +1,7 @@
 # PresencaConfig
 # Campos: nome (obrigatório), descricao (opcional), ordem_exibicao (obrigatório)
 nome;descricao;ordem_exibicao
-Bom;;1
-Leal;;2
-Caótico;;3
-Neutro;;4
+Bom;Aura de benevolência e proteção; aqueles próximos sentem conforto e confiança;1
+Leal;Aura de ordem e autoridade; transmite disciplina e respeito pelas leis e hierarquias;2
+Caótico;Aura imprevisível e perturbadora; semeia instabilidade e desconforto ao redor;3
+Neutro;Aura equilibrada, sem inclinação evidente; passa despercebido pela maioria;4

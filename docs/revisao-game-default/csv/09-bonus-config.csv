@@ -3,12 +3,12 @@
 # sigla: 2-5 chars, ÚNICA cross-entity por jogo
 # formula_base: usa abreviações de atributos do arquivo 08 (FOR, AGI, VIG, SAB, INTU, INT, AST)
 nome;sigla;formula_base;descricao;ordem_exibicao
-B.B.A;BBA;(FOR + AGI) / 3;;1
-B.B.M;BBM;(SAB + INT) / 3;;2
-Defesa;DEF;VIG / 5;;3
-Esquiva;ESQ;AGI / 5;;4
-Iniciativa;INI;INTU / 5;;5
-Percepção;PER;INTU / 3;;6
-Raciocínio;RAC;INT / 3;;7
-Bloqueio;BLO;VIG / 3;;8
-Reflexo;REF;AGI / 3;;9
+B.B.A;BBA;(FOR + AGI) / 3;Bônus base de ataque físico; derivado da Força e Agilidade do personagem;1
+B.B.M;BBM;(SAB + INT) / 3;Bônus base de ação mental ou mágica; derivado da Sabedoria e Inteligência;2
+Defesa;DEF;VIG / 5;Redução passiva de dano físico recebido; derivada do Vigor;3
+Esquiva;ESQ;AGI / 5;Valor de referência para desviar de ataques; derivado da Agilidade;4
+Iniciativa;INI;INTU / 5;Determina a ordem de ação em combate; derivada da Intuição;5
+Percepção;PER;INTU / 3;Capacidade de notar detalhes, ameaças e pistas no ambiente; derivada da Intuição;6
+Raciocínio;RAC;INT / 3;Qualidade do pensamento analítico e resolução de problemas; derivado da Inteligência;7
+Bloqueio;BLO;VIG / 3;Capacidade de absorver impactos com escudo ou arma; derivado do Vigor;8
+Reflexo;REF;AGI / 3;Velocidade de reação a eventos imprevistos ou ataques surpresa; derivado da Agilidade;9

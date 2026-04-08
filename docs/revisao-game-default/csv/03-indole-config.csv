@@ -1,6 +1,6 @@
 # IndoleConfig
 # Campos: nome (obrigatório), descricao (opcional), ordem_exibicao (obrigatório)
 nome;descricao;ordem_exibicao
-Bom;;1
-Mau;;2
-Neutro;;3
+Bom;Movido por compaixão e altruísmo; tende a ajudar os necessitados e defender os fracos;1
+Mau;Guiado por ambição cruel ou egoísmo; usa os outros como meios para seus próprios fins;2
+Neutro;Sem viés moral definido; age conforme as circunstâncias, nem bondoso nem cruel;3

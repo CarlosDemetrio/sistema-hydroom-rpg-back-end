@@ -1,12 +1,13 @@
 # MembroCorpoConfig
-# Campos: nome;porcentagem_vida;ordem_exibicao
-# porcentagem_vida: BigDecimal de 0.01 a 1.00 (1.00 = 100% da VT total)
-# REVISÃO: Sangue com ordem 9 — ordens 7 e 8 estão puladas (intencional?)
-nome;porcentagem_vida;ordem_exibicao
-Cabeça;0.75;1
-Tronco;0.35;2
-Braço Direito;0.10;3
-Braço Esquerdo;0.10;4
-Perna Direita;0.10;5
-Perna Esquerda;0.10;6
-Sangue;1.00;9
+# Campos: nome;porcentagem_vida;descricao;ordem_exibicao
+# porcentagem_vida: BigDecimal de 0.01 a 1.00 — pool de VT do membro como fração da VT total
+# NOTA: campo 'descricao' adicionado nesta revisão — requer inclusão no modelo da entidade
+# NOTA: ordens 7 e 8 estão disponíveis intencionalmente para o Mestre adicionar Pescoço e Coração
+nome;porcentagem_vida;descricao;ordem_exibicao
+Cabeça;0.75;Ao chegar a 0 VT, o personagem fica incapacitado; pode resultar em morte instantânea ou estado vegetativo dependendo do dano excedente;1
+Tronco;0.35;Ao chegar a 0 VT, o personagem entra em colapso e fica totalmente incapaz de agir;2
+Braço Direito;0.10;Ao chegar a 0 VT, o membro fica inutilizado; ações que o exigem sofrem penalidade grave;3
+Braço Esquerdo;0.10;Ao chegar a 0 VT, o membro fica inutilizado; ações que o exigem sofrem penalidade grave;4
+Perna Direita;0.10;Ao chegar a 0 VT, a mobilidade é severamente reduzida; penalidade no deslocamento e ações de esquiva;5
+Perna Esquerda;0.10;Ao chegar a 0 VT, a mobilidade é severamente reduzida; penalidade no deslocamento e ações de esquiva;6
+Sangue;1.00;Representa o pool total de vida do personagem; ao chegar a 0 o personagem morre por sangramento crítico;9

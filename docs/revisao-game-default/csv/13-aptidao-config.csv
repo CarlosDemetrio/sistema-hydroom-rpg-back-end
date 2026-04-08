@@ -2,27 +2,27 @@
 # Campos: nome;tipo_aptidao_nome;descricao;ordem_exibicao
 # tipo_aptidao_nome → referencia coluna 'nome' do arquivo 01-tipo-aptidao.csv (FISICA ou MENTAL)
 nome;tipo_aptidao_nome;descricao;ordem_exibicao
-Acrobacia;FISICA;Habilidade de realizar manobras acrobáticas;1
-Guarda;FISICA;Capacidade de defesa e bloqueio;2
-Aparar;FISICA;Habilidade de desviar ataques;3
-Atletismo;FISICA;Força física e condicionamento;4
-Resvalar;FISICA;Capacidade de esquiva e movimento ágil;5
-Resistência;FISICA;Capacidade de resistir a condições adversas;6
-Perseguição;FISICA;Habilidade de perseguir ou fugir;7
-Natação;FISICA;Capacidade de nadar e manobras aquáticas;8
-Furtividade;FISICA;Capacidade de se mover sem ser detectado;9
-Prestidigitação;FISICA;Destreza manual e truques;10
-Conduzir;FISICA;Habilidade de pilotar veículos e montarias;11
-Arte da Fuga;FISICA;Capacidade de escapar de restrições;12
-Idiomas;MENTAL;Conhecimento de línguas;13
-Observação;MENTAL;Capacidade de notar detalhes;14
-Falsificar;MENTAL;Habilidade de criar falsificações;15
-Prontidão;MENTAL;Capacidade de reagir rapidamente;16
-Auto Controle;MENTAL;Controle emocional e mental;17
-Sentir Motivação;MENTAL;Capacidade de ler intenções;18
-Sobrevivência;MENTAL;Conhecimento de técnicas de sobrevivência;19
-Investigar;MENTAL;Habilidade de coletar e analisar informações;20
-Blefar;MENTAL;Capacidade de enganar e mentir;21
-Atuação;MENTAL;Habilidade de interpretar personagens;22
-Diplomacia;MENTAL;Capacidade de negociação e persuasão;23
-Operação de Mecanismos;MENTAL;Conhecimento de dispositivos mecânicos;24
+Acrobacia;FISICA;Execução de manobras ágeis como saltos, rolamentos e equilíbrio em terreno difícil;1
+Guarda;FISICA;Técnica defensiva de posicionar corpo e armas para absorver ou redirecionar impactos;2
+Aparar;FISICA;Desviar ou neutralizar ataques com arma ou escudo com precisão de timing;3
+Atletismo;FISICA;Força física bruta aplicada a escalada, arremesso, luta corporal e resistência de esforço;4
+Resvalar;FISICA;Técnica de esquiva dinâmica que usa o movimento do corpo para evitar golpes e projéteis;5
+Resistência;FISICA;Capacidade de suportar condições extremas: fome, veneno, dor, temperatura e exaustão;6
+Perseguição;FISICA;Habilidade de rastrear e perseguir alvos em movimento, ou de fugir eficientemente;7
+Natação;FISICA;Habilidade de nadar e se mover em ambientes aquáticos, incluindo mergulho e combate na água;8
+Furtividade;FISICA;Habilidade de mover-se silenciosamente, esconder-se e realizar ações sem ser detectado;9
+Prestidigitação;FISICA;Destreza manual para realizar truques, pickpocket, esconder objetos e manipulação fina;10
+Conduzir;FISICA;Habilidade de montar animais ou pilotar veículos, incluindo manobras em alta velocidade;11
+Arte da Fuga;FISICA;Habilidade de escapar de amarras, algemas, prisões e outras situações de captura;12
+Idiomas;MENTAL;Conhecimento de idiomas estrangeiros, dialetos e sistemas de escrita do mundo de Klayrah;13
+Observação;MENTAL;Percepção aguçada para notar detalhes, pistas ocultas e anomalias no ambiente;14
+Falsificar;MENTAL;Habilidade de criar documentos falsos, imitar assinaturas e forjar selos oficiais;15
+Prontidão;MENTAL;Estado de alerta elevado; evita ser surpreendido e age rapidamente em situações de crise;16
+Auto Controle;MENTAL;Domínio das emoções e resistência à manipulação, medo, sedução e pressão psicológica;17
+Sentir Motivação;MENTAL;Habilidade de perceber as verdadeiras intenções e emoções ocultas de outras pessoas;18
+Sobrevivência;MENTAL;Conhecimento de orientação, caça, armadilhas e sobrevivência em ambientes hostis;19
+Investigar;MENTAL;Habilidade de reunir pistas, interrogar testemunhas e deduzir conclusões a partir de evidências;20
+Blefar;MENTAL;Capacidade de mentir convincentemente, criar desvios e manipular a percepção alheia;21
+Atuação;MENTAL;Habilidade de interpretar personagens, disfarçar-se e convencer por meio de performance;22
+Diplomacia;MENTAL;Arte da negociação, persuasão e mediação de conflitos com argumentos e charme;23
+Operação de Mecanismos;MENTAL;Habilidade de operar, reparar e arrombar mecanismos, fechaduras e engenhocas;24

@@ -1,6 +1,6 @@
 # GeneroConfig
 # Campos: nome (obrigatório), descricao (opcional), ordem_exibicao (obrigatório)
 nome;descricao;ordem_exibicao
-Masculino;;1
-Feminino;;2
-Outro;;3
+Masculino;Personagem de identidade masculina;1
+Feminino;Personagem de identidade feminina;2
+Outro;Personagem com identidade de gênero não binária ou indefinida;3

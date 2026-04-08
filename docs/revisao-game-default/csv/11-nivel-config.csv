@@ -2,7 +2,32 @@
 # Campos: nivel;xp_necessaria;pontos_atributo;pontos_aptidao;pontos_vantagem;limitador_atributo;permite_renascimento
 # pontos_vantagem: campo no DTO mas IGNORADO pelo initializer (PontosVantagemConfig é a fonte real)
 # permite_renascimento: setado inline no initializer como (nivel >= 31) — não vem do DTO
-# REVISÃO: nivel 35 tem mesma XP que nivel 34 (595000) — intencional?
+#
+# === DECISÕES DE DESIGN ===
+#
+# PROGRESSÃO DE XP (fórmula triangular):
+#   xp(N) = N*(N+1)/2 * 1000
+#   Equivale a: cada nível N requer exatamente N*1.000 XP a mais que o nível anterior.
+#   Exemplo: nível 1 custa 1.000 XP; nível 10 custa 10.000 XP; nível 35 custa 35.000 XP.
+#   Total para nível 35 máximo: 630.000 XP acumulados.
+#
+# NÍVEL 0:
+#   Estado base do personagem recém-criado. XP=0, todos os pontos=0, limitador=10.
+#   Representa o personagem antes de qualquer evolução.
+#
+# LIMITADOR DE ATRIBUTO:
+#   Níveis  0- 1: 10  (personagem iniciante, atributos muito restritos)
+#   Níveis  2-20: 50  (progressão normal — faixa principal do jogo)
+#   Níveis 21-25: 75  (tier intermediário — personagens veteranos)
+#   Níveis 26-30: 100 (tier avançado — heróis de elite)
+#   Níveis 31-35: 120 (tier de renascimento — personagens lendários)
+#   O salto de 10→50 entre níveis 1 e 2 é intencional: nível 0/1 é o estado "tutorial".
+#
+# PONTOS DE ATRIBUTO E APTIDÃO:
+#   Distribuição flat: 3 pontos de atributo + 1 ponto de aptidão por nível (exceto nível 0).
+#   Design intencional — consistência e previsibilidade. Marcos (5, 10, 15, 20...) não têm
+#   bônus extras pois a progressão do limitador já representa os marcos de poder.
+#   Pontos de vantagem são gerenciados separadamente via PontosVantagemConfig.
 nivel;xp_necessaria;pontos_atributo;pontos_aptidao;pontos_vantagem;limitador_atributo
 0;0;0;0;0;10
 1;1000;3;1;3;10
@@ -39,4 +64,4 @@ nivel;xp_necessaria;pontos_atributo;pontos_aptidao;pontos_vantagem;limitador_atr
 32;528000;3;1;3;120
 33;561000;3;1;3;120
 34;595000;3;1;3;120
-35;595000;3;1;3;120
+35;630000;3;1;3;120

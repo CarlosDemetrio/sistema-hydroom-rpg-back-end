@@ -11,8 +11,8 @@ Treinamento em Combate Evasivo;TCE;Treinamento especializado em evasão. Recebe 
 # === Treinamento Mental ===
 Treinamento Mágico;TM;Treinamento especializado em técnicas mágicas. O dado é elevado até D10 onde um novo dado se inicia no D3.;10;4;+1 B.B.M e 1 dado de dano mágico (D3→D.UP) por nível;VANTAGEM;Treinamento Mental;4
 Treinamento em Percepção Mágica;TPM;Treinamento em percepção de auras e manifestações mágicas. Recebe 2 de bônus por nível.;10;2;+2 Percepção por nível;VANTAGEM;Treinamento Mental;5
-Treinamento Lógico;TL;Treinamento especializado em raciocínio lógico e dedutivo. Requer B.RAC 5+.;5;4;[TODO] Dado e bônus a confirmar com o Mestre;VANTAGEM;Treinamento Mental;6
-Treinamento em Manipulação;T.M;Treinamento em técnicas mentais de manipulação. Requer B.MENT 8+.;3;3;+2 em Aptidões Mentais por nível;VANTAGEM;Treinamento Mental;7
+Treinamento Lógico;TL;Treinamento especializado em raciocínio lógico e dedutivo. Requer B.RAC 5+.;5;4;+1 B.B.M por nível;VANTAGEM;Treinamento Mental;6
+Treinamento em Manipulação;TMA;Treinamento em técnicas mentais de manipulação. Requer B.B.M 8+.;3;3;+2 em Aptidões Mentais por nível;VANTAGEM;Treinamento Mental;7
 # === Ação ===
 Ataque Adicional;AA;Permite realizar um ataque extra após a ação ofensiva principal. Requer Bônus Ofensivo 15+.;1;10;Um ataque adicional após a ação ofensiva;VANTAGEM;Ação;8
 Ataque Sentai;AS;Em ataque conjunto força percepção do alvo usando a maior soma dos atacantes. Requer Raciocínio 5+.;1;10;Ataque conjunto usa maior soma e força percepção do alvo;VANTAGEM;Ação;9
@@ -26,7 +26,7 @@ Instinto de Sobrevivência;ISB;Reduz somas de dificuldade para desviar ataques d
 Reflexos Aprimorados;RA;Reduz somas de dificuldade para reduzir dano pela metade. Requer Base Reflexos 7+.;3;3;-1 por nível na dificuldade ao reduzir dano pela metade;VANTAGEM;Reação;16
 # === Vantagem de Atributo ===
 Capacidade de Força Máxima;CFM;Desbloqueia uso da Força máxima em danos por contusão. Desbloqueada a cada 10 em Força.;1;6;Concede 1D3 de dano por contusão com Força máxima;VANTAGEM;Vantagem de Atributo;17
-Domínio de Força;DM;Eleva o dado de dano por contusão concedido pela Capacidade de Força Máxima. Requer CFM.;6;2;Eleva dado de dano por contusão 1x por nível (D3→D4→...→D8);VANTAGEM;Vantagem de Atributo;18
+Domínio de Força;DM;Eleva o dado de dano por contusão concedido pela Capacidade de Força Máxima. Requer CFM.;6;2;Eleva dado de dano por contusão 1x por nível (D3→D4→...→D9);VANTAGEM;Vantagem de Atributo;18
 Tenacidade;TEN;Desbloqueia uso do Vigor máximo em RD por contusão. Desbloqueada a cada 10 em Vigor.;1;6;Concede 1D3 de RD por contusão com Vigor máximo;VANTAGEM;Vantagem de Atributo;19
 Domínio de Vigor;DV;Eleva o dado de RD por contusão concedido pela Tenacidade. Requer Tenacidade.;2;2;Eleva dado de RD por contusão 1x por nível (D3→D4→D5);VANTAGEM;Vantagem de Atributo;20
 Destreza Felina;DF;Reduz penalidades em locais e terrenos difíceis. Desbloqueada a cada 10 em Agilidade.;1;5;-1 em penalidade de local ou terreno difícil;VANTAGEM;Vantagem de Atributo;21
@@ -41,7 +41,7 @@ Ambidestria;AMB;Remove penalidade de usar mão não dominante. Domínio bilatera
 Memória Fotográfica;MF;Possibilita memória visual plena de tudo que foi visto. Requer Raciocínio 10+.;1;10;Memória visual completa e fotográfica;VANTAGEM;Vantagem Geral;29
 # === Vantagem Histórica ===
 Herança;HER;O personagem herdou bens e recursos de família ou mentor. Rola 1D3 de Riqueza aplicada.;1;5;Rola 1D3 de Riqueza inicial aplicada;VANTAGEM;Vantagem Histórica;30
-Riqueza;RIQ;Representa acumulação de bens materiais. [AMBIGUIDADE: custo 3 ou 5 PN no PDF - 5x7=35 é mais consistente];7;5;+1 Grade de Riqueza por nível;VANTAGEM;Vantagem Histórica;31
+Riqueza;RIQ;Representa acumulação de bens materiais e riquezas. Cada nível custa mais PN que o anterior.;3;nivel * 5;+1 Grade de Riqueza por nível (Nv1=5PN, Nv2=10PN, Nv3=15PN);VANTAGEM;Vantagem Histórica;31
 Índole Aplicada;IA;Permite alterar a índole do personagem em relação a um alvo adicional por nível.;5;2;Muda índole com 1 alvo adicional por nível;VANTAGEM;Vantagem Histórica;32
 Ofícios;OFI;O personagem conhece profissões e ofícios variados do mundo.;2;2;+1 Profissão ou Ofício conhecida por nível;VANTAGEM;Vantagem Histórica;33
 Treino de Ofício;TOF;Aprimora a performance do personagem no exercício de ofícios e profissões.;10;4;+1 por nível em testes para exercer ofícios;VANTAGEM;Vantagem Histórica;34
@@ -50,9 +50,9 @@ Capangas;CAP;O personagem possui aliados ou capangas leais que o seguem.;5;5;+1 
 # === Vantagem de Renascimento ===
 Controle de Dano;CDA;Permite rolar o dado de dano e decidir quanto efetivamente aplicar. Requer 1 Renascimento.;1;5;Decide quanto do dano rolado aplicar ao alvo;VANTAGEM;Vantagem de Renascimento;37
 Último Sigilo;USI;Oculta completamente a manifestação visual e sensorial de habilidades mágicas. Requer 1 Renascimento.;1;5;Oculta manifestação mágica de habilidades;VANTAGEM;Vantagem de Renascimento;38
-Escaramuça;ESC;Permite realizar ataques falsos e manobras avançadas de combate. Requer 1 Renascimento. [PDF grafia: ESCARAMURCA];3;3;Ataques falsos e manobras avançadas de combate por nível;VANTAGEM;Vantagem de Renascimento;39
+Escaramuça;ESC;Permite realizar ataques falsos e manobras avançadas de combate. Requer 1 Renascimento.;3;3;Ataques falsos e manobras avançadas de combate por nível;VANTAGEM;Vantagem de Renascimento;39
 Previsão em Combate;PCO;Antecipa ações em combate afetando Defesa, Ofensiva ou Reatividade. Requer 2 Renascimentos.;3;15;Por nível: +1 em Defesa, Ofensiva ou Reatividade (escolha);VANTAGEM;Vantagem de Renascimento;40
-Armas Improvisadas;AI;Permite usar armas improvisadas com eficácia crescente. Requer 1 Renascimento. [TODO: BM no PDF pode ser B.B.A ou B.B.M - confirmar];10;4;+1 B.B.A e 1 dado (D3→D.UP) por nível com armas improvisadas;VANTAGEM;Vantagem de Renascimento;41
+Armas Improvisadas;AI;Permite usar armas improvisadas com eficácia crescente. Requer 1 Renascimento.;10;4;+1 B.B.A e 1 dado (D3→D.UP) por nível com armas improvisadas;VANTAGEM;Vantagem de Renascimento;41
 Dano Não Letal;DNL;Converte todos os danos causados em danos não letais por contusão. Requer 1 Renascimento.;1;5;Converte danos para tipo contusão (não letal);VANTAGEM;Vantagem de Renascimento;42
 Ação em Cadeia;AEC;Permite agir e atacar durante o Ataque Adicional no mesmo turno. Requer 1 Renascimento e Ataque Adicional.;1;10;Agir e atacar durante o Ataque Adicional;VANTAGEM;Vantagem de Renascimento;43
 Atenção Difusa;ATD;Expande o raio de atenção ao redor do personagem em 1 metro por nível. Requer 1 Renascimento.;10;5;+1 metro de raio de atenção ao redor por nível;VANTAGEM;Vantagem de Renascimento;44

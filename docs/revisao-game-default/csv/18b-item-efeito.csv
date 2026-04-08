@@ -28,7 +28,9 @@ Amuleto de Saúde;BONUS_VIDA;;;5;;;
 Amuleto da Essência;BONUS_ESSENCIA;;;5;;;
 Manto de Elvenkind;BONUS_DERIVADO;Esquiva;;3;;;
 Manto de Elvenkind;BONUS_DERIVADO;Percepção;;2;;;
-# TODO: poções não têm ItemEfeito — decidir se BONUS_VIDA deve ser adicionado
-# Poção de Cura Menor;BONUS_VIDA;;;5;;;
-# Poção de Cura;BONUS_VIDA;;;10;;;
-# Poção de Cura Superior;BONUS_VIDA;;;25;;;
+Poção de Cura Menor;BONUS_VIDA;;;5;;Recupera 5 pontos de vida ao ser consumida.;
+Poção de Cura;BONUS_VIDA;;;10;;Recupera 10 pontos de vida ao ser consumida.;
+Poção de Cura Superior;BONUS_VIDA;;;25;;Recupera 25 pontos de vida ao ser consumida.;
+Kit de Curandeiro;FORMULA_CUSTOMIZADA;;;;concede_bonus_medicina;Bônus em testes de medicina e primeiros socorros com usos disponíveis.;
+Kit de Ladrão;FORMULA_CUSTOMIZADA;;;;concede_bonus_arrombamento;Bônus em testes de furtividade e arrombamento enquanto equipado.;
+Tomo Arcano;BONUS_ESSENCIA;;;2;;Potencializa levemente a reserva arcana de magos e feiticeiros ao ser carregado.;

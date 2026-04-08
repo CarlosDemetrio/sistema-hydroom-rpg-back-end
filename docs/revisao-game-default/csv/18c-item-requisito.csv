@@ -4,8 +4,14 @@
 # tipo_requisito: NIVEL, ATRIBUTO, BONUS, APTIDAO, VANTAGEM, CLASSE, RACA
 # alvo: nome/sigla do alvo (ex: "FOR", "B.B.A", "Guerreiro")
 # valor_minimo: valor mínimo exigido
-# TODO: mapear requisitos formais (atualmente apenas texto em 'propriedades')
 item_nome;tipo_requisito;alvo;valor_minimo
-# Exemplos baseados nas propriedades textuais:
-# Cota de Malha;ATRIBUTO;FOR;15
-# Machado Grande;ATRIBUTO;FOR;13
+# === ARMADURAS ===
+Cota de Escamas;ATRIBUTO;FOR;12
+Cota de Malha;ATRIBUTO;FOR;15
+Meia Placa;ATRIBUTO;FOR;15
+Placa Completa;ATRIBUTO;FOR;17
+# === ARMAS ===
+Machado Grande;ATRIBUTO;FOR;13
+Arco Longo;ATRIBUTO;FOR;12
+# === ITENS MÁGICOS ===
+Cajado Arcano +1;ATRIBUTO;INT;12

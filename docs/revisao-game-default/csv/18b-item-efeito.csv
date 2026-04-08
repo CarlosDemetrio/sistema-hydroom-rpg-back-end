@@ -1,0 +1,34 @@
+# ItemEfeito — efeitos mecânicos dos itens ao serem equipados
+# Campos: item_nome;tipo_efeito;bonus_nome;atributo_sigla;valor_fixo;formula;descricao_efeito
+# item_nome → referencia 'nome' de 18-item-config.csv
+# tipo_efeito: BONUS_ATRIBUTO, BONUS_APTIDAO, BONUS_DERIVADO, BONUS_VIDA, BONUS_ESSENCIA, FORMULA_CUSTOMIZADA, EFEITO_DADO
+# bonus_nome → referencia 'nome' de 09-bonus-config.csv (para BONUS_DERIVADO)
+# atributo_sigla → referencia 'sigla' de 08-atributo-config.csv (para BONUS_ATRIBUTO)
+item_nome;tipo_efeito;bonus_nome;atributo_sigla;valor_fixo;formula;descricao_efeito
+Espada Longa +1;BONUS_DERIVADO;B.B.A;;1;;;
+Espada Longa +2;BONUS_DERIVADO;B.B.A;;2;;;
+Arco Longo +1;BONUS_DERIVADO;B.B.A;;1;;;
+Cajado Arcano +1;BONUS_DERIVADO;B.B.M;;1;;;
+Gibão de Couro;BONUS_DERIVADO;Defesa;;1;;;
+Couro Batido;BONUS_DERIVADO;Defesa;;2;;;
+Camisão de Malha;BONUS_DERIVADO;Defesa;;3;;;
+Cota de Escamas;BONUS_DERIVADO;Defesa;;4;;;
+Cota de Malha;BONUS_DERIVADO;Defesa;;5;;;
+Meia Placa;BONUS_DERIVADO;Defesa;;5;;;
+Meia Placa;BONUS_DERIVADO;Reflexo;;1;;;
+Placa Completa;BONUS_DERIVADO;Defesa;;6;;;
+Escudo de Madeira;BONUS_DERIVADO;Bloqueio;;1;;;
+Escudo de Aço;BONUS_DERIVADO;Bloqueio;;2;;;
+Escudo Enfeitiçado +1;BONUS_DERIVADO;Bloqueio;;2;;;
+Escudo Enfeitiçado +1;BONUS_DERIVADO;Defesa;;1;;;
+Anel da Força +1;BONUS_ATRIBUTO;;FOR;1;;;
+Anel de Proteção +1;BONUS_DERIVADO;Defesa;;1;;;
+Anel de Proteção +1;BONUS_DERIVADO;Bloqueio;;1;;;
+Amuleto de Saúde;BONUS_VIDA;;;5;;;
+Amuleto da Essência;BONUS_ESSENCIA;;;5;;;
+Manto de Elvenkind;BONUS_DERIVADO;Esquiva;;3;;;
+Manto de Elvenkind;BONUS_DERIVADO;Percepção;;2;;;
+# TODO: poções não têm ItemEfeito — decidir se BONUS_VIDA deve ser adicionado
+# Poção de Cura Menor;BONUS_VIDA;;;5;;;
+# Poção de Cura;BONUS_VIDA;;;10;;;
+# Poção de Cura Superior;BONUS_VIDA;;;25;;;

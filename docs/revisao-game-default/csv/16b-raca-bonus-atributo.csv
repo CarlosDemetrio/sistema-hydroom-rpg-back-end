@@ -1,0 +1,10 @@
+# RacaBonusAtributo — bônus de atributo que a raça concede
+# Campos: raca_nome;atributo_sigla;bonus
+# raca_nome → referencia 'nome' de 16-raca.csv
+# atributo_sigla → referencia 'sigla' de 08-atributo-config.csv
+# bonus: pode ser negativo
+# TODO PA-015-02: preencher bônus de atributos por raça
+raca_nome;atributo_sigla;bonus
+# Exemplo: Elfo;INT;2
+# Exemplo: Elfo;FOR;-1
+# Exemplo: Anão;VIG;2

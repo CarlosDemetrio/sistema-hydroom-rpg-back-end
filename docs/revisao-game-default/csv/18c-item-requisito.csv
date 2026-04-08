@@ -1,0 +1,11 @@
+# ItemRequisito — requisitos para usar/equipar um item
+# Campos: item_nome;tipo_requisito;alvo;valor_minimo
+# item_nome → referencia 'nome' de 18-item-config.csv
+# tipo_requisito: NIVEL, ATRIBUTO, BONUS, APTIDAO, VANTAGEM, CLASSE, RACA
+# alvo: nome/sigla do alvo (ex: "FOR", "B.B.A", "Guerreiro")
+# valor_minimo: valor mínimo exigido
+# TODO: mapear requisitos formais (atualmente apenas texto em 'propriedades')
+item_nome;tipo_requisito;alvo;valor_minimo
+# Exemplos baseados nas propriedades textuais:
+# Cota de Malha;ATRIBUTO;FOR;15
+# Machado Grande;ATRIBUTO;FOR;13

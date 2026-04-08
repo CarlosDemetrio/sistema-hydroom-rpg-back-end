@@ -1,0 +1,8 @@
+# VantagemPreRequisito — pré-requisitos entre vantagens
+# Campos: vantagem_nome;requisito_nome;nivel_minimo
+# vantagem_nome → a vantagem que TEM o pré-requisito (referencia 17-vantagem-config.csv)
+# requisito_nome → a vantagem EXIGIDA como pré-requisito (referencia 17-vantagem-config.csv)
+# nivel_minimo: nível mínimo do pré-requisito (default: 1)
+vantagem_nome;requisito_nome;nivel_minimo
+# TODO: definir pré-requisitos entre vantagens
+# Exemplo: Ataque Sentai;Ataque Adicional;3

@@ -1,0 +1,7 @@
+# ClasseBonus — bônus de derivados que a classe concede
+# Campos: classe_nome;bonus_nome;valor_bonus;ordem_exibicao
+# classe_nome → referencia 'nome' de 15-classe-personagem.csv
+# bonus_nome → referencia 'nome' de 09-bonus-config.csv
+# TODO PA-015-01: preencher bônus de derivados por classe
+classe_nome;bonus_nome;valor_bonus;ordem_exibicao
+# Exemplo: Guerreiro;BBA;2;1

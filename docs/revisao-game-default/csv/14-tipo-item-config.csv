@@ -1,0 +1,28 @@
+# TipoItemConfig — PREENCHER ANTES DE 18-item-config.csv
+# Campos: nome;categoria;subcategoria;requer_duas_maos;ordem_exibicao
+# categoria: ARMA, ARMADURA, ACESSORIO, CONSUMIVEL, FERRAMENTA, AVENTURA
+# subcategoria: ESPADA, ARCO, LANCA, MACHADO, MARTELO, CAJADO, ADAGA, ARREMESSO, BESTA,
+#               ARMADURA_LEVE, ARMADURA_MEDIA, ARMADURA_PESADA, ESCUDO,
+#               ANEL, AMULETO, BOTAS, CAPA, LUVAS, POCAO, MUNICAO, KIT, OUTROS
+# REVISÃO: "Lanca" → "Lança", "Armadura Media" → "Armadura Média", "Pocao" → "Poção", "Municao" → "Munição"
+nome;categoria;subcategoria;requer_duas_maos;ordem_exibicao
+Espada Curta;ARMA;ESPADA;false;1
+Espada Longa;ARMA;ESPADA;false;2
+Espada Dupla;ARMA;ESPADA;true;3
+Arco Curto;ARMA;ARCO;true;4
+Arco Longo;ARMA;ARCO;true;5
+Adaga;ARMA;ADAGA;false;6
+Machado de Batalha;ARMA;MACHADO;false;7
+Machado Grande;ARMA;MACHADO;true;8
+Martelo de Guerra;ARMA;MARTELO;false;9
+Cajado;ARMA;CAJADO;true;10
+Lança;ARMA;LANCA;false;11
+Armadura Leve;ARMADURA;ARMADURA_LEVE;false;12
+Armadura Média;ARMADURA;ARMADURA_MEDIA;false;13
+Armadura Pesada;ARMADURA;ARMADURA_PESADA;false;14
+Escudo;ARMADURA;ESCUDO;false;15
+Anel;ACESSORIO;ANEL;false;16
+Amuleto;ACESSORIO;AMULETO;false;17
+Poção;CONSUMIVEL;POCAO;false;18
+Munição;CONSUMIVEL;MUNICAO;false;19
+Equipamento de Aventura;AVENTURA;OUTROS;false;20

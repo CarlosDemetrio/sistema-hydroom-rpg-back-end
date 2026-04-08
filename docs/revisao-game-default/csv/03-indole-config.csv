@@ -1,0 +1,6 @@
+# IndoleConfig
+# Campos: nome (obrigatório), descricao (opcional), ordem_exibicao (obrigatório)
+nome;descricao;ordem_exibicao
+Bom;;1
+Mau;;2
+Neutro;;3

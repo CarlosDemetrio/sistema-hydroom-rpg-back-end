@@ -1,0 +1,12 @@
+# CategoriaVantagem — PREENCHER ANTES DE 17-vantagem-config.csv
+# Campos: nome (obrigatório), cor (hex #RRGGBB), descricao (opcional), ordem_exibicao (obrigatório)
+# ATENÇÃO: os nomes aqui devem ser idênticos aos usados na coluna categoria_nome do arquivo 17
+nome;cor;descricao;ordem_exibicao
+Treinamento Físico;#e74c3c;;1
+Treinamento Mental;#8e44ad;;2
+Ação;#e67e22;;3
+Reação;#27ae60;;4
+Vantagem de Atributo;#2980b9;;5
+Vantagem Geral;#95a5a6;;6
+Vantagem Histórica;#f39c12;;7
+Vantagem de Renascimento;#1abc9c;;8

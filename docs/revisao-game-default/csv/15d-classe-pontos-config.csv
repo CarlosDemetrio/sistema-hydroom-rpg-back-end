@@ -1,0 +1,6 @@
+# ClassePontosConfig — pontos de atributo/aptidão por nível para cada classe
+# Campos: classe_nome;nivel;pontos_atributo;pontos_aptidao
+# classe_nome → referencia 'nome' de 15-classe-personagem.csv
+# TODO PA-015-01: preencher distribuição de pontos por nível por classe
+classe_nome;nivel;pontos_atributo;pontos_aptidao
+# Exemplo: Guerreiro;1;5;2

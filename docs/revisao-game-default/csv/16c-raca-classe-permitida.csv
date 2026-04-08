@@ -1,0 +1,8 @@
+# RacaClassePermitida — classes permitidas para cada raça
+# Campos: raca_nome;classe_nome
+# raca_nome → referencia 'nome' de 16-raca.csv
+# classe_nome → referencia 'nome' de 15-classe-personagem.csv
+# Se vazio = todas as classes permitidas (comportamento padrão?)
+raca_nome;classe_nome
+# Exemplo: Elfo;Mago
+# Exemplo: Anão;Guerreiro

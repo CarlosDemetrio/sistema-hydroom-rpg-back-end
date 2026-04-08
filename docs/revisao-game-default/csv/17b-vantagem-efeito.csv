@@ -1,0 +1,19 @@
+# VantagemEfeito — efeitos mecânicos concretos de cada vantagem
+# Campos: vantagem_nome;tipo_efeito;atributo_sigla;aptidao_nome;bonus_nome;membro_nome;valor_fixo;valor_por_nivel;formula;descricao_efeito
+# vantagem_nome → referencia 'nome' de 17-vantagem-config.csv
+# tipo_efeito: BONUS_ATRIBUTO, BONUS_APTIDAO, BONUS_DERIVADO, BONUS_VIDA, BONUS_VIDA_MEMBRO, BONUS_ESSENCIA, DADO_UP, FORMULA_CUSTOMIZADA
+# atributo_sigla → referencia 'sigla' de 08-atributo-config.csv (apenas para BONUS_ATRIBUTO)
+# aptidao_nome → referencia 'nome' de 13-aptidao-config.csv (apenas para BONUS_APTIDAO)
+# bonus_nome → referencia 'nome' de 09-bonus-config.csv (apenas para BONUS_DERIVADO)
+# membro_nome → referencia 'nome' de 10-membro-corpo-config.csv (apenas para BONUS_VIDA_MEMBRO)
+# valor_fixo: bônus fixo independente do nível da vantagem
+# valor_por_nivel: bônus × nivel_vantagem
+# formula: expressão exp4j (apenas para FORMULA_CUSTOMIZADA; variável: nivel_vantagem)
+# ATENÇÃO: preencha apenas os campos relevantes para o tipo_efeito
+vantagem_nome;tipo_efeito;atributo_sigla;aptidao_nome;bonus_nome;membro_nome;valor_fixo;valor_por_nivel;formula;descricao_efeito
+# TODO: preencher efeitos para todas as vantagens
+# Exemplos de referência:
+# Saúde de Ferro;BONUS_VIDA;;;;;;;;5;+5 PV por nível da vantagem
+# Fortitude;BONUS_ATRIBUTO;VIG;;;;;2;;Aumenta VIG em +2 por nível
+# Ataque Aprimorado;BONUS_DERIVADO;;;BBA;;;1;;+1 BBA por nível da vantagem
+# Destreza Física;BONUS_ATRIBUTO;AGI;;;;1;;Aumenta AGI em +1 por nível

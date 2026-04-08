@@ -1,0 +1,7 @@
+# PresencaConfig
+# Campos: nome (obrigatório), descricao (opcional), ordem_exibicao (obrigatório)
+nome;descricao;ordem_exibicao
+Bom;;1
+Leal;;2
+Caótico;;3
+Neutro;;4

@@ -1,0 +1,7 @@
+# ClasseAptidaoBonus — aptidões que a classe concede como bônus
+# Campos: classe_nome;aptidao_nome;valor_bonus;ordem_exibicao
+# classe_nome → referencia 'nome' de 15-classe-personagem.csv
+# aptidao_nome → referencia 'nome' de 13-aptidao-config.csv
+# TODO PA-015-01: preencher aptidões bônus por classe
+classe_nome;aptidao_nome;valor_bonus;ordem_exibicao
+# Exemplo: Guerreiro;Guarda;2;1

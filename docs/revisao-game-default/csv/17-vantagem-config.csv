@@ -1,0 +1,51 @@
+# VantagemConfig
+# Campos: nome;sigla;descricao;nivel_maximo;formula_custo;descricao_efeito;tipo_vantagem;categoria_nome;ordem_exibicao
+# sigla: 2-5 chars, ÚNICA cross-entity por jogo (opcional mas necessária para refs em fórmulas)
+# tipo_vantagem: VANTAGEM (comprada) ou INSOLITUS (concedida pelo Mestre)
+# categoria_nome → referencia 'nome' de 06-categoria-vantagem.csv
+# formula_custo: ATENÇÃO — "custo_base * nivel_vantagem" usa variável 'custo_base' que NÃO EXISTE no FormulaEvaluatorService
+#   Variáveis disponíveis: nivel, base, total, e siglas de atributos (FOR, AGI, VIG, SAB, INTU, INT, AST)
+#   Sugestão de correção: trocar para expressão válida como "nivel * 3" em vez de "custo_base * nivel_vantagem"
+nome;sigla;descricao;nivel_maximo;formula_custo;descricao_efeito;tipo_vantagem;categoria_nome;ordem_exibicao
+# === Treinamento Físico ===
+Treinamento de Combate Ofensivo;;Treinamento especializado em técnicas ofensivas de combate;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Treinamento Físico;1
+Treinamento de Combate Defensivo;;Treinamento especializado em técnicas defensivas de combate;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Treinamento Físico;2
+Treinamento de Combate com Escudo;;Treinamento especializado no uso de escudo em combate;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Treinamento Físico;3
+# === Treinamento Mental ===
+Treinamento Mágico;;Treinamento especializado em técnicas mágicas;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Treinamento Mental;4
+Treinamento de Poder Mental;;Treinamento especializado em poderes mentais;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Treinamento Mental;5
+Treinamento de Liderança;;Treinamento especializado em técnicas de liderança e comando;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Treinamento Mental;6
+Treinamento de Meditação;;Treinamento especializado em técnicas de meditação e foco mental;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Treinamento Mental;7
+# === Ação ===
+Ataque Adicional;;Permite realizar um ataque adicional por turno;3;custo_base * nivel_vantagem;TODO;VANTAGEM;Ação;8
+Ataque Sentai;;Permite atacar múltiplos alvos em área;5;custo_base * nivel_vantagem;TODO;VANTAGEM;Ação;9
+# === Reação ===
+Contra-Ataque;;Permite realizar um contra-ataque ao ser atacado;5;custo_base * nivel_vantagem;TODO;VANTAGEM;Reação;10
+Interceptação;;Permite interceptar ataques direcionados a aliados;5;custo_base * nivel_vantagem;TODO;VANTAGEM;Reação;11
+# === Vantagem de Atributo ===
+Corpo Fechado;;Proteção mágica que reduz danos recebidos;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Vantagem de Atributo;12
+Destreza Mental;;Aumenta a capacidade de processamento mental;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Vantagem de Atributo;13
+Destreza Física;;Aumenta a agilidade e reflexos físicos;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Vantagem de Atributo;14
+Determinação Vital;;Aumenta a resistência física e pontos de vida;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Vantagem de Atributo;15
+Sexto Sentido;;TODO;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Vantagem de Atributo;16
+Inspiração Natural;;TODO;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Vantagem de Atributo;17
+# === Vantagem Geral ===
+Saúde de Ferro;;Constituição excepcional que aumenta pontos de vida;10;custo_base * nivel_vantagem;TODO;VANTAGEM;Vantagem Geral;18
+Ambidestria;;Remove penalidades de usar armas com a mão inábil;1;custo_base;TODO;VANTAGEM;Vantagem Geral;19
+# === Vantagem Histórica ===
+Riqueza;;Personagem possui recursos financeiros consideráveis;5;custo_base * nivel_vantagem;TODO;VANTAGEM;Vantagem Histórica;20
+Capangas;;Personagem possui aliados leais que podem ser convocados;5;custo_base * nivel_vantagem;TODO;VANTAGEM;Vantagem Histórica;21
+# === Vantagem de Renascimento ===
+Último Sigilo;;Proteção divina que pode prevenir a morte uma vez por sessão;1;custo_base;TODO;VANTAGEM;Vantagem de Renascimento;22
+Pensamento Bifurcado;;Capacidade de processar duas linhas de pensamento simultaneamente;1;custo_base;TODO;VANTAGEM;Vantagem de Renascimento;23
+# === Legadas (sem categoria definida) ===
+Fortitude;;Aumenta o atributo Vigor permanentemente;10;custo_base * nivel_vantagem;TODO;VANTAGEM;;24
+Força Aprimorada;;Aumenta o atributo Força permanentemente;10;custo_base * nivel_vantagem;TODO;VANTAGEM;;25
+Agilidade Aprimorada;;Aumenta o atributo Agilidade permanentemente;10;custo_base * nivel_vantagem;TODO;VANTAGEM;;26
+Ataque Aprimorado;;Aumenta BBA em +1 por nível da vantagem;;custo_base * nivel_vantagem;TODO;VANTAGEM;;27
+Defesa Mágica;;Aumenta BBM em +1 por nível da vantagem;;custo_base * nivel_vantagem;TODO;VANTAGEM;;28
+Golpe Crítico;;Aumenta chance de crítico em combate;5;custo_base * nivel_vantagem;TODO;VANTAGEM;;29
+Vida Extra;;Aumenta pontos de vida em +5 por nível da vantagem;;custo_base * nivel_vantagem;TODO;VANTAGEM;;30
+Essência Ampliada;;Aumenta pontos de essência/mana em +10 por nível da vantagem;;custo_base * nivel_vantagem;TODO;VANTAGEM;;31
+Visão no Escuro;;Permite enxergar no escuro até 18 metros;1;custo_base;TODO;VANTAGEM;;32
+Resistência a Veneno;;Adiciona +4 em testes contra venenos;1;custo_base;TODO;VANTAGEM;;33

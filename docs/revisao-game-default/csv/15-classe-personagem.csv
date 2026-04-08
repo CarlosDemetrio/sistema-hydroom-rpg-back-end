@@ -1,0 +1,15 @@
+# ClassePersonagem
+# Campos: nome;descricao;ordem_exibicao
+nome;descricao;ordem_exibicao
+Guerreiro;Especialista em combate corpo a corpo;1
+Arqueiro;Mestre em combate à distância;2
+Monge;Lutador desarmado com disciplina espiritual;3
+Berserker;Guerreiro selvagem de fúria incontrolável;4
+Assassino;Especialista em ataques furtivos e letais;5
+Fauno (Herdeiro);Herdeiro com poderes especiais;6
+Mago;Conjurador de magias arcanas;7
+Feiticeiro;Usuário de magia inata;8
+Necromante;Manipulador de forças da morte;9
+Sacerdote;Servo divino com poderes sagrados;10
+Ladrão;Especialista em subterfúgio e furto;11
+Negociante;Mestre em comércio e persuasão;12

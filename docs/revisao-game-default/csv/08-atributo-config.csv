@@ -1,0 +1,13 @@
+# AtributoConfig
+# Campos: nome;sigla;descricao;formula_impeto;unidade_impeto;valor_minimo;valor_maximo;ordem_exibicao
+# sigla: 2-5 chars, ÚNICA cross-entity por jogo
+# unidade_impeto → mapeia para descricaoImpeto na entidade (nome diferente no DTO)
+# valor_minimo e valor_maximo: TODO — não estão no provider atual
+nome;sigla;descricao;formula_impeto;unidade_impeto;valor_minimo;valor_maximo;ordem_exibicao
+Força;FOR;Capacidade física bruta, determina capacidade de carga;total * 3;kg;TODO;TODO;1
+Agilidade;AGI;Velocidade e reflexos, determina deslocamento;total / 3;metros;TODO;TODO;2
+Vigor;VIG;Resistência física, redução de dano físico;total / 10;RD;TODO;TODO;3
+Sabedoria;SAB;Resistência mágica, redução de dano mágico;total / 10;RDM;TODO;TODO;4
+Intuição;INTU;Sorte e percepção instintiva, pontos de sorte;min(total / 20, 3);pontos;TODO;TODO;5
+Inteligência;INT;Capacidade de comando e raciocínio;total / 20;comando;TODO;TODO;6
+Astúcia;AST;Pensamento estratégico e tático;total / 10;estratégia;TODO;TODO;7

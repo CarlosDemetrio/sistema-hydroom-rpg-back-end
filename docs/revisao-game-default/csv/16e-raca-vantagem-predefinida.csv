@@ -1,0 +1,7 @@
+# RacaVantagemPreDefinida — vantagens pré-definidas concedidas ao escolher a raça
+# Campos: raca_nome;vantagem_nome;nivel_inicial
+# raca_nome → referencia 'nome' de 16-raca.csv
+# vantagem_nome → referencia 'nome' de 17-vantagem-config.csv
+# PREENCHER APÓS 17-vantagem-config.csv
+raca_nome;vantagem_nome;nivel_inicial
+# Exemplo: Elfo;Visão no Escuro;1

@@ -1,0 +1,12 @@
+# MembroCorpoConfig
+# Campos: nome;porcentagem_vida;ordem_exibicao
+# porcentagem_vida: BigDecimal de 0.01 a 1.00 (1.00 = 100% da VT total)
+# REVISÃO: Sangue com ordem 9 — ordens 7 e 8 estão puladas (intencional?)
+nome;porcentagem_vida;ordem_exibicao
+Cabeça;0.75;1
+Tronco;0.35;2
+Braço Direito;0.10;3
+Braço Esquerdo;0.10;4
+Perna Direita;0.10;5
+Perna Esquerda;0.10;6
+Sangue;1.00;9

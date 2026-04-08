@@ -1,0 +1,5 @@
+# TipoAptidao — criado diretamente no GameConfigInitializerService (não via provider)
+# Referenciado por: 13-aptidao-config.csv (coluna tipo_aptidao_nome)
+nome
+FISICA
+MENTAL

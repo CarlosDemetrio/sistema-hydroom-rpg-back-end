@@ -1,0 +1,6 @@
+# RacaPontosConfig — pontos de atributo/aptidão adicionais por nível para a raça
+# Campos: raca_nome;nivel;pontos_atributo;pontos_aptidao
+# raca_nome → referencia 'nome' de 16-raca.csv
+# TODO PA-015-02: preencher
+raca_nome;nivel;pontos_atributo;pontos_aptidao
+# Exemplo: Elfo;1;0;2

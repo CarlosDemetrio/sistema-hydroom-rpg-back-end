@@ -1,0 +1,7 @@
+# ClasseVantagemPreDefinida — vantagens pré-definidas concedidas ao escolher a classe
+# Campos: classe_nome;vantagem_nome;nivel_inicial
+# classe_nome → referencia 'nome' de 15-classe-personagem.csv
+# vantagem_nome → referencia 'nome' de 17-vantagem-config.csv
+# PREENCHER APÓS 17-vantagem-config.csv
+classe_nome;vantagem_nome;nivel_inicial
+# Exemplo: Guerreiro;Treinamento de Combate Ofensivo;1

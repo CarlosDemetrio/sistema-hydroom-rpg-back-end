@@ -1,0 +1,14 @@
+# BonusConfig (derivados/atributos calculados)
+# Campos: nome;sigla;formula_base;descricao;ordem_exibicao
+# sigla: 2-5 chars, ÚNICA cross-entity por jogo
+# formula_base: usa abreviações de atributos do arquivo 08 (FOR, AGI, VIG, SAB, INTU, INT, AST)
+nome;sigla;formula_base;descricao;ordem_exibicao
+B.B.A;BBA;(FOR + AGI) / 3;;1
+B.B.M;BBM;(SAB + INT) / 3;;2
+Defesa;DEF;VIG / 5;;3
+Esquiva;ESQ;AGI / 5;;4
+Iniciativa;INI;INTU / 5;;5
+Percepção;PER;INTU / 3;;6
+Raciocínio;RAC;INT / 3;;7
+Bloqueio;BLO;VIG / 3;;8
+Reflexo;REF;AGI / 3;;9

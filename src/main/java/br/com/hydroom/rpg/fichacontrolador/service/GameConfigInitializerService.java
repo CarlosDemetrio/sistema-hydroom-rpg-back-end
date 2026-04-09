@@ -44,7 +44,9 @@ public class GameConfigInitializerService {
     private final TipoAptidaoRepository tipoAptidaoRepository;
     private final ConfiguracaoNivelRepository nivelRepository;
     private final ConfiguracaoClasseRepository classeRepository;
+    private final ClassePontosConfigRepository classePontosConfigRepository;
     private final ConfiguracaoRacaRepository racaRepository;
+    private final RacaPontosConfigRepository racaPontosConfigRepository;
     private final RacaBonusAtributoRepository racaBonusAtributoRepository;
     private final DadoProspeccaoConfigRepository prospeccaoRepository;
     private final GeneroConfigRepository generoRepository;
@@ -363,7 +365,7 @@ public class GameConfigInitializerService {
     }
 
     /**
-     * Cria classes padrão para o jogo.
+     * Cria classes padrão para o jogo e seus pontos de bônus por nível.
      */
     private List<ClassePersonagem> createClasses(Jogo jogo, List<ClasseConfigDTO> dtos) {
         List<ClassePersonagem> entities = dtos.stream()
@@ -376,12 +378,34 @@ public class GameConfigInitializerService {
                 .toList();
 
         List<ClassePersonagem> saved = classeRepository.saveAll(entities);
+
+        Map<String, ClassePersonagem> classeMap = saved.stream()
+                .collect(Collectors.toMap(ClassePersonagem::getNome, c -> c));
+        List<ClassePontosConfig> pontos = new ArrayList<>();
+        for (ClasseConfigDTO dto : dtos) {
+            ClassePersonagem classe = classeMap.get(dto.getNome());
+            if (classe != null && dto.getPontosConfig() != null) {
+                for (var p : dto.getPontosConfig()) {
+                    pontos.add(ClassePontosConfig.builder()
+                            .classePersonagem(classe)
+                            .nivel(p.nivel())
+                            .pontosAtributo(p.pontosAtributo())
+                            .pontosVantagem(p.pontosVantagem())
+                            .build());
+                }
+            }
+        }
+        if (!pontos.isEmpty()) {
+            classePontosConfigRepository.saveAll(pontos);
+            log.debug("{} ClassePontosConfig entries criadas", pontos.size());
+        }
+
         log.debug("{} classes criadas", saved.size());
         return saved;
     }
 
     /**
-     * Cria raças padrão para o jogo.
+     * Cria raças padrão para o jogo e seus pontos de bônus por marcos de nível.
      */
     private List<Raca> createRacas(Jogo jogo, List<RacaConfigDTO> dtos) {
         List<Raca> entities = dtos.stream()
@@ -394,6 +418,28 @@ public class GameConfigInitializerService {
                 .toList();
 
         List<Raca> saved = racaRepository.saveAll(entities);
+
+        Map<String, Raca> racaMap = saved.stream()
+                .collect(Collectors.toMap(Raca::getNome, r -> r));
+        List<RacaPontosConfig> pontos = new ArrayList<>();
+        for (RacaConfigDTO dto : dtos) {
+            Raca raca = racaMap.get(dto.getNome());
+            if (raca != null && dto.getPontosConfig() != null) {
+                for (var p : dto.getPontosConfig()) {
+                    pontos.add(RacaPontosConfig.builder()
+                            .raca(raca)
+                            .nivel(p.nivel())
+                            .pontosAtributo(p.pontosAtributo())
+                            .pontosVantagem(p.pontosVantagem())
+                            .build());
+                }
+            }
+        }
+        if (!pontos.isEmpty()) {
+            racaPontosConfigRepository.saveAll(pontos);
+            log.debug("{} RacaPontosConfig entries criadas", pontos.size());
+        }
+
         log.debug("{} raças criadas", saved.size());
         return saved;
     }

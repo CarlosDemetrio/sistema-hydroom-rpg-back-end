@@ -1,35 +1,45 @@
 package br.com.hydroom.rpg.fichacontrolador.config.defaults;
 
 import br.com.hydroom.rpg.fichacontrolador.dto.defaults.BonusAtributoDTO;
+import br.com.hydroom.rpg.fichacontrolador.dto.defaults.PontosNivelConfigDTO;
 import br.com.hydroom.rpg.fichacontrolador.dto.defaults.RacaConfigDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Provedor das 6 raças padrão do universo Klayrah com bônus raciais e pontos por nível.
+ *
+ * <p>Bônus de nível são concedidos em marcos (1, 5, 10, 15, 20, 25, 30, 35).
+ * Karzarcryer e Atlas não recebem bônus de nível — seus atributos iniciais já
+ * equivalem a muitos pontos de head start.</p>
+ */
 @Component
 public class DefaultRacasProvider {
+
+    private static final List<Integer> MARCOS = List.of(1, 5, 10, 15, 20, 25, 30, 35);
 
     public List<RacaConfigDTO> getRacas() {
         return List.of(
             RacaConfigDTO.of("Humano",
-                "Raca versatil e adaptavel, capaz de aprender qualquer arte ou oficio. Sua maior forca e a adaptabilidade e a capacidade de superacao. Nao possuem vantagens raciais fisicas marcantes, mas compensam com 5 vantagens especiais que refletem a resiliencia e o potencial ilimitado da humanidade.",
-                1),
+                "Raça versátil e adaptável, capaz de aprender qualquer arte ou ofício. Sua maior força é a adaptabilidade e a capacidade de superação. Não possuem vantagens raciais físicas marcantes, mas compensam com 5 vantagens especiais que refletem a resiliência e o potencial ilimitado da humanidade.",
+                1, pontosEmMarcos(0, 1)),
             RacaConfigDTO.of("Karzarcryer",
-                "Descendentes de dragoes do plano do fogo, os Karzarcryer possuem escamas ignicas e sangue quente. Bonus: +8 Forca (+24 VIG), -3 Percepcao (-9 INTU). Sao conhecidos por seu temperamento explosivo e pela Ignomia inicial 5. Dominam o elemento fogo e possuem resistencia sobrenatural ao calor.",
-                2),
+                "Descendentes de dragões do plano do fogo, os Karzarcryer possuem escamas ígneas e sangue quente. Bônus: +8 Força (+24 VIG), -3 Percepção (-9 INTU). São conhecidos por seu temperamento explosivo e pela Ignomia inicial 5. Dominam o elemento fogo e possuem resistência sobrenatural ao calor.",
+                2, List.of()),
             RacaConfigDTO.of("Ikaruz",
-                "Raca de seres alados com afinidade a sabedoria celestial. Possuem asas funcionais e adaptacao a diferentes altitudes. Bonus: +5 Sabedoria, +3 Percepcao (+9 INTU), -3 Resistencia (-9 VIG). Antecedente: Nanismo.",
-                3),
+                "Raça de seres alados com afinidade à sabedoria celestial. Possuem asas funcionais e adaptação a diferentes altitudes. Bônus: +5 Sabedoria, +3 Percepção (+9 INTU), -3 Resistência (-9 VIG). Antecedente: Nanismo.",
+                3, pontosEmMarcos(0, 1)),
             RacaConfigDTO.of("Hankraz",
-                "Seres esguios de inteligencia agucada que habitam entre planos de existencia paralelos. Bonus: +5 Inteligencia, +3 Percepcao (+9 INTU), -3 Resistencia (-9 VIG). Antecedente: Baixo vigor.",
-                4),
+                "Seres esguios de inteligência aguçada que habitam entre planos de existência paralelos. Bônus: +5 Inteligência, +3 Percepção (+9 INTU), -3 Resistência (-9 VIG). Antecedente: Baixo vigor.",
+                4, pontosEmMarcos(0, 1)),
             RacaConfigDTO.of("Atlas",
-                "Gigantes de forca incomparavel. Bonus: +8 Forca, -3 Inteligencia. Antecedente: E burro. Sao guerreiros natos mas carecem de sofisticacao intelectual.",
-                5),
+                "Gigantes de força incomparável. Bônus: +8 Força, -3 Inteligência. Antecedente: É burro. São guerreiros natos mas carecem de sofisticação intelectual.",
+                5, List.of()),
             RacaConfigDTO.of("Anakarys",
-                "Raca agil de predadores naturais com garras, presas e instintos agucados. Bonus: +3 Agilidade, +2 Percepcao (+6 INTU).",
-                6)
+                "Raça ágil de predadores naturais com garras, presas e instintos aguçados. Bônus: +3 Agilidade, +2 Percepção (+6 INTU).",
+                6, pontosEmMarcos(0, 1))
         );
     }
 
@@ -59,5 +69,12 @@ public class DefaultRacasProvider {
                 BonusAtributoDTO.of("INTU",  6)
             ))
         );
+    }
+
+    /** +X pontos nos marcos de nível 1, 5, 10, 15, 20, 25, 30, 35. */
+    private static List<PontosNivelConfigDTO> pontosEmMarcos(int pa, int pv) {
+        return MARCOS.stream()
+                .map(n -> new PontosNivelConfigDTO(n, pa, pv))
+                .toList();
     }
 }

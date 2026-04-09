@@ -156,26 +156,6 @@ public interface GameDefaultConfigProvider {
     List<CategoriaVantagemDTO> getDefaultCategoriasVantagem();
 
     /**
-     * Retorna defaults de pontos extras por classe (por nível).
-     *
-     * <p>TODO PA-015-01: Definir com PO os valores canônicos por classe.
-     * Por enquanto retorna vazio — Mestre configura manualmente após criar o jogo.</p>
-     *
-     * @return Mapa de nome da classe → lista de pontos por nível
-     */
-    Map<String, List<?>> getDefaultClassePontos();
-
-    /**
-     * Retorna defaults de pontos extras por raça (por nível).
-     *
-     * <p>TODO PA-015-02: Definir com PO os valores canônicos por raça.
-     * Por enquanto retorna vazio — Mestre configura manualmente após criar o jogo.</p>
-     *
-     * @return Mapa de nome da raça → lista de pontos por nível
-     */
-    Map<String, List<?>> getDefaultRacaPontos();
-
-    /**
      * Retorna as 7 raridades de itens padrão (Comum → Único).
      *
      * @return Lista de RaridadeItemConfigDefault com cores e limites de bônus

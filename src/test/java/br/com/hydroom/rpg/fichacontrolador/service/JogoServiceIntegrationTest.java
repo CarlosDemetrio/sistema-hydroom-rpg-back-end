@@ -83,6 +83,12 @@ class JogoServiceIntegrationTest {
     @Autowired
     private VantagemConfigRepository vantagemRepository;
 
+    @Autowired
+    private ClassePontosConfigRepository classePontosConfigRepository;
+
+    @Autowired
+    private RacaPontosConfigRepository racaPontosConfigRepository;
+
     private Usuario mestre;
     private Usuario jogador;
     private Jogo jogo;
@@ -407,6 +413,16 @@ class JogoServiceIntegrationTest {
         assertThat(vantagens)
             .as("Deve criar vantagens (quantidade pode variar)")
             .isNotEmpty();
+
+        // Assert - Pontos por classe (2 classes×35 níveis + 2 classes×7 marcos + 8 classes×35 níveis = 364)
+        assertThat(classePontosConfigRepository.findAll())
+            .as("Deve criar 364 entradas de ClassePontosConfig")
+            .hasSize(364);
+
+        // Assert - Pontos por raça (4 raças × 8 marcos [1,5,10,15,20,25,30,35] = 32; Karzarcryer e Atlas sem pontos)
+        assertThat(racaPontosConfigRepository.findAll())
+            .as("Deve criar 32 entradas de RacaPontosConfig")
+            .hasSize(32);
     }
 
     @Test

@@ -118,16 +118,6 @@ public class DefaultGameConfigProviderImpl implements GameDefaultConfigProvider 
     }
 
     @Override
-    public Map<String, List<?>> getDefaultClassePontos() {
-        return Map.of();
-    }
-
-    @Override
-    public Map<String, List<?>> getDefaultRacaPontos() {
-        return Map.of();
-    }
-
-    @Override
     public List<RaridadeItemConfigDefault> getDefaultRaridades() {
         return itensProvider.getRaridades();
     }

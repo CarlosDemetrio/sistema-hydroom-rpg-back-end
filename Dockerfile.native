@@ -21,7 +21,7 @@ COPY src ./src
 RUN ./mvnw clean package -Pnative -DskipTests -q
 
 # ----- Stage 2: Runtime Distroless (sem JVM, sem shell) -----
-FROM gcr.io/distroless/base-debian12 AS production
+FROM gcr.io/distroless/cc-debian12 AS production
 
 WORKDIR /app
 

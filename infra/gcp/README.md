@@ -34,6 +34,7 @@ Firebase Hosting (CDN)         ← Frontend Angular (Spec 019)
 | `backup-postgres.sh` | Script de backup diario com retencao 7 dias |
 | `cloud-run-deploy.sh` | Deploy automatizado do backend no Cloud Run |
 | `setup-secrets.sh` | Criacao de segredos no GCP Secret Manager |
+| `setup-artifact-registry.sh` | Criacao do repositorio Docker no Artifact Registry + permissoes |
 
 ---
 
@@ -71,7 +72,27 @@ gcloud compute instances create postgres-db \
 > deve ser promovido a IP interno ou use `--private-network-ip`.
 > Ajuste conforme a topologia de rede do seu projeto.
 
-### 3. Regras de Firewall
+### 3. Criar repositório no Artifact Registry
+
+```bash
+# Executar o script (substitua SA_EMAIL pelo email da Service Account do GitHub Actions)
+cd infra/gcp
+./setup-artifact-registry.sh SA_EMAIL@PROJECT_ID.iam.gserviceaccount.com
+
+# Ou manualmente:
+gcloud services enable artifactregistry.googleapis.com
+gcloud artifacts repositories create ficha-controlador \
+  --repository-format=docker \
+  --location=us-east1 \
+  --description="Docker images do backend ficha-controlador"
+
+# Conceder permissão de push à Service Account
+gcloud projects add-iam-policy-binding PROJECT_ID \
+  --member="serviceAccount:SA_EMAIL" \
+  --role="roles/artifactregistry.writer"
+```
+
+### 4. Regras de Firewall
 
 ```bash
 # PostgreSQL — APENAS rede interna VPC (Cloud Run via Direct VPC Egress)

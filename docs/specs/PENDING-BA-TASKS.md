@@ -2,14 +2,14 @@
 
 Briefing estruturado para Business Analysts. Estas três frentes precisam de trabalho de análise/decisão antes de virarem specs técnicas executáveis. Criado em 2026-04-08 pelo PO.
 
-**Ordem sugerida de execução:** BA-01 → BA-03 → BA-02 (BA-02 é a maior e depende de BA-01 estar validado para saber o que já existe no catálogo default).
+**Ordem sugerida de execução:** BA-03 → BA-02 → BA-01 (BA-01 bloqueado até escopo de configuração fechar — habilidades podem adicionar novos campos ao provider).
 
 ---
 
 ## BA-01 — Revisão da massa do GameDefaultProvider
 
 **Spec number sugerida:** SPEC-020-revisao-game-default
-**Prioridade:** P0 (bloqueia qualquer ajuste futuro no provider)
+**Prioridade:** ⏸ BLOQUEADO — aguarda fechamento do escopo de configuração (Habilidades/SPEC-021 pode adicionar novos campos ao provider)
 **Dependências:** nenhuma
 **Esforço estimado BA:** 1-2 sessões
 

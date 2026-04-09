@@ -112,7 +112,7 @@ Briefing completo em `docs/specs/PENDING-BA-TASKS.md`. Três frentes que precisa
 | BA-02 | Sistema de Habilidades (Skills) | SPEC-021 | P1 | 2-3 sessões |
 | BA-03 | Categorização/tags de NPCs | SPEC-022 | P2 | 0.5-1 sessão |
 
-Ordem sugerida: BA-01 → BA-03 → BA-02. Nenhuma bloqueia o RC — podem rodar em paralelo à homologação.
+Ordem sugerida: BA-03 → BA-02 (BA-01 ⏸ bloqueado até escopo de configuração fechar). Nenhuma bloqueia o RC — podem rodar em paralelo à homologação.
 
 ### Obrigatorio antes do RC
 

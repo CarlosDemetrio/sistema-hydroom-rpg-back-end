@@ -104,10 +104,12 @@ echo -n "SEU_API_SECRET"  | gcloud secrets create rpg-cloudinary-api-secret --da
 
 ### Obrigatorio antes do RC
 
-| Task | Descricao | Agente |
-|------|-----------|--------|
-| Spec 011 T8 | Testes frontend (~40 novos testes) | angular-frontend-dev |
-| Acoes manuais | Secrets GCP + re-deploys | Usuario |
+| Task | Descricao | Agente | Status |
+|------|-----------|--------|--------|
+| Spec 011 T8 | Testes frontend (~40 novos testes) | angular-frontend-dev | PENDENTE |
+| Secrets GCP (4 secrets) | rpg-cors-allowed-origins + 3x Cloudinary | Usuario | ✅ FEITO |
+| Re-deploy backend + frontend | Cloud Run + Firebase | Usuario | ✅ FEITO |
+| `npm install marked` | Markdown completo no frontend | Usuario | ✅ FEITO |
 
 ### RC (Rodada 17)
 
@@ -134,8 +136,6 @@ echo -n "SEU_API_SECRET"  | gcloud secrets create rpg-cloudinary-api-secret --da
 
 ## Bloqueados / Pontos em Aberto
 
-- **Cloudinary secrets** — criar manualmente no GCP antes do proximo deploy
-- **`npm install marked`** — instalar no frontend para Markdown completo
 - **Cloudinary secrets** — criar manualmente no GCP antes do proximo deploy
 - **`npm install marked`** — instalar no frontend para Markdown completo
 - **PA-R02-01**: Spec 016 T5 — FichaItemService 4x TODO recalcularStats(); teste @Disabled

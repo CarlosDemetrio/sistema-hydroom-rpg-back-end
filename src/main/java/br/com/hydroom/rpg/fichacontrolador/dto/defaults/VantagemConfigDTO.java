@@ -24,8 +24,6 @@ public class VantagemConfigDTO {
     private String valorBonusFormula;
     private Integer custoBase;
     private String formulaCusto;       // Ex: "custo_base * nivel_vantagem"
-    private Integer nivelMinimoPersonagem;
-    private Boolean podeEvoluir;
     private Integer nivelMaximoVantagem;
     private Integer ordemExibicao;
 
@@ -40,8 +38,6 @@ public class VantagemConfigDTO {
                 .tipoBonus(tipoBonus)
                 .custoBase(custoBase)
                 .formulaCusto(formulaCusto)
-                .nivelMinimoPersonagem(1)
-                .podeEvoluir(true)
                 .build();
     }
 }

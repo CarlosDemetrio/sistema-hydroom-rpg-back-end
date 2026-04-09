@@ -62,8 +62,8 @@ public interface GameDefaultConfigProvider {
     List<ClasseConfigDTO> getDefaultClasses();
 
     /**
-     * Retorna as 4 raças padrão.
-     * Exemplo: Humano, Elfo, Anão, Meio-Elfo
+     * Retorna as 6 raças padrão.
+     * Exemplo: Humano, Karzarcryer, Ikaruz, Hankraz, Atlas, Anakarys
      *
      * @return Lista de RacaConfigDTO
      */
@@ -76,14 +76,8 @@ public interface GameDefaultConfigProvider {
      * Exemplo:
      * <pre>
      * {
-     *   "Elfo": [
-     *     BonusAtributoDTO("Agilidade", +2),
-     *     BonusAtributoDTO("Vigor", -1)
-     *   ],
-     *   "Anão": [
-     *     BonusAtributoDTO("Vigor", +2),
-     *     BonusAtributoDTO("Agilidade", -1)
-     *   ]
+     *   "Anakarys": [BonusAtributoDTO("AGI", +3), BonusAtributoDTO("INTU", +6)],
+     *   "Ikaruz":   [BonusAtributoDTO("SAB", +5), BonusAtributoDTO("VIG", -9)]
      * }
      * </pre>
      *
@@ -100,24 +94,24 @@ public interface GameDefaultConfigProvider {
     List<ProspeccaoConfigDTO> getDefaultProspeccoes();
 
     /**
-     * Retorna os 4 gêneros padrão.
-     * Exemplo: Masculino, Feminino, Não-Binário, Prefiro não informar
+     * Retorna os 3 gêneros padrão.
+     * Exemplo: Masculino, Feminino, Outro
      *
      * @return Lista de GeneroConfigDTO
      */
     List<GeneroConfigDTO> getDefaultGeneros();
 
     /**
-     * Retorna as 9 índoles (alinhamentos) padrão.
-     * Exemplo: Ordeiro Bondoso, Neutro, Caótico Maligno, etc.
+     * Retorna as 3 índoles padrão.
+     * Exemplo: Bondoso, Neutro, Maligno
      *
      * @return Lista de IndoleConfigDTO
      */
     List<IndoleConfigDTO> getDefaultIndoles();
 
     /**
-     * Retorna os 6 níveis de presença padrão.
-     * Exemplo: Insignificante, Fraco, Normal, Notável, Impressionante, Dominante
+     * Retorna os 4 níveis de presença padrão.
+     * Exemplo: Baixa, Moderada, Alta, Dominante
      *
      * @return Lista de PresencaConfigDTO
      */

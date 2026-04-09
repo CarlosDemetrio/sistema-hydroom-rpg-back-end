@@ -299,4 +299,73 @@ class DefaultGameConfigProviderImplTest {
             assertThat(tipoNomes).contains(item.tipoNome());
         });
     }
+
+    @Test
+    @DisplayName("T5-20: Mapa de bônus raciais cobre todas as 6 raças com valores corretos")
+    void mapaBonusRaciaisDeveConterTodasAsRacas() {
+        var bonusMap = provider.getDefaultBonusRaciais();
+
+        assertThat(bonusMap).containsOnlyKeys(
+                "Humano", "Karzarcryer", "Ikaruz", "Hankraz", "Atlas", "Anakarys"
+        );
+        assertThat(bonusMap.get("Humano")).isEmpty();
+
+        assertThat(bonusMap.get("Anakarys"))
+                .extracting(BonusAtributoDTO::getAbreviacaoAtributo)
+                .containsExactlyInAnyOrder("AGI", "INTU");
+
+        assertThat(bonusMap.get("Atlas"))
+                .extracting(BonusAtributoDTO::getAbreviacaoAtributo)
+                .containsExactlyInAnyOrder("FOR", "INT");
+    }
+
+    @Test
+    @DisplayName("T5-21: 5 limitadores cobrem faixas de nível sem sobreposição ou gap")
+    void limitadoresDevemCobrir5FaixasComCoerencia() {
+        var limitadores = provider.getDefaultLimitadores();
+
+        assertThat(limitadores).hasSize(5);
+
+        assertThat(limitadores)
+                .filteredOn(l -> l.getNivelInicio() == 0)
+                .first()
+                .extracting(LimitadorConfigDTO::getLimiteAtributo)
+                .isEqualTo(10);
+
+        assertThat(limitadores)
+                .filteredOn(l -> l.getNivelInicio() == 31)
+                .first()
+                .extracting(LimitadorConfigDTO::getLimiteAtributo)
+                .isEqualTo(120);
+    }
+
+    @Test
+    @DisplayName("T5-22: 6 dados de prospecção com faces crescentes")
+    void deveRetornarSeisDadosComFacesCrescentes() {
+        var prospeccoes = provider.getDefaultProspeccoes();
+
+        assertThat(prospeccoes).hasSize(6);
+        assertThat(prospeccoes)
+                .extracting(ProspeccaoConfigDTO::getNome)
+                .containsExactly("d3", "d4", "d6", "d8", "d10", "d12");
+
+        var faces = prospeccoes.stream().map(ProspeccaoConfigDTO::getNumLados).toList();
+        for (int i = 1; i < faces.size(); i++) {
+            assertThat(faces.get(i)).isGreaterThan(faces.get(i - 1));
+        }
+    }
+
+    @Test
+    @DisplayName("T5-23: 24 aptidões — 12 FISICA e 12 MENTAL sem outras categorias")
+    void aptidoesDevemTer12FisicasE12Mentais() {
+        var aptidoes = provider.getDefaultAptidoes();
+
+        assertThat(aptidoes).hasSize(24);
+        assertThat(aptidoes).filteredOn(a -> "FISICA".equals(a.getTipo())).hasSize(12);
+        assertThat(aptidoes).filteredOn(a -> "MENTAL".equals(a.getTipo())).hasSize(12);
+
+        assertThat(aptidoes)
+                .extracting(AptidaoConfigDTO::getTipo)
+                .containsOnly("FISICA", "MENTAL");
+    }
 }

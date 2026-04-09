@@ -53,8 +53,6 @@ public class DefaultVantagensProvider {
                 .valorBonusFormula(efeito)
                 .tipoVantagem(tipo)
                 .categoriaNome(categoria)
-                .nivelMinimoPersonagem(1)
-                .podeEvoluir(nivelMax > 1)
                 .ordemExibicao(ordem)
                 .build();
     }

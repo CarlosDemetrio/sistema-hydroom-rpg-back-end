@@ -1,8 +1,6 @@
 package br.com.hydroom.rpg.fichacontrolador.exception;
 
 import br.com.hydroom.rpg.fichacontrolador.constants.ValidationMessages;
-import br.com.hydroom.rpg.fichacontrolador.exception.ExternalServiceException;
-import br.com.hydroom.rpg.fichacontrolador.exception.ForbiddenException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;

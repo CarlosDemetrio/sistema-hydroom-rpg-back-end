@@ -1,10 +1,10 @@
-# Handoff de Sessao — 2026-04-08 (sessao 17 — Rodada 15 + Copilot R05)
+# Handoff de Sessao — 2026-04-08 (sessao 17 — Rodada 15 + Copilot R05 + Rodada 16)
 
 > Branch atual: `main`
-> Backend: **743 testes** passando, 0 falhas (+20 da Spec 011 T3)
-> Frontend: **~907 testes** (novos componentes T6+T7 sem spec ainda — T8 pendente)
-> Sprint 3: **Rodada 15 CONCLUIDA** (BUG-PROD + Spec 017 P1 + Spec 011 T3/T5/T6/T7) + **Copilot R05** (FichaPreviewService fix)
-> Ultima atualizacao: 2026-04-08 [Copilot R05 — FichaPreviewService overload deprecated removido]
+> Backend: **743 testes** passando, 0 falhas
+> Frontend: **1006/1008 testes** passando (2 falhas pre-existentes ficha-vantagens-tab)
+> Sprint 3: **Spec 011 100% CONCLUIDA** — RC desbloqueado
+> Ultima atualizacao: 2026-04-08 [Rodada 16 — Spec 011 T8 completa (+105 testes frontend)]
 
 ---
 
@@ -36,7 +36,7 @@ Deploy ja em producao (Firebase + Cloud Run). Pendente apenas: 4 secrets GCP do 
 #### P2 — PENDENTE (pos-RC)
 #### P3 — BACKLOG (pos-RC)
 
-### Spec 011 — Galeria + Anotacoes
+### Spec 011 — Galeria + Anotacoes — ✅ CONCLUIDA 9/9
 
 | Task | Status | Commit/Nota |
 |------|--------|-------------|
@@ -48,9 +48,7 @@ Deploy ja em producao (Firebase + Cloud Run). Pendente apenas: 4 secrets GCP do 
 | T5 Markdown + pastas (FE) | ✅ Claude R15 | `a4c001c`..`2ab9a19` |
 | T6 FichaImagem model + API (FE) | ✅ Claude R15 | `132db35` |
 | T7 Componentes galeria (FE) | ✅ Claude R15 | `5bd60f7`..`e2822ca` |
-| **T8 Testes frontend** | **PENDENTE** | Proxima sessao |
-
-**Spec 011: 8/9 tasks completas. Apenas T8 (testes) pendente.**
+| T8 Testes frontend | ✅ Rodada 16 | +105 testes (1006/1008 total) |
 
 ### Copilot R05 — Bug fix FichaPreviewService
 
@@ -118,7 +116,7 @@ Ordem sugerida: BA-03 → BA-02 (BA-01 ⏸ bloqueado até escopo de configuraç�
 
 | Task | Descricao | Agente | Status |
 |------|-----------|--------|--------|
-| Spec 011 T8 | Testes frontend (~40 novos testes) | angular-frontend-dev | PENDENTE |
+| Spec 011 T8 | Testes frontend (+105 novos testes) | angular-frontend-dev | ✅ FEITO |
 | Secrets GCP (4 secrets) | rpg-cors-allowed-origins + 3x Cloudinary | Usuario | ✅ FEITO |
 | Re-deploy backend + frontend | Cloud Run + Firebase | Usuario | ✅ FEITO |
 | `npm install marked` | Markdown completo no frontend | Usuario | ✅ FEITO |

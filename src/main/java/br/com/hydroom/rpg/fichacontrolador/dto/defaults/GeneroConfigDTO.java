@@ -16,15 +16,18 @@ import lombok.NoArgsConstructor;
 public class GeneroConfigDTO {
 
     private String nome;
+    private String descricao;
     private Integer ordemExibicao;
 
-    /**
-     * Cria um GeneroConfigDTO com valores básicos.
-     */
-    public static GeneroConfigDTO of(String nome, Integer ordemExibicao) {
+    public static GeneroConfigDTO of(String nome, String descricao, Integer ordemExibicao) {
         return GeneroConfigDTO.builder()
                 .nome(nome)
+                .descricao(descricao)
                 .ordemExibicao(ordemExibicao)
                 .build();
+    }
+
+    public static GeneroConfigDTO of(String nome, Integer ordemExibicao) {
+        return of(nome, null, ordemExibicao);
     }
 }

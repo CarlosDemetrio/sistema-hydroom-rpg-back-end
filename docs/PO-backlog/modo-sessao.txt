@@ -1,0 +1,13 @@
+revisar UX e criar/rever o modo sessão, que é quando o mestre inicia a sessão de jogo, ele tem a opção de escolher o modo sessão.
+o jogo flue normalmente até o mestre clicar em "finalizar sessão", quando isso acontecer, o sistema deve calcular a experiência ganha por cada personagem,
+baseado nas ações realizadas durante a sessão, como derrotar inimigos, completar missões, interagir com npcs, etc.
+
+
+durante a sessão, o jogador tem liberdade para alterar seu personagem, como equipar ou desequipar armas, usar itens, gastar pontos de habilidade, etc.
+o sistema deve registrar todas essas ações para que, ao final da sessão, o mestre possa revisar as ações de cada personagem.
+ele tambem pode gastar coisas, como essencia, vida, pontos de ação, etc.
+no final fica a critério do mestre se isso pode ser resetado.
+
+vamos tentar deixar o máximo de coisas a cargo do jogador, pois o mestre já é bastante sobrecarregado.
+e normalmente em um RPG de mesa, o mestre nao tem o controle total de tudo, acaba que no final os jogadores decidem tudo.
+e sobrecarregar o mestre com muitas decisões e controles pode acabar atrapalhando a fluidez do jogo, e o objetivo é justamente deixar o jogo fluido e divertido, sem que o mestre precise se preocupar com muitos detalhes técnicos ou burocráticos.

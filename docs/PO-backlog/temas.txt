@@ -1,0 +1,3 @@
+o jogador pode selecionar varios temas pre definidos no sistema, e cada uma ppode trazes tonalidades de cores diferentes para o modo dark e o light mode.
+nao precisa ser muitas opções, mas o suficiente para que o jogador possa escolher aquela que mais combina com seu estilo e preferencia, e para que ele possa personalizar a aparência do jogo de acordo com seu gosto.
+esta funcionalidade tem prioridade baixissima.

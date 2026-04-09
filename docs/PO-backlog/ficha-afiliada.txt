@@ -1,0 +1,6 @@
+pode ocorrer de um personagem ter uma ficha a mais, referente a uma invocacao, animal de estimacao, ou até guarda, escravo e etc.
+e o jogo deve prever isso para facilitar a vida do jogador, pois ele pode ter uma ficha para o personagem principal, e outra ficha para o animal de estimação, ou para o guarda, ou para o escravo, etc.
+essa ficha adicional deve ser vinculada a ficha principal, para que o jogador possa acessar facilmente as informações de ambas as fichas, e para que o sistema possa calcular os bônus e penalidades corretamente
+normalmente a ficha adicional deve ser mais simples, com menos atributos e habilidades, para facilitar a vida do jogador, e para que ele possa focar mais na ficha principal, que é a do personagem principal.
+essa ficha adicional deve ter um campo para indicar o tipo de ficha, se é uma invocação, um animal de estimação, um guarda, um escravo, etc., para que o sistema possa aplicar as regras específicas para cada tipo de ficha, como por exemplo, a invocação pode ter uma duração limitada, o animal de estimação pode ter um vínculo com o personagem principal, o guarda pode ter uma função de proteção, o escravo pode ter uma função de trabalho, etc
+

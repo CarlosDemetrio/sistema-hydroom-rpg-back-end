@@ -16,15 +16,18 @@ import lombok.NoArgsConstructor;
 public class IndoleConfigDTO {
 
     private String nome;
+    private String descricao;
     private Integer ordemExibicao;
 
-    /**
-     * Cria um IndoleConfigDTO com valores básicos.
-     */
-    public static IndoleConfigDTO of(String nome, Integer ordemExibicao) {
+    public static IndoleConfigDTO of(String nome, String descricao, Integer ordemExibicao) {
         return IndoleConfigDTO.builder()
                 .nome(nome)
+                .descricao(descricao)
                 .ordemExibicao(ordemExibicao)
                 .build();
+    }
+
+    public static IndoleConfigDTO of(String nome, Integer ordemExibicao) {
+        return of(nome, null, ordemExibicao);
     }
 }

@@ -1,0 +1,4 @@
+As armas devem poder ser "replicadas" quando é vinculada a uma ficha, seja ela npc ou personagem.
+pois pode acontecer eventos de narrativa que mudem a arma, por exmeplo, ele ir no ferreiro e mandar encantar a arma, ou ele ir em um ferreiro e mandar afiar a arma, ou ele ir em um ferreiro e mandar reparar a arma,
+ ou ele ir em um ferreiro e mandar modificar a arma, ou ele ir em um ferreiro e mandar personalizar a arma,
+  ou seja lá o que for, o importante é que a arma seja replicada para que as mudanças sejam refletidas apenas naquela ficha, e não na ficha de outros personagens ou npcs que tenham aquela mesma arma vinculada.

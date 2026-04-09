@@ -1,0 +1,6 @@
+o jogador pode ter uma subclasse. mas neste caso, no nosso contexto, isto se aplica apenas a profissoes
+como apotecário, ferreiro, alquimista, etc. ou seja, profissões que tem uma função mais específica e que podem ter habilidades e características únicas, que as diferenciam de outras profissões.
+essa subclasse pode ser escolhida no momento da criação do personagem e deve ser gasto pontos de vantagem para isso.
+nao deve ser barato o preco dessa vantagem, pois ela pode trazer habilidades e características únicas para o personagem, e isso pode impactar bastante na jogabilidade e na narrativa do jogo.
+além disso, a subclasse deve ter um impacto significativo na jogabilidade, ou seja,ela deve trazer habilidades e características únicas que realmente façam diferença na forma como o personagem é jogado, e que possam ser exploradas pelo jogador de forma criativa e estratégica durante as sessões de jogo
+

@@ -16,8 +16,11 @@ import lombok.NoArgsConstructor;
 public class VantagemConfigDTO {
 
     private String nome;
+    private String sigla;              // Ex: "TCO", "TCD", "ENF"
     private String descricao;
     private String tipoBonus;
+    private String tipoVantagem;       // "VANTAGEM" or "INSOLITUS"
+    private String categoriaNome;      // Ex: "Treinamento Físico"
     private String valorBonusFormula;
     private Integer custoBase;
     private String formulaCusto;       // Ex: "custo_base * nivel_vantagem"

@@ -17,16 +17,19 @@ public class ProspeccaoConfigDTO {
 
     private String nome;               // Ex: "d3", "d4", "d6", "d8", "d10", "d12"
     private Integer numLados;          // Número de lados do dado
+    private String descricao;
     private Integer ordemExibicao;
 
-    /**
-     * Cria um ProspeccaoConfigDTO com valores básicos.
-     */
-    public static ProspeccaoConfigDTO of(String nome, Integer numLados, Integer ordemExibicao) {
+    public static ProspeccaoConfigDTO of(String nome, Integer numLados, String descricao, Integer ordemExibicao) {
         return ProspeccaoConfigDTO.builder()
                 .nome(nome)
                 .numLados(numLados)
+                .descricao(descricao)
                 .ordemExibicao(ordemExibicao)
                 .build();
+    }
+
+    public static ProspeccaoConfigDTO of(String nome, Integer numLados, Integer ordemExibicao) {
+        return of(nome, numLados, null, ordemExibicao);
     }
 }

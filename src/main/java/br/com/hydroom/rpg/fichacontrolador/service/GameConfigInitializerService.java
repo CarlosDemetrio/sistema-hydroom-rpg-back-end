@@ -4,6 +4,7 @@ import br.com.hydroom.rpg.fichacontrolador.config.GameDefaultConfigProvider;
 import br.com.hydroom.rpg.fichacontrolador.dto.defaults.*;
 import br.com.hydroom.rpg.fichacontrolador.model.*;
 import br.com.hydroom.rpg.fichacontrolador.model.enums.TipoItemEfeito;
+import br.com.hydroom.rpg.fichacontrolador.model.enums.TipoVantagem;
 import br.com.hydroom.rpg.fichacontrolador.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -212,6 +213,8 @@ public class GameConfigInitializerService {
                         .descricao(dto.getDescricao())
                         .formulaImpeto(dto.getFormulaImpeto())
                         .descricaoImpeto(dto.getUnidadeImpeto())
+                        .valorMinimo(dto.getValorMinimo() != null ? dto.getValorMinimo() : 0)
+                        .valorMaximo(dto.getValorMaximo() != null ? dto.getValorMaximo() : 999)
                         .ordemExibicao(dto.getOrdemExibicao())
                         .build())
                 .toList();
@@ -283,6 +286,7 @@ public class GameConfigInitializerService {
                         .nome(dto.nome())
                         .sigla(dto.sigla())
                         .formulaBase(dto.formulaBase())
+                        .descricao(dto.descricao())
                         .ordemExibicao(dto.ordemExibicao())
                         .build())
                 .toList();
@@ -456,6 +460,7 @@ public class GameConfigInitializerService {
                         .jogo(jogo)
                         .nome(dto.getNome())
                         .numeroFaces(dto.getNumLados())
+                        .descricao(dto.getDescricao())
                         .ordemExibicao(dto.getOrdemExibicao())
                         .build())
                 .toList();
@@ -472,6 +477,7 @@ public class GameConfigInitializerService {
                 .map(dto -> GeneroConfig.builder()
                         .jogo(jogo)
                         .nome(dto.getNome())
+                        .descricao(dto.getDescricao())
                         .ordemExibicao(dto.getOrdemExibicao())
                         .build())
                 .toList();
@@ -488,6 +494,7 @@ public class GameConfigInitializerService {
                 .map(dto -> IndoleConfig.builder()
                         .jogo(jogo)
                         .nome(dto.getNome())
+                        .descricao(dto.getDescricao())
                         .ordemExibicao(dto.getOrdemExibicao())
                         .build())
                 .toList();
@@ -504,6 +511,7 @@ public class GameConfigInitializerService {
                 .map(dto -> PresencaConfig.builder()
                         .jogo(jogo)
                         .nome(dto.getNome())
+                        .descricao(dto.getDescricao())
                         .ordemExibicao(dto.getOrdemExibicao())
                         .build())
                 .toList();
@@ -539,15 +547,26 @@ public class GameConfigInitializerService {
      */
     private void createVantagens(Jogo jogo, Map<String, CategoriaVantagem> categorias, List<VantagemConfigDTO> dtos) {
         List<VantagemConfig> entities = dtos.stream()
-                .map(dto -> VantagemConfig.builder()
-                        .jogo(jogo)
-                        .nome(dto.getNome())
-                        .descricao(dto.getDescricao())
-                        .nivelMaximo(dto.getNivelMaximoVantagem() != null ? dto.getNivelMaximoVantagem() : 10)
-                        .formulaCusto(dto.getFormulaCusto())
-                        .descricaoEfeito(dto.getTipoBonus())
-                        .ordemExibicao(dto.getOrdemExibicao() != null ? dto.getOrdemExibicao() : 0)
-                        .build())
+                .map(dto -> {
+                    CategoriaVantagem categoria = dto.getCategoriaNome() != null
+                            ? categorias.get(dto.getCategoriaNome())
+                            : null;
+                    TipoVantagem tipo = dto.getTipoVantagem() != null
+                            ? TipoVantagem.valueOf(dto.getTipoVantagem())
+                            : TipoVantagem.VANTAGEM;
+                    return VantagemConfig.builder()
+                            .jogo(jogo)
+                            .nome(dto.getNome())
+                            .sigla(dto.getSigla())
+                            .descricao(dto.getDescricao())
+                            .nivelMaximo(dto.getNivelMaximoVantagem() != null ? dto.getNivelMaximoVantagem() : 1)
+                            .formulaCusto(dto.getFormulaCusto() != null ? dto.getFormulaCusto() : "0")
+                            .descricaoEfeito(dto.getValorBonusFormula())
+                            .tipoVantagem(tipo)
+                            .categoriaVantagem(categoria)
+                            .ordemExibicao(dto.getOrdemExibicao() != null ? dto.getOrdemExibicao() : 0)
+                            .build();
+                })
                 .toList();
 
         vantagemRepository.saveAll(entities);

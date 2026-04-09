@@ -1,0 +1,2 @@
+nao faz sentido ter que alterar todas contorllers
+revise para ver se é possivel criar uma solucao generica que possa ser aplicada a todos os controllers, para evitar ter que alterar cada um deles individualmente, o que pode ser trabalhoso e propenso a erros.

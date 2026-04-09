@@ -16,15 +16,18 @@ import lombok.NoArgsConstructor;
 public class PresencaConfigDTO {
 
     private String nome;
+    private String descricao;
     private Integer ordemExibicao;
 
-    /**
-     * Cria um PresencaConfigDTO com valores básicos.
-     */
-    public static PresencaConfigDTO of(String nome, Integer ordemExibicao) {
+    public static PresencaConfigDTO of(String nome, String descricao, Integer ordemExibicao) {
         return PresencaConfigDTO.builder()
                 .nome(nome)
+                .descricao(descricao)
                 .ordemExibicao(ordemExibicao)
                 .build();
+    }
+
+    public static PresencaConfigDTO of(String nome, Integer ordemExibicao) {
+        return of(nome, null, ordemExibicao);
     }
 }

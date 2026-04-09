@@ -28,62 +28,13 @@ public class DefaultGameConfigProviderImpl implements GameDefaultConfigProvider 
     @Override
     public List<AtributoConfigDTO> getDefaultAtributos() {
         return List.of(
-            AtributoConfigDTO.of(
-                "Força",
-                "FOR",
-                "Capacidade física bruta, determina capacidade de carga",
-                "total * 3",
-                "kg",
-                1
-            ),
-            AtributoConfigDTO.of(
-                "Agilidade",
-                "AGI",
-                "Velocidade e reflexos, determina deslocamento",
-                "total / 3",
-                "metros",
-                2
-            ),
-            AtributoConfigDTO.of(
-                "Vigor",
-                "VIG",
-                "Resistência física, redução de dano físico",
-                "total / 10",
-                "RD",
-                3
-            ),
-            AtributoConfigDTO.of(
-                "Sabedoria",
-                "SAB",
-                "Resistência mágica, redução de dano mágico",
-                "total / 10",
-                "RDM",
-                4
-            ),
-            AtributoConfigDTO.of(
-                "Intuição",
-                "INTU",
-                "Sorte e percepção instintiva, pontos de sorte",
-                "min(total / 20, 3)",
-                "pontos",
-                5
-            ),
-            AtributoConfigDTO.of(
-                "Inteligência",
-                "INT",
-                "Capacidade de comando e raciocínio",
-                "total / 20",
-                "comando",
-                6
-            ),
-            AtributoConfigDTO.of(
-                "Astúcia",
-                "AST",
-                "Pensamento estratégico e tático",
-                "total / 10",
-                "estratégia",
-                7
-            )
+            AtributoConfigDTO.of("Força",       "FOR",  "Capacidade física bruta, determina capacidade de carga",   "total * 3",        "kg",       1, 120, 1),
+            AtributoConfigDTO.of("Agilidade",   "AGI",  "Velocidade e reflexos, determina deslocamento",            "total / 3",        "metros",   1, 120, 2),
+            AtributoConfigDTO.of("Vigor",       "VIG",  "Resistência física, redução de dano físico",               "total / 10",       "RD",       1, 120, 3),
+            AtributoConfigDTO.of("Sabedoria",   "SAB",  "Resistência mágica, redução de dano mágico",               "total / 10",       "RDM",      1, 120, 4),
+            AtributoConfigDTO.of("Intuição",    "INTU", "Sorte e percepção instintiva, pontos de sorte",            "min(total / 20, 3)","pontos",  1, 120, 5),
+            AtributoConfigDTO.of("Inteligência","INT",  "Capacidade de comando e raciocínio",                       "total / 20",       "comando",  1, 120, 6),
+            AtributoConfigDTO.of("Astúcia",     "AST",  "Pensamento estratégico e tático",                          "total / 10",       "estratégia",1, 120, 7)
         );
     }
 
@@ -91,32 +42,32 @@ public class DefaultGameConfigProviderImpl implements GameDefaultConfigProvider 
     public List<AptidaoConfigDTO> getDefaultAptidoes() {
         return List.of(
             // === Aptidões Físicas (12) ===
-            AptidaoConfigDTO.of("Acrobacia",             "FISICA", "Habilidade de realizar manobras acrobáticas", 1),
-            AptidaoConfigDTO.of("Guarda",                "FISICA", "Capacidade de defesa e bloqueio", 2),
-            AptidaoConfigDTO.of("Aparar",                "FISICA", "Habilidade de desviar ataques", 3),
-            AptidaoConfigDTO.of("Atletismo",             "FISICA", "Força física e condicionamento", 4),
-            AptidaoConfigDTO.of("Resvalar",              "FISICA", "Capacidade de esquiva e movimento ágil", 5),
-            AptidaoConfigDTO.of("Resistência",           "FISICA", "Capacidade de resistir a condições adversas", 6),
-            AptidaoConfigDTO.of("Perseguição",           "FISICA", "Habilidade de perseguir ou fugir", 7),
-            AptidaoConfigDTO.of("Natação",               "FISICA", "Capacidade de nadar e manobras aquáticas", 8),
-            AptidaoConfigDTO.of("Furtividade",           "FISICA", "Capacidade de se mover sem ser detectado", 9),
-            AptidaoConfigDTO.of("Prestidigitação",       "FISICA", "Destreza manual e truques", 10),
-            AptidaoConfigDTO.of("Conduzir",              "FISICA", "Habilidade de pilotar veículos e montarias", 11),
-            AptidaoConfigDTO.of("Arte da Fuga",          "FISICA", "Capacidade de escapar de restrições", 12),
+            AptidaoConfigDTO.of("Acrobacia",              "FISICA", "Execução de manobras ágeis como saltos, rolamentos e equilíbrio em terreno difícil", 1),
+            AptidaoConfigDTO.of("Guarda",                 "FISICA", "Técnica defensiva de posicionar corpo e armas para absorver ou redirecionar impactos", 2),
+            AptidaoConfigDTO.of("Aparar",                 "FISICA", "Desviar ou neutralizar ataques com arma ou escudo com precisão de timing", 3),
+            AptidaoConfigDTO.of("Atletismo",              "FISICA", "Força física bruta aplicada a escalada, arremesso, luta corporal e resistência de esforço", 4),
+            AptidaoConfigDTO.of("Resvalar",               "FISICA", "Técnica de esquiva dinâmica que usa o movimento do corpo para evitar golpes e projéteis", 5),
+            AptidaoConfigDTO.of("Resistência",            "FISICA", "Capacidade de suportar condições extremas: fome, veneno, dor, temperatura e exaustão", 6),
+            AptidaoConfigDTO.of("Perseguição",            "FISICA", "Habilidade de rastrear e perseguir alvos em movimento, ou de fugir eficientemente", 7),
+            AptidaoConfigDTO.of("Natação",                "FISICA", "Habilidade de nadar e se mover em ambientes aquáticos, incluindo mergulho e combate na água", 8),
+            AptidaoConfigDTO.of("Furtividade",            "FISICA", "Habilidade de mover-se silenciosamente, esconder-se e realizar ações sem ser detectado", 9),
+            AptidaoConfigDTO.of("Prestidigitação",        "FISICA", "Destreza manual para realizar truques, pickpocket, esconder objetos e manipulação fina", 10),
+            AptidaoConfigDTO.of("Conduzir",               "FISICA", "Habilidade de montar animais ou pilotar veículos, incluindo manobras em alta velocidade", 11),
+            AptidaoConfigDTO.of("Arte da Fuga",           "FISICA", "Habilidade de escapar de amarras, algemas, prisões e outras situações de captura", 12),
 
             // === Aptidões Mentais (12) ===
-            AptidaoConfigDTO.of("Idiomas",               "MENTAL", "Conhecimento de línguas", 13),
-            AptidaoConfigDTO.of("Observação",            "MENTAL", "Capacidade de notar detalhes", 14),
-            AptidaoConfigDTO.of("Falsificar",            "MENTAL", "Habilidade de criar falsificações", 15),
-            AptidaoConfigDTO.of("Prontidão",             "MENTAL", "Capacidade de reagir rapidamente", 16),
-            AptidaoConfigDTO.of("Auto Controle",         "MENTAL", "Controle emocional e mental", 17),
-            AptidaoConfigDTO.of("Sentir Motivação",      "MENTAL", "Capacidade de ler intenções", 18),
-            AptidaoConfigDTO.of("Sobrevivência",         "MENTAL", "Conhecimento de técnicas de sobrevivência", 19),
-            AptidaoConfigDTO.of("Investigar",            "MENTAL", "Habilidade de coletar e analisar informações", 20),
-            AptidaoConfigDTO.of("Blefar",                "MENTAL", "Capacidade de enganar e mentir", 21),
-            AptidaoConfigDTO.of("Atuação",               "MENTAL", "Habilidade de interpretar personagens", 22),
-            AptidaoConfigDTO.of("Diplomacia",            "MENTAL", "Capacidade de negociação e persuasão", 23),
-            AptidaoConfigDTO.of("Operação de Mecanismos","MENTAL", "Conhecimento de dispositivos mecânicos", 24)
+            AptidaoConfigDTO.of("Idiomas",                "MENTAL", "Conhecimento de idiomas estrangeiros, dialetos e sistemas de escrita do mundo de Klayrah", 13),
+            AptidaoConfigDTO.of("Observação",             "MENTAL", "Percepção aguçada para notar detalhes, pistas ocultas e anomalias no ambiente", 14),
+            AptidaoConfigDTO.of("Falsificar",             "MENTAL", "Habilidade de criar documentos falsos, imitar assinaturas e forjar selos oficiais", 15),
+            AptidaoConfigDTO.of("Prontidão",              "MENTAL", "Estado de alerta elevado; evita ser surpreendido e age rapidamente em situações de crise", 16),
+            AptidaoConfigDTO.of("Auto Controle",          "MENTAL", "Domínio das emoções e resistência à manipulação, medo, sedução e pressão psicológica", 17),
+            AptidaoConfigDTO.of("Sentir Motivação",       "MENTAL", "Habilidade de perceber as verdadeiras intenções e emoções ocultas de outras pessoas", 18),
+            AptidaoConfigDTO.of("Sobrevivência",          "MENTAL", "Conhecimento de orientação, caça, armadilhas e sobrevivência em ambientes hostis", 19),
+            AptidaoConfigDTO.of("Investigar",             "MENTAL", "Habilidade de reunir pistas, interrogar testemunhas e deduzir conclusões a partir de evidências", 20),
+            AptidaoConfigDTO.of("Blefar",                 "MENTAL", "Capacidade de mentir convincentemente, criar desvios e manipular a percepção alheia", 21),
+            AptidaoConfigDTO.of("Atuação",                "MENTAL", "Habilidade de interpretar personagens, disfarçar-se e convencer por meio de performance", 22),
+            AptidaoConfigDTO.of("Diplomacia",             "MENTAL", "Arte da negociação, persuasão e mediação de conflitos com argumentos e charme", 23),
+            AptidaoConfigDTO.of("Operação de Mecanismos", "MENTAL", "Habilidade de operar, reparar e arrombar mecanismos, fechaduras e engenhocas", 24)
         );
     }
 
@@ -160,7 +111,7 @@ public class DefaultGameConfigProviderImpl implements GameDefaultConfigProvider 
             NivelConfigDTO.of(32, 528000L, 3, 1, 3, 120),
             NivelConfigDTO.of(33, 561000L, 3, 1, 3, 120),
             NivelConfigDTO.of(34, 595000L, 3, 1, 3, 120),
-            NivelConfigDTO.of(35, 595000L, 3, 1, 3, 120)
+            NivelConfigDTO.of(35, 630000L, 3, 1, 3, 120)
         );
     }
 
@@ -196,72 +147,81 @@ public class DefaultGameConfigProviderImpl implements GameDefaultConfigProvider 
     @Override
     public List<RacaConfigDTO> getDefaultRacas() {
         return List.of(
-            RacaConfigDTO.of("Humano",    "Raça versátil e adaptável",           1),
-            RacaConfigDTO.of("Elfo",      "Seres longevos com afinidade mágica", 2),
-            RacaConfigDTO.of("Anão",      "Raça resistente e trabalhadora",      3),
-            RacaConfigDTO.of("Meio-Elfo", "Híbrido entre humano e elfo",         4)
+            RacaConfigDTO.of("Humano",     "Raça versátil e adaptável, capaz de aprender qualquer arte ou ofício. Sua maior força é a adaptabilidade e a capacidade de superação. Não possuem vantagens raciais físicas marcantes, mas compensam com 5 vantagens especiais que refletem a resiliência e o potencial ilimitado da humanidade.", 1),
+            RacaConfigDTO.of("Karzarcryer","Descendentes de dragões do plano do fogo, os Karzarcryer possuem escamas ígnicas e sangue quente. Bônus: +8 Força (+24 VIG), -3 Percepção (-9 INTU). São conhecidos por seu temperamento explosivo e pela Ignomia inicial 5. Dominam o elemento fogo e possuem resistência sobrenatural ao calor.", 2),
+            RacaConfigDTO.of("Ikarúz",     "Raça de seres alados com afinidade à sabedoria celestial. Possuem asas funcionais e adaptação a diferentes altitudes. Bônus: +5 Sabedoria, +3 Percepção (+9 INTU), -3 Resistência (-9 VIG). Antecedente: Nanismo.", 3),
+            RacaConfigDTO.of("Hankráz",    "Seres esguios de inteligência aguçada que habitam entre planos de existência paralelos. Bônus: +5 Inteligência, +3 Percepção (+9 INTU), -3 Resistência (-9 VIG). Antecedente: Baixo vigor.", 4),
+            RacaConfigDTO.of("Atlas",      "Gigantes de força incomparável. Bônus: +8 Força, -3 Inteligência. Antecedente: É burro. São guerreiros natos mas carecem de sofisticação intelectual.", 5),
+            RacaConfigDTO.of("Anakarys",   "Raça ágil de predadores naturais com garras, presas e instintos aguçados. Bônus: +3 Agilidade, +2 Percepção (+6 INTU).", 6)
         );
     }
 
     @Override
     public Map<String, List<BonusAtributoDTO>> getDefaultBonusRaciais() {
-        return Map.of(
-            "Humano",    List.of(),
-
-            "Elfo",      List.of(
-                BonusAtributoDTO.of("AGI", 2),
-                BonusAtributoDTO.of("VIG", -1)
-            ),
-
-            "Anão",      List.of(
-                BonusAtributoDTO.of("VIG", 2),
-                BonusAtributoDTO.of("AGI", -1)
-            ),
-
-            "Meio-Elfo", List.of(
-                BonusAtributoDTO.of("AGI", 1),
-                BonusAtributoDTO.of("INT", 1)
-            )
+        return Map.ofEntries(
+            Map.entry("Humano",     List.of()),
+            Map.entry("Karzarcryer", List.of(
+                BonusAtributoDTO.of("VIG",  24),
+                BonusAtributoDTO.of("INTU", -9)
+            )),
+            Map.entry("Ikarúz", List.of(
+                BonusAtributoDTO.of("SAB",  5),
+                BonusAtributoDTO.of("INTU", 9),
+                BonusAtributoDTO.of("VIG",  -9)
+            )),
+            Map.entry("Hankráz", List.of(
+                BonusAtributoDTO.of("INT",  5),
+                BonusAtributoDTO.of("INTU", 9),
+                BonusAtributoDTO.of("VIG",  -9)
+            )),
+            Map.entry("Atlas", List.of(
+                BonusAtributoDTO.of("FOR",  8),
+                BonusAtributoDTO.of("INT",  -3)
+            )),
+            Map.entry("Anakarys", List.of(
+                BonusAtributoDTO.of("AGI",  3),
+                BonusAtributoDTO.of("INTU", 6)
+            ))
         );
     }
 
     @Override
     public List<ProspeccaoConfigDTO> getDefaultProspeccoes() {
         return List.of(
-            ProspeccaoConfigDTO.of("d3",  3,  1),
-            ProspeccaoConfigDTO.of("d4",  4,  2),
-            ProspeccaoConfigDTO.of("d6",  6,  3),
-            ProspeccaoConfigDTO.of("d8",  8,  4),
-            ProspeccaoConfigDTO.of("d10", 10, 5),
-            ProspeccaoConfigDTO.of("d12", 12, 6)
+            ProspeccaoConfigDTO.of("d3",  3,  "Dado de 3 faces, incerteza mínima, usado em situações triviais ou de baixíssimo risco", 1),
+            ProspeccaoConfigDTO.of("d4",  4,  "Dado de 4 faces, pequena variação, para situações simples e controladas", 2),
+            ProspeccaoConfigDTO.of("d6",  6,  "Dado de 6 faces, o dado padrão do sistema, para situações cotidianas e moderadas", 3),
+            ProspeccaoConfigDTO.of("d8",  8,  "Dado de 8 faces, dificuldade moderada, para desafios com risco real", 4),
+            ProspeccaoConfigDTO.of("d10", 10, "Dado de 10 faces, alta dificuldade, para situações arriscadas ou complexas", 5),
+            ProspeccaoConfigDTO.of("d12", 12, "Dado de 12 faces, extremo ou raro, reservado para proezas épicas e eventos críticos", 6)
         );
     }
 
     @Override
     public List<GeneroConfigDTO> getDefaultGeneros() {
         return List.of(
-            GeneroConfigDTO.of("Masculino", 1),
-            GeneroConfigDTO.of("Feminino",  2),
-            GeneroConfigDTO.of("Outro",     3)
+            GeneroConfigDTO.of("Masculino", "Personagem de identidade masculina",                              1),
+            GeneroConfigDTO.of("Feminino",  "Personagem de identidade feminina",                               2),
+            GeneroConfigDTO.of("Outro",     "Personagem com identidade de gênero não binária ou indefinida",   3)
         );
     }
 
     @Override
     public List<IndoleConfigDTO> getDefaultIndoles() {
         return List.of(
-            IndoleConfigDTO.of("Bom",    1),
-            IndoleConfigDTO.of("Mau",    2),
-            IndoleConfigDTO.of("Neutro", 3)
+            IndoleConfigDTO.of("Bom",    "Movido por compaixão e altruísmo, tende a ajudar os necessitados e defender os fracos",  1),
+            IndoleConfigDTO.of("Mau",    "Guiado por ambição cruel ou egoísmo, usa os outros como meios para seus próprios fins",  2),
+            IndoleConfigDTO.of("Neutro", "Sem viés moral definido, age conforme as circunstâncias, nem bondoso nem cruel",         3)
         );
     }
 
     @Override
     public List<PresencaConfigDTO> getDefaultPresencas() {
         return List.of(
-            PresencaConfigDTO.of("Bom",     1),
-            PresencaConfigDTO.of("Leal",    2),
-            PresencaConfigDTO.of("Caótico", 3),
-            PresencaConfigDTO.of("Neutro",  4)
+            PresencaConfigDTO.of("Bom",     "Aura de benevolência e proteção, aqueles próximos sentem conforto e confiança",                  1),
+            PresencaConfigDTO.of("Leal",    "Aura de ordem e autoridade, transmite disciplina e respeito pelas leis e hierarquias",           2),
+            PresencaConfigDTO.of("Caótico", "Aura imprevisível e perturbadora, semeia instabilidade e desconforto ao redor",                  3),
+            PresencaConfigDTO.of("Neutro",  "Aura equilibrada, sem inclinação evidente, passa despercebido pela maioria",                     4)
         );
     }
 
@@ -281,15 +241,15 @@ public class DefaultGameConfigProviderImpl implements GameDefaultConfigProvider 
     @Override
     public List<BonusConfigDTO> getDefaultBonus() {
         return List.of(
-            BonusConfigDTO.of("B.B.A",      "BBA", "(FOR + AGI) / 3", 1),
-            BonusConfigDTO.of("B.B.M",      "BBM", "(SAB + INT) / 3", 2),
-            BonusConfigDTO.of("Defesa",     "DEF", "VIG / 5",         3),
-            BonusConfigDTO.of("Esquiva",    "ESQ", "AGI / 5",         4),
-            BonusConfigDTO.of("Iniciativa", "INI", "INTU / 5",        5),
-            BonusConfigDTO.of("Percepção",  "PER", "INTU / 3",        6),
-            BonusConfigDTO.of("Raciocínio", "RAC", "INT / 3",         7),
-            BonusConfigDTO.of("Bloqueio",   "BLO", "VIG / 3",         8),
-            BonusConfigDTO.of("Reflexo",    "REF", "AGI / 3",         9)
+            BonusConfigDTO.of("B.B.A",      "BBA", "(FOR + AGI) / 3", "Bônus base de ataque físico, derivado da Força e Agilidade do personagem", 1),
+            BonusConfigDTO.of("B.B.M",      "BBM", "(SAB + INT) / 3", "Bônus base de ação mental ou mágica, derivado da Sabedoria e Inteligência", 2),
+            BonusConfigDTO.of("Defesa",     "DEF", "VIG / 5",         "Redução passiva de dano físico recebido, derivada do Vigor",               3),
+            BonusConfigDTO.of("Esquiva",    "ESQ", "AGI / 5",         "Valor de referência para desviar de ataques, derivado da Agilidade",       4),
+            BonusConfigDTO.of("Iniciativa", "INI", "INTU / 5",        "Determina a ordem de ação em combate, derivada da Intuição",               5),
+            BonusConfigDTO.of("Percepção",  "PER", "INTU / 3",        "Capacidade de notar detalhes, ameaças e pistas no ambiente, derivada da Intuição", 6),
+            BonusConfigDTO.of("Raciocínio", "RAC", "INT / 3",         "Qualidade do pensamento analítico e resolução de problemas, derivado da Inteligência", 7),
+            BonusConfigDTO.of("Bloqueio",   "BLO", "VIG / 3",         "Capacidade de absorver impactos com escudo ou arma, derivado do Vigor",    8),
+            BonusConfigDTO.of("Reflexo",    "REF", "AGI / 3",         "Velocidade de reação a eventos imprevistos ou ataques surpresa, derivado da Agilidade", 9)
         );
     }
 
@@ -297,12 +257,39 @@ public class DefaultGameConfigProviderImpl implements GameDefaultConfigProvider 
     public List<PontosVantagemConfigDTO> getDefaultPontosVantagem() {
         return List.of(
             PontosVantagemConfigDTO.of(1,  6),
+            PontosVantagemConfigDTO.of(2,  0),
+            PontosVantagemConfigDTO.of(3,  0),
+            PontosVantagemConfigDTO.of(4,  0),
             PontosVantagemConfigDTO.of(5,  3),
+            PontosVantagemConfigDTO.of(6,  0),
+            PontosVantagemConfigDTO.of(7,  0),
+            PontosVantagemConfigDTO.of(8,  0),
+            PontosVantagemConfigDTO.of(9,  0),
             PontosVantagemConfigDTO.of(10, 10),
+            PontosVantagemConfigDTO.of(11, 0),
+            PontosVantagemConfigDTO.of(12, 0),
+            PontosVantagemConfigDTO.of(13, 0),
+            PontosVantagemConfigDTO.of(14, 0),
             PontosVantagemConfigDTO.of(15, 3),
+            PontosVantagemConfigDTO.of(16, 0),
+            PontosVantagemConfigDTO.of(17, 0),
+            PontosVantagemConfigDTO.of(18, 0),
+            PontosVantagemConfigDTO.of(19, 0),
             PontosVantagemConfigDTO.of(20, 10),
+            PontosVantagemConfigDTO.of(21, 0),
+            PontosVantagemConfigDTO.of(22, 0),
+            PontosVantagemConfigDTO.of(23, 0),
+            PontosVantagemConfigDTO.of(24, 0),
             PontosVantagemConfigDTO.of(25, 3),
+            PontosVantagemConfigDTO.of(26, 0),
+            PontosVantagemConfigDTO.of(27, 0),
+            PontosVantagemConfigDTO.of(28, 0),
+            PontosVantagemConfigDTO.of(29, 0),
             PontosVantagemConfigDTO.of(30, 15),
+            PontosVantagemConfigDTO.of(31, 0),
+            PontosVantagemConfigDTO.of(32, 0),
+            PontosVantagemConfigDTO.of(33, 0),
+            PontosVantagemConfigDTO.of(34, 0),
             PontosVantagemConfigDTO.of(35, 3)
         );
     }
@@ -317,7 +304,8 @@ public class DefaultGameConfigProviderImpl implements GameDefaultConfigProvider 
             CategoriaVantagemDTO.of("Vantagem de Atributo",    "#2980b9", 5),
             CategoriaVantagemDTO.of("Vantagem Geral",          "#95a5a6", 6),
             CategoriaVantagemDTO.of("Vantagem Histórica",      "#f39c12", 7),
-            CategoriaVantagemDTO.of("Vantagem de Renascimento","#1abc9c", 8)
+            CategoriaVantagemDTO.of("Vantagem de Renascimento","#1abc9c", 8),
+            CategoriaVantagemDTO.of("Vantagem Racial",         "#7f8c8d", 9)
         );
     }
 
@@ -326,14 +314,16 @@ public class DefaultGameConfigProviderImpl implements GameDefaultConfigProvider 
         return List.of(
             // === Treinamento Físico ===
             VantagemConfigDTO.builder()
-                .nome("Treinamento de Combate Ofensivo")
-                .descricao("Treinamento especializado em técnicas ofensivas de combate")
-                .tipoBonus("ESPECIAL")
-                .formulaCusto("custo_base * nivel_vantagem")
-                .custoBase(3)
+                .sigla("TCO")
+                .nome("Treinamento em Combate Ofensivo")
+                .descricao("Treinamento especializado em técnicas ofensivas de combate físico. O dado é elevado até D10 onde um novo dado se inicia no D3.")
+                .nivelMaximoVantagem(10)
+                .formulaCusto("4")
+                .valorBonusFormula("+1 B.B.A e 1 dado de dano (D3→D.UP) por nível")
+                .tipoVantagem("VANTAGEM")
+                .categoriaNome("Treinamento Físico")
                 .nivelMinimoPersonagem(1)
                 .podeEvoluir(true)
-                .nivelMaximoVantagem(10)
                 .ordemExibicao(1)
                 .build(),
 

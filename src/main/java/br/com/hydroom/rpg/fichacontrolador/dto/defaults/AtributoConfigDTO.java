@@ -20,28 +20,27 @@ public class AtributoConfigDTO {
     private String descricao;
     private String formulaImpeto;      // Fórmula exp4j (ex: "total * 3", "min(total/20, 3)")
     private String unidadeImpeto;      // Unidade de medida (ex: "kg", "metros", "RD")
+    private Integer valorMinimo;
+    private Integer valorMaximo;
     private Integer ordemExibicao;
 
-    /**
-     * Cria um AtributoConfigDTO com valores básicos.
-     *
-     * @param nome Nome do atributo
-     * @param abreviacao Abreviação do atributo (2-5 caracteres)
-     * @param descricao Descrição
-     * @param formulaImpeto Fórmula de cálculo do ímpeto
-     * @param unidadeImpeto Unidade de medida
-     * @param ordemExibicao Ordem de exibição
-     * @return AtributoConfigDTO configurado
-     */
     public static AtributoConfigDTO of(String nome, String abreviacao, String descricao,
-                                       String formulaImpeto, String unidadeImpeto, Integer ordemExibicao) {
+                                       String formulaImpeto, String unidadeImpeto,
+                                       Integer valorMinimo, Integer valorMaximo, Integer ordemExibicao) {
         return AtributoConfigDTO.builder()
                 .nome(nome)
                 .abreviacao(abreviacao)
                 .descricao(descricao)
                 .formulaImpeto(formulaImpeto)
                 .unidadeImpeto(unidadeImpeto)
+                .valorMinimo(valorMinimo)
+                .valorMaximo(valorMaximo)
                 .ordemExibicao(ordemExibicao)
                 .build();
+    }
+
+    public static AtributoConfigDTO of(String nome, String abreviacao, String descricao,
+                                       String formulaImpeto, String unidadeImpeto, Integer ordemExibicao) {
+        return of(nome, abreviacao, descricao, formulaImpeto, unidadeImpeto, null, null, ordemExibicao);
     }
 }

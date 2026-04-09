@@ -26,6 +26,7 @@ FROM debian:12-slim AS production
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     zlib1g \
+    libstdc++6 \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
@@ -34,8 +35,9 @@ WORKDIR /app
 # Copiar APENAS o executavel nativo (nada mais)
 COPY --from=build /app/target/ficha-controlador /app/ficha-controlador
 
-# Cloud Run injeta a variavel PORT em runtime
+# Cloud Run injeta PORT em runtime — Spring Boot precisa de SERVER_PORT
 ENV PORT=8081
+ENV SERVER_PORT=${PORT}
 EXPOSE ${PORT}
 
 # Rodar como usuario nao-root (UID 65534 = nobody)

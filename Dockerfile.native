@@ -20,8 +20,14 @@ RUN chmod +x mvnw && ./mvnw dependency:go-offline -B -q
 COPY src ./src
 RUN ./mvnw clean package -Pnative -DskipTests -q
 
-# ----- Stage 2: Runtime Distroless (sem JVM, sem shell) -----
-FROM gcr.io/distroless/cc-debian12 AS production
+# ----- Stage 2: Runtime Debian Slim -----
+# debian:12-slim inclui zlib1g e libssl necessarios para o binario nativo GraalVM
+FROM debian:12-slim AS production
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    zlib1g \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -32,8 +38,8 @@ COPY --from=build /app/target/ficha-controlador /app/ficha-controlador
 ENV PORT=8081
 EXPOSE ${PORT}
 
-# Distroless usa nonroot (UID 65534) por padrao — sem root
-USER nonroot:nonroot
+# Rodar como usuario nao-root (UID 65534 = nobody)
+USER 65534:65534
 
 # Executar o binario nativo diretamente (sem java -jar)
 ENTRYPOINT ["/app/ficha-controlador"]

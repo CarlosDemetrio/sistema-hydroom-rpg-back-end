@@ -248,11 +248,11 @@ class FichaCalculationServiceBugsIntegrationTest {
     // =========================================================
 
     @Test
-    @DisplayName("T0-03: Raça Elfo com bonus=+2 em AGI deve resultar em FichaAtributo.outros=2")
+    @DisplayName("T0-03: Raça Anakarys com bonus=+3 em AGI deve resultar em FichaAtributo.outros=3")
     void t003_racaBonusAtributo_positivo_deveSerAplicadoEmFichaAtributoOutros() {
-        // Arrange: Elfo já existe com AGI+2 configurado pelo DefaultGameConfigProvider
-        Raca elfo = racaRepository.findByJogoIdAndNomeIgnoreCase(jogo.getId(), "Elfo");
-        assertThat(elfo).as("Raça Elfo deve existir após inicialização do jogo").isNotNull();
+        // Arrange: Anakarys já existe com AGI+3 configurado pelo DefaultGameConfigProvider
+        Raca anakarys = racaRepository.findByJogoIdAndNomeIgnoreCase(jogo.getId(), "Anakarys");
+        assertThat(anakarys).as("Raça Anakarys deve existir após inicialização do jogo").isNotNull();
 
         AtributoConfig agi = atributoConfigRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId())
                 .stream()
@@ -260,15 +260,15 @@ class FichaCalculationServiceBugsIntegrationTest {
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("AtributoConfig AGI não encontrado"));
 
-        // Criar ficha com raca=Elfo
+        // Criar ficha com raca=Anakarys
         Ficha ficha = fichaService.criar(new CreateFichaRequest(
-                jogo.getId(), "Elfo Teste", null, elfo.getId(), null, null, null, null, false));
+                jogo.getId(), "Anakarys Teste", null, anakarys.getId(), null, null, null, null, false));
 
         // Act: recalcular via atualizar
         fichaService.atualizar(ficha.getId(), new UpdateFichaRequest(
                 null, null, null, null, null, null, null, null));
 
-        // Assert: FichaAtributo.AGI.outros deve ser 2 (bônus da raça Elfo)
+        // Assert: FichaAtributo.AGI.outros deve ser 3 (bônus da raça Anakarys)
         List<FichaAtributo> atributos = fichaAtributoRepository.findByFichaIdWithConfig(ficha.getId());
         FichaAtributo atributoAgi = atributos.stream()
                 .filter(a -> a.getAtributoConfig() != null
@@ -277,11 +277,11 @@ class FichaCalculationServiceBugsIntegrationTest {
                 .orElseThrow(() -> new IllegalStateException("FichaAtributo AGI não encontrado"));
 
         assertThat(atributoAgi.getOutros())
-                .as("RacaBonusAtributo Elfo+2 em AGI deve ser aplicado em outros=2")
-                .isEqualTo(2);
+                .as("RacaBonusAtributo Anakarys+3 em AGI deve ser aplicado em outros=3")
+                .isEqualTo(3);
         assertThat(atributoAgi.getTotal())
-                .as("Total de AGI deve ser 2 (base=0 + nivel=0 + outros=2)")
-                .isEqualTo(2);
+                .as("Total de AGI deve ser 3 (base=0 + nivel=0 + outros=3)")
+                .isEqualTo(3);
     }
 
     // =========================================================
@@ -289,11 +289,11 @@ class FichaCalculationServiceBugsIntegrationTest {
     // =========================================================
 
     @Test
-    @DisplayName("T0-04: Raça Elfo com penalidade=-1 em VIG deve resultar em FichaAtributo.outros=-1")
+    @DisplayName("T0-04: Raça Ikaruz com penalidade=-9 em VIG deve resultar em FichaAtributo.outros=-9")
     void t004_racaBonusAtributo_negativo_deveAplicarPenalidade() {
-        // Arrange: Elfo tem VIG-1 configurado pelo DefaultGameConfigProvider
-        Raca elfo = racaRepository.findByJogoIdAndNomeIgnoreCase(jogo.getId(), "Elfo");
-        assertThat(elfo).as("Raça Elfo deve existir após inicialização do jogo").isNotNull();
+        // Arrange: Ikaruz tem VIG-9 configurado pelo DefaultGameConfigProvider
+        Raca ikaruz = racaRepository.findByJogoIdAndNomeIgnoreCase(jogo.getId(), "Ikaruz");
+        assertThat(ikaruz).as("Raça Ikaruz deve existir após inicialização do jogo").isNotNull();
 
         AtributoConfig vig = atributoConfigRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId())
                 .stream()
@@ -301,15 +301,15 @@ class FichaCalculationServiceBugsIntegrationTest {
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("AtributoConfig VIG não encontrado"));
 
-        // Criar ficha com raca=Elfo
+        // Criar ficha com raca=Ikaruz
         Ficha ficha = fichaService.criar(new CreateFichaRequest(
-                jogo.getId(), "Elfo Penalidade", null, elfo.getId(), null, null, null, null, false));
+                jogo.getId(), "Ikaruz Penalidade", null, ikaruz.getId(), null, null, null, null, false));
 
         // Act: recalcular via atualizar
         fichaService.atualizar(ficha.getId(), new UpdateFichaRequest(
                 null, null, null, null, null, null, null, null));
 
-        // Assert: FichaAtributo.VIG.outros deve ser -1 (penalidade da raça Elfo)
+        // Assert: FichaAtributo.VIG.outros deve ser -9 (penalidade da raça Ikaruz)
         List<FichaAtributo> atributos = fichaAtributoRepository.findByFichaIdWithConfig(ficha.getId());
         FichaAtributo atributoVig = atributos.stream()
                 .filter(a -> a.getAtributoConfig() != null
@@ -318,11 +318,11 @@ class FichaCalculationServiceBugsIntegrationTest {
                 .orElseThrow(() -> new IllegalStateException("FichaAtributo VIG não encontrado"));
 
         assertThat(atributoVig.getOutros())
-                .as("RacaBonusAtributo Elfo-1 em VIG deve ser aplicado como penalidade outros=-1")
-                .isEqualTo(-1);
+                .as("RacaBonusAtributo Ikaruz-9 em VIG deve ser aplicado como penalidade outros=-9")
+                .isEqualTo(-9);
         assertThat(atributoVig.getTotal())
-                .as("Total de VIG deve ser -1 (base=0 + nivel=0 + outros=-1)")
-                .isEqualTo(-1);
+                .as("Total de VIG deve ser -9 (base=0 + nivel=0 + outros=-9)")
+                .isEqualTo(-9);
     }
 
     // =========================================================

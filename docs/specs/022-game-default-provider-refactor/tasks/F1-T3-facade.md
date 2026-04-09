@@ -1,25 +1,22 @@
-package br.com.hydroom.rpg.fichacontrolador.config;
+# F1-T3 — Refatorar DefaultGameConfigProviderImpl como Facade
 
-import br.com.hydroom.rpg.fichacontrolador.config.defaults.*;
-import br.com.hydroom.rpg.fichacontrolador.dto.defaults.*;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+## Objetivo
+Transformar o monolito em thin facade que delega para os 11 providers.
 
-import java.util.List;
-import java.util.Map;
+## Arquivo modificado
+`config/DefaultGameConfigProviderImpl.java`
 
-/**
- * Thin facade que delega para providers especializados no pacote {@code config.defaults}.
- *
- * <p>Fornece todos os dados default para inicialização de um jogo novo.</p>
- * <p>Valores são baseados nas regras canônicas do sistema Klayrah RPG.</p>
- *
- * <p><strong>Para customizar</strong>: Crie sua própria implementação de GameDefaultConfigProvider
- * e registre como @Primary no Spring Context.</p>
- *
- * @author Carlos Demétrio
- * @since 2026-02-05
- */
+## O que fazer
+
+1. Adicionar `@RequiredArgsConstructor` (Lombok)
+2. Adicionar 11 campos `private final` para os providers
+3. Substituir corpo de cada `getDefault*()` por delegacao ao provider
+4. Manter `getDefaultClassePontos()` e `getDefaultRacaPontos()` como stubs `Map.of()`
+5. Remover todos os dados inline e imports nao usados
+
+## Resultado esperado
+
+```java
 @Component
 @RequiredArgsConstructor
 public class DefaultGameConfigProviderImpl implements GameDefaultConfigProvider {
@@ -35,7 +32,6 @@ public class DefaultGameConfigProviderImpl implements GameDefaultConfigProvider 
     private final DefaultPontosVantagemProvider pontosVantagemProvider;
     private final DefaultVantagensProvider vantagensProvider;
     private final DefaultItensProvider itensProvider;
-
 
     @Override
     public List<AtributoConfigDTO> getDefaultAtributos() {
@@ -142,3 +138,22 @@ public class DefaultGameConfigProviderImpl implements GameDefaultConfigProvider 
         return itensProvider.getItens();
     }
 }
+```
+
+## Validacao
+```bash
+./mvnw test -Dtest=DefaultGameConfigProviderImplTest
+```
+Testes T5-01, T5-03..T5-08, T5-10 devem passar. T5-02 e T5-09 continuam quebrados (corrigidos na T13).
+
+## Commit
+```
+refactor(defaults): DefaultGameConfigProviderImpl como thin facade [Copilot R07 T3]
+```
+
+## Acceptance Checks
+- [ ] Classe <= 100 linhas
+- [ ] 11 providers injetados via `private final`
+- [ ] Todos os `getDefault*()` delegam
+- [ ] Stubs `getDefaultClassePontos()` e `getDefaultRacaPontos()` retornam `Map.of()`
+- [ ] Testes T5-01, T5-03..T5-08, T5-10 passam

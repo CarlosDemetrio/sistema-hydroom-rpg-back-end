@@ -1,5 +1,6 @@
 package br.com.hydroom.rpg.fichacontrolador.config;
 
+import br.com.hydroom.rpg.fichacontrolador.config.defaults.*;
 import br.com.hydroom.rpg.fichacontrolador.dto.defaults.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,7 +19,19 @@ class DefaultGameConfigProviderImplTest {
 
     @BeforeEach
     void setUp() {
-        provider = new DefaultGameConfigProviderImpl();
+        provider = new DefaultGameConfigProviderImpl(
+                new DefaultAtributosProvider(),
+                new DefaultAptidoesProvider(),
+                new DefaultNiveisProvider(),
+                new DefaultClassesProvider(),
+                new DefaultRacasProvider(),
+                new DefaultProspeccoesProvider(),
+                new DefaultConfigSimpleProvider(),
+                new DefaultBonusProvider(),
+                new DefaultPontosVantagemProvider(),
+                new DefaultVantagensProvider(),
+                new DefaultItensProvider()
+        );
     }
 
     @Test
@@ -42,11 +56,11 @@ class DefaultGameConfigProviderImplTest {
     }
 
     @Test
-    @DisplayName("T5-02: Provider retorna 8 PontosVantagemConfig defaults com valores corretos")
+    @DisplayName("T5-02: Provider retorna 35 PontosVantagemConfig defaults com valores corretos")
     void deveRetornarOitoPontosVantagemDefaults() {
         List<PontosVantagemConfigDTO> pontos = provider.getDefaultPontosVantagem();
 
-        assertThat(pontos).hasSize(8);
+        assertThat(pontos).hasSize(35);
 
         assertThat(pontos)
             .filteredOn(p -> p.nivel() == 1)
@@ -150,11 +164,11 @@ class DefaultGameConfigProviderImplTest {
     }
 
     @Test
-    @DisplayName("T5-09: Provider retorna 8 CategoriaVantagem defaults com nomes e cores")
+    @DisplayName("T5-09: Provider retorna 9 CategoriaVantagem defaults com nomes e cores")
     void deveRetornarOitoCategoriasVantagemDefaults() {
         List<CategoriaVantagemDTO> categorias = provider.getDefaultCategoriasVantagem();
 
-        assertThat(categorias).hasSize(8);
+        assertThat(categorias).hasSize(9);
 
         assertThat(categorias)
             .extracting(CategoriaVantagemDTO::nome)
@@ -166,7 +180,8 @@ class DefaultGameConfigProviderImplTest {
                 "Vantagem de Atributo",
                 "Vantagem Geral",
                 "Vantagem Histórica",
-                "Vantagem de Renascimento"
+                "Vantagem de Renascimento",
+                "Vantagem Racial"
             );
 
         categorias.forEach(c -> {
@@ -191,6 +206,97 @@ class DefaultGameConfigProviderImplTest {
             assertThat(b.sigla().length())
                 .as("Sigla '%s' deve ter 2-5 caracteres", b.sigla())
                 .isBetween(2, 5);
+        });
+    }
+
+    @Test
+    @DisplayName("T5-11: getDefaultVantagens() retorna exatamente 64 vantagens")
+    void deveRetornarSesentaEQuatroVantagens() {
+        var vantagens = provider.getDefaultVantagens();
+        assertThat(vantagens).hasSize(64);
+    }
+
+    @Test
+    @DisplayName("T5-12: siglas das vantagens são únicas, têm 2-5 caracteres e começam com V")
+    void siglasVantagensDevemSerUnicasE2a5CharsComPrefixoV() {
+        var vantagens = provider.getDefaultVantagens();
+        var siglas = vantagens.stream().map(VantagemConfigDTO::getSigla).toList();
+        assertThat(siglas).doesNotContainNull();
+        siglas.forEach(s -> assertThat(s.length()).isBetween(2, 5));
+        siglas.forEach(s -> assertThat(s).startsWith("V"));
+        assertThat(siglas).doesNotHaveDuplicates();
+    }
+
+    @Test
+    @DisplayName("T5-13: todos os INSOLITUS têm formulaCusto = 0")
+    void insolitusDeverTerFormulaCustoZero() {
+        var insolitus = provider.getDefaultVantagens().stream()
+                .filter(v -> "INSOLITUS".equals(v.getTipoVantagem()))
+                .toList();
+        assertThat(insolitus).hasSize(17);
+        insolitus.forEach(v -> assertThat(v.getFormulaCusto()).isEqualTo("0"));
+    }
+
+    @Test
+    @DisplayName("T5-14: todas as categoriaNome existem em getDefaultCategoriasVantagem()")
+    void categoriaNomeDeveExistirNasCategorias() {
+        var categoriasNomes = provider.getDefaultCategoriasVantagem().stream()
+                .map(CategoriaVantagemDTO::nome)
+                .collect(Collectors.toSet());
+        provider.getDefaultVantagens().forEach(v ->
+                assertThat(categoriasNomes).contains(v.getCategoriaNome())
+        );
+    }
+
+    @Test
+    @DisplayName("T5-15: nenhuma formulaCusto usa custo_base")
+    void formulaCustoNaoDeveTerCustoBase() {
+        provider.getDefaultVantagens().forEach(v ->
+                assertThat(v.getFormulaCusto()).doesNotContain("custo_base")
+        );
+    }
+
+    @Test
+    @DisplayName("T5-16: 7 atributos com abreviações únicas")
+    void deveRetornarSeteAtributosComAbreviacoesUnicas() {
+        var atributos = provider.getDefaultAtributos();
+        assertThat(atributos).hasSize(7);
+        var abreviacoes = atributos.stream().map(AtributoConfigDTO::getAbreviacao).toList();
+        assertThat(abreviacoes).doesNotHaveDuplicates();
+    }
+
+    @Test
+    @DisplayName("T5-17: 6 raças com nomes únicos")
+    void deveRetornarSeisRacasComNomesUnicos() {
+        var racas = provider.getDefaultRacas();
+        assertThat(racas).hasSize(6);
+        var nomes = racas.stream().map(RacaConfigDTO::getNome).toList();
+        assertThat(nomes).doesNotHaveDuplicates();
+    }
+
+    @Test
+    @DisplayName("T5-18: 36 níveis (0-35) com XP crescente")
+    void deveRetornar36NiveisComXpCrescente() {
+        var niveis = provider.getDefaultNiveis();
+        assertThat(niveis).hasSize(36);
+        for (int i = 1; i < niveis.size(); i++) {
+            assertThat(niveis.get(i).getExperienciaNecessaria())
+                    .isGreaterThanOrEqualTo(niveis.get(i - 1).getExperienciaNecessaria());
+        }
+    }
+
+    @Test
+    @DisplayName("T5-19: 40 itens com raridade e tipo existentes")
+    void deveRetornar40ItensComRaridadeETipoValidos() {
+        var itens = provider.getDefaultItens();
+        assertThat(itens).hasSize(40);
+        var raridadeNomes = provider.getDefaultRaridades().stream()
+                .map(RaridadeItemConfigDefault::nome).collect(Collectors.toSet());
+        var tipoNomes = provider.getDefaultTipos().stream()
+                .map(TipoItemConfigDefault::nome).collect(Collectors.toSet());
+        itens.forEach(item -> {
+            assertThat(raridadeNomes).contains(item.raridadeNome());
+            assertThat(tipoNomes).contains(item.tipoNome());
         });
     }
 }

@@ -415,7 +415,7 @@ class FichaEfeitosCalculationIntegrationTest {
     @DisplayName("TC-4a: BONUS_VIDA com valorPorNivel=5 e nivelVantagem=4 adiciona 20 ao FichaVida.vt")
     void tc4a_bonusVida_nivelQuatro_adicionaVinte() {
         // Arrange
-        VantagemConfig vantagem = criarVantagem("Saude de Ferro");
+        VantagemConfig vantagem = criarVantagem("Saude de Ferro Teste");
         criarEfeito(vantagem, TipoEfeito.BONUS_VIDA,
                 null, null, null, null,
                 null, BigDecimal.valueOf(5), null);

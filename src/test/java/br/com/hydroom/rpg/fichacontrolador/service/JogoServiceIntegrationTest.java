@@ -375,8 +375,8 @@ class JogoServiceIntegrationTest {
             .hasSize(12);
 
         assertThat(racaRepository.findByJogoIdOrderByOrdemExibicao(jogoId))
-            .as("Deve criar 4 raças")
-            .hasSize(4);
+            .as("Deve criar 6 raças")
+            .hasSize(6);
 
         assertThat(racaBonusRepository.findAll())
             .as("Deve criar pelo menos 6 bônus raciais")
@@ -517,19 +517,19 @@ class JogoServiceIntegrationTest {
         var racas = racaRepository.findByJogoIdOrderByOrdemExibicao(result.getId());
 
         assertThat(racas)
-            .hasSize(4)
+            .hasSize(6)
             .extracting("nome")
-            .containsExactlyInAnyOrder("Humano", "Elfo", "Anão", "Meio-Elfo");
+            .containsExactlyInAnyOrder("Humano", "Karzarcryer", "Ikaruz", "Hankraz", "Atlas", "Anakarys");
 
         // Assert - Verificar que raças têm bônus (exceto Humano que não tem)
-        var racaElfo = racas.stream()
-            .filter(r -> r.getNome().equals("Elfo"))
+        var racaKarzarcryer = racas.stream()
+            .filter(r -> r.getNome().equals("Karzarcryer"))
             .findFirst()
             .orElseThrow();
 
-        var bonusElfo = racaBonusRepository.findByRacaId(racaElfo.getId());
-        assertThat(bonusElfo)
-            .as("Elfo deve ter bônus raciais")
+        var bonusKarzarcryer = racaBonusRepository.findByRacaId(racaKarzarcryer.getId());
+        assertThat(bonusKarzarcryer)
+            .as("Karzarcryer deve ter bônus raciais")
             .isNotEmpty();
     }
 

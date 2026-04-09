@@ -263,6 +263,7 @@
                             <buildArgs>
                                 <buildArg>--no-fallback</buildArg>
                                 <buildArg>-H:+ReportExceptionStackTraces</buildArg>
+                                <buildArg>--initialize-at-build-time=org.jboss.logging</buildArg>
                             </buildArgs>
                         </configuration>
                     </plugin>

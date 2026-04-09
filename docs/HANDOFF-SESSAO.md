@@ -102,6 +102,18 @@ echo -n "SEU_API_SECRET"  | gcloud secrets create rpg-cloudinary-api-secret --da
 
 ## Proxima Sessao — Rodada 16
 
+### Tasks BA pendentes (pré-spec)
+
+Briefing completo em `docs/specs/PENDING-BA-TASKS.md`. Três frentes que precisam de BA antes de virar implementação:
+
+| ID | Titulo | Spec sugerida | Prioridade | Esforço BA |
+|----|--------|---------------|------------|------------|
+| BA-01 | Revisão da massa do GameDefaultProvider (CSVs) | SPEC-020 | P0 | 1-2 sessões |
+| BA-02 | Sistema de Habilidades (Skills) | SPEC-021 | P1 | 2-3 sessões |
+| BA-03 | Categorização/tags de NPCs | SPEC-022 | P2 | 0.5-1 sessão |
+
+Ordem sugerida: BA-01 → BA-03 → BA-02. Nenhuma bloqueia o RC — podem rodar em paralelo à homologação.
+
 ### Obrigatorio antes do RC
 
 | Task | Descricao | Agente | Status |

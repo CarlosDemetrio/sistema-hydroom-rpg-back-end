@@ -3,8 +3,26 @@
 # raca_nome → referencia 'nome' de 16-raca.csv
 # atributo_sigla → referencia 'sigla' de 08-atributo-config.csv
 # bonus: pode ser negativo
-# TODO PA-015-02: preencher bônus de atributos por raça
+#
+# MAPEAMENTO DE DERIVADOS:
+# "Percepção" (PER = INTU/3) → bônus em INTU: +3 Percepção = +9 INTU; -3 Percepção = -9 INTU
+# "Resistência" (análoga a Bloqueio = VIG/3) → bônus em VIG: +8 Resistência = +24 VIG; -3 Resistência = -9 VIG
 raca_nome;atributo_sigla;bonus
-# Exemplo: Elfo;INT;2
-# Exemplo: Elfo;FOR;-1
-# Exemplo: Anão;VIG;2
+# Humano — sem bônus/penalidades de atributo (compensado pelas 5 vantagens raciais)
+# Karzarcryer: +8 Resistência = +24 VIG; -3 Percepção = -9 INTU
+Karzarcryer;VIG;24
+Karzarcryer;INTU;-9
+# Ikarúz: +5 Sabedoria, +3 Percepção = +9 INTU, -3 Resistência = -9 VIG
+Ikarúz;SAB;5
+Ikarúz;INTU;9
+Ikarúz;VIG;-9
+# Hankráz: +5 Inteligência, +3 Percepção = +9 INTU, -3 Resistência = -9 VIG
+Hankráz;INT;5
+Hankráz;INTU;9
+Hankráz;VIG;-9
+# Atlas: +8 Força, -3 Inteligência (antecedente "É burro" representado pelo -3 INT)
+Atlas;FOR;8
+Atlas;INT;-3
+# Anakarys: +3 Agilidade, +2 Percepção = +6 INTU
+Anakarys;AGI;3
+Anakarys;INTU;6

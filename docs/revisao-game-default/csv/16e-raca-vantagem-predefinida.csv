@@ -2,6 +2,31 @@
 # Campos: raca_nome;vantagem_nome;nivel_inicial
 # raca_nome → referencia 'nome' de 16-raca.csv
 # vantagem_nome → referencia 'nome' de 17-vantagem-config.csv
-# PREENCHER APÓS 17-vantagem-config.csv
+# nivel_inicial: nível com que a vantagem é concedida (normalmente 1)
 raca_nome;vantagem_nome;nivel_inicial
-# Exemplo: Elfo;Visão no Escuro;1
+# Humano — 5 vantagens que refletem adaptabilidade e potencial ilimitado
+Humano;Adaptabilidade Humana;1
+Humano;Resiliência Humana;1
+Humano;Versatilidade Humana;1
+Humano;Espírito Inabalável;1
+Humano;Legado de Civilização;1
+# Karzarcryer — descendentes de dragões do fogo
+Karzarcryer;Elemento Natural: Fogo;1
+Karzarcryer;Imunidade Elemental: Fogo;1
+Karzarcryer;Estômago de Dragão;1
+# Ikarúz — seres alados de sabedoria celestial
+Ikarúz;Membro Adicional: Asas;1
+Ikarúz;Adaptação Atmosférica;1
+Ikarúz;Combate Alado;1
+# Hankráz — viajantes entre planos de inteligência aguçada
+Hankráz;Piercings Raciais;1
+Hankráz;Corpo Esguio;1
+Hankráz;Vagante entre Mundos;1
+# Atlas — gigantes de força incomparável (usa vantagens JÁ EXISTENTES no sistema)
+Atlas;Capacidade de Força Máxima;1
+Atlas;Ambidestria;1
+Atlas;Ataque Adicional;1
+# Anakarys — predadores ágeis com armas naturais aprimoradas
+Anakarys;Armas Naturais Aprimoradas;1
+Anakarys;Deslocamento Especial;1
+Anakarys;Ataque Adicional Racial;1

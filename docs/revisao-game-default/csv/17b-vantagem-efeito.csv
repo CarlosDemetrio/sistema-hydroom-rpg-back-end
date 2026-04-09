@@ -65,3 +65,26 @@ Atenção Difusa;FORMULA_CUSTOMIZADA;;;;;;1;nivel;+1 metro de raio de atenção 
 Senso Numérico;FORMULA_CUSTOMIZADA;;;;;;;;Cálculos e estimativas numéricas com precisão absoluta e instantânea
 Pensamento Bifurcado;FORMULA_CUSTOMIZADA;;;;;;;;Executa uma ação Independente e uma ação Padrão simultaneamente no mesmo turno
 Memória Eidética;FORMULA_CUSTOMIZADA;;;;;;;;Memória completa e precisa de experiências passadas com todos os sentidos
+# === Vantagem Racial — Karzarcryer ===
+Elemento Natural: Fogo;FORMULA_CUSTOMIZADA;;;;;;;;Afinidade com fogo: exposição a chamas restaura 1D3 de HP por rodada e concede +1 B.B.M em feitiços de fogo
+Imunidade Elemental: Fogo;FORMULA_CUSTOMIZADA;;;;;;;;Imunidade total a danos do tipo fogo — natural, mágico ou ambiental (vulcões, forjas, etc.)
+Estômago de Dragão;FORMULA_CUSTOMIZADA;;;;;;;;Pode ingerir substâncias tóxicas, ácidas ou ígneas sem efeito adverso; imunidade total a venenos ingeridos
+# === Vantagem Racial — Ikarúz ===
+Membro Adicional: Asas;FORMULA_CUSTOMIZADA;;;;;;;;Voo sustentado: velocidade aérea = velocidade terrestre base; pode planar indefinidamente sem custo
+Adaptação Atmosférica;FORMULA_CUSTOMIZADA;;;;;;;;Sem penalidades por altitude extrema, pressão reduzida ou ventos de força até intensidade 10
+Combate Alado;BONUS_DERIVADO;;;B.B.A;;;1;;+1 B.B.A em combate aéreo por nível de vantagem (máx nível 3)
+Combate Alado;BONUS_DERIVADO;;;Esquiva;;;1;;+1 Esquiva usando asas defensivamente por nível de vantagem (máx nível 3)
+# === Vantagem Racial — Hankráz ===
+Piercings Raciais;FORMULA_CUSTOMIZADA;;;;;;;;Piercings rúnicos: amplificam habilidades sobrenaturais em +1 grau de intensidade; conduzem energia mística para feitiços
+Corpo Esguio;FORMULA_CUSTOMIZADA;;;;;;;;Bônus em aptidão Furtividade e -2 em penalidades de movimentação por espaços apertados ou estreitos
+Vagante entre Mundos;FORMULA_CUSTOMIZADA;;;;;;;;Visão espiritual passiva: percebe criaturas planares, portais e energias de planos alternativos num raio de 10 metros
+# === Vantagem Racial — Humano ===
+Adaptabilidade Humana;FORMULA_CUSTOMIZADA;;;;;;;;Escolhe 1 aptidão ao criar o personagem: +2 permanente em todos os testes dessa aptidão (sem restrição de tipo)
+Resiliência Humana;FORMULA_CUSTOMIZADA;;;;;;;;Recuperação acelerada: veneno, doença e condições debilitantes têm duração e intensidade reduzidas à metade
+Versatilidade Humana;FORMULA_CUSTOMIZADA;;;;;;;;Remove pré-requisitos raciais para compra de vantagens de qualquer categoria ou origem no sistema
+Espírito Inabalável;FORMULA_CUSTOMIZADA;;;;;;5;;+5 de resistência em testes contra efeitos mentais (medo, encantamento, manipulação, sedução sobrenatural)
+Legado de Civilização;FORMULA_CUSTOMIZADA;;;;;;3;;+3 em testes de negociação, diplomacia e interação social com qualquer raça inteligente de Klayrah
+# === Vantagem Racial — Anakarys ===
+Armas Naturais Aprimoradas;BONUS_DERIVADO;;;B.B.A;;;3;;+3 B.B.A permanente em ataques realizados com armas naturais (garras, presas, cauda)
+Deslocamento Especial;FORMULA_CUSTOMIZADA;;;;;;;;Modo de movimento especial sem penalidades: escalar (velocidade normal), saltar (+3m/ação) ou rastejar (sem penalidade)
+Ataque Adicional Racial;FORMULA_CUSTOMIZADA;;;;;;;;1 ataque adicional por turno com armas naturais — restrição: alvo deve ser de tamanho igual ou menor que o personagem

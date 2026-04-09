@@ -1,7 +1,9 @@
 # Raca
 # Campos: nome;descricao;ordem_exibicao
 nome;descricao;ordem_exibicao
-Humano;Raça versátil e adaptável;1
-Elfo;Seres longevos com afinidade mágica;2
-Anão;Raça resistente e trabalhadora;3
-Meio-Elfo;Híbrido entre humano e elfo;4
+Humano;Raça versátil e adaptável, capaz de aprender qualquer arte ou ofício. Sua maior força é a adaptabilidade e a capacidade de superação. Não possuem vantagens raciais físicas marcantes, mas compensam com 5 vantagens especiais que refletem a resiliência e o potencial ilimitado da humanidade.;1
+Karzarcryer;Descendentes de dragões do plano do fogo, os Karzarcryer possuem escamas ígnicas e sangue quente. Bônus: +8 Resistência (+24 VIG), -3 Percepção (-9 INTU). São conhecidos por seu temperamento explosivo (Antecedente: Falta de autocontrole) e pela Ignomia inicial 5, que representa sua reputação de destruição instintiva. Dominam o elemento fogo e possuem resistência sobrenatural ao calor.;2
+Ikarúz;Raça de seres alados com afinidade à sabedoria celestial. Possuem asas funcionais e adaptação a diferentes altitudes. Bônus: +5 Sabedoria (+5 SAB), +3 Percepção (+9 INTU), -3 Resistência (-9 VIG). Antecedente: Nanismo — apesar das asas grandiosas, seu corpo é pequeno e delicado, tornando-os vulneráveis em combate corpo a corpo.;3
+Hankráz;Seres esguios de inteligência aguçada que habitam entre planos de existência paralelos. Seus piercings mágicos amplificam capacidades sobrenaturais. Bônus: +5 Inteligência (+5 INT), +3 Percepção (+9 INTU), -3 Resistência (-9 VIG). Antecedente: Baixo vigor — corpos frágeis que compensam com mente analítica e habilidades multidimensionais.;4
+Atlas;Gigantes de força incomparável, os Atlas são a raça mais fisicamente poderosa de Klayrah. Bônus: +8 Força (+8 FOR), -3 Inteligência (-3 INT). Antecedente: É burro — já representado pela penalidade em INT. São guerreiros natos mas carecem de sofisticação intelectual. Possuem capacidade de força máxima inata, ambidestria natural e um ataque adicional devastador.;5
+Anakarys;Raça ágil de predadores naturais com garras, presas e instintos aguçados. Bônus: +3 Agilidade (+3 AGI), +2 Percepção (+6 INTU). Possuem armas naturais aprimoradas, formas únicas de deslocamento e um ataque adicional racial com restrições específicas de uso.;6

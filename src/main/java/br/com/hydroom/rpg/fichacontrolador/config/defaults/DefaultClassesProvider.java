@@ -27,7 +27,7 @@ public class DefaultClassesProvider {
 
     public List<ClasseConfigDTO> get() {
         return List.of(
-            ClasseConfigDTO.of("Guerreiro",       "Especialista em combate corpo a corpo",           1, pontosPorNivel(1, 0)),
+            ClasseConfigDTO.of("Guerreiro",       "Especialista em combate corpo a corpo de curta e média distância",           1, pontosPorNivel(1, 0)),
             ClasseConfigDTO.of("Arqueiro",         "Mestre em combate à distância",                  2, pontosEmMarcos5a35(1, 0)),
             ClasseConfigDTO.of("Monge",            "Lutador desarmado com disciplina espiritual",    3, pontosEmMarcos5a35(1, 0)),
             ClasseConfigDTO.of("Berserker",        "Guerreiro selvagem de fúria incontrolável",      4, pontosPorNivel(1, 0)),

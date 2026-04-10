@@ -340,14 +340,14 @@ class DefaultGameConfigProviderImplTest {
     }
 
     @Test
-    @DisplayName("T5-22: 6 dados de prospecção com faces crescentes")
+    @DisplayName("T5-22: 7 dados de prospecção com faces crescentes")
     void deveRetornarSeisDadosComFacesCrescentes() {
         var prospeccoes = provider.getDefaultProspeccoes();
 
-        assertThat(prospeccoes).hasSize(6);
+        assertThat(prospeccoes).hasSize(7);
         assertThat(prospeccoes)
                 .extracting(ProspeccaoConfigDTO::getNome)
-                .containsExactly("d3", "d4", "d6", "d8", "d10", "d12");
+                .containsExactly("d3", "d4", "d6", "d8", "d10", "d12", "d20");
 
         var faces = prospeccoes.stream().map(ProspeccaoConfigDTO::getNumLados).toList();
         for (int i = 1; i < faces.size(); i++) {

@@ -21,6 +21,120 @@
       "allPublicMethods": true
     },
     {
+      "type": "org.hibernate.dialect.type.PostgreSQLInetJdbcType",
+      "allDeclaredConstructors": true,
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.dialect.type.PostgreSQLCastingInetJdbcType",
+      "allDeclaredConstructors": true,
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.dialect.type.PostgreSQLIntervalSecondJdbcType",
+      "allDeclaredConstructors": true,
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.dialect.type.PostgreSQLCastingIntervalSecondJdbcType",
+      "allDeclaredConstructors": true,
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.dialect.type.PostgreSQLStructPGObjectJdbcType",
+      "allDeclaredConstructors": true,
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.dialect.type.PostgreSQLStructCastingJdbcType",
+      "allDeclaredConstructors": true,
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.dialect.type.PostgreSQLJsonPGObjectJsonType",
+      "allDeclaredConstructors": true,
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.dialect.type.PostgreSQLJsonPGObjectJsonbType",
+      "allDeclaredConstructors": true,
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.dialect.type.PostgreSQLCastingJsonJdbcType",
+      "allDeclaredConstructors": true,
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.dialect.type.PostgreSQLArrayJdbcType",
+      "allDeclaredConstructors": true,
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.dialect.type.PostgreSQLArrayJdbcTypeConstructor",
+      "allDeclaredConstructors": true,
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.dialect.type.PostgreSQLCastingJsonArrayJdbcType",
+      "allDeclaredConstructors": true,
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.dialect.type.PostgreSQLCastingJsonArrayJdbcTypeConstructor",
+      "allDeclaredConstructors": true,
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.dialect.type.PostgreSQLJsonArrayPGObjectType",
+      "allDeclaredConstructors": true,
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.dialect.type.PostgreSQLJsonArrayPGObjectJsonJdbcTypeConstructor",
+      "allDeclaredConstructors": true,
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.dialect.type.PostgreSQLJsonArrayPGObjectJsonbJdbcTypeConstructor",
+      "allDeclaredConstructors": true,
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.dialect.type.PostgreSQLEnumJdbcType",
+      "allDeclaredConstructors": true,
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.dialect.type.PostgreSQLOrdinalEnumJdbcType",
+      "allDeclaredConstructors": true,
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.dialect.type.PostgreSQLUUIDJdbcType",
+      "allDeclaredConstructors": true,
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
       "type": "org.hibernate.action.internal.ActionLogging_$logger",
       "allDeclaredConstructors": true,
       "allPublicMethods": true
@@ -299,6 +413,469 @@
       "type": "org.hibernate.validator.internal.util.logging.Log_$logger",
       "allDeclaredConstructors": true,
       "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride",
+      "queryAllDeclaredClasses": true,
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$Check",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$Checks",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$ColumnDefault",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$ColumnDefaults",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$DiscriminatorFormula",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$DiscriminatorFormulas",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$FilterDefOverrides",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$FilterDefs",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$FilterOverrides",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$Filters",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$Formula",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$Formulas",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$GeneratedColumn",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$GeneratedColumns",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$JoinFormula",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$JoinFormulas",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$OverridesAnnotation",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$SQLDelete",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$SQLDeleteAll",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$SQLDeleteAlls",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$SQLDeletes",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$SQLInsert",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$SQLInserts",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$SQLOrder",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$SQLOrders",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$SQLRestriction",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$SQLRestrictions",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$SQLSelect",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$SQLSelects",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$SQLUpdate",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$SQLUpdates",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.annotations.DialectOverride$Version",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.boot.models.DialectOverrideAnnotations",
+      "allDeclaredConstructors": true,
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.boot.model.internal.DialectOverridesAnnotationHelper",
+      "allDeclaredConstructors": true,
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.boot.models.annotations.spi.DialectOverrider",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.AutoFlushEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.AutoFlushEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.ClearEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.ClearEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.DeleteEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.DeleteEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.DirtyCheckEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.DirtyCheckEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.EvictEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.EvictEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.FlushEntityEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.FlushEntityEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.FlushEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.FlushEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.InitializeCollectionEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.InitializeCollectionEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.LoadEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.LoadEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.LockEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.LockEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.MergeEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.MergeEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.PersistEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.PersistEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.PostActionEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.PostActionEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.PostCollectionRecreateEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.PostCollectionRecreateEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.PostCollectionRemoveEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.PostCollectionRemoveEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.PostCollectionUpdateEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.PostCollectionUpdateEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.PostCommitDeleteEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.PostCommitDeleteEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.PostCommitInsertEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.PostCommitInsertEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.PostCommitUpdateEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.PostCommitUpdateEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.PostDeleteEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.PostDeleteEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.PostInsertEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.PostInsertEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.PostLoadEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.PostLoadEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.PostUpdateEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.PostUpdateEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.PostUpsertEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.PostUpsertEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.PreCollectionRecreateEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.PreCollectionRecreateEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.PreCollectionRemoveEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.PreCollectionRemoveEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.PreCollectionUpdateEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.PreCollectionUpdateEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.PreDeleteEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.PreDeleteEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.PreFlushEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.PreFlushEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.PreInsertEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.PreInsertEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.PreLoadEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.PreLoadEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.PreUpdateEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.PreUpdateEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.PreUpsertEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.PreUpsertEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.RefreshEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.RefreshEventListener[]"
+    },
+    {
+      "type": "org.hibernate.event.spi.ReplicateEventListener",
+      "allDeclaredFields": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.event.spi.ReplicateEventListener[]"
     }
   ]
 }

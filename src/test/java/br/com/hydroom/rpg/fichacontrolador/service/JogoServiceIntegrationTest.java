@@ -389,8 +389,8 @@ class JogoServiceIntegrationTest {
             .hasSizeGreaterThanOrEqualTo(6);
 
         assertThat(prospeccaoRepository.findByJogoIdOrderByOrdemExibicao(jogoId))
-            .as("Deve criar 6 dados de prospecção")
-            .hasSize(6);
+            .as("Deve criar 7 dados de prospecção")
+            .hasSize(7);
 
         assertThat(generoRepository.findByJogoIdOrderByOrdemExibicao(jogoId))
             .as("Deve criar 3 gêneros (Masculino, Feminino, Outro)")

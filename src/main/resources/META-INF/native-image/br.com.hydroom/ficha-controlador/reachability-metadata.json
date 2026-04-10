@@ -1,6 +1,26 @@
 {
   "reflection": [
     {
+      "type": "org.hibernate.boot.model.relational.ColumnOrderingStrategyStandard",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.boot.model.relational.ColumnOrderingStrategyLegacy",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl",
+      "allDeclaredConstructors": true,
+      "allPublicMethods": true
+    },
+    {
       "type": "org.hibernate.action.internal.ActionLogging_$logger",
       "allDeclaredConstructors": true,
       "allPublicMethods": true

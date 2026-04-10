@@ -7,6 +7,26 @@ import org.springframework.aot.hint.RuntimeHintsRegistrar;
 public class NativeHintsRegistrar implements RuntimeHintsRegistrar {
     @Override
     public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+        // Hibernate 7 strategy classes: AOT-generated reflect-config references
+        // MetadataBuildingOptionsImpl$1 and $2 which no longer exist in Hibernate 7.x,
+        // so the conditional registrations are never triggered. Register unconditionally.
+        hints.reflection().registerType(
+            org.hibernate.boot.model.relational.ColumnOrderingStrategyStandard.class,
+            MemberCategory.INVOKE_DECLARED_CONSTRUCTORS
+        );
+        hints.reflection().registerType(
+            org.hibernate.boot.model.relational.ColumnOrderingStrategyLegacy.class,
+            MemberCategory.INVOKE_DECLARED_CONSTRUCTORS
+        );
+        hints.reflection().registerType(
+            org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl.class,
+            MemberCategory.INVOKE_DECLARED_CONSTRUCTORS
+        );
+        hints.reflection().registerType(
+            org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl.class,
+            MemberCategory.INVOKE_DECLARED_CONSTRUCTORS
+        );
+
         // exp4j: uses reflection to parse mathematical expressions
         hints.reflection().registerType(
             net.objecthunter.exp4j.Expression.class,

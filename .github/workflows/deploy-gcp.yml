@@ -114,7 +114,7 @@ jobs:
           echo "🧹 Removendo todas as imagens exceto latest..."
           LATEST_DIGEST=$(gcloud artifacts docker images describe \
             "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest" \
-            --format="get(image_summary.digest)" 2>/dev/null || echo "")
+            --format="value(image_summary.digest)" 2>/dev/null || echo "")
 
           if [ -z "$LATEST_DIGEST" ]; then
             echo "⚠️ Não foi possível obter digest do latest. Pulando cleanup."
@@ -122,8 +122,7 @@ jobs:
             echo "  Latest digest: $LATEST_DIGEST"
             gcloud artifacts docker images list \
               "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}" \
-              --include-tags \
-              --format="get(DIGEST)" | \
+              --format="value(DIGEST)" | \
             while read -r DIGEST; do
               if [ -n "$DIGEST" ] && [ "$DIGEST" != "$LATEST_DIGEST" ]; then
                 echo "  Removendo: $DIGEST"

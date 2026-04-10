@@ -16,6 +16,23 @@ public class NativeHintsRegistrar implements RuntimeHintsRegistrar {
             net.objecthunter.exp4j.ExpressionBuilder.class,
             MemberCategory.values()
         );
-        // Add more classes here as native build testing reveals reflection issues
+
+        // Cloudinary: loads HTTP strategies via Class.forName() at runtime
+        hints.reflection().registerType(
+            com.cloudinary.http5.UploaderStrategy.class,
+            MemberCategory.values()
+        );
+        hints.reflection().registerType(
+            com.cloudinary.http5.ApiStrategy.class,
+            MemberCategory.values()
+        );
+        hints.reflection().registerType(
+            com.cloudinary.Cloudinary.class,
+            MemberCategory.values()
+        );
+        hints.reflection().registerType(
+            com.cloudinary.Configuration.class,
+            MemberCategory.values()
+        );
     }
 }

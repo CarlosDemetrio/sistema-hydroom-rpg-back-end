@@ -1,4 +1,5 @@
 [
   { "interfaces": ["org.hibernate.jpa.internal.JpaLogger"] },
-  { "interfaces": ["org.hibernate.internal.CoreMessageLogger"] }
+  { "interfaces": ["org.hibernate.internal.CoreMessageLogger"] },
+  { "interfaces": ["jakarta.persistence.EntityManager", "org.springframework.orm.jpa.EntityManagerProxy"] }
 ]

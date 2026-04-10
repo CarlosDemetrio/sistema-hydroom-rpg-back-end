@@ -244,6 +244,14 @@
     <profiles>
         <profile>
             <id>native</id>
+            <dependencies>
+                <!-- H2 needed during AOT processing (no PostgreSQL available in Docker build) -->
+                <dependency>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+            </dependencies>
             <build>
                 <plugins>
                     <plugin>
@@ -270,6 +278,27 @@
                     <plugin>
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>process-aot</id>
+                                <goals>
+                                    <goal>process-aot</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- Use H2 in-memory DB for AOT since no PostgreSQL is available during Docker build -->
+                                    <jvmArguments>
+                                        <argument>-Dspring.datasource.url=jdbc:h2:mem:aotdb;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL</argument>
+                                        <argument>-Dspring.datasource.username=sa</argument>
+                                        <argument>-Dspring.datasource.password=</argument>
+                                        <argument>-Dspring.jpa.hibernate.ddl-auto=create-drop</argument>
+                                        <argument>-Dspring.jpa.open-in-view=false</argument>
+                                        <argument>-Dspring.security.oauth2.client.registration.google.client-id=dummy</argument>
+                                        <argument>-Dspring.security.oauth2.client.registration.google.client-secret=dummy</argument>
+                                        <argument>-Dspringdoc.api-docs.enabled=false</argument>
+                                    </jvmArguments>
+                                </configuration>
+                            </execution>
+                        </executions>
                         <configuration>
                             <excludes>
                                 <exclude>

@@ -291,17 +291,9 @@
                                     <goal>process-aot</goal>
                                 </goals>
                                 <configuration>
-                                    <!-- Use H2 in-memory DB for AOT since no PostgreSQL is available during Docker build -->
-                                    <jvmArguments>
-                                        <argument>-Dspring.datasource.url=jdbc:h2:mem:aotdb;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL</argument>
-                                        <argument>-Dspring.datasource.username=sa</argument>
-                                        <argument>-Dspring.datasource.password=</argument>
-                                        <argument>-Dspring.jpa.hibernate.ddl-auto=create-drop</argument>
-                                        <argument>-Dspring.jpa.open-in-view=false</argument>
-                                        <argument>-Dspring.security.oauth2.client.registration.google.client-id=dummy</argument>
-                                        <argument>-Dspring.security.oauth2.client.registration.google.client-secret=dummy</argument>
-                                        <argument>-Dspringdoc.api-docs.enabled=false</argument>
-                                    </jvmArguments>
+                                    <!-- Use H2 in-memory DB for AOT since no PostgreSQL is available during Docker build.
+                                         jvmArguments must be a flat string (not child elements) for process-aot goal. -->
+                                    <jvmArguments>-Dspring.datasource.url=jdbc:h2:mem:aotdb;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL -Dspring.datasource.username=sa "-Dspring.datasource.password=" -Dspring.jpa.hibernate.ddl-auto=create-drop -Dspring.jpa.open-in-view=false -Dspring.security.oauth2.client.registration.google.client-id=dummy -Dspring.security.oauth2.client.registration.google.client-secret=dummy -Dspringdoc.api-docs.enabled=false</jvmArguments>
                                 </configuration>
                             </execution>
                         </executions>

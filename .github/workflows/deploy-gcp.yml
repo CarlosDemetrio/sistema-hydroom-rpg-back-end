@@ -161,7 +161,7 @@ jobs:
             --region ${{ env.CLOUD_RUN_REGION }} \
             --platform managed \
             --service-account cloud-run-sa@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com \
-            --vpc-egress all-traffic \
+            --vpc-egress private-ranges-only \
             --network default \
             --subnet default \
             --set-env-vars SPRING_PROFILES_ACTIVE=prod \

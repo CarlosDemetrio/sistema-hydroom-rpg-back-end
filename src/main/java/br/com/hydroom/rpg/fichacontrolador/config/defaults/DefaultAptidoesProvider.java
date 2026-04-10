@@ -28,7 +28,7 @@ public class DefaultAptidoesProvider {
             AptidaoConfigDTO.of("Idiomas",                "MENTAL", "Conhecimento de idiomas estrangeiros, dialetos e sistemas de escrita do mundo de Klayrah", 13),
             AptidaoConfigDTO.of("Observa\u00e7\u00e3o",             "MENTAL", "Percep\u00e7\u00e3o agu\u00e7ada para notar detalhes, pistas ocultas e anomalias no ambiente", 14),
             AptidaoConfigDTO.of("Falsificar",             "MENTAL", "Habilidade de criar documentos falsos, imitar assinaturas e forjar selos oficiais", 15),
-            AptidaoConfigDTO.of("Prontid\u00e3o",              "MENTAL", "Estado de alerta elevado; evita ser surpreendido e age rapidamente em situa\u00e7\u00f5es de crise", 16),
+            AptidaoConfigDTO.of("Prontid\u00e3o",              "MENTAL", "Estado de alerta elevado;  evita ser surpreendido e age rapidamente em situa\u00e7\u00f5es de crise", 16),
             AptidaoConfigDTO.of("Auto Controle",          "MENTAL", "Dom\u00ednio das emo\u00e7\u00f5es e resist\u00eancia \u00e0 manipula\u00e7\u00e3o, medo, sedu\u00e7\u00e3o e press\u00e3o psicol\u00f3gica", 17),
             AptidaoConfigDTO.of("Sentir Motiva\u00e7\u00e3o",       "MENTAL", "Habilidade de perceber as verdadeiras inten\u00e7\u00f5es e emo\u00e7\u00f5es ocultas de outras pessoas", 18),
             AptidaoConfigDTO.of("Sobreviv\u00eancia",          "MENTAL", "Conhecimento de orienta\u00e7\u00e3o, ca\u00e7a, armadilhas e sobreviv\u00eancia em ambientes hostis", 19),

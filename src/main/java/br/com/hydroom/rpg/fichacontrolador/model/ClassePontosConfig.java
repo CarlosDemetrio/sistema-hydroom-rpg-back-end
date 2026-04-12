@@ -24,7 +24,7 @@ import org.hibernate.annotations.SQLRestriction;
     ))
 @SQLRestriction("deleted_at IS NULL")
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = "classePersonagem")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

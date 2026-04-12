@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 })
 @SQLRestriction("deleted_at IS NULL")
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = "classe")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

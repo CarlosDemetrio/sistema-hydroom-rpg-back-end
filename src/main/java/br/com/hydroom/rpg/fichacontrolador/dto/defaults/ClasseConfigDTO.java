@@ -25,6 +25,18 @@ public class ClasseConfigDTO {
     @Builder.Default
     private List<PontosNivelConfigDTO> pontosConfig = List.of();
 
+    /** Bônus de derivados concedidos por esta classe. */
+    @Builder.Default
+    private List<ClasseBonusDefault> bonusDefaults = List.of();
+
+    /** Bônus fixos de aptidão concedidos por esta classe. */
+    @Builder.Default
+    private List<ClasseAptidaoBonusDefault> aptidaoBonusDefaults = List.of();
+
+    /** Vantagens predefinidas concedidas por esta classe. */
+    @Builder.Default
+    private List<ClasseVantagemPreDefinidaDefault> vantagemPreDefinidaDefaults = List.of();
+
     /** Cria um ClasseConfigDTO sem bônus de nível. */
     public static ClasseConfigDTO of(String nome, String descricao, Integer ordemExibicao) {
         return ClasseConfigDTO.builder()
@@ -42,6 +54,23 @@ public class ClasseConfigDTO {
                 .descricao(descricao)
                 .ordemExibicao(ordemExibicao)
                 .pontosConfig(pontosConfig)
+                .build();
+    }
+
+    /** Cria um ClasseConfigDTO completo com relacionamentos defaults definidos. */
+    public static ClasseConfigDTO of(String nome, String descricao, Integer ordemExibicao,
+                                     List<PontosNivelConfigDTO> pontosConfig,
+                                     List<ClasseBonusDefault> bonusDefaults,
+                                     List<ClasseAptidaoBonusDefault> aptidaoBonusDefaults,
+                                     List<ClasseVantagemPreDefinidaDefault> vantagemPreDefinidaDefaults) {
+        return ClasseConfigDTO.builder()
+                .nome(nome)
+                .descricao(descricao)
+                .ordemExibicao(ordemExibicao)
+                .pontosConfig(pontosConfig)
+                .bonusDefaults(bonusDefaults)
+                .aptidaoBonusDefaults(aptidaoBonusDefaults)
+                .vantagemPreDefinidaDefaults(vantagemPreDefinidaDefaults)
                 .build();
     }
 }

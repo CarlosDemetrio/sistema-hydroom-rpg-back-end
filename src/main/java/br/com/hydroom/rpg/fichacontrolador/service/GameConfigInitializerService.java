@@ -45,15 +45,22 @@ public class GameConfigInitializerService {
     private final ConfiguracaoNivelRepository nivelRepository;
     private final ConfiguracaoClasseRepository classeRepository;
     private final ClassePontosConfigRepository classePontosConfigRepository;
+    private final ClasseBonusRepository classeBonusRepository;
+    private final ClasseAptidaoBonusRepository classeAptidaoBonusRepository;
+    private final ClasseVantagemPreDefinidaRepository classeVantagemPreDefinidaRepository;
     private final ConfiguracaoRacaRepository racaRepository;
     private final RacaPontosConfigRepository racaPontosConfigRepository;
     private final RacaBonusAtributoRepository racaBonusAtributoRepository;
+    private final RacaClassePermitidaRepository racaClassePermitidaRepository;
+    private final RacaVantagemPreDefinidaRepository racaVantagemPreDefinidaRepository;
     private final DadoProspeccaoConfigRepository prospeccaoRepository;
     private final GeneroConfigRepository generoRepository;
     private final IndoleConfigRepository indoleRepository;
     private final PresencaConfigRepository presencaRepository;
     private final MembroCorpoConfigRepository membroCorpoRepository;
     private final VantagemConfigRepository vantagemRepository;
+    private final VantagemEfeitoRepository vantagemEfeitoRepository;
+    private final VantagemPreRequisitoRepository vantagemPreRequisitoRepository;
     private final BonusConfigRepository bonusConfigRepository;
     private final PontosVantagemConfigRepository pontosVantagemRepository;
     private final CategoriaVantagemRepository categoriaVantagemRepository;
@@ -140,11 +147,13 @@ public class GameConfigInitializerService {
 
         // 10. Criar classes
         log.debug("Criando classes...");
-        createClasses(jogo, defaultProvider.getDefaultClasses());
+        List<ClasseConfigDTO> classesDefault = defaultProvider.getDefaultClasses();
+        List<ClassePersonagem> classes = createClasses(jogo, classesDefault);
 
         // 11. Criar raças
         log.debug("Criando raças...");
-        List<Raca> racas = createRacas(jogo, defaultProvider.getDefaultRacas());
+        List<RacaConfigDTO> racasDefault = defaultProvider.getDefaultRacas();
+        List<Raca> racas = createRacas(jogo, racasDefault);
 
         // 12. Criar bônus raciais
         log.debug("Criando bônus raciais...");
@@ -173,6 +182,13 @@ public class GameConfigInitializerService {
         // 18. Criar vantagens (após CategoriaVantagem)
         log.debug("Criando vantagens...");
         createVantagens(jogo, categorias, defaultProvider.getDefaultVantagens());
+
+        // 18.1 Criar vantagens predefinidas de classes e raças (dependem de VantagemConfig)
+        log.debug("Criando vantagens predefinidas de classes...");
+        createClasseVantagensPreDefinidas(classes, classesDefault, jogo.getId());
+
+        log.debug("Criando vantagens predefinidas de raças...");
+        createRacaVantagensPreDefinidas(racas, racasDefault, jogo.getId());
 
         // 19. Criar raridades de itens
         log.debug("Criando raridades de itens...");
@@ -400,6 +416,66 @@ public class GameConfigInitializerService {
             log.debug("{} ClassePontosConfig entries criadas", pontos.size());
         }
 
+        Map<String, BonusConfig> bonusMap = bonusConfigRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).stream()
+                .collect(Collectors.toMap(BonusConfig::getNome, bonus -> bonus));
+        List<ClasseBonus> bonusClasses = new ArrayList<>();
+        for (ClasseConfigDTO dto : dtos) {
+            ClassePersonagem classe = classeMap.get(dto.getNome());
+            if (classe == null || dto.getBonusDefaults() == null) {
+                continue;
+            }
+
+            for (ClasseBonusDefault bonusDefault : dto.getBonusDefaults()) {
+                BonusConfig bonus = bonusMap.get(bonusDefault.bonusNome());
+                if (bonus == null) {
+                    log.warn("BonusConfig '{}' não encontrado para classe '{}'. Pulando bônus de classe.",
+                            bonusDefault.bonusNome(), dto.getNome());
+                    continue;
+                }
+
+                bonusClasses.add(ClasseBonus.builder()
+                        .classe(classe)
+                        .bonus(bonus)
+                        .valorPorNivel(bonusDefault.valorPorNivel())
+                        .build());
+            }
+        }
+
+        if (!bonusClasses.isEmpty()) {
+            classeBonusRepository.saveAll(bonusClasses);
+            log.debug("{} ClasseBonus entries criadas", bonusClasses.size());
+        }
+
+        Map<String, AptidaoConfig> aptidaoMap = aptidaoRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).stream()
+                .collect(Collectors.toMap(AptidaoConfig::getNome, aptidao -> aptidao));
+        List<ClasseAptidaoBonus> aptidaoBonus = new ArrayList<>();
+        for (ClasseConfigDTO dto : dtos) {
+            ClassePersonagem classe = classeMap.get(dto.getNome());
+            if (classe == null || dto.getAptidaoBonusDefaults() == null) {
+                continue;
+            }
+
+            for (ClasseAptidaoBonusDefault aptidaoBonusDefault : dto.getAptidaoBonusDefaults()) {
+                AptidaoConfig aptidao = aptidaoMap.get(aptidaoBonusDefault.aptidaoNome());
+                if (aptidao == null) {
+                    log.warn("AptidaoConfig '{}' não encontrada para classe '{}'. Pulando bônus de aptidão.",
+                            aptidaoBonusDefault.aptidaoNome(), dto.getNome());
+                    continue;
+                }
+
+                aptidaoBonus.add(ClasseAptidaoBonus.builder()
+                        .classe(classe)
+                        .aptidao(aptidao)
+                        .bonus(aptidaoBonusDefault.bonus())
+                        .build());
+            }
+        }
+
+        if (!aptidaoBonus.isEmpty()) {
+            classeAptidaoBonusRepository.saveAll(aptidaoBonus);
+            log.debug("{} ClasseAptidaoBonus entries criadas", aptidaoBonus.size());
+        }
+
         log.debug("{} classes criadas", saved.size());
         return saved;
     }
@@ -440,8 +516,134 @@ public class GameConfigInitializerService {
             log.debug("{} RacaPontosConfig entries criadas", pontos.size());
         }
 
+        Map<String, ClassePersonagem> classeMap = classeRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).stream()
+                .collect(Collectors.toMap(ClassePersonagem::getNome, classe -> classe));
+        List<RacaClassePermitida> classesPermitidas = new ArrayList<>();
+        for (RacaConfigDTO dto : dtos) {
+            Raca raca = racaMap.get(dto.getNome());
+            if (raca == null || dto.getClassesPermitidas() == null) {
+                continue;
+            }
+
+            for (RacaClassePermitidaDefault classePermitidaDefault : dto.getClassesPermitidas()) {
+                ClassePersonagem classe = classeMap.get(classePermitidaDefault.classeNome());
+                if (classe == null) {
+                    log.warn("Classe '{}' não encontrada para raça '{}'. Pulando restrição de classe.",
+                            classePermitidaDefault.classeNome(), dto.getNome());
+                    continue;
+                }
+
+                classesPermitidas.add(RacaClassePermitida.builder()
+                        .raca(raca)
+                        .classe(classe)
+                        .build());
+            }
+        }
+
+        if (!classesPermitidas.isEmpty()) {
+            racaClassePermitidaRepository.saveAll(classesPermitidas);
+            log.debug("{} RacaClassePermitida entries criadas", classesPermitidas.size());
+        }
+
         log.debug("{} raças criadas", saved.size());
         return saved;
+    }
+
+    private void createClasseVantagensPreDefinidas(List<ClassePersonagem> classes,
+                                                   List<ClasseConfigDTO> dtos,
+                                                   Long jogoId) {
+        Map<String, ClassePersonagem> classeMap = classes.stream()
+                .collect(Collectors.toMap(ClassePersonagem::getNome, classe -> classe));
+        Map<String, VantagemConfig> vantagensPorNome = vantagemRepository.findByJogoIdOrderByOrdemExibicao(jogoId).stream()
+                .collect(Collectors.toMap(VantagemConfig::getNome, vantagem -> vantagem));
+        Map<String, VantagemConfig> vantagensPorSigla = vantagemRepository.findByJogoIdOrderByOrdemExibicao(jogoId).stream()
+                .filter(vantagem -> vantagem.getSigla() != null)
+                .collect(Collectors.toMap(VantagemConfig::getSigla, vantagem -> vantagem));
+
+        List<ClasseVantagemPreDefinida> vantagensPreDefinidas = new ArrayList<>();
+        for (ClasseConfigDTO dto : dtos) {
+            ClassePersonagem classe = classeMap.get(dto.getNome());
+            if (classe == null || dto.getVantagemPreDefinidaDefaults() == null) {
+                continue;
+            }
+
+            for (ClasseVantagemPreDefinidaDefault vantagemDefault : dto.getVantagemPreDefinidaDefaults()) {
+                VantagemConfig vantagem = resolveVantagem(vantagensPorNome, vantagensPorSigla,
+                        vantagemDefault.vantagemNome(), vantagemDefault.vantagemSigla());
+                if (vantagem == null) {
+                    log.warn("Vantagem '{}'/'{}' não encontrada para classe '{}'. Pulando vantagem predefinida.",
+                            vantagemDefault.vantagemNome(), vantagemDefault.vantagemSigla(), dto.getNome());
+                    continue;
+                }
+
+                vantagensPreDefinidas.add(ClasseVantagemPreDefinida.builder()
+                        .classePersonagem(classe)
+                        .vantagemConfig(vantagem)
+                        .nivel(vantagemDefault.nivel() != null ? vantagemDefault.nivel() : 1)
+                        .build());
+            }
+        }
+
+        if (!vantagensPreDefinidas.isEmpty()) {
+            classeVantagemPreDefinidaRepository.saveAll(vantagensPreDefinidas);
+            log.debug("{} ClasseVantagemPreDefinida entries criadas", vantagensPreDefinidas.size());
+        }
+    }
+
+    private void createRacaVantagensPreDefinidas(List<Raca> racas,
+                                                 List<RacaConfigDTO> dtos,
+                                                 Long jogoId) {
+        Map<String, Raca> racaMap = racas.stream()
+                .collect(Collectors.toMap(Raca::getNome, raca -> raca));
+        Map<String, VantagemConfig> vantagensPorNome = vantagemRepository.findByJogoIdOrderByOrdemExibicao(jogoId).stream()
+                .collect(Collectors.toMap(VantagemConfig::getNome, vantagem -> vantagem));
+        Map<String, VantagemConfig> vantagensPorSigla = vantagemRepository.findByJogoIdOrderByOrdemExibicao(jogoId).stream()
+                .filter(vantagem -> vantagem.getSigla() != null)
+                .collect(Collectors.toMap(VantagemConfig::getSigla, vantagem -> vantagem));
+
+        List<RacaVantagemPreDefinida> vantagensPreDefinidas = new ArrayList<>();
+        for (RacaConfigDTO dto : dtos) {
+            Raca raca = racaMap.get(dto.getNome());
+            if (raca == null || dto.getVantagemPreDefinidaDefaults() == null) {
+                continue;
+            }
+
+            for (RacaVantagemPreDefinidaDefault vantagemDefault : dto.getVantagemPreDefinidaDefaults()) {
+                VantagemConfig vantagem = resolveVantagem(vantagensPorNome, vantagensPorSigla,
+                        vantagemDefault.vantagemNome(), vantagemDefault.vantagemSigla());
+                if (vantagem == null) {
+                    log.warn("Vantagem '{}'/'{}' não encontrada para raça '{}'. Pulando vantagem racial predefinida.",
+                            vantagemDefault.vantagemNome(), vantagemDefault.vantagemSigla(), dto.getNome());
+                    continue;
+                }
+
+                vantagensPreDefinidas.add(RacaVantagemPreDefinida.builder()
+                        .raca(raca)
+                        .vantagemConfig(vantagem)
+                        .nivel(vantagemDefault.nivel() != null ? vantagemDefault.nivel() : 1)
+                        .build());
+            }
+        }
+
+        if (!vantagensPreDefinidas.isEmpty()) {
+            racaVantagemPreDefinidaRepository.saveAll(vantagensPreDefinidas);
+            log.debug("{} RacaVantagemPreDefinida entries criadas", vantagensPreDefinidas.size());
+        }
+    }
+
+    private VantagemConfig resolveVantagem(Map<String, VantagemConfig> vantagensPorNome,
+                                           Map<String, VantagemConfig> vantagensPorSigla,
+                                           String vantagemNome,
+                                           String vantagemSigla) {
+        if (vantagemSigla != null && vantagensPorSigla.containsKey(vantagemSigla)) {
+            return vantagensPorSigla.get(vantagemSigla);
+        }
+
+        if (vantagemNome != null) {
+            return vantagensPorNome.get(vantagemNome);
+        }
+
+        return null;
     }
 
     /**
@@ -611,12 +813,128 @@ public class GameConfigInitializerService {
                             .tipoVantagem(tipo)
                             .categoriaVantagem(categoria)
                             .ordemExibicao(dto.getOrdemExibicao() != null ? dto.getOrdemExibicao() : 0)
-                            .build();
-                })
-                .toList();
+                             .build();
+                 })
+                 .toList();
 
-        vantagemRepository.saveAll(entities);
-        log.debug("{} vantagens criadas", entities.size());
+        List<VantagemConfig> saved = vantagemRepository.saveAll(entities);
+        log.debug("{} vantagens criadas", saved.size());
+
+        Map<String, VantagemConfig> vantagemMap = saved.stream()
+                .collect(Collectors.toMap(VantagemConfig::getSigla, vantagem -> vantagem));
+        Map<String, BonusConfig> bonusMap = bonusConfigRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).stream()
+                .collect(Collectors.toMap(BonusConfig::getNome, bonus -> bonus));
+        Map<String, AtributoConfig> atributoMap = atributoRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).stream()
+                .collect(Collectors.toMap(AtributoConfig::getAbreviacao, atributo -> atributo));
+        Map<String, AptidaoConfig> aptidaoMap = aptidaoRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).stream()
+                .collect(Collectors.toMap(AptidaoConfig::getNome, aptidao -> aptidao));
+        Map<String, MembroCorpoConfig> membroMap = membroCorpoRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).stream()
+                .collect(Collectors.toMap(MembroCorpoConfig::getNome, membro -> membro));
+
+        List<VantagemEfeito> efeitos = new ArrayList<>();
+        for (VantagemConfigDTO dto : dtos) {
+            VantagemConfig vantagem = vantagemMap.get(dto.getSigla());
+            if (vantagem == null || dto.getEfeitos() == null || dto.getEfeitos().isEmpty()) {
+                continue;
+            }
+
+            for (VantagemEfeitoDefault efeitoDto : dto.getEfeitos()) {
+                VantagemEfeito efeito = buildVantagemEfeito(efeitoDto, vantagem, bonusMap, atributoMap, aptidaoMap, membroMap);
+                if (efeito != null) {
+                    efeitos.add(efeito);
+                }
+            }
+        }
+
+        if (!efeitos.isEmpty()) {
+            vantagemEfeitoRepository.saveAll(efeitos);
+            log.debug("{} efeitos de vantagem criados", efeitos.size());
+        }
+
+        List<VantagemPreRequisito> preRequisitos = new ArrayList<>();
+        for (VantagemConfigDTO dto : dtos) {
+            VantagemConfig vantagem = vantagemMap.get(dto.getSigla());
+            if (vantagem == null || dto.getPreRequisitos() == null || dto.getPreRequisitos().isEmpty()) {
+                continue;
+            }
+
+            for (VantagemPreRequisitoDefault preRequisitoDto : dto.getPreRequisitos()) {
+                VantagemConfig requisito = vantagemMap.get(preRequisitoDto.requisitoSigla());
+                if (requisito == null) {
+                    log.warn("Vantagem requisito '{}' não encontrada para '{}'. Pulando pré-requisito.",
+                            preRequisitoDto.requisitoSigla(), vantagem.getNome());
+                    continue;
+                }
+
+                preRequisitos.add(VantagemPreRequisito.builder()
+                        .vantagem(vantagem)
+                        .requisito(requisito)
+                        .nivelMinimo(preRequisitoDto.nivelMinimo() != null ? preRequisitoDto.nivelMinimo() : 1)
+                        .build());
+            }
+        }
+
+        if (!preRequisitos.isEmpty()) {
+            vantagemPreRequisitoRepository.saveAll(preRequisitos);
+            log.debug("{} pré-requisitos de vantagem criados", preRequisitos.size());
+        }
+    }
+
+    private VantagemEfeito buildVantagemEfeito(VantagemEfeitoDefault dto,
+                                               VantagemConfig vantagem,
+                                               Map<String, BonusConfig> bonusMap,
+                                               Map<String, AtributoConfig> atributoMap,
+                                               Map<String, AptidaoConfig> aptidaoMap,
+                                               Map<String, MembroCorpoConfig> membroMap) {
+        VantagemEfeito.VantagemEfeitoBuilder builder = VantagemEfeito.builder()
+                .vantagemConfig(vantagem)
+                .tipoEfeito(dto.tipoEfeito())
+                .valorFixo(dto.valorFixo())
+                .valorPorNivel(dto.valorPorNivel())
+                .formula(dto.formula())
+                .descricaoEfeito(dto.descricaoEfeito());
+
+        if (dto.bonusAlvoNome() != null) {
+            BonusConfig bonus = bonusMap.get(dto.bonusAlvoNome());
+            if (bonus == null) {
+                log.warn("BonusConfig '{}' não encontrado para efeito da vantagem '{}'. Pulando efeito.",
+                        dto.bonusAlvoNome(), vantagem.getNome());
+                return null;
+            }
+            builder.bonusAlvo(bonus);
+        }
+
+        if (dto.atributoAlvoSigla() != null) {
+            AtributoConfig atributo = atributoMap.get(dto.atributoAlvoSigla());
+            if (atributo == null) {
+                log.warn("AtributoConfig '{}' não encontrado para efeito da vantagem '{}'. Pulando efeito.",
+                        dto.atributoAlvoSigla(), vantagem.getNome());
+                return null;
+            }
+            builder.atributoAlvo(atributo);
+        }
+
+        if (dto.aptidaoAlvoNome() != null) {
+            AptidaoConfig aptidao = aptidaoMap.get(dto.aptidaoAlvoNome());
+            if (aptidao == null) {
+                log.warn("AptidaoConfig '{}' não encontrada para efeito da vantagem '{}'. Pulando efeito.",
+                        dto.aptidaoAlvoNome(), vantagem.getNome());
+                return null;
+            }
+            builder.aptidaoAlvo(aptidao);
+        }
+
+        if (dto.membroAlvoNome() != null) {
+            MembroCorpoConfig membro = membroMap.get(dto.membroAlvoNome());
+            if (membro == null) {
+                log.warn("MembroCorpoConfig '{}' não encontrado para efeito da vantagem '{}'. Pulando efeito.",
+                        dto.membroAlvoNome(), vantagem.getNome());
+                return null;
+            }
+            builder.membroAlvo(membro);
+        }
+
+        return builder.build();
     }
 
     /**

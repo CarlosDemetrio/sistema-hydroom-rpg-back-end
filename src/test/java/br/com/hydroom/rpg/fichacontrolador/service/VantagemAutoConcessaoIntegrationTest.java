@@ -156,7 +156,7 @@ class VantagemAutoConcessaoIntegrationTest {
     @DisplayName("T4-01: deve auto-conceder vantagem de classe no nivel 1 ao criar ficha")
     void deveAutoConcederVantagemDeClasseNoCriacao() {
         // Arrange
-        ClassePersonagem guerreiro = criarClasse("Guerreiro");
+        ClassePersonagem guerreiro = criarClasse("Guerreiro Auto T4-01");
         VantagemConfig tco = criarVantagem("Treinamento Combate Ofensivo");
         criarClasseVantagemPreDefinida(guerreiro, 1, tco);
 
@@ -185,7 +185,7 @@ class VantagemAutoConcessaoIntegrationTest {
     @DisplayName("T4-02: deve auto-conceder vantagem de classe no level up para nivel 5")
     void deveAutoConcederVantagemNoLevelUp() {
         // Arrange
-        ClassePersonagem guerreiro = criarClasse("Guerreiro");
+        ClassePersonagem guerreiro = criarClasse("Guerreiro Auto T4-02");
         VantagemConfig ataqueAdicional = criarVantagem("Ataque Devastador Nivel5");
         criarClasseVantagemPreDefinida(guerreiro, 5, ataqueAdicional);
 
@@ -223,7 +223,7 @@ class VantagemAutoConcessaoIntegrationTest {
     @DisplayName("T4-03: deve ignorar vantagem pre-definida se ficha ja possui aquela vantagem")
     void deveIgnorarVantagemJaExistente() {
         // Arrange — criar ficha com classe que tem vantagem pré-definida no nível 1
-        ClassePersonagem guerreiro = criarClasse("Guerreiro");
+        ClassePersonagem guerreiro = criarClasse("Guerreiro Auto T4-03");
         VantagemConfig tco = criarVantagem("TCO");
         criarClasseVantagemPreDefinida(guerreiro, 1, tco);
 
@@ -253,7 +253,7 @@ class VantagemAutoConcessaoIntegrationTest {
     @DisplayName("T4-03b: nao deve sobrescrever vantagem comprada pelo jogador com a auto-concessao")
     void naoDeveSobrescreverVantagemCompradaPeloJogador() {
         // Arrange — vantagem comprada manualmente antes da auto-concessão
-        ClassePersonagem guerreiro = criarClasse("Guerreiro");
+        ClassePersonagem guerreiro = criarClasse("Guerreiro Auto T4-03b");
         VantagemConfig tco = criarVantagem("TCO Manual");
         criarClasseVantagemPreDefinida(guerreiro, 1, tco);
 
@@ -298,8 +298,8 @@ class VantagemAutoConcessaoIntegrationTest {
     @DisplayName("T4-04: deve auto-conceder vantagens de classe E raca ao criar ficha")
     void deveAutoConcederVantagensDeClasseERaca() {
         // Arrange
-        ClassePersonagem guerreiro = criarClasse("Guerreiro");
-        Raca humano = criarRaca("Humano");
+        ClassePersonagem guerreiro = criarClasse("Guerreiro Auto T4-04");
+        Raca humano = criarRaca("Humano Auto T4-04");
         VantagemConfig tco = criarVantagem("TCO-AutoTeste");
         VantagemConfig destreza = criarVantagem("Destreza-AutoTeste");
 
@@ -333,7 +333,7 @@ class VantagemAutoConcessaoIntegrationTest {
     @DisplayName("T4-05: deve auto-conceder vantagens de todos os niveis pulados no level up")
     void deveAutoConcederVantagensDeNiveisPulados() {
         // Arrange
-        ClassePersonagem guerreiro = criarClasse("Guerreiro");
+        ClassePersonagem guerreiro = criarClasse("Guerreiro Auto T4-05");
         VantagemConfig tcd = criarVantagem("TCD");
         VantagemConfig tce = criarVantagem("TCE");
         criarClasseVantagemPreDefinida(guerreiro, 2, tcd);
@@ -395,7 +395,7 @@ class VantagemAutoConcessaoIntegrationTest {
     @DisplayName("T4-06b: deve retornar lista vazia sem erro quando ficha so tem classe mas sem pre-definidas")
     void deveRetornarListaVaziaQuandoSemPreDefinidas() {
         // Arrange
-        ClassePersonagem mago = criarClasse("Mago");
+        ClassePersonagem mago = criarClasse("Mago Sem Predef T4-06b");
         // Sem ClasseVantagemPreDefinida para o Mago
 
         autenticarComo(mestre);

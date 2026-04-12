@@ -22,7 +22,12 @@ import lombok.NoArgsConstructor;
     @UniqueConstraint(name = "uk_raca_jogo_nome", columnNames = {"jogo_id", "nome"})
 })
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = {
+    "bonusAtributos",
+    "classesPermitidas",
+    "pontosConfig",
+    "vantagensPreDefinidas"
+})
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

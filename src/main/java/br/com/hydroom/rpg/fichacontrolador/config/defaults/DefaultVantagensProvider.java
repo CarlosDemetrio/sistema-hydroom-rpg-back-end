@@ -2,8 +2,12 @@ package br.com.hydroom.rpg.fichacontrolador.config.defaults;
 
 import br.com.hydroom.rpg.fichacontrolador.dto.defaults.CategoriaVantagemDTO;
 import br.com.hydroom.rpg.fichacontrolador.dto.defaults.VantagemConfigDTO;
+import br.com.hydroom.rpg.fichacontrolador.dto.defaults.VantagemEfeitoDefault;
+import br.com.hydroom.rpg.fichacontrolador.dto.defaults.VantagemPreRequisitoDefault;
+import br.com.hydroom.rpg.fichacontrolador.model.enums.TipoEfeito;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -51,10 +55,248 @@ public class DefaultVantagensProvider {
                 .nivelMaximoVantagem(nivelMax)
                 .formulaCusto(formulaCusto)
                 .valorBonusFormula(efeito)
+                .efeitos(getEfeitos(sigla))
+                .preRequisitos(getPreRequisitos(sigla))
                 .tipoVantagem(tipo)
                 .categoriaNome(categoria)
                 .ordemExibicao(ordem)
                 .build();
+    }
+
+    private VantagemEfeitoDefault efeito(TipoEfeito tipoEfeito, String atributoAlvoSigla,
+                                         String aptidaoAlvoNome, String bonusAlvoNome, String membroAlvoNome,
+                                         BigDecimal valorFixo, BigDecimal valorPorNivel,
+                                         String formula, String descricaoEfeito) {
+        return new VantagemEfeitoDefault(
+            tipoEfeito,
+            atributoAlvoSigla,
+            aptidaoAlvoNome,
+            bonusAlvoNome,
+            membroAlvoNome,
+            valorFixo,
+            valorPorNivel,
+            formula,
+            descricaoEfeito
+        );
+    }
+
+    private VantagemPreRequisitoDefault prerequisito(String requisitoSigla, Integer nivelMinimo) {
+        return new VantagemPreRequisitoDefault(requisitoSigla, nivelMinimo);
+    }
+
+    private List<VantagemEfeitoDefault> getEfeitos(String sigla) {
+        return switch (sigla) {
+            case "VTCO" -> List.of(
+                efeito(TipoEfeito.BONUS_DERIVADO, null, null, "B.B.A", null, null, new BigDecimal("1"), null, "+1 B.B.A por nível de vantagem"),
+                efeito(TipoEfeito.DADO_UP, null, null, null, null, null, null, null, "1 dado de dano ofensivo: D3→D4→D5→D6→D7→D8→D9→D10 reinicia no D3 apos D10")
+            );
+            case "VTCD" -> List.of(
+                efeito(TipoEfeito.BONUS_DERIVADO, null, null, "Bloqueio", null, null, new BigDecimal("1"), null, "+1 Bloqueio por nível de vantagem"),
+                efeito(TipoEfeito.DADO_UP, null, null, null, null, null, null, null, "1 dado de RD natural (contusão): D3→D4→D5→D6→D7→D8→D9→D10 reinicia no D3 apos D10")
+            );
+            case "VTCE" -> List.of(
+                efeito(TipoEfeito.BONUS_DERIVADO, null, null, "Reflexo", null, null, new BigDecimal("2"), null, "+2 Reflexo por nível (bônus dobrado em relação aos outros treinamentos)")
+            );
+            case "VTM" -> List.of(
+                efeito(TipoEfeito.BONUS_DERIVADO, null, null, "B.B.M", null, null, new BigDecimal("1"), null, "+1 B.B.M por nível de vantagem"),
+                efeito(TipoEfeito.DADO_UP, null, null, null, null, null, null, null, "1 dado de dano mágico: D3→D4→D5→D6→D7→D8→D9→D10 reinicia no D3 apos D10")
+            );
+            case "VTPM" -> List.of(
+                efeito(TipoEfeito.BONUS_DERIVADO, null, null, "Percepção", null, null, new BigDecimal("2"), null, "+2 Percepção por nível")
+            );
+            case "VTL" -> List.of(
+                efeito(TipoEfeito.BONUS_DERIVADO, null, null, "B.B.M", null, null, new BigDecimal("1"), null, "+1 B.B.M por nível de vantagem")
+            );
+            case "VTMA" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, new BigDecimal("2"), "nivel * 2", "+2 em Aptidões Mentais por nível (jogador escolhe qual aptidão mental)")
+            );
+            case "VAA" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Garante 1 ataque adicional após a ação ofensiva principal por turno")
+            );
+            case "VAS" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Em ataque conjunto força percepção do alvo e usa maior soma dos participantes")
+            );
+            case "VCA" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Reação: pode atacar de volta com dificuldade +5 ao ser atacado")
+            );
+            case "VITC" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Reação: interrompe ação do oponente antes de ela acontecer")
+            );
+            case "VRE" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Reações padrão podem ser executadas com habilidades especiais por nível")
+            );
+            case "VIH" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Usa ação padrão para salvar um aliado de perigo iminente")
+            );
+            case "VDH" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Usa ação padrão para salvar a si mesmo e outro com dificuldade +5")
+            );
+            case "VISB" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, "nivel * -1", "-1 por nível na soma de dificuldade ao desviar de ataques de múltiplos alvos")
+            );
+            case "VRA" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, "nivel * -1", "-1 por nível na soma de dificuldade ao tentar reduzir dano pela metade")
+            );
+            case "VCFM" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Concede 1D3 de dano por contusão ao atacar com Força máxima (base para Domínio de Força)")
+            );
+            case "VDM" -> List.of(
+                efeito(TipoEfeito.DADO_UP, null, null, null, null, null, null, null, "Eleva dado de CFM 1x por nível: D3→D4→D5→D6→D7→D8→D9 (max 6 elevações)")
+            );
+            case "VTEN" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Concede 1D3 de RD por contusão ao usar Vigor máximo (base para Domínio de Vigor)")
+            );
+            case "VDV" -> List.of(
+                efeito(TipoEfeito.DADO_UP, null, null, null, null, null, null, null, "Eleva dado de Tenacidade 1x por nível: D3→D4→D5 (max 2 elevações)")
+            );
+            case "VDF" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "-1 em penalidade de local ou terreno difícil (por cada 10 em Agilidade)")
+            );
+            case "VSG" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Por nível: eleva 1 aspecto mágico em 1 grau (Dano, Defesa, Bônus, Duração ou Área - escolha)")
+            );
+            case "VSAG" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, new BigDecimal("2"), "nivel * 2", "+2 de Percepção em 1 sentido específico por nível (audição, visão, olfato, tato ou paladar)")
+            );
+            case "VIN" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Por nível: +0.5x no multiplicador de Raciocínio (nv1=1.5x, nv2=2.0x, nv3=2.5x)")
+            );
+            case "VSFE" -> List.of(
+                efeito(TipoEfeito.BONUS_VIDA, null, null, null, null, null, new BigDecimal("5"), null, "+5 pontos de Vida por nível")
+            );
+            case "VCON" -> List.of(
+                efeito(TipoEfeito.BONUS_ESSENCIA, null, null, null, null, null, new BigDecimal("5"), null, "+5 pontos de Animus por nível")
+            );
+            case "VSRQ" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Saca armas sem custo de Ponto de Ação - 1 saque gratuito por nível por turno")
+            );
+            case "VAMB" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Remove penalidade por usar mão não dominante - domínio bilateral de armas e ações")
+            );
+            case "VMF" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Memória visual fotográfica plena de tudo que foi visto (requer Raciocínio 10+)")
+            );
+            case "VHER" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Rola 1D3 e aplica resultado como Grade de Riqueza inicial do personagem")
+            );
+            case "VRIQ" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, new BigDecimal("1"), "nivel", "+1 Grade de Riqueza por nível (total 3 níveis: 5/10/15 PN)")
+            );
+            case "VIA" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, new BigDecimal("1"), "nivel", "Permite mudar índole com 1 alvo adicional por nível de vantagem")
+            );
+            case "VOFI" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, new BigDecimal("1"), "nivel", "+1 Profissão ou Ofício conhecido por nível")
+            );
+            case "VTOF" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, new BigDecimal("1"), "nivel", "+1 por nível em testes para exercer ofícios e profissões")
+            );
+            case "VVO" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Por nível: influência em organização com dezenas de membros")
+            );
+            case "VCAP" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, new BigDecimal("1"), "nivel", "+1 aliado ou capanga leal por nível (total = nível da vantagem)")
+            );
+            case "VCDA" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Após rolar dano decide quanto do resultado efetivamente aplicar ao alvo")
+            );
+            case "VUSI" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Oculta completamente a manifestação visual e sensorial de habilidades mágicas")
+            );
+            case "VESC" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Por nível: técnicas de ataque falso e manobras avançadas de combate")
+            );
+            case "VPCO" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Por nível: +1 em Defesa, Ofensiva ou Reatividade (escolha na compra de cada nível)")
+            );
+            case "VAI" -> List.of(
+                efeito(TipoEfeito.BONUS_DERIVADO, null, null, "B.B.A", null, null, new BigDecimal("1"), null, "+1 B.B.A por nível com armas improvisadas"),
+                efeito(TipoEfeito.DADO_UP, null, null, null, null, null, null, null, "1 dado de dano com armas improvisadas: D3→D4→D5→D6→D7→D8→D9→D10 reinicia no D3 apos D10")
+            );
+            case "VDNL" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Todos os danos causados são convertidos para tipo contusão (não letal)")
+            );
+            case "VAEC" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Permite realizar uma ação e atacar durante o Ataque Adicional no mesmo turno")
+            );
+            case "VATD" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, new BigDecimal("1"), "nivel", "+1 metro de raio de atenção ao redor por nível (até 10 metros no nv10)")
+            );
+            case "VSNM" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Cálculos e estimativas numéricas com precisão absoluta e instantânea")
+            );
+            case "VPBF" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Executa uma ação Independente e uma ação Padrão simultaneamente no mesmo turno")
+            );
+            case "VMEI" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Memória completa e precisa de experiências passadas com todos os sentidos")
+            );
+            case "VENF" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Afinidade com fogo: exposição a chamas restaura 1D3 de HP por rodada e concede +1 B.B.M em feitiços de fogo")
+            );
+            case "VIEF" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Imunidade total a danos do tipo fogo - natural, mágico ou ambiental (vulcões, forjas, etc.)")
+            );
+            case "VESD" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Pode ingerir substâncias tóxicas, ácidas ou ígneas sem efeito adverso")
+            );
+            case "VASA" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Voo sustentado: velocidade aérea = velocidade terrestre base")
+            );
+            case "VADA" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Sem penalidades por altitude extrema, pressão reduzida ou ventos de força até intensidade 10")
+            );
+            case "VCAL" -> List.of(
+                efeito(TipoEfeito.BONUS_DERIVADO, null, null, "B.B.A", null, null, new BigDecimal("1"), null, "+1 B.B.A em combate aéreo por nível de vantagem (máx nível 3)"),
+                efeito(TipoEfeito.BONUS_DERIVADO, null, null, "Esquiva", null, null, new BigDecimal("1"), null, "+1 Esquiva usando asas defensivamente por nível de vantagem (máx nível 3)")
+            );
+            case "VPIR" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Piercings rúnicos: amplificam habilidades sobrenaturais em +1 grau de intensidade")
+            );
+            case "VCEG" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Bônus em aptidão Furtividade e -2 em penalidades de movimentação por espaços apertados ou estreitos")
+            );
+            case "VVEM" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Visão espiritual passiva: percebe criaturas planares, portais e energias de planos alternativos num raio de 10 metros")
+            );
+            case "VAHU" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Escolhe 1 aptidão ao criar o personagem: +2 permanente em todos os testes dessa aptidão (sem restrição de tipo)")
+            );
+            case "VRHU" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Recuperação acelerada: veneno, doença e condições debilitantes têm duração e intensidade reduzidas à metade")
+            );
+            case "VVHU" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Remove pré-requisitos raciais para compra de vantagens de qualquer categoria ou origem no sistema")
+            );
+            case "VEIN" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, new BigDecimal("5"), null, "+5 de resistência em testes contra efeitos mentais (medo, encantamento, manipulação, sedução sobrenatural)")
+            );
+            case "VLCI" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, new BigDecimal("3"), null, "+3 em testes de negociação, diplomacia e interação social com qualquer raça inteligente de Klayrah")
+            );
+            case "VMAB" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "4 braços funcionais: empunha até 4 armas de 1 mão (ou 2 de 2 mãos)")
+            );
+            case "VANA" -> List.of(
+                efeito(TipoEfeito.BONUS_DERIVADO, null, null, "B.B.A", null, null, new BigDecimal("3"), null, "+3 B.B.A permanente em ataques realizados com armas naturais (garras, presas, cauda)")
+            );
+            case "VDES" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "Modo de movimento especial sem penalidades: escalar (velocidade normal), saltar (+3m/ação) ou rastejar (sem penalidade)")
+            );
+            case "VAAR" -> List.of(
+                efeito(TipoEfeito.FORMULA_CUSTOMIZADA, null, null, null, null, null, null, null, "1 ataque adicional por turno com armas naturais - restrição: alvo deve ser de tamanho igual ou menor que o personagem")
+            );
+            default -> List.of();
+        };
+    }
+
+    private List<VantagemPreRequisitoDefault> getPreRequisitos(String sigla) {
+        return switch (sigla) {
+            case "VDM" -> List.of(prerequisito("VCFM", 1));
+            case "VDV" -> List.of(prerequisito("VTEN", 1));
+            case "VAEC" -> List.of(prerequisito("VAA", 1));
+            default -> List.of();
+        };
     }
 
     private List<VantagemConfigDTO> buildTreinamentoFisico() {
@@ -306,7 +548,11 @@ public class DefaultVantagensProvider {
                 1, CUSTO, "Escalar, rastejar e saltar com eficiencia sobrenatural", TIPO, CAT, 63),
             vantagem("VAAR", "Ataque Adicional Racial",
                 "Versão racial e limitada do Ataque Adicional. Os Anakarys podem realizar um ataque extra por turno, mas apenas com armas naturais e somente contra alvos de tamanho igual ou menor.",
-                1, CUSTO, "Ataque extra por turno apenas com armas naturais vs alvos iguais ou menores", TIPO, CAT, 64)
+                1, CUSTO, "Ataque extra por turno apenas com armas naturais vs alvos iguais ou menores", TIPO, CAT, 64),
+            // Atlas
+            vantagem("VMAB", "Membros Adicionais: Braços",
+                "Os Atlas possuem dois pares de braços plenamente funcionais — quatro braços no total. Esta anatomia monstruosa permite empunhar múltiplas armas ou escudos simultaneamente, realizar ações de alcance com pares independentes e carregar cargas que seriam impossíveis para raças bípedes comuns.",
+                1, CUSTO, "4 bracos funcionais: pode empunhar ate 4 armas de uma mao (ou 2 de duas maos), segurar escudo e arma simultaneamente em ambos os pares, e carregar o dobro da capacidade normal", TIPO, CAT, 65)
         );
     }
 }

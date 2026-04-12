@@ -25,6 +25,14 @@ public class RacaConfigDTO {
     @Builder.Default
     private List<PontosNivelConfigDTO> pontosConfig = List.of();
 
+    /** Classes explicitamente permitidas para esta raça. */
+    @Builder.Default
+    private List<RacaClassePermitidaDefault> classesPermitidas = List.of();
+
+    /** Vantagens predefinidas concedidas por esta raça. */
+    @Builder.Default
+    private List<RacaVantagemPreDefinidaDefault> vantagemPreDefinidaDefaults = List.of();
+
     /** Cria um RacaConfigDTO sem bônus de nível. */
     public static RacaConfigDTO of(String nome, String descricao, Integer ordemExibicao) {
         return RacaConfigDTO.builder()
@@ -42,6 +50,21 @@ public class RacaConfigDTO {
                 .descricao(descricao)
                 .ordemExibicao(ordemExibicao)
                 .pontosConfig(pontosConfig)
+                .build();
+    }
+
+    /** Cria um RacaConfigDTO completo com relacionamentos defaults definidos. */
+    public static RacaConfigDTO of(String nome, String descricao, Integer ordemExibicao,
+                                   List<PontosNivelConfigDTO> pontosConfig,
+                                   List<RacaClassePermitidaDefault> classesPermitidas,
+                                   List<RacaVantagemPreDefinidaDefault> vantagemPreDefinidaDefaults) {
+        return RacaConfigDTO.builder()
+                .nome(nome)
+                .descricao(descricao)
+                .ordemExibicao(ordemExibicao)
+                .pontosConfig(pontosConfig)
+                .classesPermitidas(classesPermitidas)
+                .vantagemPreDefinidaDefaults(vantagemPreDefinidaDefaults)
                 .build();
     }
 }

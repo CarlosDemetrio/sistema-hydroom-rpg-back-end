@@ -33,11 +33,10 @@ public interface FichaRepository extends JpaRepository<Ficha, Long> {
     long countByJogoIdAndJogadorIdAndIsNpcFalse(Long jogoId, Long jogadorId);
 
     /**
-     * Busca fichas com filtros opcionais (nome, classeId, racaId, nivel).
+     * Busca fichas com filtros opcionais de classe, raça e nível.
      * Mestre vê todas as fichas de jogadores (isNpc=false).
      */
     @Query("SELECT f FROM Ficha f WHERE f.jogo.id = :jogoId " +
-           "AND (:nome IS NULL OR LOWER(f.nome) LIKE LOWER(CONCAT('%', :nome, '%'))) " +
            "AND (:classeId IS NULL OR f.classe.id = :classeId) " +
            "AND (:racaId IS NULL OR f.raca.id = :racaId) " +
            "AND (:nivel IS NULL OR f.nivel = :nivel) " +
@@ -46,24 +45,59 @@ public interface FichaRepository extends JpaRepository<Ficha, Long> {
            "ORDER BY f.nome")
     List<Ficha> findByJogoIdWithFilters(
             @Param("jogoId") Long jogoId,
-            @Param("nome") String nome,
             @Param("classeId") Long classeId,
             @Param("racaId") Long racaId,
             @Param("nivel") Integer nivel);
 
     /**
-     * Busca fichas de um jogador específico com filtros opcionais.
+     * Busca fichas com filtro obrigatório de nome mais filtros opcionais.
      */
     @Query("SELECT f FROM Ficha f WHERE f.jogo.id = :jogoId " +
-           "AND f.jogadorId = :jogadorId " +
-           "AND (:nome IS NULL OR LOWER(f.nome) LIKE LOWER(CONCAT('%', :nome, '%'))) " +
+           "AND LOWER(f.nome) LIKE LOWER(CONCAT('%', :nome, '%')) " +
            "AND (:classeId IS NULL OR f.classe.id = :classeId) " +
            "AND (:racaId IS NULL OR f.raca.id = :racaId) " +
            "AND (:nivel IS NULL OR f.nivel = :nivel) " +
            "AND f.isNpc = false " +
            "AND f.deletedAt IS NULL " +
            "ORDER BY f.nome")
+    List<Ficha> findByJogoIdWithNomeFilter(
+            @Param("jogoId") Long jogoId,
+            @Param("nome") String nome,
+            @Param("classeId") Long classeId,
+            @Param("racaId") Long racaId,
+            @Param("nivel") Integer nivel);
+
+    /**
+     * Busca fichas de um jogador específico com filtros opcionais de classe, raça e nível.
+     */
+    @Query("SELECT f FROM Ficha f WHERE f.jogo.id = :jogoId " +
+            "AND f.jogadorId = :jogadorId " +
+            "AND (:classeId IS NULL OR f.classe.id = :classeId) " +
+            "AND (:racaId IS NULL OR f.raca.id = :racaId) " +
+            "AND (:nivel IS NULL OR f.nivel = :nivel) " +
+            "AND f.isNpc = false " +
+            "AND f.deletedAt IS NULL " +
+            "ORDER BY f.nome")
     List<Ficha> findByJogoIdAndJogadorIdWithFilters(
+            @Param("jogoId") Long jogoId,
+            @Param("jogadorId") Long jogadorId,
+            @Param("classeId") Long classeId,
+            @Param("racaId") Long racaId,
+            @Param("nivel") Integer nivel);
+
+    /**
+     * Busca fichas de um jogador específico com filtro obrigatório de nome mais filtros opcionais.
+     */
+    @Query("SELECT f FROM Ficha f WHERE f.jogo.id = :jogoId " +
+            "AND f.jogadorId = :jogadorId " +
+            "AND LOWER(f.nome) LIKE LOWER(CONCAT('%', :nome, '%')) " +
+            "AND (:classeId IS NULL OR f.classe.id = :classeId) " +
+            "AND (:racaId IS NULL OR f.raca.id = :racaId) " +
+            "AND (:nivel IS NULL OR f.nivel = :nivel) " +
+            "AND f.isNpc = false " +
+            "AND f.deletedAt IS NULL " +
+            "ORDER BY f.nome")
+    List<Ficha> findByJogoIdAndJogadorIdWithNomeFilter(
             @Param("jogoId") Long jogoId,
             @Param("jogadorId") Long jogadorId,
             @Param("nome") String nome,
@@ -114,7 +148,6 @@ public interface FichaRepository extends JpaRepository<Ficha, Long> {
            "LEFT JOIN FETCH f.indole " +
            "LEFT JOIN FETCH f.presenca " +
            "WHERE f.jogo.id = :jogoId " +
-           "AND (:nome IS NULL OR LOWER(f.nome) LIKE LOWER(CONCAT('%', :nome, '%'))) " +
            "AND (:classeId IS NULL OR f.classe.id = :classeId) " +
            "AND (:racaId IS NULL OR f.raca.id = :racaId) " +
            "AND (:nivel IS NULL OR f.nivel = :nivel) " +
@@ -122,6 +155,30 @@ public interface FichaRepository extends JpaRepository<Ficha, Long> {
            "AND f.deletedAt IS NULL " +
            "ORDER BY f.nome")
     List<Ficha> findByJogoIdWithFiltersAndRelationships(
+            @Param("jogoId") Long jogoId,
+            @Param("classeId") Long classeId,
+            @Param("racaId") Long racaId,
+            @Param("nivel") Integer nivel);
+
+    /**
+     * Busca fichas por jogoId com filtro obrigatório de nome e JOIN FETCH nos relacionamentos ManyToOne.
+     */
+    @Query("SELECT f FROM Ficha f " +
+           "LEFT JOIN FETCH f.jogo " +
+           "LEFT JOIN FETCH f.raca " +
+           "LEFT JOIN FETCH f.classe " +
+           "LEFT JOIN FETCH f.genero " +
+           "LEFT JOIN FETCH f.indole " +
+           "LEFT JOIN FETCH f.presenca " +
+           "WHERE f.jogo.id = :jogoId " +
+           "AND LOWER(f.nome) LIKE LOWER(CONCAT('%', :nome, '%')) " +
+           "AND (:classeId IS NULL OR f.classe.id = :classeId) " +
+           "AND (:racaId IS NULL OR f.raca.id = :racaId) " +
+           "AND (:nivel IS NULL OR f.nivel = :nivel) " +
+           "AND f.isNpc = false " +
+           "AND f.deletedAt IS NULL " +
+           "ORDER BY f.nome")
+    List<Ficha> findByJogoIdWithNomeFilterAndRelationships(
             @Param("jogoId") Long jogoId,
             @Param("nome") String nome,
             @Param("classeId") Long classeId,
@@ -140,7 +197,6 @@ public interface FichaRepository extends JpaRepository<Ficha, Long> {
            "LEFT JOIN FETCH f.presenca " +
            "WHERE f.jogo.id = :jogoId " +
            "AND f.jogadorId = :jogadorId " +
-           "AND (:nome IS NULL OR LOWER(f.nome) LIKE LOWER(CONCAT('%', :nome, '%'))) " +
            "AND (:classeId IS NULL OR f.classe.id = :classeId) " +
            "AND (:racaId IS NULL OR f.raca.id = :racaId) " +
            "AND (:nivel IS NULL OR f.nivel = :nivel) " +
@@ -148,6 +204,32 @@ public interface FichaRepository extends JpaRepository<Ficha, Long> {
            "AND f.deletedAt IS NULL " +
            "ORDER BY f.nome")
     List<Ficha> findByJogoIdAndJogadorIdWithFiltersAndRelationships(
+            @Param("jogoId") Long jogoId,
+            @Param("jogadorId") Long jogadorId,
+            @Param("classeId") Long classeId,
+            @Param("racaId") Long racaId,
+            @Param("nivel") Integer nivel);
+
+    /**
+     * Busca fichas de um jogador com filtro obrigatório de nome e JOIN FETCH nos relacionamentos ManyToOne.
+     */
+    @Query("SELECT f FROM Ficha f " +
+            "LEFT JOIN FETCH f.jogo " +
+            "LEFT JOIN FETCH f.raca " +
+            "LEFT JOIN FETCH f.classe " +
+            "LEFT JOIN FETCH f.genero " +
+            "LEFT JOIN FETCH f.indole " +
+            "LEFT JOIN FETCH f.presenca " +
+            "WHERE f.jogo.id = :jogoId " +
+            "AND f.jogadorId = :jogadorId " +
+            "AND LOWER(f.nome) LIKE LOWER(CONCAT('%', :nome, '%')) " +
+            "AND (:classeId IS NULL OR f.classe.id = :classeId) " +
+            "AND (:racaId IS NULL OR f.raca.id = :racaId) " +
+            "AND (:nivel IS NULL OR f.nivel = :nivel) " +
+            "AND f.isNpc = false " +
+            "AND f.deletedAt IS NULL " +
+            "ORDER BY f.nome")
+    List<Ficha> findByJogoIdAndJogadorIdWithNomeFilterAndRelationships(
             @Param("jogoId") Long jogoId,
             @Param("jogadorId") Long jogadorId,
             @Param("nome") String nome,

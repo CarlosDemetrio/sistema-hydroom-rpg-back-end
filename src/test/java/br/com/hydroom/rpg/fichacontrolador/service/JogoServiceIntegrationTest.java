@@ -80,14 +80,35 @@ class JogoServiceIntegrationTest {
     @Autowired
     private MembroCorpoConfigRepository membroCorpoRepository;
 
+     @Autowired
+     private VantagemConfigRepository vantagemRepository;
+
     @Autowired
-    private VantagemConfigRepository vantagemRepository;
+    private VantagemEfeitoRepository vantagemEfeitoRepository;
+
+    @Autowired
+    private VantagemPreRequisitoRepository vantagemPreRequisitoRepository;
 
     @Autowired
     private ClassePontosConfigRepository classePontosConfigRepository;
 
     @Autowired
+    private ClasseBonusRepository classeBonusRepository;
+
+    @Autowired
+    private ClasseAptidaoBonusRepository classeAptidaoBonusRepository;
+
+    @Autowired
+    private ClasseVantagemPreDefinidaRepository classeVantagemPreDefinidaRepository;
+
+    @Autowired
     private RacaPontosConfigRepository racaPontosConfigRepository;
+
+    @Autowired
+    private RacaClassePermitidaRepository racaClassePermitidaRepository;
+
+    @Autowired
+    private RacaVantagemPreDefinidaRepository racaVantagemPreDefinidaRepository;
 
     private Usuario mestre;
     private Usuario jogador;
@@ -455,6 +476,147 @@ class JogoServiceIntegrationTest {
     }
 
     @Test
+    @DisplayName("Deve persistir efeitos default das vantagens ao criar jogo")
+    void criarJogoDevePersistirEfeitosDefaultDasVantagens() {
+        // Arrange
+        var request = CriarJogoRequest.builder()
+            .nome("Teste Efeitos de Vantagens")
+            .build();
+
+        // Act
+        Jogo result = jogoService.criarJogo(request);
+
+        // Assert
+        var vantagem = vantagemRepository.findByJogoIdOrderByOrdemExibicao(result.getId()).stream()
+            .filter(v -> v.getNome().equals("Treinamento em Combate Ofensivo"))
+            .findFirst()
+            .orElseThrow(() -> new AssertionError("Vantagem default 'Treinamento em Combate Ofensivo' não encontrada"));
+
+        var efeitos = vantagemEfeitoRepository.findByVantagemConfigId(vantagem.getId());
+
+        assertThat(efeitos)
+            .as("Treinamento em Combate Ofensivo deve persistir 2 efeitos default do CSV 17b")
+            .hasSize(2);
+
+        assertThat(efeitos)
+            .extracting(efeito -> efeito.getTipoEfeito().name())
+            .containsExactlyInAnyOrder("BONUS_DERIVADO", "DADO_UP");
+
+        assertThat(efeitos)
+            .filteredOn(efeito -> "BONUS_DERIVADO".equals(efeito.getTipoEfeito().name()))
+            .singleElement()
+            .satisfies(efeito -> {
+                assertThat(efeito.getBonusAlvo()).isNotNull();
+                assertThat(efeito.getBonusAlvo().getNome()).isEqualTo("B.B.A");
+                assertThat(efeito.getValorPorNivel()).isEqualByComparingTo("1");
+            });
+    }
+
+    @Test
+    @DisplayName("Deve persistir pré-requisitos default das vantagens ao criar jogo")
+    void criarJogoDevePersistirPreRequisitosDefaultDasVantagens() {
+        // Arrange
+        var request = CriarJogoRequest.builder()
+            .nome("Teste Pré-requisitos de Vantagens")
+            .build();
+
+        // Act
+        Jogo result = jogoService.criarJogo(request);
+
+        // Assert
+        var vantagem = vantagemRepository.findByJogoIdOrderByOrdemExibicao(result.getId()).stream()
+            .filter(v -> v.getSigla().equals("VDM"))
+            .findFirst()
+            .orElseThrow(() -> new AssertionError("Vantagem default 'Dominio de Forca' não encontrada"));
+
+        var preRequisitos = vantagemPreRequisitoRepository.findByVantagemId(vantagem.getId());
+
+        assertThat(preRequisitos)
+            .as("Dominio de Forca deve persistir o pré-requisito definido no CSV 17c")
+            .hasSize(1);
+
+        assertThat(preRequisitos.getFirst().getRequisito().getSigla()).isEqualTo("VCFM");
+        assertThat(preRequisitos.getFirst().getNivelMinimo()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("Deve persistir subestruturas default de classes e raças ao criar jogo")
+    void criarJogoDevePersistirSubestruturasDefaultDeClassesERacas() {
+        // Arrange
+        var request = CriarJogoRequest.builder()
+            .nome("Teste Subestruturas de Classes e Raças")
+            .build();
+
+        // Act
+        Jogo result = jogoService.criarJogo(request);
+
+        // Assert
+        var guerreiro = classeRepository.findByJogoIdOrderByOrdemExibicao(result.getId()).stream()
+            .filter(classe -> classe.getNome().equals("Guerreiro"))
+            .findFirst()
+            .orElseThrow(() -> new AssertionError("Classe default 'Guerreiro' não encontrada"));
+
+        var bonusGuerreiro = classeBonusRepository.findByClasseIdWithBonusConfig(guerreiro.getId());
+        assertThat(bonusGuerreiro)
+            .as("Guerreiro deve persistir bônus derivados default")
+            .anySatisfy(bonus -> {
+                assertThat(bonus.getBonus().getNome()).isEqualTo("B.B.A");
+                assertThat(bonus.getValorPorNivel()).isEqualByComparingTo("2");
+            });
+
+        var aptidoesBonusGuerreiro = classeAptidaoBonusRepository.findByClasseIdWithAptidao(guerreiro.getId());
+        assertThat(aptidoesBonusGuerreiro)
+            .as("Guerreiro deve persistir aptidões bônus default")
+            .anySatisfy(aptidaoBonus -> {
+                assertThat(aptidaoBonus.getAptidao().getNome()).isEqualTo("Guarda");
+                assertThat(aptidaoBonus.getBonus()).isEqualTo(3);
+            });
+
+        var vantagensGuerreiro = classeVantagemPreDefinidaRepository.findByClasseIdAndNivelWithVantagem(guerreiro.getId(), 1);
+        assertThat(vantagensGuerreiro)
+            .as("Guerreiro deve persistir vantagens predefinidas default")
+            .extracting(vantagem -> vantagem.getVantagemConfig().getNome())
+            .contains("Treinamento em Combate Ofensivo");
+
+        var atlas = racaRepository.findByJogoIdOrderByOrdemExibicao(result.getId()).stream()
+            .filter(raca -> raca.getNome().equals("Atlas"))
+            .findFirst()
+            .orElseThrow(() -> new AssertionError("Raça default 'Atlas' não encontrada"));
+
+        var vantagensAtlas = racaVantagemPreDefinidaRepository.findByRacaIdAndNivelWithVantagem(atlas.getId(), 1);
+        assertThat(vantagensAtlas)
+            .as("Atlas deve persistir vantagens raciais predefinidas default")
+            .extracting(vantagem -> vantagem.getVantagemConfig().getSigla())
+            .containsExactlyInAnyOrder("VMAB", "VCFM", "VAMB", "VAA");
+
+        var humano = racaRepository.findByJogoIdOrderByOrdemExibicao(result.getId()).stream()
+            .filter(raca -> raca.getNome().equals("Humano"))
+            .findFirst()
+            .orElseThrow(() -> new AssertionError("Raça default 'Humano' não encontrada"));
+
+        var vantagensHumano = racaVantagemPreDefinidaRepository.findByRacaIdAndNivelWithVantagem(humano.getId(), 1);
+        assertThat(vantagensHumano)
+            .as("Humano deve persistir todas as vantagens raciais predefinidas canônicas")
+            .extracting(vantagem -> vantagem.getVantagemConfig().getSigla())
+            .containsExactlyInAnyOrder("VAHU", "VRHU", "VVHU", "VEIN", "VLCI");
+
+        var ikaruz = racaRepository.findByJogoIdOrderByOrdemExibicao(result.getId()).stream()
+            .filter(raca -> raca.getNome().equals("Ikarúz"))
+            .findFirst()
+            .orElseThrow(() -> new AssertionError("Raça default 'Ikarúz' não encontrada"));
+
+        var vantagensIkaruz = racaVantagemPreDefinidaRepository.findByRacaIdAndNivelWithVantagem(ikaruz.getId(), 1);
+        assertThat(vantagensIkaruz)
+            .as("Ikarúz deve persistir todas as vantagens raciais predefinidas canônicas")
+            .extracting(vantagem -> vantagem.getVantagemConfig().getSigla())
+            .containsExactlyInAnyOrder("VASA", "VADA", "VCAL");
+
+        assertThat(racaClassePermitidaRepository.findAll())
+            .as("Não deve persistir restrições de classe racial quando o CSV 16c está vazio")
+            .isEmpty();
+    }
+
+    @Test
     @DisplayName("Deve criar atributos com abreviações corretas")
     void criarJogoComAtributosCorretos() {
         // Arrange
@@ -535,7 +697,7 @@ class JogoServiceIntegrationTest {
         assertThat(racas)
             .hasSize(6)
             .extracting("nome")
-            .containsExactlyInAnyOrder("Humano", "Karzarcryer", "Ikaruz", "Hankraz", "Atlas", "Anakarys");
+            .containsExactlyInAnyOrder("Humano", "Karzarcryer", "Ikarúz", "Hankráz", "Atlas", "Anakarys");
 
         // Assert - Verificar que raças têm bônus (exceto Humano que não tem)
         var racaKarzarcryer = racas.stream()

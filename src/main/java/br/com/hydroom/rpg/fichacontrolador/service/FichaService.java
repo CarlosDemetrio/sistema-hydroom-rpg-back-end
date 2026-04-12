@@ -250,13 +250,24 @@ public class FichaService {
         Usuario usuarioAtual = getUsuarioAtual();
         boolean isMestre = jogoParticipanteRepository.existsByJogoIdAndUsuarioIdAndRole(
                 jogoId, usuarioAtual.getId(), RoleJogo.MESTRE);
+        String nomeNormalizado = normalizarFiltroNome(nome);
 
         if (isMestre) {
-            return fichaRepository.findByJogoIdWithFiltersAndRelationships(jogoId, nome, classeId, racaId, nivel);
+            if (nomeNormalizado == null) {
+                return fichaRepository.findByJogoIdWithFiltersAndRelationships(jogoId, classeId, racaId, nivel);
+            }
+            return fichaRepository.findByJogoIdWithNomeFilterAndRelationships(
+                    jogoId, nomeNormalizado, classeId, racaId, nivel);
         } else {
             // Fichas próprias do jogador
-            List<Ficha> fichasJogador = fichaRepository.findByJogoIdAndJogadorIdWithFiltersAndRelationships(
-                    jogoId, usuarioAtual.getId(), nome, classeId, racaId, nivel);
+            List<Ficha> fichasJogador;
+            if (nomeNormalizado == null) {
+                fichasJogador = fichaRepository.findByJogoIdAndJogadorIdWithFiltersAndRelationships(
+                        jogoId, usuarioAtual.getId(), classeId, racaId, nivel);
+            } else {
+                fichasJogador = fichaRepository.findByJogoIdAndJogadorIdWithNomeFilterAndRelationships(
+                        jogoId, usuarioAtual.getId(), nomeNormalizado, classeId, racaId, nivel);
+            }
             // NPCs revelados globalmente pelo Mestre
             List<Ficha> npcsVisiveis = fichaRepository.findNpcsVisivelGlobalmenteByJogoId(jogoId);
 
@@ -967,6 +978,15 @@ public class FichaService {
         if (!usuarioAtual.getId().equals(ficha.getJogadorId())) {
             throw new ForbiddenException("Acesso negado: você só pode editar suas próprias fichas.");
         }
+    }
+
+    private String normalizarFiltroNome(String nome) {
+        if (nome == null) {
+            return null;
+        }
+
+        String nomeNormalizado = nome.trim();
+        return nomeNormalizado.isEmpty() ? null : nomeNormalizado;
     }
 
     private Usuario getUsuarioAtual() {

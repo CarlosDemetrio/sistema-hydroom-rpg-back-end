@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * DTO para configuração padrão de Vantagens.
  * Usado pelo GameDefaultConfigProvider para inicializar vantagens de um jogo.
@@ -26,6 +28,10 @@ public class VantagemConfigDTO {
     private String formulaCusto;       // Ex: "custo_base * nivel_vantagem"
     private Integer nivelMaximoVantagem;
     private Integer ordemExibicao;
+    @Builder.Default
+    private List<VantagemEfeitoDefault> efeitos = List.of();
+    @Builder.Default
+    private List<VantagemPreRequisitoDefault> preRequisitos = List.of();
 
     /**
      * Cria um VantagemConfigDTO básico.

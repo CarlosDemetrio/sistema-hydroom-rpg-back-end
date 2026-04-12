@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
     }
 )
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = "raca")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

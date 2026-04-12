@@ -1,7 +1,9 @@
 package br.com.hydroom.rpg.fichacontrolador.service.configuracao;
 
+import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.RacaResponse;
 import br.com.hydroom.rpg.fichacontrolador.exception.ConflictException;
 import br.com.hydroom.rpg.fichacontrolador.exception.ValidationException;
+import br.com.hydroom.rpg.fichacontrolador.mapper.configuracao.RacaMapper;
 import br.com.hydroom.rpg.fichacontrolador.model.AtributoConfig;
 import br.com.hydroom.rpg.fichacontrolador.model.ClassePersonagem;
 import br.com.hydroom.rpg.fichacontrolador.model.Jogo;
@@ -54,6 +56,9 @@ class RacaSubResourcesIntegrationTest {
 
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    private RacaMapper racaMapper;
 
     private static final AtomicInteger counter = new AtomicInteger(1);
 
@@ -234,5 +239,22 @@ class RacaSubResourcesIntegrationTest {
         // Verifica via listar que os sub-recursos foram persistidos corretamente
         assertThat(racaService.listarBonusAtributo(raca.getId())).hasSize(1);
         assertThat(racaService.listarClassesPermitidas(raca.getId())).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("deve mapear listagem de raças com bônus e classes permitidas sem erro de concorrência")
+    void deveMapearListagemDeRacasSemErroDeConcorrencia() {
+        racaService.adicionarBonusAtributo(raca.getId(), atributo.getId(), 2);
+        racaService.permitirClasse(raca.getId(), classe.getId());
+        entityManager.flush();
+        entityManager.clear();
+
+        List<RacaResponse> responses = racaService.listar(jogo.getId()).stream()
+            .map(racaMapper::toResponse)
+            .toList();
+
+        assertThat(responses).hasSize(1);
+        assertThat(responses.get(0).bonusAtributos()).hasSize(1);
+        assertThat(responses.get(0).classesPermitidas()).hasSize(1);
     }
 }

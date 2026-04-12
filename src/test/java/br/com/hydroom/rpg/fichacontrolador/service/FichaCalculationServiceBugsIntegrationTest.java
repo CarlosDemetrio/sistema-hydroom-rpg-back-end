@@ -140,9 +140,8 @@ class FichaCalculationServiceBugsIntegrationTest {
     @Test
     @DisplayName("T0-01: ClasseBonus com valorPorNivel=2 e nivel=5 deve resultar em FichaBonus.classe=10")
     void t001_classeBonus_deveSerAplicadoEmFichaBonus() {
-        // Arrange: obter classe Guerreiro do jogo (criada pelo GameConfigInitializerService)
-        ClassePersonagem guerreiro = classeRepository.findByJogoIdAndNomeIgnoreCase(jogo.getId(), "Guerreiro");
-        assertThat(guerreiro).as("Classe Guerreiro deve existir após inicialização do jogo").isNotNull();
+        // Arrange: usar uma classe sintética para isolar o teste dos defaults canônicos
+        ClassePersonagem guerreiro = criarClasseTeste("Classe Bonus T0-01");
 
         // Buscar BonusConfig 'BBA' criado pelo GameConfigInitializerService
         BonusConfig bba = bonusConfigRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).stream()
@@ -200,11 +199,8 @@ class FichaCalculationServiceBugsIntegrationTest {
     @Test
     @DisplayName("T0-02: ClasseAptidaoBonus com bonus=3 deve resultar em FichaAptidao.classe=3")
     void t002_classeAptidaoBonus_deveSerAplicadoEmFichaAptidao() {
-        // Arrange: usar primeira classe disponível
-        ClassePersonagem primeiraClasse = classeRepository.findAll().stream()
-                .filter(c -> c.getJogo().getId().equals(jogo.getId()))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Nenhuma classe encontrada no jogo"));
+        // Arrange: usar uma classe sintética para evitar colisão com bônus default
+        ClassePersonagem primeiraClasse = criarClasseTeste("Classe Aptidao Bonus T0-02");
 
         // Usar primeira aptidão disponível
         AptidaoConfig primeiraAptidao = aptidaoConfigRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId())
@@ -289,11 +285,11 @@ class FichaCalculationServiceBugsIntegrationTest {
     // =========================================================
 
     @Test
-    @DisplayName("T0-04: Raça Ikaruz com penalidade=-9 em VIG deve resultar em FichaAtributo.outros=-9")
+    @DisplayName("T0-04: Raça Ikarúz com penalidade=-9 em VIG deve resultar em FichaAtributo.outros=-9")
     void t004_racaBonusAtributo_negativo_deveAplicarPenalidade() {
-        // Arrange: Ikaruz tem VIG-9 configurado pelo DefaultGameConfigProvider
-        Raca ikaruz = racaRepository.findByJogoIdAndNomeIgnoreCase(jogo.getId(), "Ikaruz");
-        assertThat(ikaruz).as("Raça Ikaruz deve existir após inicialização do jogo").isNotNull();
+        // Arrange: Ikarúz tem VIG-9 configurado pelo DefaultGameConfigProvider
+        Raca ikaruz = racaRepository.findByJogoIdAndNomeIgnoreCase(jogo.getId(), "Ikarúz");
+        assertThat(ikaruz).as("Raça Ikarúz deve existir após inicialização do jogo").isNotNull();
 
         AtributoConfig vig = atributoConfigRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId())
                 .stream()
@@ -301,15 +297,15 @@ class FichaCalculationServiceBugsIntegrationTest {
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("AtributoConfig VIG não encontrado"));
 
-        // Criar ficha com raca=Ikaruz
+        // Criar ficha com raca=Ikarúz
         Ficha ficha = fichaService.criar(new CreateFichaRequest(
-                jogo.getId(), "Ikaruz Penalidade", null, ikaruz.getId(), null, null, null, null, false));
+                jogo.getId(), "Ikarúz Penalidade", null, ikaruz.getId(), null, null, null, null, false));
 
         // Act: recalcular via atualizar
         fichaService.atualizar(ficha.getId(), new UpdateFichaRequest(
                 null, null, null, null, null, null, null, null));
 
-        // Assert: FichaAtributo.VIG.outros deve ser -9 (penalidade da raça Ikaruz)
+        // Assert: FichaAtributo.VIG.outros deve ser -9 (penalidade da raça Ikarúz)
         List<FichaAtributo> atributos = fichaAtributoRepository.findByFichaIdWithConfig(ficha.getId());
         FichaAtributo atributoVig = atributos.stream()
                 .filter(a -> a.getAtributoConfig() != null
@@ -318,7 +314,7 @@ class FichaCalculationServiceBugsIntegrationTest {
                 .orElseThrow(() -> new IllegalStateException("FichaAtributo VIG não encontrado"));
 
         assertThat(atributoVig.getOutros())
-                .as("RacaBonusAtributo Ikaruz-9 em VIG deve ser aplicado como penalidade outros=-9")
+                .as("RacaBonusAtributo Ikarúz-9 em VIG deve ser aplicado como penalidade outros=-9")
                 .isEqualTo(-9);
         assertThat(atributoVig.getTotal())
                 .as("Total de VIG deve ser -9 (base=0 + nivel=0 + outros=-9)")
@@ -438,6 +434,14 @@ class FichaCalculationServiceBugsIntegrationTest {
     // =========================================================
     // HELPERS
     // =========================================================
+
+    private ClassePersonagem criarClasseTeste(String nome) {
+        return classeRepository.save(ClassePersonagem.builder()
+                .jogo(jogo)
+                .nome(nome)
+                .ordemExibicao(999)
+                .build());
+    }
 
     private void autenticarComo(Usuario usuario) {
         var auth = new UsernamePasswordAuthenticationToken(usuario.getEmail(), "n/a");

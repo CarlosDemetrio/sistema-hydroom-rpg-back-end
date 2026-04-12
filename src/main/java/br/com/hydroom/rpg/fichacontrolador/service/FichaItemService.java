@@ -58,6 +58,7 @@ public class FichaItemService {
     private final FichaAtributoRepository fichaAtributoRepository;
     private final JogoParticipanteRepository jogoParticipanteRepository;
     private final UsuarioRepository usuarioRepository;
+    private final FichaService fichaService;
 
     /**
      * Lista o inventário completo de uma ficha, separado por equipados e em estoque.
@@ -224,8 +225,7 @@ public class FichaItemService {
         fichaItem.setEquipado(true);
         fichaItem = fichaItemRepository.save(fichaItem);
 
-        // TODO [Spec 016 T5]: integrar recalculo quando item for equipado/desequipado
-        // fichaService.recalcular(fichaId);
+        fichaService.recalcularFicha(fichaId);
 
         log.info("Item '{}' equipado na ficha {}", fichaItem.getNome(), fichaId);
         return fichaItem;
@@ -247,8 +247,7 @@ public class FichaItemService {
         fichaItem.setEquipado(false);
         fichaItem = fichaItemRepository.save(fichaItem);
 
-        // TODO [Spec 016 T5]: integrar recalculo quando item for equipado/desequipado
-        // fichaService.recalcular(fichaId);
+        fichaService.recalcularFicha(fichaId);
 
         log.info("Item '{}' desequipado da ficha {}", fichaItem.getNome(), fichaId);
         return fichaItem;
@@ -270,6 +269,8 @@ public class FichaItemService {
         FichaItem fichaItem = buscarFichaItem(fichaId, itemId);
         verificarAcessoMestre(fichaItem.getFicha(), usuarioAtualId);
 
+        boolean estaEquipadoAntes = fichaItem.isEquipado();
+
         if (request.restaurar()) {
             Integer duracaoPadrao = fichaItem.getItemConfig() != null
                     ? fichaItem.getItemConfig().getDuracaoPadrao()
@@ -285,12 +286,16 @@ public class FichaItemService {
                 fichaItem.setEquipado(false);
                 log.info("Item '{}' da ficha {} chegou a durabilidade 0 e foi desequipado automaticamente.",
                         fichaItem.getNome(), fichaId);
-                // TODO [Spec 016 T5]: integrar recalculo quando item for equipado/desequipado
-                // fichaService.recalcular(fichaId);
             }
         }
 
         fichaItem = fichaItemRepository.save(fichaItem);
+
+        // Recalcula se o estado de equipado mudou (auto-desequipe por durabilidade 0)
+        if (estaEquipadoAntes && !fichaItem.isEquipado()) {
+            fichaService.recalcularFicha(fichaId);
+        }
+
         return fichaItem;
     }
 
@@ -318,8 +323,7 @@ public class FichaItemService {
         fichaItemRepository.save(fichaItem);
 
         if (estaEquipado) {
-            // TODO [Spec 016 T5]: integrar recalculo quando item equipado for removido
-            // fichaService.recalcular(fichaId);
+            fichaService.recalcularFicha(fichaId);
         }
 
         log.info("Item '{}' removido do inventário da ficha {} por {}", fichaItem.getNome(), fichaId, usuarioAtualId);

@@ -53,6 +53,7 @@ public class FichaService {
     private final FichaDescricaoFisicaRepository fichaDescricaoFisicaRepository;
     private final FichaVantagemRepository fichaVantagemRepository;
     private final FichaVisibilidadeRepository fichaVisibilidadeRepository;
+    private final FichaItemRepository fichaItemRepository;
 
     // Repositories de configuração
     private final ConfiguracaoAtributoRepository atributoConfigRepository;
@@ -1027,6 +1028,19 @@ public class FichaService {
     }
 
     /**
+     * Ponto de entrada público para recalcular uma ficha a partir do seu ID.
+     * Usado pelo FichaItemService ao equipar/desequipar/remover itens.
+     *
+     * @param fichaId ID da ficha a recalcular
+     */
+    @Transactional
+    public void recalcularFicha(Long fichaId) {
+        Ficha ficha = fichaRepository.findById(fichaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ficha não encontrada: " + fichaId));
+        recalcular(ficha);
+    }
+
+    /**
      * Carrega todos os sub-registros da ficha, recalcula e persiste.
      * Usa queries com JOIN FETCH para evitar N+1 ao acessar configs durante recálculo.
      *
@@ -1071,11 +1085,14 @@ public class FichaService {
                 : List.of();
         List<FichaProspeccao> prospeccoes = fichaProspeccaoRepository.findByFichaIdWithConfig(fichaId);
 
+        // Carregar itens equipados com efeitos para Passo 6 (Spec 016 T5)
+        List<FichaItem> itensEquipados = fichaItemRepository.findEquipadosWithEfeitos(fichaId);
+
         // Recalcular tudo
         fichaCalculationService.recalcular(
                 ficha, atributos, aptidoes, bonus, vida, membros, essencia, ameaca,
                 racaBonusAtributos, classeBonus, classeAptidaoBonus, vantagens,
-                dadosOrdenados, prospeccoes);
+                dadosOrdenados, prospeccoes, itensEquipados);
 
         // Persistir sub-registros recalculados
         fichaAtributoRepository.saveAll(atributos);

@@ -3,6 +3,8 @@ package br.com.hydroom.rpg.fichacontrolador.service.configuracao;
 import br.com.hydroom.rpg.fichacontrolador.exception.ConflictException;
 import br.com.hydroom.rpg.fichacontrolador.exception.ResourceNotFoundException;
 import br.com.hydroom.rpg.fichacontrolador.exception.ValidationException;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.ClasseResponse;
+import br.com.hydroom.rpg.fichacontrolador.mapper.configuracao.ClassePersonagemMapper;
 import br.com.hydroom.rpg.fichacontrolador.model.AptidaoConfig;
 import br.com.hydroom.rpg.fichacontrolador.model.BonusConfig;
 import br.com.hydroom.rpg.fichacontrolador.model.ClasseAptidaoBonus;
@@ -23,6 +25,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -64,6 +67,12 @@ class ClasseSubRecursosIntegrationTest {
 
     @Autowired
     private JogoRepository jogoRepository;
+
+    @Autowired
+    private EntityManager entityManager;
+
+    @Autowired
+    private ClassePersonagemMapper classeMapper;
 
     private Jogo jogo;
     private Jogo outroJogo;
@@ -383,5 +392,22 @@ class ClasseSubRecursosIntegrationTest {
         // Act & Assert — tenta remover pelo id da classe errada
         assertThrows(ValidationException.class,
                 () -> classeService.removerAptidaoBonus(classe.getId(), cab.getId()));
+    }
+
+    @Test
+    @DisplayName("deve mapear listagem de classes com bonus e aptidao sem erro de concorrencia")
+    void deveMapearListagemDeClassesSemErroDeConcorrencia() {
+        classeService.adicionarBonus(classe.getId(), bonus.getId(), BigDecimal.ONE);
+        classeService.adicionarAptidaoBonus(classe.getId(), aptidao.getId(), 3);
+        entityManager.flush();
+        entityManager.clear();
+
+        List<ClasseResponse> responses = classeService.listar(jogo.getId()).stream()
+            .map(classeMapper::toResponse)
+            .toList();
+
+        assertThat(responses).hasSize(1);
+        assertThat(responses.get(0).bonusConfig()).hasSize(1);
+        assertThat(responses.get(0).aptidaoBonus()).hasSize(1);
     }
 }

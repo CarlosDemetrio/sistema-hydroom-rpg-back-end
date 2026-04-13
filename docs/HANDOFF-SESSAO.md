@@ -68,7 +68,7 @@ Decisao do PO: a tela de habilidades para JOGADOR ficara em **secao separada** (
 | 004 | Siglas, formulas, relacionamentos | CONCLUIDO | — |
 | 005 | Participantes, aprovacao, permissoes | CONCLUIDO | — |
 | 006 | Wizard de criacao de ficha | CONCLUIDO | — |
-| 007 | VantagemEfeito + Motor de calculos | 12/13 | T10 BLOQUEADO PA-004 |
+| 007 | VantagemEfeito + Motor de calculos | 12/13 | T10 DESBLOQUEADO (PA-004 resolvido) |
 | 008 | Sub-recursos Classes/Racas (FE) | CONCLUIDO | — |
 | 009-ext | NPC Visibility + Prospeccao + Essencia | CONCLUIDO | — |
 | 010 | Roles ADMIN refactor | STAND-BY | pos-homologacao |
@@ -76,9 +76,9 @@ Decisao do PO: a tela de habilidades para JOGADOR ficara em **secao separada** (
 | 012 | Niveis e progressao (FE) | CONCLUIDO | — |
 | 013 | Documentacao tecnica | STAND-BY | pos-homologacao |
 | 014 | Cobertura de testes | Parcial | T1+T5 OK; T2-T4+T6 pendentes |
-| 015 | ConfigPontos Classe/Raca | Parcial | T4 bloqueado |
+| 015 | ConfigPontos Classe/Raca | Parcial | T4 DESBLOQUEADO (PA-015-04 resolvido) |
 | 016 | Sistema de Itens | **CONCLUIDO** | T1-T11 todos concluidos (T5 Wave 1, T8-T10 Wave 1, T11 Wave 2) |
-| 017 | Correcoes Pre-RC | P0+P1 OK, **P2 parcial** | T13+T14+T-DOC1 pre-implementados; P3 pos-RC |
+| 017 | Correcoes Pre-RC | **CONCLUIDO** | P0+P1+P2+P3 — T15-T21 pre-implementados |
 | 018 | Deploy Backend GCP | CONCLUIDO | +hotfixes infra |
 | 019 | Deploy Frontend Firebase | CONCLUIDO | — |
 | 021 | Sistema de Habilidades | **CONCLUIDO** | BA + T1 BE (Wave 2) + T2 FE (Wave 3) |
@@ -95,22 +95,32 @@ Decisao do PO: a tela de habilidades para JOGADOR ficara em **secao separada** (
 | PA-R05-01 | FichaPreviewResponse incompleto (sem aptidoes/dado prospeccao) | Nao (decisao PO) | PO decide se amplia resposta |
 | PA-R05-02 | FichaPreviewService sem testes avancados | Nao | Pos-RC |
 | PA-R02-01 | Spec 016 T5 — FichaItemService 4x TODO recalcularStats | **RESOLVIDO** (Wave 1) | — |
-| PA-004 | FormulaEditorEfeito (S007-T10) | Nao | Decisao PO pendente |
-| PA-015-04 | Enum origem FichaVantagem (S015-T4) | Sim (S015-T4) | Decisao PO pendente |
+| PA-004 | FormulaEditorEfeito (S007-T10) | **RESOLVIDO** | Editor permite selecionar campo-alvo (atributo/bonus); 1 formula por campo |
+| PA-015-04 | Enum origem FichaVantagem (S015-T4) | **RESOLVIDO** | Enum OrigemFichaVantagem: JOGADOR, MESTRE, SISTEMA |
 | PA-017-03 | Reativar SidebarComponent (T15, P3) | Nao | Pos-RC |
 | PA-017-04 | Exportar/Importar config — formato | Nao | Pos-RC |
 | PA-021-03 | Tela habilidades JOGADOR em secao separada | **RESOLVIDO** | Decisao PO registrada |
 
 ### Outros bloqueios
 
-- **S007-T10**: FormulaEditorEfeito — PA-004 aguarda decisao PO
-- **Spec 015 T4**: VantagemAutoConcessao — bloqueado PA-015-04 (enum origem FichaVantagem)
+- Nenhum bloqueio ativo. S007-T10 e S015-T4 agora DESBLOQUEADOS.
 
 ---
 
 ## Proxima Sessao — Homologacao / RC
 
-Todas as waves da sessao 19 foram concluidas. Spec 016 e Spec 021 estao 100%. O foco agora e **homologacao e validacao para RC**.
+Todas as waves da sessao 19 foram concluidas. Spec 016, Spec 021 e Spec 017 estao 100%. PA-004 e PA-015-04 resolvidos pelo PO — desbloqueiam S007-T10 e S015-T4. O foco agora e **homologacao e validacao para RC** + implementacao das tasks desbloqueadas.
+
+### Decisoes de PO registradas (sessao 19)
+
+**PA-004 RESOLVIDO — FormulaEditor (Spec 007 T10):**
+- O editor de formula customizada permite selecionar **para qual campo** (atributo ou bonus) o resultado da formula ira
+- Pode-se adicionar uma formula por campo de atributo/bonus na vantagem
+- Desbloqueia task T10 (FormulaEditor)
+
+**PA-015-04 RESOLVIDO — enum `origem` em FichaVantagem (Spec 015 T4):**
+- Criar enum `OrigemFichaVantagem` com valores: `JOGADOR`, `MESTRE`, `SISTEMA`
+- Desbloqueia task T4 (auto-concessao de vantagens pre-definidas no level up)
 
 ### Prioridade 1: Validacao em producao
 
@@ -127,18 +137,18 @@ Todas as waves da sessao 19 foram concluidas. Spec 016 e Spec 021 estao 100%. O 
 1. **S007-T12** — Insolitus UI — possivelmente pre-implementado (sem arquivo de task)
 2. **Path HabilidadeConfig** — frontend T2 ja implementado com `/api/jogos/{jogoId}/config/habilidades` — confirmar se funciona em producao
 
-### Prioridade 3: Desejavel pre-RC
+### Prioridade 3: Tasks desbloqueadas
 
-- Spec 017 P1 (T8-T12 — PageHeader + toast cleanup, ~10h)
+- **S007-T10** — FormulaEditorEfeito (PA-004 resolvido) — frontend
+- **S015-T4** — VantagemAutoConcessao com enum OrigemFichaVantagem (PA-015-04 resolvido) — backend
 
 ---
 
 ## Pos-RC (ordem de prioridade)
 
 1. **Spec 014 T2-T4+T6** — cobertura testes (JaCoCo 50% para 75%)
-2. **Spec 017 P3** — T15-T21 backlog qualidade
-3. **Spec 013** — Documentacao tecnica
-4. **Spec 010** — Roles ADMIN refactor
+2. **Spec 013** — Documentacao tecnica
+3. **Spec 010** — Roles ADMIN refactor
 
 ---
 

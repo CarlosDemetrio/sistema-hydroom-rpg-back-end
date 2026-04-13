@@ -7,7 +7,7 @@
 > Ponto de entrada rapido: `HANDOFF-SESSAO.md` → `MASTER.md` → `PM.md`.
 > Mapa completo de docs: `README.md`.
 >
-> Gerado em: 2026-04-01 | Atualizado: 2026-04-13 (sessao 19, Wave 1+2, rev.14 — Sprint 3: RC desbloqueado, 796B+1138F testes) | Branch: `main`
+> Gerado em: 2026-04-01 | Atualizado: 2026-04-13 (sessao 19 COMPLETA, rev.15 — Spec 016+021+017 finalizadas, PA-004+PA-015-04 resolvidos, 796B+~1208F testes) | Branch: `main`
 > Cronologia: `docs/historico/CRONOLOGIA.md`
 
 ---
@@ -18,7 +18,7 @@
 |------|-----------|------------|
 | Backend: Infraestrutura | 100% | Schema gerenciado pelo Hibernate (ddl-auto). Sem DDL manual necessario para 0.0.1-RC. |
 | Backend: Configuracoes (13 CRUDs) | 100% | Todos com testes de integracao |
-| Backend: Motor de Formulas | **97%** | 7/8 TipoEfeito + 20 testes integracao. FORMULA_CUSTOMIZADA bloqueado PA-004. Frontend: T9/T11/T12 CONCLUIDOS. T10 BLOQUEADO (PA-004). |
+| Backend: Motor de Formulas | **97%** | 7/8 TipoEfeito + 20 testes integracao. FORMULA_CUSTOMIZADA desbloqueado (PA-004 resolvido). Frontend: T9/T11/T12 CONCLUIDOS. T10 DESBLOQUEADO. |
 | Backend: Ficha de Personagem (Spec 006/007) | **100%** | Wizard 6 passos completo (T6-T13). S006-T1/T2/T4/T5 backend CONCLUIDOS. PUT /fichas/{id}/completar funcional. Navega para FichaDetail. |
 | Backend: NPC + Duplicacao (Spec 009) | **100%** | POST /jogos/{id}/npcs + POST /fichas/{id}/duplicar implementados. |
 | Backend: NPC Visibilidade (Spec 009-ext) | **100%** | visivelGlobalmente, FichaVisibilidade (4 endpoints), ProspeccaoUso (endpoints conceder/usar/reverter), resetar-estado, essenciaAtual/vidaAtual no resumo. 32 novos testes. |
@@ -27,12 +27,12 @@
 | Backend: Perfil Usuario | **100%** | GET/PUT /api/v1/usuarios/me implementado e testado |
 | Backend: Participantes (Spec 005) | **100%** | P1T1/P1T2/P1T3 + P2T1/P2T2/P2T3 CONCLUIDOS (6/6). Strategy Reactivate, banir/desbanir/remover/meu-status, JogoDetail Mestre, JogosDisponiveis Jogador. |
 | Frontend: Modelos e Servicos de API | **100%** | Sub-recursos (008), PontosVantagem/CategoriaVantagem (012), FichaVisibilidade + Prospeccao (009-ext) CONCLUIDOS. |
-| Frontend: Componentes | **97%** | Wizard completo, configs (012 fase 1), sub-recursos Classes/Racas, **009-ext frontend completo (T7-T10)**. Falta: 012 fase 2 (T6-T11), 015 T6/T7. |
-| Frontend: Testes | **100%** | **848 passando**, 0 falhas |
+| Frontend: Componentes | **99%** | Wizard completo, configs, sub-recursos, 009-ext, 012, 016 T8-T11, 021 T2. Falta: S007-T10 (FormulaEditor, desbloqueado). |
+| Frontend: Testes | **100%** | **~1208 passando** (2 falhas pre-existentes ficha-vantagens-tab) |
 
-**Completude geral estimada: ~98%** (Sprint 3 — Wave 1+2 concluidas, RC desbloqueado)
+**Completude geral estimada: ~99%** (Sprint 3 — sessao 19 COMPLETA, Spec 016+021+017 finalizadas, RC desbloqueado)
 **Backend: 796 testes, 0 falhas**
-**Frontend: 1138 testes passando** (2 falhas pre-existentes ficha-vantagens-tab)
+**Frontend: ~1208 testes passando** (2 falhas pre-existentes ficha-vantagens-tab)
 **Total tasks MVP: ~103** (52 backend + 51 frontend)
 
 ---
@@ -121,8 +121,8 @@
 - **Spec 005 (backend 100%)** — JogoParticipante: P1T1 (strategy Reactivate), P1T2 (5 endpoints), P1T3 (29 testes). Faltam: P2T1-P2T3 frontend
 - **Spec 006 (100% CONCLUIDA)** — Wizard 6 passos completo (Identificacao, Descricao, Atributos, Aptidoes, Vantagens, Revisao). StepRevisaoComponent, WizardRodapeComponent shared, confirmarCriacao() -> PUT /fichas/{id}/completar -> navega /fichas/{id}. Badge "Incompleta" na listagem retoma rascunho. 624 testes frontend.
 - **Spec 005 (100% CONCLUIDA)** — JogoParticipante: strategy Reactivate, banir/desbanir/remover/meu-status/filtro, 29 testes backend. Frontend: JogoDetail Mestre (remover/banir/filtro), JogosDisponiveis Jogador (solicitar/cancelar/status/badges).
-- **Spec 007 (97% CONCLUIDA)** — 7/8 TipoEfeito + 20 testes integracao. Frontend: EfeitoFormComponent (31 testes), DadoUp seletor, UI Insolitus (dialog busca + revogar). T5alt/T10 BLOQUEADOS PA-004.
-- **Spec 015 (backend 100%)** — 4 entidades ConfigPontos, 14 CRUD endpoints, pontos integrados no FichaResumoResponse, DefaultProvider 8 bugs corrigidos, auto-concessao vantagens pre-definidas. FALTAM: T6/T7 (frontend)
+- **Spec 007 (97% CONCLUIDA)** — 7/8 TipoEfeito + 20 testes integracao. Frontend: EfeitoFormComponent (31 testes), DadoUp seletor, UI Insolitus (dialog busca + revogar). T5alt/T10 DESBLOQUEADOS (PA-004 resolvido).
+- **Spec 015 (backend 100%)** — 4 entidades ConfigPontos, 14 CRUD endpoints, pontos integrados no FichaResumoResponse, DefaultProvider 8 bugs corrigidos, auto-concessao vantagens pre-definidas. T4 DESBLOQUEADO (PA-015-04 resolvido). FALTAM: T6/T7 (frontend)
 - **Spec 008-old** — DashboardController, duplicacao de jogo, export/import de config, resumo de ficha, filtros, reordenacao batch (100% backend)
 - **Spec 009** — NPC security, POST /jogos/{id}/npcs, POST /fichas/{id}/duplicar, anotacoes. 100% backend
 - **Frontend Sprint 2** — Wizard completo (6 passos), EfeitoFormComponent, JogoDetail Mestre, JogosDisponiveis Jogador, badge Incompleta, WizardRodapeComponent. **624 testes passando, 0 falhas**
@@ -232,9 +232,9 @@
 | ~~S007-T1 adaptar modelo~~ | ~~Bloqueava T2-T7~~ | **RESOLVIDO** (rodada 2) — 474 testes |
 | ~~34 testes frontend falhando~~ | ~~CI nao confiavel~~ | **RESOLVIDO** (rodada 2) — 359/359 passando |
 | Spec 007 impacta ~20-30 arquivos | Regressao nos calculos | Spec 007 T8 com testes extensivos |
-| PA-004 nao resolvido | FORMULA_CUSTOMIZADA sem alvo | Escalar ao PO antes de T6 |
+| ~~PA-004 nao resolvido~~ | ~~FORMULA_CUSTOMIZADA sem alvo~~ | **RESOLVIDO** (sessao 19) — editor seleciona campo-alvo (atributo/bonus) |
 | PA-006 nao resolvido | VIG/SAB hardcoded (GAP-CALC-09) | Fora do escopo de T0; escalar ao PO |
-| Sprint 2 encerrado com S007-T10 bloqueada | PA-004 sem decisao do PO | Escalar PA-004 ao PO antes de Sprint 3 retomar S007-T10 |
+| ~~Sprint 2 encerrado com S007-T10 bloqueada~~ | ~~PA-004 sem decisao do PO~~ | **RESOLVIDO** (sessao 19) — PA-004 e PA-015-04 ambos resolvidos |
 | Spec 010 transversal | ~50+ @PreAuthorize a revisar | Implementar por ULTIMO, branch dedicada |
 
 ---
@@ -253,4 +253,4 @@
 
 ---
 
-*Atualizado: 2026-04-13 (rev.14 — Sprint 3 Wave 1+2: 796B+1138F, ~98% completude) | PM/Scrum Master*
+*Atualizado: 2026-04-13 (rev.15 — sessao 19 COMPLETA: Spec 016+021+017 finalizadas, PA-004+PA-015-04 resolvidos, 796B+~1208F, ~99% completude) | PM/Scrum Master*

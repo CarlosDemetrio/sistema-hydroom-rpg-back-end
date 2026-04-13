@@ -6,9 +6,9 @@
 > Para detalhes por area e historico, ver `PM.md`.
 > Para estado da ultima sessao, ver `HANDOFF-SESSAO.md`.
 >
-> Atualizado: 2026-04-13 (sessao 19 — Wave 1+2 implementacao paralela)
+> Atualizado: 2026-04-13 (sessao 19 COMPLETA — Waves 1+2+3, Spec 016+021+017 finalizadas, PA-004+PA-015-04 resolvidos)
 > PM: Scrum Orchestrator
-> Objetivo: **RC — homologacao em andamento, Spec 016+021 em finalizacao**
+> Objetivo: **RC — homologacao em andamento, S007-T10+S015-T4 desbloqueadas**
 > Duracao estimada: 2-3 semanas
 > Cronologia: `docs/historico/CRONOLOGIA.md` | Rodadas: `docs/tracking/rodadas/` | Copilot: `docs/tracking/rodadas-copilot/`
 
@@ -20,15 +20,15 @@
 |---------|-------|
 | Rodadas Claude concluidas | 3 (R12 + R13 + R14) |
 | **Rodadas Copilot concluidas** | **4 (R01+R02+R03+R04 — paralelo, zero merge conflicts)** |
-| **Waves paralelas (sessao 19)** | **Wave 1+2 (2026-04-13): Spec 016 T5+T8-T11, Spec 021 BA+T1, Spec 017 P2 parcial** |
+| **Waves paralelas (sessao 19)** | **Waves 1+2+3 COMPLETAS (2026-04-13): Spec 016 T5+T8-T11, Spec 021 BA+T1+T2, Spec 017 P2+P3** |
 | Tasks entregues (Claude R14) | 8 (Spec 017 T3+T4+T5+T7 + Spec 012 T7+T8+T9+T10) + 2 pre-existentes (T6+T11) |
 | Tasks entregues (Copilot total) | Spec 017 T1+T2+T6+T22; Spec 015 T6+T7; Spec 014 T1+T5; Spec 016 T1-T4+T6+T7; Spec 011 T0-T2+T4; Spec 018+019 deploy |
-| **Tasks entregues (Wave 1+2)** | **Spec 016 T5 BE+T8+T9+T10 FE; Spec 021 BA+T1 BE; Spec 017 P2 T13+T14+T-DOC1 (pre-impl); Spec 007 T9+T11 (pre-impl)** |
-| Tasks restantes para RC | smoke test overlay (PA-R04-02) + Spec 016 T11 FE (em andamento) |
+| **Tasks entregues (Waves 1+2+3)** | **Spec 016 T5 BE+T8+T9+T10+T11 FE; Spec 021 BA+T1 BE+T2 FE; Spec 017 P2+P3 (pre-impl); Spec 007 T9+T11 (pre-impl)** |
+| Tasks restantes para RC | smoke test overlay (PA-R04-02) |
 | Testes backend | **796 passando**, 0 falhas |
-| Testes frontend | **1138 passando** + 2 falhas pre-existentes + 2 OOM pre-existentes |
-| Specs 100% concluidas | Spec 008, Spec 009-ext, Spec 012 (todas as fases), Spec 015 (T4 bloqueado, resto OK), Spec 018, Spec 019, **Spec 022** |
-| Specs em andamento | Spec 017 (P0+P1 OK, P2 parcial), Spec 011 (~50%), Spec 014 (~28%), **Spec 016 (~90% — T11 FE em andamento)**, **Spec 021 (T1 BE OK, T2 FE pendente)** |
+| Testes frontend | **~1208 passando** + 2 falhas pre-existentes + 2 OOM pre-existentes |
+| Specs 100% concluidas | Spec 008, Spec 009-ext, Spec 012 (todas as fases), Spec 015 (T4 desbloqueado, resto OK), Spec 018, Spec 019, **Spec 022**, **Spec 016**, **Spec 021**, **Spec 017** |
+| Specs em andamento | Spec 011 (~50%), Spec 014 (~28%), Spec 007 (12/13 — T10 desbloqueado), Spec 015 (6/7 — T4 desbloqueado) |
 | Novas specs | Spec 017 + Spec 018 + Spec 019 + **Spec 021 (Sistema de Habilidades)** |
 | Stand-by remanescente | Spec 010, Spec 013, Spec 014 T2-T4+T6 |
 
@@ -76,10 +76,21 @@
 | Task | Status | Resultado | Commits |
 |------|--------|-----------|---------|
 | Spec 021 T1 BE (HabilidadeConfig CRUD) | Concluido | 796 testes (+15) | `b0e84c4`, `39f39ed` |
-| Spec 016 T11 FE (Inventario FichaDetail) | Em andamento | agente rodando | — |
+| Spec 016 T11 FE (Inventario FichaDetail) | Concluido | +40 testes frontend | `6b88997` |
+
+**Wave 3:**
+
+| Task | Status | Resultado | Commits |
+|------|--------|-----------|---------|
+| Spec 021 T2 FE (HabilidadeConfig Mestre + Jogador) | Concluido | +30 testes frontend | `caa0d2c` |
+| Spec 017 P3 T15-T21 (backlog qualidade) | Pre-implementado | ja existia | — |
 
 **Decisao PO:** PA-021-03 resolvido — tela habilidades JOGADOR em secao separada (nao no painel config Mestre).
 **Ponto tecnico:** HabilidadeConfigController usa path `/api/jogos/{jogoId}/config/habilidades` (diverge da spec). Verificar antes do frontend.
+
+**Decisoes PO sessao 19:**
+- **PA-004 RESOLVIDO**: FormulaEditor permite selecionar campo-alvo (atributo/bonus); 1 formula por campo. Desbloqueia S007-T10.
+- **PA-015-04 RESOLVIDO**: Enum OrigemFichaVantagem (JOGADOR, MESTRE, SISTEMA). Desbloqueia S015-T4.
 
 ### Desejavel pre-RC (Spec 017 P1)
 | Task | Descricao | Status |
@@ -91,12 +102,13 @@
 | S017-T12 | Remover double-toast em 19 componentes | PENDENTE |
 
 ### Bloqueados
-- S007-T10: FormulaEditorEfeito — PA-004 aguarda decisao PO
-- S015-T4: Auto-concessao vantagens — bloqueado PA-015-04 (enum origem FichaVantagem)
+- Nenhum bloqueio ativo. S007-T10 e S015-T4 agora DESBLOQUEADOS (PA-004 e PA-015-04 resolvidos).
 
 ### PAs resolvidos nesta sessao
 - **PA-R02-01**: Spec 016 T5 FichaItemService recalcularStats — **RESOLVIDO** (Wave 1, commits `c2b4522`+`74c2d36`)
 - **PA-021-03**: Tela habilidades JOGADOR em secao separada — **RESOLVIDO** (decisao PO)
+- **PA-004**: FormulaEditor campo-alvo (atributo/bonus) — **RESOLVIDO** (decisao PO sessao 19). Desbloqueia S007-T10.
+- **PA-015-04**: Enum OrigemFichaVantagem (JOGADOR, MESTRE, SISTEMA) — **RESOLVIDO** (decisao PO sessao 19). Desbloqueia S015-T4.
 
 ---
 
@@ -126,7 +138,7 @@
 | Concluidas | **34** + 2 bonus (S007-T0, T1, T2, T3+T4+T5, T7, T8, T9, T11, **T12**, S015-T5, T1, T2, T3, T4, S006-T1, T2, T4, T5, T6, T7, T8, T9, T10, **T11**, **T12b**, **T13**, S005-P1T1, P1T2, P1T3, P2T1, P2T2, P2T3, URG-01, URG-02, QW-Bug3) |
 | Em andamento | 0 |
 | Pendentes | 0 do escopo original |
-| Bloqueadas | 2 (S007-T5alt FORMULA_CUSTOMIZADA, S007-T10 FormulaEditorEfeito — ambas PA-004) |
+| Bloqueadas | 0 (PA-004 resolvido sessao 19 — S007-T5alt e S007-T10 desbloqueados) |
 | Testes backend | **581 passando**, 0 falhas |
 | Testes frontend | **624 passando**, 0 falhas (+21 da rodada 11) |
 | Gaps resolvidos pelo PO | **TODOS** (GAP-01 a GAP-08, INCONS-02, P-03, PA-001/002, Q14-Q17) |
@@ -223,7 +235,7 @@ TRACK F — Documentacao e Qualidade (apos TODAS as specs funcionais):
 | S007-T1 | 007/T1 | Backend | Adaptar modelo de dados para efeitos de vantagem | S007-T0 | **[CONCLUIDO]** (rodada 2 — SCHEMA-01/02, FichaProspeccao.dadoDisponivel, findByFichaIdWithEfeitos, stub aplicarEfeitosVantagens) |
 | S007-T2 | 007/T2 | Backend | FichaCalculationService — BONUS_ATRIBUTO, BONUS_APTIDAO, BONUS_VIDA, BONUS_ESSENCIA | S007-T1 | **[CONCLUIDO]** (rodada 3 — escopo expandido, commit `52738da`) |
 | S007-T3+T4+T5 | 007/T3-T5 | Backend | FichaCalculationService — BONUS_DERIVADO, BONUS_VIDA_MEMBRO, DADO_UP | S007-T2 | **[CONCLUIDO]** (rodada 4 — commit `0621bc8`, 7/8 efeitos) |
-| S007-T5alt | 007/T5alt | Backend | FichaCalculationService — FORMULA_CUSTOMIZADA | S007-T1, PA-004 | **[BLOQUEADO]** (PA-004) |
+| S007-T5alt | 007/T5alt | Backend | FichaCalculationService — FORMULA_CUSTOMIZADA | S007-T1, PA-004 | **[PENDENTE]** (PA-004 resolvido sessao 19 — desbloqueado) |
 | S007-T7 | 007/T7 | Backend | Insolitus — campo tipoVantagem + endpoint de concessao | S007-T1 | **[CONCLUIDO]** (rodada 5 — commit `bd75582`) |
 | S007-T8 | 007/T8 | Backend | Testes de integracao para todos os tipos de efeito | T3-T7 | **[CONCLUIDO]** (rodada 6 [13:20] — commit `e1bbe50`, 20 testes, 7 tipos cobertos) |
 
@@ -232,14 +244,14 @@ TRACK F — Documentacao e Qualidade (apos TODAS as specs funcionais):
 | ID | Spec Task | Tipo | Descricao | Dependencia | Status |
 |----|-----------|------|-----------|-------------|--------|
 | S007-T9 | 007/T9 | Frontend | VantagensConfigComponent — secao de efeitos (31 testes) | S007-T8 | **[CONCLUIDO]** (rodada 7 — commit `f19c213`, EfeitoFormComponent standalone, formulario dinamico, preview calculado, aba "Efeitos" com badge) |
-| S007-T10 | 007/T10 | Frontend | FormulaEditor integrado para FORMULA_CUSTOMIZADA | S007-T9 | **[BLOQUEADO]** (PA-004 nao resolvido — sem alvo definido) |
+| S007-T10 | 007/T10 | Frontend | FormulaEditor integrado para FORMULA_CUSTOMIZADA | S007-T9 | **[PENDENTE]** (PA-004 resolvido sessao 19 — editor seleciona campo-alvo) |
 | S007-T11 | 007/T11 | Frontend | Seletor de dado para DADO_UP (progressao visual) | S007-T9 | **[CONCLUIDO]** (rodada 9 — commit `0c5fb29`, seletor dado base + slider nivel + dado resultante calculado) |
 | S007-T12 | 007/T12 | Frontend | UI de concessao de Insolitus pelo Mestre | S007-T9 | **[CONCLUIDO]** (rodada 10 — commit `d23a3cf`, dialog Mestre, busca por nome filtrando vantagens INSOLITUS, botoes Conceder/Revogar, 17 testes) |
 
 **Pontos em Aberto (confirmar antes de iniciar T6/T7):**
 - PA-001: RESOLVIDO — MESTRE pode revogar QUALQUER vantagem (incluindo Insolitus)
 - PA-002: RESOLVIDO — Enum TipoVantagem (VANTAGEM | INSOLITUS)
-- PA-004: PENDENTE — FORMULA_CUSTOMIZADA sem alvo definido (onde aplica o resultado?) — afeta T6
+- PA-004: **RESOLVIDO** (sessao 19) — editor seleciona campo-alvo (atributo/bonus); 1 formula por campo
 - PA-006: PENDENTE — VIG/SAB hardcoded por abreviacao (GAP-CALC-09) — fora do escopo de T0
 
 ### P0: Spec 006 — Wizard de Criacao de Ficha (13 tasks)
@@ -428,11 +440,11 @@ PROXIMA RODADA (rodada 12 — Sprint 3):
   Spec 012 T1-T4, T14 (PontosVantagem/CategoriaVantagem)
   Spec 009 T1-T8 (NPC visibility + essencia + prospeccao)
 
-NAO AGENDADO (depende PA-004):
-  [Frontend] S007-T10 (FormulaEditorEfeito) .................. [BLOQUEADO]
+DESBLOQUEADO (PA-004 resolvido sessao 19):
+  [Frontend] S007-T10 (FormulaEditorEfeito) .................. [PENDENTE]
 ```
 
-**Sprint 2 ENCERRADO (R11):** 34/35 tasks (97%) + 2 bonus concluidas. Wizard de criacao de ficha 100% completo (6 passos). Backend 100% (exceto T5alt bloqueado PA-004). Frontend: 624 testes (vs 271 do Sprint 1). S007-T10 bloqueada por PA-004 — aguarda decisao do PO.
+**Sprint 2 ENCERRADO (R11):** 34/35 tasks (97%) + 2 bonus concluidas. Wizard de criacao de ficha 100% completo (6 passos). Backend 100% (exceto T5alt). Frontend: 624 testes (vs 271 do Sprint 1). PA-004 resolvido na sessao 19 — S007-T10 e T5alt agora PENDENTES.
 
 ---
 
@@ -445,9 +457,9 @@ NAO AGENDADO (depende PA-004):
 | ~~S007-T1 adaptar modelo~~ | ~~Bloqueava T2-T7~~ | **RESOLVIDO** (rodada 2) — SCHEMA-01, SCHEMA-02, stub aplicarEfeitosVantagens |
 | ~~34 testes frontend falhando~~ | ~~Build CI nao confiavel~~ | **RESOLVIDO** (rodada 2) — 359/359 testes passando, 0 falhas |
 | Spec 007 impacta ~20-30 arquivos | Risco de regressao nos calculos existentes | Spec 007 T8 cobre com testes de integracao extensivos |
-| PA-004 nao resolvido | FORMULA_CUSTOMIZADA sem alvo definido bloqueia T6 | Escalar ao PO antes de T6 |
+| ~~PA-004 nao resolvido~~ | ~~FORMULA_CUSTOMIZADA sem alvo~~ | **RESOLVIDO** (sessao 19) — editor seleciona campo-alvo |
 | PA-006 nao resolvido | VIG/SAB hardcoded por abreviacao (GAP-CALC-09) | Fora do escopo de T0; escalar ao PO |
-| Sprint 2 encerrado (35 tasks, 34+2bonus concluidas) | S007-T10 bloqueada por PA-004 — aguarda PO | PA-004 escalar ao PO antes de iniciar Sprint 3 |
+| ~~Sprint 2 encerrado com S007-T10 bloqueada~~ | ~~PA-004 sem decisao do PO~~ | **RESOLVIDO** (sessao 19) — PA-004 e PA-015-04 ambos resolvidos |
 
 ---
 

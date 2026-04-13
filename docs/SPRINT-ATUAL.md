@@ -1,114 +1,111 @@
-# Sprint Atual — Sprint 3: "NPC Visibility + Progressao + RC"
+# Sprint Atual — Sprint 4: "Pre-requisitos + UX + NPC"
 
 > **Papel deste arquivo:** tracking ativo da sprint corrente — tasks em
-> andamento, restante para RC, bloqueios, sequenciamento de rodadas.
+> andamento, restante, bloqueios, sequenciamento de rodadas.
 > Para visao mais macro, ver `MASTER.md`.
 > Para detalhes por area e historico, ver `PM.md`.
 > Para estado da ultima sessao, ver `HANDOFF-SESSAO.md`.
 >
-> Atualizado: 2026-04-13 (sessao 19 COMPLETA — Waves 1+2+3, Spec 016+021+017 finalizadas, PA-004+PA-015-04 resolvidos)
+> Atualizado: 2026-04-13 (sessao 20 — repriorizacao backlog, Spec 023 aprovada, Spec 010+013 cortadas)
 > PM: Scrum Orchestrator
-> Objetivo: **RC — homologacao em andamento, S007-T10+S015-T4 desbloqueadas**
+> Objetivo: **Tasks desbloqueadas (S007-T10, S015-T4) + Spec 023 BE + UX fixes + NPC gaps**
 > Duracao estimada: 2-3 semanas
 > Cronologia: `docs/historico/CRONOLOGIA.md` | Rodadas: `docs/tracking/rodadas/` | Copilot: `docs/tracking/rodadas-copilot/`
 
 ---
 
-## Sprint 3 — Progresso Geral
+## Sprint 3 — ENCERRADO (sessao 19)
 
 | Metrica | Valor |
 |---------|-------|
-| Rodadas Claude concluidas | 3 (R12 + R13 + R14) |
-| **Rodadas Copilot concluidas** | **4 (R01+R02+R03+R04 — paralelo, zero merge conflicts)** |
-| **Waves paralelas (sessao 19)** | **Waves 1+2+3 COMPLETAS (2026-04-13): Spec 016 T5+T8-T11, Spec 021 BA+T1+T2, Spec 017 P2+P3** |
-| Tasks entregues (Claude R14) | 8 (Spec 017 T3+T4+T5+T7 + Spec 012 T7+T8+T9+T10) + 2 pre-existentes (T6+T11) |
-| Tasks entregues (Copilot total) | Spec 017 T1+T2+T6+T22; Spec 015 T6+T7; Spec 014 T1+T5; Spec 016 T1-T4+T6+T7; Spec 011 T0-T2+T4; Spec 018+019 deploy |
-| **Tasks entregues (Waves 1+2+3)** | **Spec 016 T5 BE+T8+T9+T10+T11 FE; Spec 021 BA+T1 BE+T2 FE; Spec 017 P2+P3 (pre-impl); Spec 007 T9+T11 (pre-impl)** |
-| Tasks restantes para RC | smoke test overlay (PA-R04-02) |
+| Rodadas Claude | 3 (R12 + R13 + R14) |
+| Rodadas Copilot | 4 (R01+R02+R03+R04) |
+| Waves paralelas | Waves 1+2+3 COMPLETAS (2026-04-13) |
+| Specs finalizadas no Sprint 3 | 008, 009-ext, 012, 015 (6/7), 016, 017, 018, 019, 021, 022 |
+| Testes ao fechar | 796 BE, ~1208 FE |
+
+---
+
+## Sprint 4 — Progresso Geral
+
+| Metrica | Valor |
+|---------|-------|
+| Rodadas concluidas | 0 (sprint recem-iniciado) |
+| Tasks P0 | 5 (S007-T10, S015-T4, S023-BE, UX-JOGO-SELECT, NPC-FORM-CAMPOS) |
+| Tasks P1 | 6 (S023-FE, UX-ACCEPT-BTN, UX-COR-PREVIEW, NPC-TEMPLATE, UX-TIPO-VANTAGEM, UX-NIVEL-MIN-PREREQ) |
+| Tasks P2 | 5 (AUDIT-BE-FE, UX-BASE-COMP, UX-DIALOG-WIDTH, UX-PREREQ-EMPTY, S014-T2-T4+T6) |
+| Total tasks Sprint 4 | **16** (5 P0 + 6 P1 + 5 P2) |
 | Testes backend | **796 passando**, 0 falhas |
 | Testes frontend | **~1208 passando** + 2 falhas pre-existentes + 2 OOM pre-existentes |
-| Specs 100% concluidas | Spec 008, Spec 009-ext, Spec 012 (todas as fases), Spec 015 (T4 desbloqueado, resto OK), Spec 018, Spec 019, **Spec 022**, **Spec 016**, **Spec 021**, **Spec 017** |
-| Specs em andamento | Spec 011 (~50%), Spec 014 (~28%), Spec 007 (12/13 — T10 desbloqueado), Spec 015 (6/7 — T4 desbloqueado) |
-| Novas specs | Spec 017 + Spec 018 + Spec 019 + **Spec 021 (Sistema de Habilidades)** |
-| Stand-by remanescente | Spec 010, Spec 013, Spec 014 T2-T4+T6 |
+| Specs em andamento | Spec 007 (12/13 — T10 P0), Spec 015 (6/7 — T4 P0), **Spec 023** (NOVO) |
+| Specs CORTADAS | ~~Spec 010~~, ~~Spec 013~~, ~~PA-017-04~~ |
 
-### Entregas da Rodada 12 (16 tasks)
-- Spec 009-ext backend T1-T6: visivelGlobalmente, FichaVisibilidade, ProspeccaoUso, resetar-estado, essenciaAtual/vidaAtual, 32 testes
-- Spec 008 frontend T1-T4: sub-recursos Classes/Racas, 41 testes service
-- Spec 012 fase 1 T1-T4+T14: PontosVantagem, CategoriaVantagem, NiveisConfig UX, rotas/sidebar
+### P0 — Tasks Ativas Sprint 4
 
-### Entregas da Rodada 13 (4 tasks)
-- S009-T7: NpcVisibilidadeComponent + FichaVisibilidadeApiService (40 testes)
-- S009-T8: Barra essencia reativa + FichaHeaderComponent.spec (14 testes)
-- S009-T9: ProspeccaoApiService + ProspeccaoComponent Jogador+Mestre (~30 testes)
-- S009-T10: resetarEstado() + botao reset + podeResetar computed (10 testes)
+| # | ID | Tipo | Descricao | Dependencia | Status |
+|---|-----|------|-----------|-------------|--------|
+| 1 | S007-T10 | FE | FormulaEditor para FORMULA_CUSTOMIZADA (selecionar campo-alvo atributo/bonus) | S007-T9 OK | [PENDENTE] |
+| 2 | S015-T4 | BE | Auto-concessao vantagens pre-definidas + enum OrigemFichaVantagem (JOGADOR/MESTRE/SISTEMA) | S015-T3 OK | [PENDENTE] |
+| 3 | S023-BE | BE | Refatorar VantagemPreRequisito: coluna `tipo`, campos nullable, AND/OR, migration Flyway | Spec 004 OK | [PENDENTE] — tasks por criar (BA/TL) |
+| 4 | UX-JOGO-SELECT | FE | Seletor de jogo nas telas de configuracao do Mestre (bloqueador usabilidade) | Nenhuma | [PENDENTE] |
+| 5 | NPC-FORM-CAMPOS | FE | Raça/Classe/configs no formulario de criacao de NPC | Spec 009 OK | [PENDENTE] |
 
-### Spec 012 fase 2 — CONCLUIDO (Claude R14)
-| Task | Status | Commit |
-|------|--------|--------|
-| S012-T6 | ✅ Pre-existente | `2cb0245` |
-| S012-T7 | ✅ Claude R14 | `1251045` |
-| S012-T8 | ✅ Claude R14 | `1d73fd7` |
-| S012-T9 | ✅ Claude R14 | `6f30b6d` |
-| S012-T10 | ✅ Claude R14 | `406cb95` |
-| S012-T11 | ✅ Pre-existente | — |
+### P1 — Proxima Rodada
 
-### Spec 015 T6/T7 — CONCLUIDO (pre-existentes)
-| Task | Status |
-|------|--------|
-| S015-T6 | ✅ Pre-existente `2cb0245` |
-| S015-T7 | ✅ Pre-existente `2cb0245` |
+| # | ID | Tipo | Descricao | Dependencia | Status |
+|---|-----|------|-----------|-------------|--------|
+| 6 | S023-FE | FE | Aba pre-requisitos polimorfica + chips removiveis por tipo | S023-BE | [PENDENTE] |
+| 7 | UX-ACCEPT-BTN | FE | acceptButtonProps deprecated em 17 telas → `acceptButtonProps: { severity: 'danger' }` | Nenhuma | [PENDENTE] |
+| 8 | UX-COR-PREVIEW | FE | Cores hex com preview visual (swatch) em RaridadeItemConfig | Nenhuma | [PENDENTE] |
+| 9 | NPC-TEMPLATE | BE+FE | Config nivel dificuldade NPC (Facil/Medio/Dificil/Elite/Chefe) + foco FISICO/MAGICO | Nenhuma | [PENDENTE] |
+| 10 | UX-TIPO-VANTAGEM | FE | tipoVantagem no form criacao vantagem (fix: Insolitus nao pode ser criado hoje) | Nenhuma | [PENDENTE] |
+| 11 | UX-NIVEL-MIN-PREREQ | FE | nivelMinimo exibido na lista de pre-req tipo VANTAGEM | S023-FE | [PENDENTE] |
 
-### Wave 1+2 — Implementacao Paralela 2026-04-13
+### P2 — Pos
 
-**Wave 1:**
+| # | ID | Tipo | Descricao | Dependencia | Status |
+|---|-----|------|-----------|-------------|--------|
+| 12 | AUDIT-BE-FE | Auditoria | Auditar endpoints backend sem tela frontend | Nenhuma | [PENDENTE] |
+| 13 | UX-BASE-COMP | FE | Migrar 4 telas para BaseConfigComponent (habilidades, itens, raridades, tipos-item) | Nenhuma | [PENDENTE] |
+| 14 | UX-DIALOG-WIDTH | FE | Padronizar largura dialogs em 9 telas (width + maxWidth: 95vw) | Nenhuma | [PENDENTE] |
+| 15 | UX-PREREQ-EMPTY | FE | Estado vazio aba pre-requisitos — CTA "Adicionar primeiro pre-requisito" | S023-FE | [PENDENTE] |
+| 16 | S014-T2-T4+T6 | BE+FE | Cobertura de testes (JaCoCo 50% para 75%) | Nenhuma | [PENDENTE] |
 
-| Task | Status | Resultado | Commits |
-|------|--------|-----------|---------|
-| Spec 007 T9+T11 (FE efeitos + DadoUp) | Pre-implementado | 53 testes, ja existia | — |
-| Spec 017 P2 T13+T14+T-DOC1 | Pre-implementado | ja existia | `83f17ac` |
-| Spec 021 BA (spec HabilidadeConfig) | Concluido | spec escrita | `b8c3c3d` |
-| Spec 016 T5 BE (FichaCalc Passo 6 itens) | Concluido | 781 testes (+10) | `c2b4522`, `74c2d36` |
-| Spec 016 T8+T9+T10 FE (raridades, tipos, catalogo) | Concluido | 1138 testes (+89) | `944739e`, `95a00a9`, `f4f9736` |
+### Spec 023 — Pre-requisitos Polimorficos de Vantagem (NOVO — aprovado PO sessao 20)
 
-**Wave 2:**
+**Decisoes de PO:**
+- Multiplos pre-req do mesmo tipo = **OR** (ex: RACA=Elfo OR RACA=Anão)
+- Tipos diferentes = **AND** (ex: RACA=Elfo AND ATRIBUTO FOR >= 14)
+- ATRIBUTO usa `valorBase` (pontos distribuidos), NAO `valorAtual` (pos-bonus)
+- Concessao Insolitus e VantagemPreDefinida (SISTEMA) **ignoram** pre-requisitos
+- 409 ao tentar deletar config usada como pre-req — deve ser **inativada** (campo `ativo`)
+- Mudanca de raca/classe NAO revoga vantagem — Mestre decide manualmente
 
-| Task | Status | Resultado | Commits |
-|------|--------|-----------|---------|
-| Spec 021 T1 BE (HabilidadeConfig CRUD) | Concluido | 796 testes (+15) | `b0e84c4`, `39f39ed` |
-| Spec 016 T11 FE (Inventario FichaDetail) | Concluido | +40 testes frontend | `6b88997` |
+**Backend (tasks por criar por BA/TL):**
+- Refatorar entidade VantagemPreRequisito: coluna `tipo`, campos nullable (`raca_id`, `classe_id`, `atributo_id`, `aptidao_id`, `valor_minimo`)
+- Migration Flyway: registros existentes → `tipo = 'VANTAGEM'`
+- FichaVantagemService.comprar() — verificacao por tipo
+- 409 ao deletar Raca/Classe/Atributo/Aptidao usada como pre-req
 
-**Wave 3:**
-
-| Task | Status | Resultado | Commits |
-|------|--------|-----------|---------|
-| Spec 021 T2 FE (HabilidadeConfig Mestre + Jogador) | Concluido | +30 testes frontend | `caa0d2c` |
-| Spec 017 P3 T15-T21 (backlog qualidade) | Pre-implementado | ja existia | — |
-
-**Decisao PO:** PA-021-03 resolvido — tela habilidades JOGADOR em secao separada (nao no painel config Mestre).
-**Ponto tecnico:** HabilidadeConfigController usa path `/api/jogos/{jogoId}/config/habilidades` (diverge da spec). Verificar antes do frontend.
-
-**Decisoes PO sessao 19:**
-- **PA-004 RESOLVIDO**: FormulaEditor permite selecionar campo-alvo (atributo/bonus); 1 formula por campo. Desbloqueia S007-T10.
-- **PA-015-04 RESOLVIDO**: Enum OrigemFichaVantagem (JOGADOR, MESTRE, SISTEMA). Desbloqueia S015-T4.
-
-### Desejavel pre-RC (Spec 017 P1)
-| Task | Descricao | Status |
-|------|-----------|--------|
-| S017-T8 | Criar PageHeaderComponent reutilizavel | PENDENTE (PA-017-02: simples, sem breadcrumb) |
-| S017-T9 | Aplicar PageHeader telas Mestre | PENDENTE |
-| S017-T10 | Aplicar PageHeader telas Jogador | PENDENTE |
+**Frontend (tasks por criar por BA/TL):**
+- Select de tipo → campos condicionais
+- Chips removiveis: `[RACA] Elfo OU Anao`, `[ATRIBUTO] FOR >= 14`
+- Hint "Requisitos do mesmo tipo sao alternativos (OU)"
 | S017-T11 | jogo-form adicionar p-toast | PENDENTE |
 | S017-T12 | Remover double-toast em 19 componentes | PENDENTE |
 
 ### Bloqueados
-- Nenhum bloqueio ativo. S007-T10 e S015-T4 agora DESBLOQUEADOS (PA-004 e PA-015-04 resolvidos).
+- **S023-BE**: Aguarda BA/TL criarem tasks individuais (spec aprovada, tasks por escrever)
+- **S023-FE**: Depende de S023-BE
+- **UX-PREREQ-EMPTY**: Depende de S023-FE
+- **UX-NIVEL-MIN-PREREQ**: Depende de S023-FE
 
-### PAs resolvidos nesta sessao
-- **PA-R02-01**: Spec 016 T5 FichaItemService recalcularStats — **RESOLVIDO** (Wave 1, commits `c2b4522`+`74c2d36`)
-- **PA-021-03**: Tela habilidades JOGADOR em secao separada — **RESOLVIDO** (decisao PO)
-- **PA-004**: FormulaEditor campo-alvo (atributo/bonus) — **RESOLVIDO** (decisao PO sessao 19). Desbloqueia S007-T10.
-- **PA-015-04**: Enum OrigemFichaVantagem (JOGADOR, MESTRE, SISTEMA) — **RESOLVIDO** (decisao PO sessao 19). Desbloqueia S015-T4.
+### PAs abertos
+| ID | Descricao | Bloqueia | Status |
+|----|-----------|----------|--------|
+| PA-006 | VIG/SAB hardcoded (GAP-CALC-09) | Nao | PO decide |
+| PA-R05-01 | FichaPreviewResponse incompleto | Nao | PO decide |
+| PA-017-03 | Reativar SidebarComponent | Nao | Pos-MVP |
 
 ---
 
@@ -154,49 +151,48 @@
 
 ---
 
-## Tracks Paralelos — O que pode rodar simultaneamente
+## Tracks Paralelos — Sprint 4
 
 ```
-TRACK A — Backend Critico (sequencial, caminho critico):
-  URG-01 (bug XP, 30min)
-  -> S007-T0 (bugs calculo base, 4-6h)
-  -> S007-T1 (adaptar modelo dados)
-  -> S007-T2..T7 (6 tipos efeito, PARALELO entre si)
-  -> S007-T8 (testes integracao efeitos)
+TRACK A — Backend (sequencial):
+  S015-T4 (auto-concessao vantagens, enum OrigemFichaVantagem)
+  -> S023-BE (refatorar VantagemPreRequisito polimorficamente)
 
-TRACK B — Backend Secundario (paralelo com Track A):
-  S006-T1 (campo status + /completar)
-  S006-T2 (validacao RacaClassePermitida)
-  S006-T4 (PUT /fichas/{id}/xp, MESTRE-only)
-  S006-T5 (pontosDisponiveis no response)
-  S005-P1T1 (re-solicitacao constraint)
-  -> S005-P1T2 (endpoints faltantes)
-  -> S005-P1T3 (testes integracao)
+TRACK B — Frontend Tasks Desbloqueadas (paralelo com Track A):
+  S007-T10 (FormulaEditor FORMULA_CUSTOMIZADA)
 
-TRACK C — Frontend Independente (pode iniciar AGORA):
-  URG-02 (fix ~34 testes falhando)
-  T-QW Bug 1 (barras vida/essencia hardcoded, 1h30)
-  T-QW Bug 2 (pontos vantagem hardcoded, 15min)
-  T-QW Bug 3 (rota NPC errada, 5min)
-  Spec 008 T1..T4 (sub-recursos Classes/Racas — frontend puro)
-  Spec 012 T1..T4, T14 (PontosVantagem/CategoriaVantagem config — frontend puro)
+TRACK C — Frontend UX/NPC (paralelo com A+B, dominio diferente):
+  UX-JOGO-SELECT (seletor de jogo configs)
+  NPC-FORM-CAMPOS (raça/classe no form NPC)
 
-TRACK D — Frontend Apos Backend (depende de Tracks A/B):
-  S007-T9..T12 (efeitos frontend, apos T8)
-  S006-T6..T13 (wizard frontend, apos T1 e T5 backend)
-  S005-P2T1..P2T3 (participantes frontend, apos P1-T2)
-  S012-T5 (backend pontos) -> S012-T6..T11 (level up frontend)
+TRACK D — Frontend Apos S023-BE (depende de Track A):
+  S023-FE (aba pre-requisitos polimorfica)
+  -> UX-PREREQ-EMPTY (estado vazio pre-req)
+  -> UX-NIVEL-MIN-PREREQ (nivelMinimo na lista)
 
-TRACK E — Por ultimo (alto impacto transversal):
-  Spec 010 (Roles ADMIN) — implementar DEPOIS de tudo
-  Spec 011 (Galeria/Anotacoes) — P2
+TRACK E — Frontend UX Quick Fixes (independente, pode paralelizar):
+  UX-ACCEPT-BTN (17 telas acceptButtonProps)
+  UX-COR-PREVIEW (cores hex com swatch)
+  UX-TIPO-VANTAGEM (fix form criacao vantagem)
 
-TRACK F — Documentacao e Qualidade (apos TODAS as specs funcionais):
-  Spec 013 (Documentacao Tecnica) — Javadoc, OpenAPI, TSDoc, swagger.json (6 tasks)
-  Spec 014 (Cobertura de Testes) — JaCoCo, Vitest coverage, testes faltantes (6 tasks)
-  > NOTA: Track F so inicia quando Specs 005-012 estiverem 100% implementadas.
-  > Documentar e medir cobertura de codigo instavel gera retrabalho.
+TRACK F — Backend + Frontend (independente):
+  NPC-TEMPLATE (nivel dificuldade NPC — nova config BE + tela FE)
+
+TRACK G — Qualidade (P2):
+  S014-T2-T4+T6 (cobertura testes)
+  AUDIT-BE-FE (auditoria features sem tela)
+  UX-BASE-COMP (4 telas → BaseConfigComponent)
+  UX-DIALOG-WIDTH (9 dialogs)
 ```
+
+### Plano Anti-Conflito
+
+| Agente | Escopo | NAO tocar |
+|--------|--------|-----------|
+| BE-1 | S015-T4 + S023-BE | Frontend, EfeitoForm |
+| FE-1 | S007-T10 (FormulaEditor) | NPC, jogo-select, configs gerais |
+| FE-2 | UX-JOGO-SELECT + NPC-FORM-CAMPOS | vantagens-config/*, efeito-form/* |
+| FE-3 | UX-ACCEPT-BTN + UX-COR-PREVIEW | wizard, ficha-detail, NPC |
 
 ---
 

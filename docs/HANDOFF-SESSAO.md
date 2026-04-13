@@ -1,88 +1,100 @@
-# Handoff de Sessao — 2026-04-13 (sessao 19 — Waves 1+2+3 completas)
+# Handoff de Sessao — 2026-04-13 (sessao 20 — Repriorizacao backlog pos-analise UX+pre-requisitos)
 
 > Branch atual: `main`
 > Backend: **796 testes** passando, 0 falhas
 > Frontend: **~1208 testes** passando (2 falhas pre-existentes ficha-vantagens-tab)
-> Sprint 3: RC desbloqueado — homologacao em andamento
+> Sprint 4: INICIADO — foco em tasks desbloqueadas + Spec 023 + divida UX
 > Ultima atualizacao: 2026-04-13
 
 ---
 
 ## Resumo Executivo
 
-**Sessao 2026-04-13** entregou em tres waves paralelas:
-1. **Spec 016 T5 BE** — FichaCalculationService Passo 6 (recalculo com itens equipados), +10 testes backend
-2. **Spec 016 T8+T9+T10 FE** — Telas de raridades, tipos de item, catalogo e classe de equipamento, +89 testes frontend
-3. **Spec 021 T1 BE** — HabilidadeConfig CRUD completo (entity + service + controller + testes), +15 testes backend
-4. **Spec 016 T11 FE** — Inventario na FichaDetail (aba equipamentos), +40 testes frontend
-5. **Spec 021 T2 FE** — HabilidadeConfig frontend Mestre + Jogador, +30 testes frontend
-6. **Spec 017 P2 T13+T14+T-DOC1** — Encontrados pre-implementados (OAuth interceptor, doc)
-7. **Spec 007 T9+T11** — Encontrados pre-implementados (efeitos FE + DadoUp, 53 testes)
-8. **Spec 021 BA** — Spec HabilidadeConfig escrita (commit anterior b8c3c3d)
+**Sessao 2026-04-13 (sessao 20)** focou em repriorizacao do backlog com base em:
+1. **Analise de UX** — 17 de 19 telas com `acceptButtonProps` deprecated, 9 dialogs sem largura, 4 telas fora do BaseConfigComponent, cores hex sem preview visual
+2. **Spec 023 aprovada pelo PO** — Pre-requisitos polimorficos de vantagem (RACA, CLASSE, ATRIBUTO, APTIDAO alem de VANTAGEM)
+3. **Tasks desbloqueadas** — S007-T10 (FormulaEditor) e S015-T4 (auto-concessao vantagens) com PAs resolvidos
+4. **NPC gaps identificados** — raça/classe ausentes no cadastro + template de dificuldade
+5. **Itens cortados** — Spec 010, Spec 013, PA-017-04 removidos do backlog ativo
 
-Backend saltou de 771 para **796 testes** (+25). Frontend saltou de 1006 para **~1208 testes** (+202).
+Nenhum codigo alterado nesta sessao — apenas tracking e priorizacao.
 
 ---
 
-## Wave 1 — 2026-04-13 (5 entregas)
+## Decisoes de PO registradas (sessao 20)
 
-| Spec/Task | Status | Resultado | Commits |
-|-----------|--------|-----------|---------|
-| Spec 007 T9+T11 (FE efeitos + DadoUp) | Pre-implementado | 53 testes, ja existia | — |
-| Spec 017 P2 T13+T14+T-DOC1 (OAuth+interceptor+doc) | Pre-implementado | ja existia | `83f17ac` |
-| Spec 021 BA (spec HabilidadeConfig) | Concluido | spec escrita | `b8c3c3d` |
-| Spec 016 T5 BE (FichaCalculationService Passo 6 itens) | Concluido | 781 testes (+10) | `c2b4522`, `74c2d36` |
-| Spec 016 T8+T9+T10 FE (raridades, tipos, catalogo, classe equip) | Concluido | 1138 testes (+89) | `944739e`, `95a00a9`, `f4f9736` |
+### Spec 023 — Pre-requisitos Polimorficos de Vantagem (APROVADO)
 
-## Wave 2 — 2026-04-13 (2 entregas) — CONCLUIDA
-
-| Spec/Task | Status | Resultado | Commits |
-|-----------|--------|-----------|---------|
-| Spec 021 T1 BE (HabilidadeConfig CRUD) | Concluido | 796 testes (+15) | `b0e84c4`, `39f39ed` |
-| Spec 016 T11 FE (Inventario FichaDetail) | Concluido | +40 testes frontend | `6b88997` |
-
-## Wave 3 — 2026-04-13 (1 entrega) — CONCLUIDA
-
-| Spec/Task | Status | Resultado | Commits |
-|-----------|--------|-----------|---------|
-| Spec 021 T2 FE (HabilidadeConfig Mestre + Jogador) | Concluido | +30 testes frontend | `caa0d2c` |
+- Refatorar `VantagemPreRequisito`: nova coluna `tipo`, campos nullable por tipo (`raca_id`, `classe_id`, `atributo_id`, `aptidao_id`, `valor_minimo`)
+- Registros existentes recebem `tipo = 'VANTAGEM'` como default (Migration Flyway)
+- Logica: **AND entre tipos diferentes, OR entre registros do mesmo tipo**
+- `ATRIBUTO` usa `valorBase` (pontos distribuidos), NAO `valorAtual` (pos-bonus)
+- Concessao de Insolitus e VantagemPreDefinida (SISTEMA) **ignoram** pre-requisitos
+- 409 ao tentar deletar Raca/Classe/Atributo/Aptidao usada como pre-requisito
+- Mudanca de raca/classe NAO revoga vantagem — Mestre decide manualmente
+- Config usada como pre-req NAO pode ser deletada — deve ser **inativada** (campo `ativo`)
 
 ---
 
-## Decisoes e Pontos de Atencao
-
-### PA-021-03 — Resolvido
-
-Decisao do PO: a tela de habilidades para JOGADOR ficara em **secao separada** (nao no painel de configuracoes do Mestre).
-
-### Ponto tecnico: path HabilidadeConfig — RESOLVIDO
-
-`HabilidadeConfigController` usa path `/api/jogos/{jogoId}/config/habilidades` (padrao de `CategoriaVantagemController`). Frontend T2 (commit `caa0d2c`) ja implementado com esse path. Mestre em `/mestre/config/habilidades`, Jogador em `/jogador/habilidades`.
-
----
-
-## Estado das Specs (atualizado pos-Waves 1+2+3)
+## Estado das Specs (atualizado sessao 20)
 
 | Spec | Titulo | Status | Nota |
 |------|--------|--------|------|
 | 004 | Siglas, formulas, relacionamentos | CONCLUIDO | — |
 | 005 | Participantes, aprovacao, permissoes | CONCLUIDO | — |
 | 006 | Wizard de criacao de ficha | CONCLUIDO | — |
-| 007 | VantagemEfeito + Motor de calculos | 12/13 | T10 DESBLOQUEADO (PA-004 resolvido) |
+| 007 | VantagemEfeito + Motor de calculos | 12/13 | T10 DESBLOQUEADO — **P0 sessao 20** |
 | 008 | Sub-recursos Classes/Racas (FE) | CONCLUIDO | — |
 | 009-ext | NPC Visibility + Prospeccao + Essencia | CONCLUIDO | — |
-| 010 | Roles ADMIN refactor | STAND-BY | pos-homologacao |
 | 011 | Galeria + Anotacoes | CONCLUIDO 9/9 | — |
 | 012 | Niveis e progressao (FE) | CONCLUIDO | — |
-| 013 | Documentacao tecnica | STAND-BY | pos-homologacao |
-| 014 | Cobertura de testes | Parcial | T1+T5 OK; T2-T4+T6 pendentes |
-| 015 | ConfigPontos Classe/Raca | Parcial | T4 DESBLOQUEADO (PA-015-04 resolvido) |
-| 016 | Sistema de Itens | **CONCLUIDO** | T1-T11 todos concluidos (T5 Wave 1, T8-T10 Wave 1, T11 Wave 2) |
-| 017 | Correcoes Pre-RC | **CONCLUIDO** | P0+P1+P2+P3 — T15-T21 pre-implementados |
-| 018 | Deploy Backend GCP | CONCLUIDO | +hotfixes infra |
+| 014 | Cobertura de testes | Parcial | T1+T5 OK; T2-T4+T6 pendentes (P2) |
+| 015 | ConfigPontos Classe/Raca | 6/7 | T4 DESBLOQUEADO — **P0 sessao 20** |
+| 016 | Sistema de Itens | CONCLUIDO | T1-T11 todos concluidos |
+| 017 | Correcoes Pre-RC | CONCLUIDO | P0+P1+P2+P3 |
+| 018 | Deploy Backend GCP | CONCLUIDO | — |
 | 019 | Deploy Frontend Firebase | CONCLUIDO | — |
-| 021 | Sistema de Habilidades | **CONCLUIDO** | BA + T1 BE (Wave 2) + T2 FE (Wave 3) |
-| 022 | DefaultGameConfigProvider refactor | CONCLUIDO | 11 providers + facade + 64 vantagens |
+| 021 | Sistema de Habilidades | CONCLUIDO | BA + T1 BE + T2 FE |
+| 022 | DefaultGameConfigProvider refactor | CONCLUIDO | — |
+| **023** | **Pre-requisitos Polimorficos Vantagem** | **NOVO — PENDENTE** | Aprovado PO. Tasks por criar (BA/TL) |
+
+**Specs CORTADAS do backlog ativo:**
+- ~~Spec 010~~ (Roles ADMIN refactor) — CORTADO
+- ~~Spec 013~~ (Documentacao tecnica) — CORTADO
+- ~~PA-017-04~~ (Exportar/Importar config) — CORTADO
+
+---
+
+## Backlog Priorizado — Sprint 4
+
+### P0 — AGORA
+
+| # | ID | Tipo | Descricao | Dependencia |
+|---|-----|------|-----------|-------------|
+| 1 | S007-T10 | FE | FormulaEditor para FORMULA_CUSTOMIZADA (PA-004 resolvido) | S007-T9 CONCLUIDO |
+| 2 | S015-T4 | BE | Auto-concessao vantagens pre-definidas + enum OrigemFichaVantagem (PA-015-04 resolvido) | S015-T3 CONCLUIDO |
+| 3 | S023-BE | BE | Spec 023 backend — refatorar VantagemPreRequisito polimorficamente | Spec 004 CONCLUIDO |
+| 4 | UX-JOGO-SELECT | FE | Seletor de jogo nas telas de configuracao (bloqueador de usabilidade) | Nenhuma |
+| 5 | NPC-FORM-CAMPOS | FE | Raça/Classe/configs no formulario de criacao de NPC | Spec 009 CONCLUIDO |
+
+### P1 — PROXIMA RODADA
+
+| # | ID | Tipo | Descricao | Dependencia |
+|---|-----|------|-----------|-------------|
+| 6 | S023-FE | FE | Aba pre-requisitos polimorfica + chips por tipo | S023-BE |
+| 7 | UX-ACCEPT-BTN | FE | Corrigir acceptButtonProps deprecated em 17 telas (fix rapido) | Nenhuma |
+| 8 | UX-COR-PREVIEW | FE | Cores hex com preview visual (swatch) | Nenhuma |
+| 9 | NPC-TEMPLATE | BE+FE | Nivel de dificuldade NPC (Facil/Medio/Dificil/Elite/Chefe) + foco FISICO/MAGICO | Nenhuma |
+
+### P2 — POS
+
+| # | ID | Tipo | Descricao | Dependencia |
+|---|-----|------|-----------|-------------|
+| 10 | AUDIT-BE-FE | Auditoria | Auditar endpoints backend sem tela frontend | Nenhuma |
+| 11 | UX-BASE-COMP | FE | Migrar 4 telas para BaseConfigComponent (habilidades, itens, raridades, tipos-item) | Nenhuma |
+| 12 | UX-DIALOG-WIDTH | FE | Padronizar largura de dialogs em 9 telas | Nenhuma |
+| 13 | UX-PREREQ-EMPTY | FE | Estado vazio aba pre-requisitos — CTA "Adicionar primeiro" | S023-FE |
+| 14 | S014-T2-T4+T6 | BE+FE | Cobertura de testes (JaCoCo 50% para 75%) | Nenhuma |
 
 ---
 
@@ -93,62 +105,34 @@ Decisao do PO: a tela de habilidades para JOGADOR ficara em **secao separada** (
 | ID | Descricao | Bloqueia | Proxima acao |
 |----|-----------|----------|--------------|
 | PA-R05-01 | FichaPreviewResponse incompleto (sem aptidoes/dado prospeccao) | Nao (decisao PO) | PO decide se amplia resposta |
-| PA-R05-02 | FichaPreviewService sem testes avancados | Nao | Pos-RC |
-| PA-R02-01 | Spec 016 T5 — FichaItemService 4x TODO recalcularStats | **RESOLVIDO** (Wave 1) | — |
-| PA-004 | FormulaEditorEfeito (S007-T10) | **RESOLVIDO** | Editor permite selecionar campo-alvo (atributo/bonus); 1 formula por campo |
-| PA-015-04 | Enum origem FichaVantagem (S015-T4) | **RESOLVIDO** | Enum OrigemFichaVantagem: JOGADOR, MESTRE, SISTEMA |
-| PA-017-03 | Reativar SidebarComponent (T15, P3) | Nao | Pos-RC |
-| PA-017-04 | Exportar/Importar config — formato | Nao | Pos-RC |
-| PA-021-03 | Tela habilidades JOGADOR em secao separada | **RESOLVIDO** | Decisao PO registrada |
+| PA-R05-02 | FichaPreviewService sem testes avancados | Nao | P2 |
+| PA-006 | VIG/SAB hardcoded por abreviacao (GAP-CALC-09) | Nao | Fora do escopo T0; PO decide |
+| PA-017-03 | Reativar SidebarComponent (T15, P3) | Nao | Pos-MVP |
 
-### Outros bloqueios
-
-- Nenhum bloqueio ativo. S007-T10 e S015-T4 agora DESBLOQUEADOS.
+### PAs RESOLVIDOS (sessoes 19+20)
+- **PA-R02-01**: Spec 016 T5 FichaItemService recalcularStats — RESOLVIDO
+- **PA-021-03**: Tela habilidades JOGADOR em secao separada — RESOLVIDO
+- **PA-004**: FormulaEditor campo-alvo (atributo/bonus) — RESOLVIDO. Desbloqueia S007-T10.
+- **PA-015-04**: Enum OrigemFichaVantagem (JOGADOR, MESTRE, SISTEMA) — RESOLVIDO. Desbloqueia S015-T4.
 
 ---
 
-## Proxima Sessao — Homologacao / RC
+## Proxima Sessao — Sprint 4
 
-Todas as waves da sessao 19 foram concluidas. Spec 016, Spec 021 e Spec 017 estao 100%. PA-004 e PA-015-04 resolvidos pelo PO — desbloqueiam S007-T10 e S015-T4. O foco agora e **homologacao e validacao para RC** + implementacao das tasks desbloqueadas.
+O foco e implementar as tasks P0 desbloqueadas e iniciar Spec 023. A ordem recomendada:
 
-### Decisoes de PO registradas (sessao 19)
+1. **S007-T10** (FE) e **S015-T4** (BE) podem rodar em paralelo — nao tocam nos mesmos arquivos
+2. **S023-BE** (BE) pode iniciar assim que tasks de Spec 023 forem escritas por BA/TL
+3. **UX-JOGO-SELECT** (FE) e **NPC-FORM-CAMPOS** (FE) podem rodar em paralelo entre si, mas NAO com S007-T10 (possivel conflito em EfeitoFormComponent/vantagens-config)
 
-**PA-004 RESOLVIDO — FormulaEditor (Spec 007 T10):**
-- O editor de formula customizada permite selecionar **para qual campo** (atributo ou bonus) o resultado da formula ira
-- Pode-se adicionar uma formula por campo de atributo/bonus na vantagem
-- Desbloqueia task T10 (FormulaEditor)
+### Plano Anti-Conflito (paralelo recomendado)
 
-**PA-015-04 RESOLVIDO — enum `origem` em FichaVantagem (Spec 015 T4):**
-- Criar enum `OrigemFichaVantagem` com valores: `JOGADOR`, `MESTRE`, `SISTEMA`
-- Desbloqueia task T4 (auto-concessao de vantagens pre-definidas no level up)
-
-### Prioridade 1: Validacao em producao
-
-| ID | Cenario | Criticidade |
-|----|---------|-------------|
-| BUG-PROD-01 | Validar CSS em hydrooon.com.br | Alta |
-| BUG-PROD-02 | Validar login OAuth sem "Erro 0" | Alta |
-| PA-R04-02 | Smoke test overlay clipping em 5 telas | Media |
-| PA-R04-03 | Decidir badge severity ficha-vantagens-tab (fix ou known issue) | Baixa |
-| PA-R04-04 | Decidir OOM ficha-wizard-passo4 (fix ou known issue) | Baixa |
-
-### Prioridade 2: Verificacoes pendentes
-
-1. **S007-T12** — Insolitus UI — possivelmente pre-implementado (sem arquivo de task)
-2. **Path HabilidadeConfig** — frontend T2 ja implementado com `/api/jogos/{jogoId}/config/habilidades` — confirmar se funciona em producao
-
-### Prioridade 3: Tasks desbloqueadas
-
-- **S007-T10** — FormulaEditorEfeito (PA-004 resolvido) — frontend
-- **S015-T4** — VantagemAutoConcessao com enum OrigemFichaVantagem (PA-015-04 resolvido) — backend
-
----
-
-## Pos-RC (ordem de prioridade)
-
-1. **Spec 014 T2-T4+T6** — cobertura testes (JaCoCo 50% para 75%)
-2. **Spec 013** — Documentacao tecnica
-3. **Spec 010** — Roles ADMIN refactor
+| Agente | Escopo | NAO tocar |
+|--------|--------|-----------|
+| BE-1 | S015-T4 (auto-concessao vantagens) | Frontend, VantagemPreRequisito |
+| FE-1 | S007-T10 (FormulaEditor) | Ficha*, NPC*, jogo-select |
+| BE-2 | S023-BE (pre-requisitos polimorficos) | FichaVantagem*, Frontend |
+| FE-2 | UX-JOGO-SELECT + NPC-FORM-CAMPOS | vantagens-config/*, efeito-form/* |
 
 ---
 
@@ -156,14 +140,8 @@ Todas as waves da sessao 19 foram concluidas. Spec 016, Spec 021 e Spec 017 esta
 
 - Frontend budget warning pre-existente: bundle 1.14MB vs limite 1MB (nao bloqueia)
 - ficha-wizard OOM pre-existente: 2 timeouts (nao bloqueia)
-- `application.properties` e `application-dev.properties` com linhas concatenadas: follow-up pos-RC
-- Telas sem PageHeader por decisao tecnica: `fichas-list`, `jogos-disponiveis` (telas-destino)
-- Toast com `key` isolado mantido: `npc-visibilidade`, `prospeccao`
-- MarkdownPipe usa fallback basico sem `marked` instalado (negrito, italico, headers, code inline)
-- `tipoImagem` imutavel apos upload — para promover GALERIA para AVATAR: novo upload com tipo AVATAR
-- GraalVM native image funcional com distroless/cc-debian12 (apos ~9 fixes de reflection)
-- Structured logging GCP com formato ECS (nao GCP nativo — melhor compatibilidade)
+- HabilidadeConfigController usa path `/api/jogos/{jogoId}/config/habilidades` (nao `/api/v1/`)
+- GraalVM native image funcional com distroless/cc-debian12
+- Structured logging GCP com formato ECS
 - Micrometer Prometheus configurado para observability
 - OAuth2 com timeouts de 15s no token exchange e userinfo
-- vpc-egress configurado como private-ranges-only (nao all-traffic)
-- HabilidadeConfigController usa `/api/jogos/{jogoId}/config/habilidades` (nao `/api/v1/`) — frontend T2 ja implementado com esse path

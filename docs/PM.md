@@ -7,7 +7,7 @@
 > Ponto de entrada rapido: `HANDOFF-SESSAO.md` → `MASTER.md` → `PM.md`.
 > Mapa completo de docs: `README.md`.
 >
-> Gerado em: 2026-04-01 | Atualizado: 2026-04-13 (sessao 19 COMPLETA, rev.15 — Spec 016+021+017 finalizadas, PA-004+PA-015-04 resolvidos, 796B+~1208F testes) | Branch: `main`
+> Gerado em: 2026-04-01 | Atualizado: 2026-04-13 (sessao 20, rev.16 — repriorizacao backlog, Spec 023 aprovada, Spec 010+013 cortadas, divida UX catalogada) | Branch: `main`
 > Cronologia: `docs/historico/CRONOLOGIA.md`
 
 ---
@@ -18,7 +18,7 @@
 |------|-----------|------------|
 | Backend: Infraestrutura | 100% | Schema gerenciado pelo Hibernate (ddl-auto). Sem DDL manual necessario para 0.0.1-RC. |
 | Backend: Configuracoes (13 CRUDs) | 100% | Todos com testes de integracao |
-| Backend: Motor de Formulas | **97%** | 7/8 TipoEfeito + 20 testes integracao. FORMULA_CUSTOMIZADA desbloqueado (PA-004 resolvido). Frontend: T9/T11/T12 CONCLUIDOS. T10 DESBLOQUEADO. |
+| Backend: Motor de Formulas | **97%** | 7/8 TipoEfeito + 20 testes integracao. FORMULA_CUSTOMIZADA desbloqueado (PA-004 resolvido). Frontend: T9/T11/T12 CONCLUIDOS. **T10 P0 Sprint 4**. |
 | Backend: Ficha de Personagem (Spec 006/007) | **100%** | Wizard 6 passos completo (T6-T13). S006-T1/T2/T4/T5 backend CONCLUIDOS. PUT /fichas/{id}/completar funcional. Navega para FichaDetail. |
 | Backend: NPC + Duplicacao (Spec 009) | **100%** | POST /jogos/{id}/npcs + POST /fichas/{id}/duplicar implementados. |
 | Backend: NPC Visibilidade (Spec 009-ext) | **100%** | visivelGlobalmente, FichaVisibilidade (4 endpoints), ProspeccaoUso (endpoints conceder/usar/reverter), resetar-estado, essenciaAtual/vidaAtual no resumo. 32 novos testes. |
@@ -27,13 +27,13 @@
 | Backend: Perfil Usuario | **100%** | GET/PUT /api/v1/usuarios/me implementado e testado |
 | Backend: Participantes (Spec 005) | **100%** | P1T1/P1T2/P1T3 + P2T1/P2T2/P2T3 CONCLUIDOS (6/6). Strategy Reactivate, banir/desbanir/remover/meu-status, JogoDetail Mestre, JogosDisponiveis Jogador. |
 | Frontend: Modelos e Servicos de API | **100%** | Sub-recursos (008), PontosVantagem/CategoriaVantagem (012), FichaVisibilidade + Prospeccao (009-ext) CONCLUIDOS. |
-| Frontend: Componentes | **99%** | Wizard completo, configs, sub-recursos, 009-ext, 012, 016 T8-T11, 021 T2. Falta: S007-T10 (FormulaEditor, desbloqueado). |
+| Frontend: Componentes | **97%** | Wizard completo, configs, sub-recursos, 009-ext, 012, 016 T8-T11, 021 T2. Falta: S007-T10 (FormulaEditor), Spec 023 FE, UX fixes, NPC form. |
 | Frontend: Testes | **100%** | **~1208 passando** (2 falhas pre-existentes ficha-vantagens-tab) |
 
-**Completude geral estimada: ~99%** (Sprint 3 — sessao 19 COMPLETA, Spec 016+021+017 finalizadas, RC desbloqueado)
+**Completude geral estimada: ~92%** (Sprint 4 INICIADO — Spec 023 + tasks desbloqueadas + UX + NPC gaps)
 **Backend: 796 testes, 0 falhas**
 **Frontend: ~1208 testes passando** (2 falhas pre-existentes ficha-vantagens-tab)
-**Total tasks MVP: ~103** (52 backend + 51 frontend)
+**Total tasks MVP: ~115+** (estimado — inclui Spec 023, UX fixes, NPC gaps)
 
 ---
 
@@ -122,7 +122,7 @@
 - **Spec 006 (100% CONCLUIDA)** — Wizard 6 passos completo (Identificacao, Descricao, Atributos, Aptidoes, Vantagens, Revisao). StepRevisaoComponent, WizardRodapeComponent shared, confirmarCriacao() -> PUT /fichas/{id}/completar -> navega /fichas/{id}. Badge "Incompleta" na listagem retoma rascunho. 624 testes frontend.
 - **Spec 005 (100% CONCLUIDA)** — JogoParticipante: strategy Reactivate, banir/desbanir/remover/meu-status/filtro, 29 testes backend. Frontend: JogoDetail Mestre (remover/banir/filtro), JogosDisponiveis Jogador (solicitar/cancelar/status/badges).
 - **Spec 007 (97% CONCLUIDA)** — 7/8 TipoEfeito + 20 testes integracao. Frontend: EfeitoFormComponent (31 testes), DadoUp seletor, UI Insolitus (dialog busca + revogar). T5alt/T10 DESBLOQUEADOS (PA-004 resolvido).
-- **Spec 015 (backend 100%)** — 4 entidades ConfigPontos, 14 CRUD endpoints, pontos integrados no FichaResumoResponse, DefaultProvider 8 bugs corrigidos, auto-concessao vantagens pre-definidas. T4 DESBLOQUEADO (PA-015-04 resolvido). FALTAM: T6/T7 (frontend)
+- **Spec 015 (6/7)** — 4 entidades ConfigPontos, 14 CRUD endpoints, pontos integrados no FichaResumoResponse, DefaultProvider 8 bugs corrigidos, T6/T7 FE concluidos. **T4 DESBLOQUEADO — P0 Sprint 4** (auto-concessao vantagens pre-definidas + enum OrigemFichaVantagem)
 - **Spec 008-old** — DashboardController, duplicacao de jogo, export/import de config, resumo de ficha, filtros, reordenacao batch (100% backend)
 - **Spec 009** — NPC security, POST /jogos/{id}/npcs, POST /fichas/{id}/duplicar, anotacoes. 100% backend
 - **Frontend Sprint 2** — Wizard completo (6 passos), EfeitoFormComponent, JogoDetail Mestre, JogosDisponiveis Jogador, badge Incompleta, WizardRodapeComponent. **624 testes passando, 0 falhas**
@@ -171,34 +171,38 @@
 
 ---
 
-## Backlog Priorizado (pos-Sprint 2)
+## Backlog Priorizado — Sprint 4 (sessao 20)
 
-### P1 — Sprint 3
+### P0 — AGORA (tasks desbloqueadas + fundacao Spec 023)
 
-| Spec | Tasks | Descricao |
-|------|-------|-----------|
-| 008 | 4 (0B + 4F) | Sub-recursos Classes/Racas frontend |
-| 012 | 12 ativas (1B + 11F) | Niveis, Progressao, Level Up frontend (T12/T13 fora MVP) |
-| 009-ext | 10 (6B + 4F) | NPC Visibility + Prospeccao + Essencia + Reset (excluindo T-QW, feita no Sprint 2) |
+| # | ID | Tipo | Descricao | Dependencia | Status |
+|---|-----|------|-----------|-------------|--------|
+| 1 | S007-T10 | FE | FormulaEditor para FORMULA_CUSTOMIZADA | S007-T9 OK | [PENDENTE] |
+| 2 | S015-T4 | BE | Auto-concessao vantagens pre-definidas + enum OrigemFichaVantagem | S015-T3 OK | [PENDENTE] |
+| 3 | S023-BE | BE | Refatorar VantagemPreRequisito polimorficamente (tipos, AND/OR, migration) | Spec 004 OK | [PENDENTE] — tasks por criar |
+| 4 | UX-JOGO-SELECT | FE | Seletor de jogo nas telas de configuracao do Mestre | Nenhuma | [PENDENTE] |
+| 5 | NPC-FORM-CAMPOS | FE | Raça/Classe/configs no formulario de criacao de NPC | Spec 009 OK | [PENDENTE] |
 
-### P1 — Sprint 4 (IMPLEMENTAR POR ULTIMO)
+### P1 — PROXIMA RODADA
 
-| Spec | Tasks | Descricao |
-|------|-------|-----------|
-| 010 | 9 (5B + 3F + 1T) | Roles ADMIN/MESTRE/JOGADOR refactor — impacto transversal ~50+ @PreAuthorize |
+| # | ID | Tipo | Descricao | Dependencia | Status |
+|---|-----|------|-----------|-------------|--------|
+| 6 | S023-FE | FE | Aba pre-requisitos polimorfica + chips removiveis por tipo | S023-BE | [PENDENTE] |
+| 7 | UX-ACCEPT-BTN | FE | Corrigir acceptButtonProps deprecated em 17 telas | Nenhuma | [PENDENTE] |
+| 8 | UX-COR-PREVIEW | FE | Cores hex com preview visual (swatch) junto ao codigo | Nenhuma | [PENDENTE] |
+| 9 | NPC-TEMPLATE | BE+FE | Nivel dificuldade NPC (Facil/Medio/Dificil/Elite/Chefe) + foco FISICO/MAGICO | Nenhuma | [PENDENTE] |
+| 10 | UX-TIPO-VANTAGEM | FE | tipoVantagem no form de criacao de vantagem (Insolitus nao pode ser criado) | Nenhuma | [PENDENTE] |
+| 11 | UX-NIVEL-MIN-PREREQ | FE | nivelMinimo exibido na lista de pre-req tipo VANTAGEM | S023-FE | [PENDENTE] |
 
-### P2 — Sprint 5+
+### P2 — POS
 
-| Spec | Tasks | Descricao |
-|------|-------|-----------|
-| 011 | 8 (4B + 4F) | Galeria de Imagens e Anotacoes |
-
-### P3 — Documentacao e Qualidade (apos todas as specs funcionais + fechamento RC)
-
-| Spec | Tasks | Descricao |
-|------|-------|-----------|
-| **013** | **T0 + ~15-20 tasks** | **Documentacao Tecnica — REPLANEJAMENTO NECESSARIO.** T0 criada em `specs/013-documentacao-tecnica/tasks/P0-T0-replanejamento.md`. Dividir tasks T1-T6 originais (muito amplas) em unidades <=1.5h + novo bloco GitHub: README de repo com badges, GitHub Wiki (dominio + guia dev), GitHub Pages (Swagger UI automatico), template de Release + changelog v0.0.1-RC. |
-| 014 | 6 tasks | Cobertura de Testes — JaCoCo 75%+ branch, Vitest coverage, testes faltantes |
+| # | ID | Tipo | Descricao | Dependencia | Status |
+|---|-----|------|-----------|-------------|--------|
+| 12 | AUDIT-BE-FE | Auditoria | Auditar endpoints backend sem tela frontend correspondente | Nenhuma | [PENDENTE] |
+| 13 | UX-BASE-COMP | FE | Migrar 4 telas para BaseConfigComponent (habilidades, itens, raridades, tipos-item) | Nenhuma | [PENDENTE] |
+| 14 | UX-DIALOG-WIDTH | FE | Padronizar largura de dialogs em 9 telas | Nenhuma | [PENDENTE] |
+| 15 | UX-PREREQ-EMPTY | FE | Estado vazio aba pre-requisitos — CTA "Adicionar primeiro pre-requisito" | S023-FE | [PENDENTE] |
+| 16 | S014-T2-T4+T6 | BE+FE | Cobertura de testes (JaCoCo 50% para 75%) | Nenhuma | [PENDENTE] |
 
 ### Pos-MVP
 
@@ -209,12 +213,19 @@
 | Modo Sessao formal | SSE/WebSocket em vez de Polling 30s |
 | XP em lote | Conceder XP para toda a mesa de uma vez |
 
+### CORTADOS (sessao 20)
+
+| Item | Motivo |
+|------|--------|
+| ~~Spec 010~~ (Roles ADMIN refactor) | CORTADO — complexidade transversal, baixo valor para MVP |
+| ~~Spec 013~~ (Documentacao tecnica) | CORTADO — baixa prioridade, nao impacta funcionalidade |
+| ~~PA-017-04~~ (Exportar/Importar config) | CORTADO — escopo excessivo para MVP |
+
 ### Tech Debt (backlog permanente)
 
 | ID | Descricao | Prio |
 |----|-----------|------|
 | SP1-T13 | Barras HP por membro do corpo (VidaSection) | Baixa |
-| ~~SP1-T27~~ | ~~DDL producao (3 ALTER TABLE)~~ | **CANCELADO** — Hibernate ddl-auto gerencia o schema. Nao necessario para 0.0.1-RC. |
 | C1 | handleReorder wiring 13o componente | Baixa |
 | INCONS-01 | API-CONTRACT.md desatualizado | Media |
 | DT-FE-01 | atualizarAnotacao() fantasma | Baixa |
@@ -227,15 +238,11 @@
 
 | Risco | Impacto | Mitigacao |
 |-------|---------|-----------|
-| ~~GAP-02 vuln XP~~ | ~~Jogador altera propria XP~~ | **RESOLVIDO** (rodada 2) — PUT /fichas/{id}/xp ja tinha @PreAuthorize |
-| ~~6 bugs motor (GAP-CALC-01..08)~~ | ~~Calculos incorretos~~ | **RESOLVIDO** — T0 concluida (rodada 1), 464 testes |
-| ~~S007-T1 adaptar modelo~~ | ~~Bloqueava T2-T7~~ | **RESOLVIDO** (rodada 2) — 474 testes |
-| ~~34 testes frontend falhando~~ | ~~CI nao confiavel~~ | **RESOLVIDO** (rodada 2) — 359/359 passando |
-| Spec 007 impacta ~20-30 arquivos | Regressao nos calculos | Spec 007 T8 com testes extensivos |
-| ~~PA-004 nao resolvido~~ | ~~FORMULA_CUSTOMIZADA sem alvo~~ | **RESOLVIDO** (sessao 19) — editor seleciona campo-alvo (atributo/bonus) |
-| PA-006 nao resolvido | VIG/SAB hardcoded (GAP-CALC-09) | Fora do escopo de T0; escalar ao PO |
-| ~~Sprint 2 encerrado com S007-T10 bloqueada~~ | ~~PA-004 sem decisao do PO~~ | **RESOLVIDO** (sessao 19) — PA-004 e PA-015-04 ambos resolvidos |
-| Spec 010 transversal | ~50+ @PreAuthorize a revisar | Implementar por ULTIMO, branch dedicada |
+| PA-006 nao resolvido | VIG/SAB hardcoded (GAP-CALC-09) | Fora do escopo T0; PO decide |
+| Spec 023 refatora VantagemPreRequisito | Schema change em tabela com dados | Migration Flyway com default tipo='VANTAGEM' |
+| 17 telas com acceptButtonProps deprecated | Botao confirmar exclusao visual incorreto | Fix rapido P1 |
+| NPC sem raça/classe no form | Feature incompleta para Mestre | P0 Sprint 4 |
+| Divida UX (dialogs, BaseConfig, cores) | UX inconsistente | P1/P2 |
 
 ---
 
@@ -253,4 +260,4 @@
 
 ---
 
-*Atualizado: 2026-04-13 (rev.15 — sessao 19 COMPLETA: Spec 016+021+017 finalizadas, PA-004+PA-015-04 resolvidos, 796B+~1208F, ~99% completude) | PM/Scrum Master*
+*Atualizado: 2026-04-13 (rev.16 — sessao 20: repriorizacao backlog, Spec 023 aprovada, Spec 010+013 cortadas, divida UX catalogada, ~92% completude) | PM/Scrum Master*

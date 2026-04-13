@@ -9,7 +9,7 @@
 > Para ver o estado da ultima sessao: `HANDOFF-SESSAO.md`.
 > Para ver o mapa completo de docs/: `README.md`.
 >
-> Ultima atualizacao: 2026-04-06 (rev.13 — pos-rodada 13: Sprint 3 em andamento, Spec 009-ext 100%, 613B+848F testes) | Branch: `main`
+> Ultima atualizacao: 2026-04-13 (rev.14 — pos-Wave 1+2: Spec 016 ~90%, Spec 021 T1 BE OK, 796B+1138F testes) | Branch: `main`
 
 ---
 
@@ -17,17 +17,17 @@
 
 | Metrica | Valor |
 |---------|-------|
-| Backend testes | **613 passando**, 0 falhas |
-| Frontend testes | **848 passando**, 0 falhas |
+| Backend testes | **796 passando**, 0 falhas |
+| Frontend testes | **1138 passando** (2 falhas pre-existentes ficha-vantagens-tab) |
 | Frontend build | 0 erros, 0 warnings |
 | Sprint 1 | **CONCLUIDO** (94%, 29/31 tasks) |
-| Sprint 2 | **ENCERRADO** — 34/35 tasks (97%) + 2 bonus. S007-T10 bloqueada PA-004. Wizard criacao de ficha 100% completo (6 passos). |
-| Sprint 3 | **EM ANDAMENTO** — Rodada 12 + 13 concluidas. Spec 009-ext 100% (backend+frontend), Spec 008 100% frontend, Spec 012 fase 1 OK. Falta Spec 012 fase 2 + Spec 015 T6/T7 para RC. |
-| Specs com spec+plan+tasks | 005, 006, 007, 008, 009-ext, 010, 011, 012, 013, 014, **015** |
-| Specs em especificacao | Nenhuma — **016** (Sistema de Itens) ja 100% especificada |
-| Decisoes PO | **TODAS RESOLVIDAS** (GAP-01 a GAP-08, INCONS-02, P-03, PA-001/002, Q14-Q17) |
-| MVP objetivo | Todas as specs 005-012 + 015 + **016** implementadas e testadas |
-| Total tasks MVP | **~96** (45 backend + 47 frontend + 4 outros) — Spec 016 confirmada: 11 tasks |
+| Sprint 2 | **ENCERRADO** — 34/35 tasks (97%) + 2 bonus. S007-T10 bloqueada PA-004. |
+| Sprint 3 | **EM ANDAMENTO** — R12-R14 + Copilot R01-R07 + Wave 1+2 (2026-04-13). RC desbloqueado, homologacao em andamento. |
+| Specs com spec+plan+tasks | 005, 006, 007, 008, 009-ext, 010, 011, 012, 013, 014, 015, **021** |
+| Specs em especificacao | Nenhuma |
+| Decisoes PO | **TODAS RESOLVIDAS** (GAP-01 a GAP-08, INCONS-02, P-03, PA-001/002, Q14-Q17, PA-021-03) |
+| MVP objetivo | Todas as specs 005-012 + 015 + 016 + **021** implementadas e testadas |
+| Total tasks MVP | **~103** (45+7 backend + 47+4 frontend) — Spec 016: 11 tasks + Spec 021: ~7 tasks |
 | Total tasks pos-MVP (qualidade) | **12** (Spec 013: 6 + Spec 014: 6) |
 
 ---
@@ -39,18 +39,19 @@
 | 001 | Data model inicial, 13 CRUDs | — | — | — | CONCLUIDO |
 | 003 | Refactor: DTOs, validacoes, exceptions | — | — | — | CONCLUIDO |
 | 004 | Siglas, formulas, relacionamentos | `specs/004-*/` | — | 17 | CONCLUIDO |
-| **015** | **ConfigPontos Classe/Raca + DefaultProvider** | [`specs/015-config-pontos-classe-raca/`](specs/015-config-pontos-classe-raca/) | **P0** | 5B / 2F / **7** | **T1/T2/T3/T5 CONCLUIDOS** (5/7). T4 PENDENTE (depende S007-T6), T6/T7 frontend PENDENTES |
+| **015** | **ConfigPontos Classe/Raca + DefaultProvider** | [`specs/015-config-pontos-classe-raca/`](specs/015-config-pontos-classe-raca/) | **P0** | 5B / 2F / **7** | **6/7 CONCLUIDOS** (T1-T3+T5-T7). T4 BLOQUEADO PA-015-04 |
 | **007** | **VantagemEfeito + Motor de Calculos** | [`specs/007-vantagem-efeito/`](specs/007-vantagem-efeito/) | **P0-ABSOLUTA** | 9B / 4F / **13** | **T0/T1/T2/T3+T4+T5/T7/T8/T9/T11/T12 CONCLUIDOS** (12/13). T5alt BLOQUEADO (PA-004). **T10 BLOQUEADO (PA-004)** |
 | **006** | **Wizard de Criacao de Ficha** | [`specs/006-ficha-wizard/`](specs/006-ficha-wizard/) | **P0** | 5B / 8F / **13** | **TODOS CONCLUIDOS** (13/13 — T3 absorvida por URG-01). Wizard 6 passos completo. |
 | **005** | **Gestao de Participantes** | [`specs/005-participantes/`](specs/005-participantes/) | **P0** | 3B / 3F / **6** | **TODOS CONCLUIDOS** (6/6). P1T1/P1T2/P1T3 + P2T1/P2T2/P2T3. |
 | **008** | **Sub-recursos Classes/Racas (frontend)** | [`specs/008-sub-recursos-classes-racas/`](specs/008-sub-recursos-classes-racas/) | **P1** | 0B / 4F / **4** | **CONCLUIDO** (T1-T4 entregues, rodada 12) |
 | **009-ext** | **NPC Visibility + Prospeccao + Essencia** | [`specs/009-npc-visibility/`](specs/009-npc-visibility/) | **P1** | 6B / 4F+QW / **11** | **CONCLUIDO** (T1-T10 entregues; backend rodada 12, frontend rodada 13) |
 | **010** | **Roles ADMIN/MESTRE/JOGADOR refactor** | [`specs/010-roles-refactor/`](specs/010-roles-refactor/) | **STAND-BY** | 5B / 3F+1T / **9** | STAND-BY pos-homologacao (decisao 2026-04-06) |
-| **012** | **Niveis e Progressao (frontend)** | [`specs/012-niveis-progressao-frontend/`](specs/012-niveis-progressao-frontend/) | **P1** | 1B / 11F / **12** | Fase 1 CONCLUIDA (T1-T4+T14, rodada 12). Fase 2 PENDENTE (T6-T11 — RC). T12/T13 fora MVP. |
-| **016** | **Sistema de Itens/Equipamentos** | [`specs/016-sistema-itens/`](specs/016-sistema-itens/) | **P1** | 7B / 4F / **11** | spec+plan+tasks+dataset **100% PRONTOS**, implementacao PENDENTE |
-| **011** | **Galeria e Anotacoes** | [`specs/011-galeria-anotacoes/`](specs/011-galeria-anotacoes/) | **STAND-BY** | 4B / 4F / **8** | STAND-BY pos-homologacao (decisao 2026-04-06) |
-| **013** | **Documentacao Tecnica** | [`specs/013-documentacao-tecnica/`](specs/013-documentacao-tecnica/) | **STAND-BY** | ~15-20 tasks | STAND-BY pos-homologacao (decisao 2026-04-06) |
-| **014** | **Cobertura de Testes** | [`specs/014-cobertura-testes/`](specs/014-cobertura-testes/) | **STAND-BY** | 4B / 2F / **6** | STAND-BY pos-homologacao (decisao 2026-04-06) |
+| **012** | **Niveis e Progressao (frontend)** | [`specs/012-niveis-progressao-frontend/`](specs/012-niveis-progressao-frontend/) | **P1** | 1B / 11F / **12** | **CONCLUIDO** (todas as fases). T12/T13 fora MVP. |
+| **016** | **Sistema de Itens/Equipamentos** | [`specs/016-sistema-itens/`](specs/016-sistema-itens/) | **P1** | 7B / 4F / **11** | **~90%** — T1-T10 CONCLUIDOS (T5 BE Wave 1, T8-T10 FE Wave 1). **T11 FE em andamento (Wave 2)** |
+| **021** | **Sistema de Habilidades** | [`specs/021-sistema-habilidades/`](specs/021-sistema-habilidades/) | **P1** | ~4B / ~3F / **~7** | **Parcial** — Spec escrita (BA), T1 BE concluido (Wave 2). T2 FE pendente. |
+| **011** | **Galeria e Anotacoes** | [`specs/011-galeria-anotacoes/`](specs/011-galeria-anotacoes/) | — | 4B / 4F / **8** | CONCLUIDO 9/9 |
+| **013** | **Documentacao Tecnica** | [`specs/013-documentacao-tecnica/`](specs/013-documentacao-tecnica/) | **STAND-BY** | ~15-20 tasks | STAND-BY pos-homologacao |
+| **014** | **Cobertura de Testes** | [`specs/014-cobertura-testes/`](specs/014-cobertura-testes/) | **STAND-BY** | 4B / 2F / **6** | Parcial — T1+T5 OK; T2-T4+T6 pendentes |
 | 008-old | Utilidade e Fluidez (dashboard, export/import) | — | — | — | Backend ~100% implementado (pre-existente) |
 | 009-old | NPC backend (fichas mestre, duplicacao) | — | — | — | Backend ~100% (457 testes, pre-existente) |
 

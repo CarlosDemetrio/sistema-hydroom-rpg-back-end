@@ -7,7 +7,7 @@
 > Ponto de entrada rapido: `HANDOFF-SESSAO.md` → `MASTER.md` → `PM.md`.
 > Mapa completo de docs: `README.md`.
 >
-> Gerado em: 2026-04-01 | Atualizado: 2026-04-06 (sessao 15, rodada 13 concluida, rev.13 — Sprint 3 em andamento: Spec 009-ext 100%, 613B+848F testes) | Branch: `main`
+> Gerado em: 2026-04-01 | Atualizado: 2026-04-13 (sessao 19, Wave 1+2, rev.14 — Sprint 3: RC desbloqueado, 796B+1138F testes) | Branch: `main`
 > Cronologia: `docs/historico/CRONOLOGIA.md`
 
 ---
@@ -30,10 +30,10 @@
 | Frontend: Componentes | **97%** | Wizard completo, configs (012 fase 1), sub-recursos Classes/Racas, **009-ext frontend completo (T7-T10)**. Falta: 012 fase 2 (T6-T11), 015 T6/T7. |
 | Frontend: Testes | **100%** | **848 passando**, 0 falhas |
 
-**Completude geral estimada: ~97%** (Sprint 3 em andamento — rodada 13 concluida)
-**Backend: 613 testes, 0 falhas**
-**Frontend: 848 testes passando, 0 falhas** (+100 vs rodada 12)
-**Total tasks MVP: 96** (45 backend + 47 frontend + 4 outros)
+**Completude geral estimada: ~98%** (Sprint 3 — Wave 1+2 concluidas, RC desbloqueado)
+**Backend: 796 testes, 0 falhas**
+**Frontend: 1138 testes passando** (2 falhas pre-existentes ficha-vantagens-tab)
+**Total tasks MVP: ~103** (52 backend + 51 frontend)
 
 ---
 
@@ -253,4 +253,4 @@
 
 ---
 
-*Atualizado: 2026-04-06 (rev.10 — Sprint 2 encerrado: 34/35+2bonus, 581B+624F, ~91% completude) | PM/Scrum Master*
+*Atualizado: 2026-04-13 (rev.14 — Sprint 3 Wave 1+2: 796B+1138F, ~98% completude) | PM/Scrum Master*

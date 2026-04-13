@@ -1,131 +1,122 @@
-# Handoff de Sessao — 2026-04-08 (sessao 17 — Rodada 15 + Copilot R05 + Rodada 16)
+# Handoff de Sessao — 2026-04-13 (sessao 19 — Wave 1+2 implementacao paralela)
 
 > Branch atual: `main`
-> Backend: **743 testes** passando, 0 falhas
-> Frontend: **1006/1008 testes** passando (2 falhas pre-existentes ficha-vantagens-tab)
-> Sprint 3: **Spec 011 100% CONCLUIDA** — RC desbloqueado
-> Ultima atualizacao: 2026-04-08 [Rodada 16 — Spec 011 T8 completa (+105 testes frontend)]
+> Backend: **796 testes** passando, 0 falhas
+> Frontend: **1138 testes** passando (2 falhas pre-existentes ficha-vantagens-tab)
+> Sprint 3: RC desbloqueado — homologacao em andamento
+> Ultima atualizacao: 2026-04-13
 
 ---
 
 ## Resumo Executivo
 
-**Sessao 2026-04-08** entregou:
-1. **3 bugs de producao corrigidos** (CSS, CORS, Cloudinary prod config)
-2. **Spec 017 P1 concluida** (PageHeader T8-T12)
-3. **Spec 011 completa exceto T8** (Cloudinary backend + frontend galeria + Markdown annotations)
+**Sessao 2026-04-13** entregou em duas waves paralelas:
+1. **Spec 016 T5 BE** — FichaCalculationService Passo 6 (recalculo com itens equipados), +10 testes backend
+2. **Spec 016 T8+T9+T10 FE** — Telas de raridades, tipos de item, catalogo e classe de equipamento, +89 testes frontend
+3. **Spec 021 T1 BE** — HabilidadeConfig CRUD completo (entity + service + controller + testes), +15 testes backend
+4. **Spec 017 P2 T13+T14+T-DOC1** — Encontrados pre-implementados (OAuth interceptor, doc)
+5. **Spec 007 T9+T11** — Encontrados pre-implementados (efeitos FE + DadoUp, 53 testes)
+6. **Spec 021 BA** — Spec HabilidadeConfig escrita (commit anterior b8c3c3d)
 
-Deploy ja em producao (Firebase + Cloud Run). Pendente apenas: 4 secrets GCP do Cloudinary.
-
----
-
-## Estado das Specs
-
-### Spec 017 — Correcoes Pre-RC
-
-#### P0 — CONCLUIDO 8/8 (Claude R14 + Copilot R04)
-#### P1 — CONCLUIDO 5/5 (Claude R15)
-| Task | Status | Commit |
-|------|--------|--------|
-| T8 PageHeaderComponent | ✅ | `37696e4` |
-| T9 PageHeader Mestre | ✅ | `3be4b46` |
-| T10 PageHeader Jogador | ✅ | `94fd4af` |
-| T11 jogo-form ToastService | ✅ | `2852fae` |
-| T12 double-toast cleanup | ✅ | `6de29bc` |
-
-#### P2 — PENDENTE (pos-RC)
-#### P3 — BACKLOG (pos-RC)
-
-### Spec 011 — Galeria + Anotacoes — ✅ CONCLUIDA 9/9
-
-| Task | Status | Commit/Nota |
-|------|--------|-------------|
-| T0 AnotacaoPasta entity (BE) | ✅ Copilot R02 | — |
-| T1 PUT anotacao + pastaPaiId (BE) | ✅ Copilot R02 | — |
-| T2 FichaImagem entity + dep Cloudinary (BE) | ✅ Copilot R02 | — |
-| T3 FichaImagemService + Controller (BE) | ✅ Claude R15 | 743 testes |
-| T4 Testes integracao (BE) | ✅ Claude R15 | Antecipado no T3 (21 cenarios) |
-| T5 Markdown + pastas (FE) | ✅ Claude R15 | `a4c001c`..`2ab9a19` |
-| T6 FichaImagem model + API (FE) | ✅ Claude R15 | `132db35` |
-| T7 Componentes galeria (FE) | ✅ Claude R15 | `5bd60f7`..`e2822ca` |
-| T8 Testes frontend | ✅ Rodada 16 | +105 testes (1006/1008 total) |
-
-### Copilot R05 — Bug fix FichaPreviewService
-
-| Commit | Descricao |
-|--------|-----------|
-| `46b92d8` | Fix: FichaPreviewService usava overload deprecated do recalcular (7 params) |
-
-**O que estava errado:** `simular()` chamava overload `@Deprecated(since="Spec-007-T0")` de 7 params, ignorando aptidoes, bônus de raca/classe e efeitos de vantagens.
-**Fix:** migrado para overload completo (14 params), 6 repos injetados, `aptidaoBase` agora aplicado, overload deprecated removido de `FichaCalculationService`.
-**Testes:** 743 (0 falhas) — sem delta (bug de logica, nao de cobertura).
-
-**PAs abertos pelo Copilot R05:**
-- `PA-R05-01`: `FichaPreviewResponse` nao expoe aptidoes nem dado de prospeccao — decisao de produto
-- `PA-R05-02`: Testes de integracao do `FichaPreviewService` nao cobrem BONUS_APTIDAO, DADO_UP, raca/classe com bônus, aplicacao de `aptidaoBase`
-
-### Spec 012 — CONCLUIDO 6/6
-### Spec 015 — Parcial (T4 bloqueado)
-### Spec 016 — Parcial (T5 bloqueado PA-R02-01, T8-T11 frontend pendente)
-### Spec 018+019 — Deploy GCP+Firebase CONCLUIDO
+Backend saltou de 771 para **796 testes** (+25). Frontend saltou de 1006 para **1138 testes** (+132).
 
 ---
 
-## Bugs de Producao Corrigidos (Claude R15)
+## Wave 1 — 2026-04-13 (5 entregas)
 
-| Bug | Commit | Acoes Pendentes |
-|-----|--------|----------------|
-| BUG-PROD-01: CSS quebrado | `13945d6` (FE) | Re-deploy firebase |
-| BUG-PROD-02: CORS "Erro 0" | `4fa546e` (BE) | Criar secret + re-deploy Cloud Run |
-| BUG-PROD-03: Cloudinary sem credenciais | `4fa546e` (BE) | Criar 3 secrets + re-deploy Cloud Run |
+| Spec/Task | Status | Resultado | Commits |
+|-----------|--------|-----------|---------|
+| Spec 007 T9+T11 (FE efeitos + DadoUp) | Pre-implementado | 53 testes, ja existia | — |
+| Spec 017 P2 T13+T14+T-DOC1 (OAuth+interceptor+doc) | Pre-implementado | ja existia | `83f17ac` |
+| Spec 021 BA (spec HabilidadeConfig) | Concluido | spec escrita | `b8c3c3d` |
+| Spec 016 T5 BE (FichaCalculationService Passo 6 itens) | Concluido | 781 testes (+10) | `c2b4522`, `74c2d36` |
+| Spec 016 T8+T9+T10 FE (raridades, tipos, catalogo, classe equip) | Concluido | 1138 testes (+89) | `944739e`, `95a00a9`, `f4f9736` |
 
-### Acoes manuais urgentes (bloqueiam Cloudinary em prod)
+## Wave 2 — 2026-04-13 (2 entregas)
 
-```bash
-# 1. Criar secrets no GCP (script interativo):
-./infra/gcp/setup-secrets.sh
-
-# 2. Ou manualmente:
-echo -n "https://hydrooon.com.br,https://www.hydrooon.com.br" | gcloud secrets create rpg-cors-allowed-origins --data-file=-
-echo -n "SEU_CLOUD_NAME"  | gcloud secrets create rpg-cloudinary-cloud-name --data-file=-
-echo -n "SUA_API_KEY"     | gcloud secrets create rpg-cloudinary-api-key    --data-file=-
-echo -n "SEU_API_SECRET"  | gcloud secrets create rpg-cloudinary-api-secret --data-file=-
-
-# 3. Re-deploy backend (workflow deploy-gcp.yml) e frontend (firebase deploy)
-```
-
-**`npm install marked` no frontend** — para Markdown completo no AnotacaoCardComponent.
+| Spec/Task | Status | Resultado | Commits |
+|-----------|--------|-----------|---------|
+| Spec 021 T1 BE (HabilidadeConfig CRUD) | Concluido | 796 testes (+15) | `b0e84c4`, `39f39ed` |
+| Spec 016 T11 FE (Inventario FichaDetail) | Em andamento | agente ainda rodando | — |
 
 ---
 
-## Proxima Sessao — Rodada 16
+## Decisoes e Pontos de Atencao
 
-### Tasks BA pendentes (pré-spec)
+### PA-021-03 — Resolvido
 
-Briefing completo em `docs/specs/PENDING-BA-TASKS.md`. Três frentes que precisam de BA antes de virar implementação:
+Decisao do PO: a tela de habilidades para JOGADOR ficara em **secao separada** (nao no painel de configuracoes do Mestre).
 
-| ID | Titulo | Spec sugerida | Prioridade | Esforço BA |
-|----|--------|---------------|------------|------------|
-| BA-01 | Revisão da massa do GameDefaultProvider (CSVs) | SPEC-020 | P0 | 1-2 sessões |
-| BA-02 | Sistema de Habilidades (Skills) | SPEC-021 | P1 | 2-3 sessões |
-| BA-03 | Categorização/tags de NPCs | SPEC-022 | P2 | 0.5-1 sessão |
+### Ponto tecnico: path HabilidadeConfig
 
-Ordem sugerida: BA-03 → BA-02 (BA-01 ⏸ bloqueado até escopo de configuração fechar). Nenhuma bloqueia o RC — podem rodar em paralelo à homologação.
+`HabilidadeConfigController` usa path `/api/jogos/{jogoId}/config/habilidades` (padrao de `CategoriaVantagemController`) em vez de `/api/v1/jogos/{jogoId}/configuracoes/habilidades` que estava na spec. **Registrar como ponto de atencao antes do frontend** — pode necessitar alinhamento de rota.
 
-### Obrigatorio antes do RC
+---
 
-| Task | Descricao | Agente | Status |
-|------|-----------|--------|--------|
-| Spec 011 T8 | Testes frontend (+105 novos testes) | angular-frontend-dev | ✅ FEITO |
-| Secrets GCP (4 secrets) | rpg-cors-allowed-origins + 3x Cloudinary | Usuario | ✅ FEITO |
-| Re-deploy backend + frontend | Cloud Run + Firebase | Usuario | ✅ FEITO |
-| `npm install marked` | Markdown completo no frontend | Usuario | ✅ FEITO |
+## Estado das Specs (atualizado pos-Wave 1+2)
 
-### RC (Rodada 17)
+| Spec | Titulo | Status | Nota |
+|------|--------|--------|------|
+| 004 | Siglas, formulas, relacionamentos | CONCLUIDO | — |
+| 005 | Participantes, aprovacao, permissoes | CONCLUIDO | — |
+| 006 | Wizard de criacao de ficha | CONCLUIDO | — |
+| 007 | VantagemEfeito + Motor de calculos | 12/13 | T10 BLOQUEADO PA-004 |
+| 008 | Sub-recursos Classes/Racas (FE) | CONCLUIDO | — |
+| 009-ext | NPC Visibility + Prospeccao + Essencia | CONCLUIDO | — |
+| 010 | Roles ADMIN refactor | STAND-BY | pos-homologacao |
+| 011 | Galeria + Anotacoes | CONCLUIDO 9/9 | — |
+| 012 | Niveis e progressao (FE) | CONCLUIDO | — |
+| 013 | Documentacao tecnica | STAND-BY | pos-homologacao |
+| 014 | Cobertura de testes | Parcial | T1+T5 OK; T2-T4+T6 pendentes |
+| 015 | ConfigPontos Classe/Raca | Parcial | T4 bloqueado |
+| 016 | Sistema de Itens | **~90%** | **T5 BE concluido (Wave 1), T8-T10 FE concluidos (Wave 1), T11 FE em andamento (Wave 2)**; T1-T4+T6+T7 OK anteriores |
+| 017 | Correcoes Pre-RC | P0+P1 OK, **P2 parcial** | T13+T14+T-DOC1 pre-implementados; P3 pos-RC |
+| 018 | Deploy Backend GCP | CONCLUIDO | +hotfixes infra |
+| 019 | Deploy Frontend Firebase | CONCLUIDO | — |
+| 021 | Sistema de Habilidades | **Parcial** | **Spec escrita (BA), T1 BE concluido (Wave 2)**; T2 FE pendente |
+| 022 | DefaultGameConfigProvider refactor | CONCLUIDO | 11 providers + facade + 64 vantagens |
+
+---
+
+## Bloqueados / Pontos em Aberto
+
+### PAs acumulados
+
+| ID | Descricao | Bloqueia | Proxima acao |
+|----|-----------|----------|--------------|
+| PA-R05-01 | FichaPreviewResponse incompleto (sem aptidoes/dado prospeccao) | Nao (decisao PO) | PO decide se amplia resposta |
+| PA-R05-02 | FichaPreviewService sem testes avancados | Nao | Pos-RC |
+| PA-R02-01 | Spec 016 T5 — FichaItemService 4x TODO recalcularStats | **RESOLVIDO** (Wave 1) | — |
+| PA-004 | FormulaEditorEfeito (S007-T10) | Nao | Decisao PO pendente |
+| PA-015-04 | Enum origem FichaVantagem (S015-T4) | Sim (S015-T4) | Decisao PO pendente |
+| PA-017-03 | Reativar SidebarComponent (T15, P3) | Nao | Pos-RC |
+| PA-017-04 | Exportar/Importar config — formato | Nao | Pos-RC |
+| PA-021-03 | Tela habilidades JOGADOR em secao separada | **RESOLVIDO** | Decisao PO registrada |
+
+### Outros bloqueios
+
+- **S007-T10**: FormulaEditorEfeito — PA-004 aguarda decisao PO
+- **Spec 015 T4**: VantagemAutoConcessao — bloqueado PA-015-04 (enum origem FichaVantagem)
+
+---
+
+## Proxima Sessao — Recomendacoes
+
+### Prioridade 1: Wave 3 — Spec 016 T11 + Spec 021 T2
+
+1. **Verificar Spec 016 T11 FE** (inventario) — agente ainda rodando na Wave 2
+2. **Spec 021 T2 FE** — Frontend HabilidadeConfig (depende de T1 BE concluido)
+3. **Verificar S007-T12** — Insolitus UI — possivelmente pre-implementado (sem arquivo de task)
+
+### Prioridade 2: Alinhar path HabilidadeConfig
+
+Antes de T2 FE, confirmar com Tech Lead se o path `/api/jogos/{jogoId}/config/habilidades` esta correto ou se deve migrar para `/api/v1/jogos/{jogoId}/configuracoes/habilidades`.
+
+### Prioridade 3: Homologacao / RC
 
 | ID | Cenario |
 |----|---------|
-| BUG-PROD-01 | Validar CSS em hydrooon.com.br (apos deploy) |
+| BUG-PROD-01 | Validar CSS em hydrooon.com.br |
 | BUG-PROD-02 | Validar login OAuth sem "Erro 0" |
 | PA-R04-02 | Smoke test overlay clipping em 5 telas |
 | PA-R04-03 | Decidir badge severity ficha-vantagens-tab (fix ou known issue) |
@@ -135,25 +126,10 @@ Ordem sugerida: BA-03 → BA-02 (BA-01 ⏸ bloqueado até escopo de configuraç�
 
 ## Pos-RC (ordem de prioridade)
 
-1. **Spec 016 T5** — recalcularStats ao equipar (4x TODO FichaItemService) + frontend T8-T11
-2. **Spec 014 T2-T4+T6** — cobertura testes (JaCoCo 50% → 75%)
-3. **Spec 017 P2** — T13, T14, T-DOC1 (~4h)
-4. **Spec 013** — Documentacao tecnica
-5. **Spec 010** — Roles ADMIN refactor
-6. **Spec 017 P3** — backlog qualidade (T15-T21)
-
----
-
-## Bloqueados / Pontos em Aberto
-
-- **Cloudinary secrets** — criar manualmente no GCP antes do proximo deploy
-- **`npm install marked`** — instalar no frontend para Markdown completo
-- **PA-R02-01**: Spec 016 T5 — FichaItemService 4x TODO recalcularStats(); teste @Disabled
-- **PA-R05-01**: FichaPreviewResponse incompleto (sem aptidoes/dado prospeccao) — decisao PO
-- **PA-R05-02**: FichaPreviewService sem testes para BONUS_APTIDAO, DADO_UP, raca/classe — pos-RC
-- **S007-T10**: FormulaEditorEfeito — PA-004 aguarda decisao PO
-- **PA-017-03**: Reativar SidebarComponent? (Spec 017 T15, P3, pos-RC)
-- **PA-017-04**: Exportar/Importar config — formato? (Spec 017 T18, P3, pos-RC)
+1. **Spec 014 T2-T4+T6** — cobertura testes (JaCoCo 50% para 75%)
+2. **Spec 017 P3** — T15-T21 backlog qualidade
+3. **Spec 013** — Documentacao tecnica
+4. **Spec 010** — Roles ADMIN refactor
 
 ---
 
@@ -166,5 +142,9 @@ Ordem sugerida: BA-03 → BA-02 (BA-01 ⏸ bloqueado até escopo de configuraç�
 - Toast com `key` isolado mantido: `npc-visibilidade`, `prospeccao`
 - MarkdownPipe usa fallback basico sem `marked` instalado (negrito, italico, headers, code inline)
 - `tipoImagem` imutavel apos upload — para promover GALERIA para AVATAR: novo upload com tipo AVATAR
-- Spec 011 T8 spec: `docs/specs/011-galeria-anotacoes/tasks/P2-T8-frontend-testes.md`
-- Tracking R15: `docs/tracking/rodadas/RODADA-15.md`
+- GraalVM native image funcional com distroless/cc-debian12 (apos ~9 fixes de reflection)
+- Structured logging GCP com formato ECS (nao GCP nativo — melhor compatibilidade)
+- Micrometer Prometheus configurado para observability
+- OAuth2 com timeouts de 15s no token exchange e userinfo
+- vpc-egress configurado como private-ranges-only (nao all-traffic)
+- HabilidadeConfigController path divergente da spec — verificar antes do frontend

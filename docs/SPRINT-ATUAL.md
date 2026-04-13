@@ -6,9 +6,9 @@
 > Para detalhes por area e historico, ver `PM.md`.
 > Para estado da ultima sessao, ver `HANDOFF-SESSAO.md`.
 >
-> Atualizado: 2026-04-07 (sessao 16 Claude, Rodada 14 CONCLUIDA; + Copilot R01-R04 paralelo)
+> Atualizado: 2026-04-13 (sessao 19 — Wave 1+2 implementacao paralela)
 > PM: Scrum Orchestrator
-> Objetivo: **RC — Spec 017 P0 100% + Spec 012 fase 2 100% — homologacao pode comecar**
+> Objetivo: **RC — homologacao em andamento, Spec 016+021 em finalizacao**
 > Duracao estimada: 2-3 semanas
 > Cronologia: `docs/historico/CRONOLOGIA.md` | Rodadas: `docs/tracking/rodadas/` | Copilot: `docs/tracking/rodadas-copilot/`
 
@@ -18,18 +18,19 @@
 
 | Metrica | Valor |
 |---------|-------|
-| Rodadas Claude concluidas | 2 (R12 + R13) |
-| Rodadas Claude concluidas | 3 (R12 + R13 + **R14**) |
+| Rodadas Claude concluidas | 3 (R12 + R13 + R14) |
 | **Rodadas Copilot concluidas** | **4 (R01+R02+R03+R04 — paralelo, zero merge conflicts)** |
-| Tasks entregues (Claude R14) | **8** (Spec 017 T3+T4+T5+T7 + Spec 012 T7+T8+T9+T10) + 2 pre-existentes (T6+T11) |
-| **Tasks entregues (Copilot total)** | **Spec 017 T1+T2+T6+T22; Spec 015 T6+T7; Spec 014 T1+T5; Spec 016 T1-T4+T6+T7; Spec 011 T0-T2+T4; Spec 018+019 deploy** |
-| Tasks restantes para RC | **Spec 017 P1** (T8-T12, desejavel) + smoke test overlay (PA-R04-02) |
-| Testes backend | **723 passando**, 0 falhas |
-| Testes frontend | **901 passando** + 2 falhas pre-existentes + 2 OOM pre-existentes |
-| Specs 100% concluidas | Spec 008, Spec 009-ext, **Spec 012 (todas as fases)**, **Spec 015 (T4 bloqueado, resto OK)**, Spec 018, Spec 019 |
-| Specs em andamento | **Spec 017 (P0 100% — P1 desejavel pre-RC)**, Spec 011 (~50%), Spec 014 (~28%), Spec 016 (~85% backend) |
-| Novas specs | Spec 017 (correcoes pre-RC) + Spec 018 (deploy GCP) + Spec 019 (deploy Firebase) |
-| Stand-by remanescente | Spec 010, Spec 013, Spec 011 T3+frontend, Spec 014 T2-T4+T6, Spec 016 T5+frontend |
+| **Waves paralelas (sessao 19)** | **Wave 1+2 (2026-04-13): Spec 016 T5+T8-T11, Spec 021 BA+T1, Spec 017 P2 parcial** |
+| Tasks entregues (Claude R14) | 8 (Spec 017 T3+T4+T5+T7 + Spec 012 T7+T8+T9+T10) + 2 pre-existentes (T6+T11) |
+| Tasks entregues (Copilot total) | Spec 017 T1+T2+T6+T22; Spec 015 T6+T7; Spec 014 T1+T5; Spec 016 T1-T4+T6+T7; Spec 011 T0-T2+T4; Spec 018+019 deploy |
+| **Tasks entregues (Wave 1+2)** | **Spec 016 T5 BE+T8+T9+T10 FE; Spec 021 BA+T1 BE; Spec 017 P2 T13+T14+T-DOC1 (pre-impl); Spec 007 T9+T11 (pre-impl)** |
+| Tasks restantes para RC | smoke test overlay (PA-R04-02) + Spec 016 T11 FE (em andamento) |
+| Testes backend | **796 passando**, 0 falhas |
+| Testes frontend | **1138 passando** + 2 falhas pre-existentes + 2 OOM pre-existentes |
+| Specs 100% concluidas | Spec 008, Spec 009-ext, Spec 012 (todas as fases), Spec 015 (T4 bloqueado, resto OK), Spec 018, Spec 019, **Spec 022** |
+| Specs em andamento | Spec 017 (P0+P1 OK, P2 parcial), Spec 011 (~50%), Spec 014 (~28%), **Spec 016 (~90% — T11 FE em andamento)**, **Spec 021 (T1 BE OK, T2 FE pendente)** |
+| Novas specs | Spec 017 + Spec 018 + Spec 019 + **Spec 021 (Sistema de Habilidades)** |
+| Stand-by remanescente | Spec 010, Spec 013, Spec 014 T2-T4+T6 |
 
 ### Entregas da Rodada 12 (16 tasks)
 - Spec 009-ext backend T1-T6: visivelGlobalmente, FichaVisibilidade, ProspeccaoUso, resetar-estado, essenciaAtual/vidaAtual, 32 testes
@@ -58,6 +59,28 @@
 | S015-T6 | ✅ Pre-existente `2cb0245` |
 | S015-T7 | ✅ Pre-existente `2cb0245` |
 
+### Wave 1+2 — Implementacao Paralela 2026-04-13
+
+**Wave 1:**
+
+| Task | Status | Resultado | Commits |
+|------|--------|-----------|---------|
+| Spec 007 T9+T11 (FE efeitos + DadoUp) | Pre-implementado | 53 testes, ja existia | — |
+| Spec 017 P2 T13+T14+T-DOC1 | Pre-implementado | ja existia | `83f17ac` |
+| Spec 021 BA (spec HabilidadeConfig) | Concluido | spec escrita | `b8c3c3d` |
+| Spec 016 T5 BE (FichaCalc Passo 6 itens) | Concluido | 781 testes (+10) | `c2b4522`, `74c2d36` |
+| Spec 016 T8+T9+T10 FE (raridades, tipos, catalogo) | Concluido | 1138 testes (+89) | `944739e`, `95a00a9`, `f4f9736` |
+
+**Wave 2:**
+
+| Task | Status | Resultado | Commits |
+|------|--------|-----------|---------|
+| Spec 021 T1 BE (HabilidadeConfig CRUD) | Concluido | 796 testes (+15) | `b0e84c4`, `39f39ed` |
+| Spec 016 T11 FE (Inventario FichaDetail) | Em andamento | agente rodando | — |
+
+**Decisao PO:** PA-021-03 resolvido — tela habilidades JOGADOR em secao separada (nao no painel config Mestre).
+**Ponto tecnico:** HabilidadeConfigController usa path `/api/jogos/{jogoId}/config/habilidades` (diverge da spec). Verificar antes do frontend.
+
 ### Desejavel pre-RC (Spec 017 P1)
 | Task | Descricao | Status |
 |------|-----------|--------|
@@ -69,7 +92,11 @@
 
 ### Bloqueados
 - S007-T10: FormulaEditorEfeito — PA-004 aguarda decisao PO
-- S015-T4: Auto-concessao vantagens — depende S007-T6 (bloqueado)
+- S015-T4: Auto-concessao vantagens — bloqueado PA-015-04 (enum origem FichaVantagem)
+
+### PAs resolvidos nesta sessao
+- **PA-R02-01**: Spec 016 T5 FichaItemService recalcularStats — **RESOLVIDO** (Wave 1, commits `c2b4522`+`74c2d36`)
+- **PA-021-03**: Tela habilidades JOGADOR em secao separada — **RESOLVIDO** (decisao PO)
 
 ---
 

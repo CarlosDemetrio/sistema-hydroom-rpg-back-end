@@ -1,8 +1,8 @@
-# Handoff de Sessao — 2026-04-13 (sessao 19 — Wave 1+2 implementacao paralela)
+# Handoff de Sessao — 2026-04-13 (sessao 19 — Waves 1+2+3 completas)
 
 > Branch atual: `main`
 > Backend: **796 testes** passando, 0 falhas
-> Frontend: **1138 testes** passando (2 falhas pre-existentes ficha-vantagens-tab)
+> Frontend: **~1208 testes** passando (2 falhas pre-existentes ficha-vantagens-tab)
 > Sprint 3: RC desbloqueado — homologacao em andamento
 > Ultima atualizacao: 2026-04-13
 
@@ -10,15 +10,17 @@
 
 ## Resumo Executivo
 
-**Sessao 2026-04-13** entregou em duas waves paralelas:
+**Sessao 2026-04-13** entregou em tres waves paralelas:
 1. **Spec 016 T5 BE** — FichaCalculationService Passo 6 (recalculo com itens equipados), +10 testes backend
 2. **Spec 016 T8+T9+T10 FE** — Telas de raridades, tipos de item, catalogo e classe de equipamento, +89 testes frontend
 3. **Spec 021 T1 BE** — HabilidadeConfig CRUD completo (entity + service + controller + testes), +15 testes backend
-4. **Spec 017 P2 T13+T14+T-DOC1** — Encontrados pre-implementados (OAuth interceptor, doc)
-5. **Spec 007 T9+T11** — Encontrados pre-implementados (efeitos FE + DadoUp, 53 testes)
-6. **Spec 021 BA** — Spec HabilidadeConfig escrita (commit anterior b8c3c3d)
+4. **Spec 016 T11 FE** — Inventario na FichaDetail (aba equipamentos), +40 testes frontend
+5. **Spec 021 T2 FE** — HabilidadeConfig frontend Mestre + Jogador, +30 testes frontend
+6. **Spec 017 P2 T13+T14+T-DOC1** — Encontrados pre-implementados (OAuth interceptor, doc)
+7. **Spec 007 T9+T11** — Encontrados pre-implementados (efeitos FE + DadoUp, 53 testes)
+8. **Spec 021 BA** — Spec HabilidadeConfig escrita (commit anterior b8c3c3d)
 
-Backend saltou de 771 para **796 testes** (+25). Frontend saltou de 1006 para **1138 testes** (+132).
+Backend saltou de 771 para **796 testes** (+25). Frontend saltou de 1006 para **~1208 testes** (+202).
 
 ---
 
@@ -32,12 +34,18 @@ Backend saltou de 771 para **796 testes** (+25). Frontend saltou de 1006 para **
 | Spec 016 T5 BE (FichaCalculationService Passo 6 itens) | Concluido | 781 testes (+10) | `c2b4522`, `74c2d36` |
 | Spec 016 T8+T9+T10 FE (raridades, tipos, catalogo, classe equip) | Concluido | 1138 testes (+89) | `944739e`, `95a00a9`, `f4f9736` |
 
-## Wave 2 — 2026-04-13 (2 entregas)
+## Wave 2 — 2026-04-13 (2 entregas) — CONCLUIDA
 
 | Spec/Task | Status | Resultado | Commits |
 |-----------|--------|-----------|---------|
 | Spec 021 T1 BE (HabilidadeConfig CRUD) | Concluido | 796 testes (+15) | `b0e84c4`, `39f39ed` |
-| Spec 016 T11 FE (Inventario FichaDetail) | Em andamento | agente ainda rodando | — |
+| Spec 016 T11 FE (Inventario FichaDetail) | Concluido | +40 testes frontend | `6b88997` |
+
+## Wave 3 — 2026-04-13 (1 entrega) — CONCLUIDA
+
+| Spec/Task | Status | Resultado | Commits |
+|-----------|--------|-----------|---------|
+| Spec 021 T2 FE (HabilidadeConfig Mestre + Jogador) | Concluido | +30 testes frontend | `caa0d2c` |
 
 ---
 
@@ -47,13 +55,13 @@ Backend saltou de 771 para **796 testes** (+25). Frontend saltou de 1006 para **
 
 Decisao do PO: a tela de habilidades para JOGADOR ficara em **secao separada** (nao no painel de configuracoes do Mestre).
 
-### Ponto tecnico: path HabilidadeConfig
+### Ponto tecnico: path HabilidadeConfig — RESOLVIDO
 
-`HabilidadeConfigController` usa path `/api/jogos/{jogoId}/config/habilidades` (padrao de `CategoriaVantagemController`) em vez de `/api/v1/jogos/{jogoId}/configuracoes/habilidades` que estava na spec. **Registrar como ponto de atencao antes do frontend** — pode necessitar alinhamento de rota.
+`HabilidadeConfigController` usa path `/api/jogos/{jogoId}/config/habilidades` (padrao de `CategoriaVantagemController`). Frontend T2 (commit `caa0d2c`) ja implementado com esse path. Mestre em `/mestre/config/habilidades`, Jogador em `/jogador/habilidades`.
 
 ---
 
-## Estado das Specs (atualizado pos-Wave 1+2)
+## Estado das Specs (atualizado pos-Waves 1+2+3)
 
 | Spec | Titulo | Status | Nota |
 |------|--------|--------|------|
@@ -69,11 +77,11 @@ Decisao do PO: a tela de habilidades para JOGADOR ficara em **secao separada** (
 | 013 | Documentacao tecnica | STAND-BY | pos-homologacao |
 | 014 | Cobertura de testes | Parcial | T1+T5 OK; T2-T4+T6 pendentes |
 | 015 | ConfigPontos Classe/Raca | Parcial | T4 bloqueado |
-| 016 | Sistema de Itens | **~90%** | **T5 BE concluido (Wave 1), T8-T10 FE concluidos (Wave 1), T11 FE em andamento (Wave 2)**; T1-T4+T6+T7 OK anteriores |
+| 016 | Sistema de Itens | **CONCLUIDO** | T1-T11 todos concluidos (T5 Wave 1, T8-T10 Wave 1, T11 Wave 2) |
 | 017 | Correcoes Pre-RC | P0+P1 OK, **P2 parcial** | T13+T14+T-DOC1 pre-implementados; P3 pos-RC |
 | 018 | Deploy Backend GCP | CONCLUIDO | +hotfixes infra |
 | 019 | Deploy Frontend Firebase | CONCLUIDO | — |
-| 021 | Sistema de Habilidades | **Parcial** | **Spec escrita (BA), T1 BE concluido (Wave 2)**; T2 FE pendente |
+| 021 | Sistema de Habilidades | **CONCLUIDO** | BA + T1 BE (Wave 2) + T2 FE (Wave 3) |
 | 022 | DefaultGameConfigProvider refactor | CONCLUIDO | 11 providers + facade + 64 vantagens |
 
 ---
@@ -100,27 +108,28 @@ Decisao do PO: a tela de habilidades para JOGADOR ficara em **secao separada** (
 
 ---
 
-## Proxima Sessao — Recomendacoes
+## Proxima Sessao — Homologacao / RC
 
-### Prioridade 1: Wave 3 — Spec 016 T11 + Spec 021 T2
+Todas as waves da sessao 19 foram concluidas. Spec 016 e Spec 021 estao 100%. O foco agora e **homologacao e validacao para RC**.
 
-1. **Verificar Spec 016 T11 FE** (inventario) — agente ainda rodando na Wave 2
-2. **Spec 021 T2 FE** — Frontend HabilidadeConfig (depende de T1 BE concluido)
-3. **Verificar S007-T12** — Insolitus UI — possivelmente pre-implementado (sem arquivo de task)
+### Prioridade 1: Validacao em producao
 
-### Prioridade 2: Alinhar path HabilidadeConfig
+| ID | Cenario | Criticidade |
+|----|---------|-------------|
+| BUG-PROD-01 | Validar CSS em hydrooon.com.br | Alta |
+| BUG-PROD-02 | Validar login OAuth sem "Erro 0" | Alta |
+| PA-R04-02 | Smoke test overlay clipping em 5 telas | Media |
+| PA-R04-03 | Decidir badge severity ficha-vantagens-tab (fix ou known issue) | Baixa |
+| PA-R04-04 | Decidir OOM ficha-wizard-passo4 (fix ou known issue) | Baixa |
 
-Antes de T2 FE, confirmar com Tech Lead se o path `/api/jogos/{jogoId}/config/habilidades` esta correto ou se deve migrar para `/api/v1/jogos/{jogoId}/configuracoes/habilidades`.
+### Prioridade 2: Verificacoes pendentes
 
-### Prioridade 3: Homologacao / RC
+1. **S007-T12** — Insolitus UI — possivelmente pre-implementado (sem arquivo de task)
+2. **Path HabilidadeConfig** — frontend T2 ja implementado com `/api/jogos/{jogoId}/config/habilidades` — confirmar se funciona em producao
 
-| ID | Cenario |
-|----|---------|
-| BUG-PROD-01 | Validar CSS em hydrooon.com.br |
-| BUG-PROD-02 | Validar login OAuth sem "Erro 0" |
-| PA-R04-02 | Smoke test overlay clipping em 5 telas |
-| PA-R04-03 | Decidir badge severity ficha-vantagens-tab (fix ou known issue) |
-| PA-R04-04 | Decidir OOM ficha-wizard-passo4 (fix ou known issue) |
+### Prioridade 3: Desejavel pre-RC
+
+- Spec 017 P1 (T8-T12 — PageHeader + toast cleanup, ~10h)
 
 ---
 
@@ -147,4 +156,4 @@ Antes de T2 FE, confirmar com Tech Lead se o path `/api/jogos/{jogoId}/config/ha
 - Micrometer Prometheus configurado para observability
 - OAuth2 com timeouts de 15s no token exchange e userinfo
 - vpc-egress configurado como private-ranges-only (nao all-traffic)
-- HabilidadeConfigController path divergente da spec — verificar antes do frontend
+- HabilidadeConfigController usa `/api/jogos/{jogoId}/config/habilidades` (nao `/api/v1/`) — frontend T2 ja implementado com esse path

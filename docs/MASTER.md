@@ -24,12 +24,12 @@
 | Sprint 2 | **ENCERRADO** — 34/35 tasks (97%) + 2 bonus. S007-T10 bloqueada PA-004. |
 | Sprint 3 | **ENCERRADO** — R12-R14 + Copilot R01-R07 + Waves 1-3. |
 | Sprint 4 | **INICIADO** — Tasks desbloqueadas (S007-T10, S015-T4) + Spec 023 + divida UX |
-| Specs com spec+plan+tasks | 005, 006, 007, 008, 009-ext, 011, 012, 014, 015, **021**, **023** (tasks por criar) |
+| Specs com spec+plan+tasks | 005, 006, 007, 008, 009-ext, 011, 012, 015, **021**, **023** (tasks por criar) |
 | Specs em especificacao | **Spec 023** (aprovada PO, tasks pendentes BA/TL) |
 | Decisoes PO | **TODAS RESOLVIDAS** (GAP-01 a GAP-08, INCONS-02, P-03, PA-001/002, Q14-Q17, PA-021-03, PA-004, PA-015-04, **Spec 023 aprovada**) |
 | MVP objetivo | Specs 005-009+012+015+016+021+**023** implementadas e testadas |
 | Total tasks MVP | **~115+** (estimado — inclui Spec 023 + UX fixes + NPC gaps) |
-| Specs CORTADAS | **Spec 010** (ADMIN roles), **Spec 013** (doc tecnica), **PA-017-04** (export/import) |
+| Specs CORTADAS | **Spec 010** (ADMIN roles), **Spec 013** (doc tecnica), **Spec 014** (cobertura testes — T2-T4+T6, cortada 2026-04-13), **PA-017-04** (export/import) |
 
 ---
 
@@ -52,7 +52,7 @@
 | **021** | **Sistema de Habilidades** | [`specs/021-sistema-habilidades/`](specs/021-sistema-habilidades/) | **P1** | ~4B / ~3F / **~7** | **CONCLUIDO** — BA + T1 BE + T2 FE (commit `caa0d2c`, +30 testes) |
 | **011** | **Galeria e Anotacoes** | [`specs/011-galeria-anotacoes/`](specs/011-galeria-anotacoes/) | — | 4B / 4F / **8** | CONCLUIDO 9/9 |
 | ~~013~~ | ~~Documentacao Tecnica~~ | — | **CORTADO** | — | CORTADO sessao 20 |
-| **014** | **Cobertura de Testes** | [`specs/014-cobertura-testes/`](specs/014-cobertura-testes/) | **STAND-BY** | 4B / 2F / **6** | Parcial — T1+T5 OK; T2-T4+T6 pendentes |
+| ~~014~~ | ~~Cobertura de Testes~~ | [`specs/014-cobertura-testes/`](specs/014-cobertura-testes/) | **CORTADO** | 4B / 2F / **6** | **CORTADO sessao 21 (2026-04-13)** — T1+T5 ja concluidos; T2-T4+T6 descartados pelo PO |
 | **023** | **Pre-requisitos Polimorficos Vantagem** | — | **P0** | ~6B / ~5F / **~11** | **NOVO** — aprovado PO sessao 20, tasks por criar (BA/TL) |
 | 008-old | Utilidade e Fluidez (dashboard, export/import) | — | — | — | Backend ~100% implementado (pre-existente) |
 | 009-old | NPC backend (fichas mestre, duplicacao) | — | — | — | Backend ~100% (457 testes, pre-existente) |
@@ -108,14 +108,15 @@ P1 — UX + NPC GAPS (NOVO sessao 20)
  10. NPC: raça/classe no cadastro + template nivel de dificuldade
 
 P2 — QUALIDADE
- 11. Spec 014 (Cobertura de Testes)        — JaCoCo, Vitest coverage, testes faltantes
-     6 tasks: 4 backend + 2 frontend
- 12. Auditoria BE→FE (features sem tela) + migracao 4 telas BaseConfigComponent + dialogs
+ 11. Auditoria BE→FE (features sem tela) + migracao 4 telas BaseConfigComponent + dialogs
 
 CORTADOS (sessao 20):
   - Spec 010 (Roles ADMIN refactor)
   - Spec 013 (Documentacao Tecnica)
   - PA-017-04 (Exportar/Importar config)
+
+CORTADOS (sessao 21, 2026-04-13):
+  - Spec 014 (Cobertura de Testes — T2-T4+T6); T1+T5 ja haviam sido entregues.
 ```
 
 **Caminho critico Sprint 4:** `S007-T10 (FE) + S015-T4 (BE)` em paralelo -> `S023-BE` -> `S023-FE` -> UX fixes -> NPC gaps
@@ -153,8 +154,8 @@ CORTADOS (sessao 20):
  +----> 012 (Niveis)
 
 APOS TODAS AS SPECS FUNCIONAIS:
-005-012+015+016 completas ──> 013 (Documentacao Tecnica)
-                          ──> 014 (Cobertura de Testes)
+005-012+015+016 completas ──> 013 (Documentacao Tecnica) — CORTADO
+                          ──> 014 (Cobertura de Testes) — CORTADO 2026-04-13
 ```
 
 **Dependencias especificas entre GAPs do Tech Lead:**
@@ -287,7 +288,7 @@ APOS TODAS AS SPECS FUNCIONAIS:
 | 011 — Galeria/Anotacoes | [`spec.md`](specs/011-galeria-anotacoes/spec.md), [`plan.md`](specs/011-galeria-anotacoes/plan.md), [`tasks/INDEX.md`](specs/011-galeria-anotacoes/tasks/INDEX.md) — 8 tasks |
 | 012 — Niveis/Progressao | [`spec.md`](specs/012-niveis-progressao-frontend/spec.md), [`plan.md`](specs/012-niveis-progressao-frontend/plan.md), [`tasks/INDEX.md`](specs/012-niveis-progressao-frontend/tasks/INDEX.md) — 12 tasks ativas (T12/T13 fora MVP) |
 | 013 — Documentacao Tecnica | [`spec.md`](specs/013-documentacao-tecnica/spec.md), [`plan.md`](specs/013-documentacao-tecnica/plan.md), [`tasks/INDEX.md`](specs/013-documentacao-tecnica/tasks/INDEX.md) — 6 tasks |
-| 014 — Cobertura de Testes | [`spec.md`](specs/014-cobertura-testes/spec.md), [`plan.md`](specs/014-cobertura-testes/plan.md), [`tasks/INDEX.md`](specs/014-cobertura-testes/tasks/INDEX.md) — 6 tasks |
+| ~~014 — Cobertura de Testes~~ | **CORTADO 2026-04-13** — [`spec.md`](specs/014-cobertura-testes/spec.md), [`plan.md`](specs/014-cobertura-testes/plan.md), [`tasks/INDEX.md`](specs/014-cobertura-testes/tasks/INDEX.md) — 6 tasks (T1+T5 entregues; T2-T4+T6 descartadas pelo PO) |
 | 015 — ConfigPontos + DefaultProvider | [`spec.md`](specs/015-config-pontos-classe-raca/spec.md), [`plan.md`](specs/015-config-pontos-classe-raca/plan.md), [`tasks/INDEX.md`](specs/015-config-pontos-classe-raca/tasks/INDEX.md) — **7 tasks** |
 | 016 — Sistema de Itens/Equipamentos | **100% ESPECIFICADA** — [`spec.md`](specs/016-sistema-itens/spec.md), [`tasks/INDEX.md`](specs/016-sistema-itens/tasks/INDEX.md), [`dataset/`](specs/016-sistema-itens/dataset/) — **11 tasks** |
 | Tech Lead Review | [`TECH-LEAD-BACKEND-REVIEW.md`](specs/TECH-LEAD-BACKEND-REVIEW.md) |

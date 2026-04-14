@@ -48,7 +48,7 @@ Nenhum codigo alterado nesta sessao — apenas tracking e priorizacao.
 | 009-ext | NPC Visibility + Prospeccao + Essencia | CONCLUIDO | — |
 | 011 | Galeria + Anotacoes | CONCLUIDO 9/9 | — |
 | 012 | Niveis e progressao (FE) | CONCLUIDO | — |
-| 014 | Cobertura de testes | Parcial | T1+T5 OK; T2-T4+T6 pendentes (P2) |
+| ~~014~~ | ~~Cobertura de testes~~ | **CORTADO** | Cortado pelo PO (2026-04-13). T1+T5 ja concluidos; T2-T4+T6 descartados |
 | 015 | ConfigPontos Classe/Raca | 6/7 | T4 DESBLOQUEADO — **P0 sessao 20** |
 | 016 | Sistema de Itens | CONCLUIDO | T1-T11 todos concluidos |
 | 017 | Correcoes Pre-RC | CONCLUIDO | P0+P1+P2+P3 |
@@ -61,6 +61,7 @@ Nenhum codigo alterado nesta sessao — apenas tracking e priorizacao.
 **Specs CORTADAS do backlog ativo:**
 - ~~Spec 010~~ (Roles ADMIN refactor) — CORTADO
 - ~~Spec 013~~ (Documentacao tecnica) — CORTADO
+- ~~Spec 014~~ (Cobertura de testes — T2-T4+T6) — CORTADO (2026-04-13 pelo PO)
 - ~~PA-017-04~~ (Exportar/Importar config) — CORTADO
 
 ---
@@ -94,7 +95,6 @@ Nenhum codigo alterado nesta sessao — apenas tracking e priorizacao.
 | 11 | UX-BASE-COMP | FE | Migrar 4 telas para BaseConfigComponent (habilidades, itens, raridades, tipos-item) | Nenhuma |
 | 12 | UX-DIALOG-WIDTH | FE | Padronizar largura de dialogs em 9 telas | Nenhuma |
 | 13 | UX-PREREQ-EMPTY | FE | Estado vazio aba pre-requisitos — CTA "Adicionar primeiro" | S023-FE |
-| 14 | S014-T2-T4+T6 | BE+FE | Cobertura de testes (JaCoCo 50% para 75%) | Nenhuma |
 
 ---
 

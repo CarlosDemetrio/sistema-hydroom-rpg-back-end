@@ -33,12 +33,12 @@
 | Rodadas concluidas | 0 (sprint recem-iniciado) |
 | Tasks P0 | 5 (S007-T10, S015-T4, S023-BE, UX-JOGO-SELECT, NPC-FORM-CAMPOS) |
 | Tasks P1 | 6 (S023-FE, UX-ACCEPT-BTN, UX-COR-PREVIEW, NPC-TEMPLATE, UX-TIPO-VANTAGEM, UX-NIVEL-MIN-PREREQ) |
-| Tasks P2 | 5 (AUDIT-BE-FE, UX-BASE-COMP, UX-DIALOG-WIDTH, UX-PREREQ-EMPTY, S014-T2-T4+T6) |
-| Total tasks Sprint 4 | **16** (5 P0 + 6 P1 + 5 P2) |
+| Tasks P2 | 4 (AUDIT-BE-FE, UX-BASE-COMP, UX-DIALOG-WIDTH, UX-PREREQ-EMPTY) |
+| Total tasks Sprint 4 | **15** (5 P0 + 6 P1 + 4 P2) |
 | Testes backend | **796 passando**, 0 falhas |
 | Testes frontend | **~1208 passando** + 2 falhas pre-existentes + 2 OOM pre-existentes |
 | Specs em andamento | Spec 007 (12/13 — T10 P0), Spec 015 (6/7 — T4 P0), **Spec 023** (NOVO) |
-| Specs CORTADAS | ~~Spec 010~~, ~~Spec 013~~, ~~PA-017-04~~ |
+| Specs CORTADAS | ~~Spec 010~~, ~~Spec 013~~, ~~Spec 014~~ (2026-04-13), ~~PA-017-04~~ |
 
 ### P0 — Tasks Ativas Sprint 4
 
@@ -69,7 +69,6 @@
 | 13 | UX-BASE-COMP | FE | Migrar 4 telas para BaseConfigComponent (habilidades, itens, raridades, tipos-item) | Nenhuma | [PENDENTE] |
 | 14 | UX-DIALOG-WIDTH | FE | Padronizar largura dialogs em 9 telas (width + maxWidth: 95vw) | Nenhuma | [PENDENTE] |
 | 15 | UX-PREREQ-EMPTY | FE | Estado vazio aba pre-requisitos — CTA "Adicionar primeiro pre-requisito" | S023-FE | [PENDENTE] |
-| 16 | S014-T2-T4+T6 | BE+FE | Cobertura de testes (JaCoCo 50% para 75%) | Nenhuma | [PENDENTE] |
 
 ### Spec 023 — Pre-requisitos Polimorficos de Vantagem (NOVO — aprovado PO sessao 20)
 
@@ -179,7 +178,6 @@ TRACK F — Backend + Frontend (independente):
   NPC-TEMPLATE (nivel dificuldade NPC — nova config BE + tela FE)
 
 TRACK G — Qualidade (P2):
-  S014-T2-T4+T6 (cobertura testes)
   AUDIT-BE-FE (auditoria features sem tela)
   UX-BASE-COMP (4 telas → BaseConfigComponent)
   UX-DIALOG-WIDTH (9 dialogs)
@@ -339,7 +337,7 @@ TRACK G — Qualidade (P2):
 | Tech Debt | INCONS-01 | 1 | API-CONTRACT.md desatualizado |
 | Tech Debt | DT-FE-01/02/03 | 3 | Divida tecnica frontend |
 | **P3** | **013** | **6** | **Documentacao Tecnica — Javadoc, OpenAPI, TSDoc, swagger.json** |
-| **P3** | **014** | **6** | **Cobertura de Testes — JaCoCo 75% branch, Vitest coverage, testes faltantes** |
+| ~~**P3**~~ | ~~**014**~~ | ~~**6**~~ | ~~**Cobertura de Testes — JaCoCo 75% branch, Vitest coverage, testes faltantes**~~ — **CORTADO pelo PO (2026-04-13)** |
 | Pos-MVP | GAP-PONTOS-CONFIG | — | Classe/Raca dando pontos extras por nivel (decisao PO: pos-MVP) |
 
 > **Nota Spec 016:** Especificacao **100% COMPLETA** (2026-04-04). 11 tasks (7B+4F), dataset D&D 5e SRD (40 itens), API contracts, UX wireframes — tudo pronto. SD-1 (Configuracao backend) pode iniciar implementacao no Sprint 3. SD-2 (Inventario/Calculos) depende de Spec 007 completa. 4 novos pontos pendentes para PO: PA-016-DS-01..04 (em PERGUNTAS-PENDENTES-PO.md).

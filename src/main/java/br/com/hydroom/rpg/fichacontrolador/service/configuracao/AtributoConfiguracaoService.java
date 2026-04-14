@@ -6,6 +6,7 @@ import br.com.hydroom.rpg.fichacontrolador.exception.ConflictException;
 import br.com.hydroom.rpg.fichacontrolador.exception.ValidationException;
 import br.com.hydroom.rpg.fichacontrolador.model.AtributoConfig;
 import br.com.hydroom.rpg.fichacontrolador.repository.ConfiguracaoAtributoRepository;
+import br.com.hydroom.rpg.fichacontrolador.repository.VantagemPreRequisitoRepository;
 import br.com.hydroom.rpg.fichacontrolador.service.FormulaEvaluatorService;
 import br.com.hydroom.rpg.fichacontrolador.service.configuracao.SiglaValidationService.TipoSigla;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,9 @@ public class AtributoConfiguracaoService extends AbstractConfiguracaoService<Atr
 
     @Autowired
     private FormulaEvaluatorService formulaEvaluatorService;
+
+    @Autowired
+    private VantagemPreRequisitoRepository vantagemPreRequisitoRepository;
 
     public AtributoConfiguracaoService(ConfiguracaoAtributoRepository repository) {
         super(repository, "Atributo");
@@ -103,6 +107,18 @@ public class AtributoConfiguracaoService extends AbstractConfiguracaoService<Atr
                     .formatted(String.join(", ", result.variaveisInvalidas()));
             throw new ValidationException(msg);
         }
+    }
+
+    @Override
+    @Transactional
+    public void deletar(Long id) {
+        long count = vantagemPreRequisitoRepository.countByAtributoId(id);
+        if (count > 0) {
+            throw new ConflictException(
+                "Não é possível excluir: AtributoConfig usado como pré-requisito em " + count + " vantagem(ns)."
+            );
+        }
+        super.deletar(id);
     }
 
     /**

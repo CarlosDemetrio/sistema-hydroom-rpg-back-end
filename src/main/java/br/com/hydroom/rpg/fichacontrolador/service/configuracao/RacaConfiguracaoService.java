@@ -14,6 +14,7 @@ import br.com.hydroom.rpg.fichacontrolador.repository.ConfiguracaoClasseReposito
 import br.com.hydroom.rpg.fichacontrolador.repository.ConfiguracaoRacaRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.RacaBonusAtributoRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.RacaClassePermitidaRepository;
+import br.com.hydroom.rpg.fichacontrolador.repository.VantagemPreRequisitoRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,9 @@ public class RacaConfiguracaoService extends AbstractConfiguracaoService<Raca, C
 
     @Autowired
     private ConfiguracaoClasseRepository classeRepository;
+
+    @Autowired
+    private VantagemPreRequisitoRepository vantagemPreRequisitoRepository;
 
     public RacaConfiguracaoService(ConfiguracaoRacaRepository repository) {
         super(repository, "Raça");
@@ -151,6 +155,18 @@ public class RacaConfiguracaoService extends AbstractConfiguracaoService<Raca, C
             throw new ValidationException("Classe permitida não pertence à raça informada.");
         }
         classePermitidaRepository.delete(rcp);
+    }
+
+    @Override
+    @Transactional
+    public void deletar(Long id) {
+        long count = vantagemPreRequisitoRepository.countByRacaId(id);
+        if (count > 0) {
+            throw new ConflictException(
+                "Não é possível excluir: Raça usada como pré-requisito em " + count + " vantagem(ns)."
+            );
+        }
+        super.deletar(id);
     }
 
     private void validateUniqueNome(String nome, Long jogoId) {

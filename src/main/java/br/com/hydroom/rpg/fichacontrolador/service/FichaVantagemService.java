@@ -11,7 +11,10 @@ import br.com.hydroom.rpg.fichacontrolador.model.VantagemConfig;
 import br.com.hydroom.rpg.fichacontrolador.model.VantagemPreRequisito;
 import br.com.hydroom.rpg.fichacontrolador.model.enums.OrigemVantagem;
 import br.com.hydroom.rpg.fichacontrolador.model.enums.RoleJogo;
+import br.com.hydroom.rpg.fichacontrolador.model.enums.TipoPreRequisito;
 import br.com.hydroom.rpg.fichacontrolador.model.enums.TipoVantagem;
+import br.com.hydroom.rpg.fichacontrolador.repository.FichaAtributoRepository;
+import br.com.hydroom.rpg.fichacontrolador.repository.FichaAptidaoRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.FichaRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.FichaVantagemRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.JogoParticipanteRepository;
@@ -25,8 +28,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Service para gerenciamento de vantagens de fichas.
@@ -50,6 +54,8 @@ public class FichaVantagemService {
     private final FichaVantagemRepository fichaVantagemRepository;
     private final VantagemConfigRepository vantagemConfigRepository;
     private final VantagemPreRequisitoRepository vantagemPreRequisitoRepository;
+    private final FichaAtributoRepository fichaAtributoRepository;
+    private final FichaAptidaoRepository fichaAptidaoRepository;
     private final JogoParticipanteRepository jogoParticipanteRepository;
     private final UsuarioRepository usuarioRepository;
     private final FormulaEvaluatorService formulaEvaluatorService;
@@ -80,32 +86,10 @@ public class FichaVantagemService {
         VantagemConfig vantagemConfig = vantagemConfigRepository.findById(vantagemConfigId)
                 .orElseThrow(() -> new ResourceNotFoundException("Vantagem não encontrada: " + vantagemConfigId));
 
-        // 5. Verificar pré-requisitos
+        // 5. Verificar pré-requisitos (lógica polimórfica OR-por-tipo AND-entre-tipos)
         List<VantagemPreRequisito> preRequisitos = vantagemPreRequisitoRepository.findByVantagemId(vantagemConfigId);
         if (!preRequisitos.isEmpty()) {
-            List<String> requisitosNaoAtendidos = new ArrayList<>();
-            for (VantagemPreRequisito prereq : preRequisitos) {
-                Long requisitoId = prereq.getRequisito().getId();
-                Integer nivelMinimo = prereq.getNivelMinimo();
-
-                boolean atendido = fichaVantagemRepository
-                        .findByFichaIdAndVantagemConfigId(fichaId, requisitoId)
-                        .map(fv -> fv.getNivelAtual() >= nivelMinimo)
-                        .orElse(false);
-
-                if (!atendido) {
-                    requisitosNaoAtendidos.add(
-                            "'" + prereq.getRequisito().getNome() + "' no nível " + nivelMinimo
-                    );
-                }
-            }
-
-            if (!requisitosNaoAtendidos.isEmpty()) {
-                throw new ValidationException(
-                        "Pré-requisitos não atendidos para comprar '" + vantagemConfig.getNome() + "': "
-                        + String.join(", ", requisitosNaoAtendidos)
-                );
-            }
+            verificarPreRequisitosPolimorficos(ficha, vantagemConfig.getNome(), preRequisitos);
         }
 
         // 6. Calcular custo para nível 1
@@ -263,6 +247,93 @@ public class FichaVantagemService {
     }
 
     // ==================== PRIVADOS ====================
+
+    /**
+     * Verifica os pré-requisitos polimórficos.
+     *
+     * <p>Regra:
+     * <ul>
+     *   <li>Pré-requisitos do <b>mesmo tipo</b> = OR (basta atender qualquer um do grupo)</li>
+     *   <li>Pré-requisitos de <b>tipos diferentes</b> = AND (todos os grupos devem ser atendidos)</li>
+     * </ul>
+     */
+    private void verificarPreRequisitosPolimorficos(Ficha ficha, String nomeVantagem,
+                                                    List<VantagemPreRequisito> preRequisitos) {
+        Map<TipoPreRequisito, List<VantagemPreRequisito>> gruposPorTipo = preRequisitos.stream()
+            .collect(Collectors.groupingBy(VantagemPreRequisito::getTipo));
+
+        for (Map.Entry<TipoPreRequisito, List<VantagemPreRequisito>> grupo : gruposPorTipo.entrySet()) {
+            boolean grupoAtendido = grupo.getValue().stream()
+                .anyMatch(prereq -> verificarPreRequisito(ficha, prereq));
+
+            if (!grupoAtendido) {
+                String descricaoGrupo = construirDescricaoGrupo(grupo.getKey(), grupo.getValue());
+                throw new ValidationException(
+                    "Pré-requisito não atendido para comprar '" + nomeVantagem + "': " + descricaoGrupo
+                );
+            }
+        }
+    }
+
+    private boolean verificarPreRequisito(Ficha ficha, VantagemPreRequisito prereq) {
+        return switch (prereq.getTipo()) {
+            case VANTAGEM -> verificarPreRequisitoVantagem(ficha.getId(), prereq);
+            case RACA -> verificarPreRequisitoRaca(ficha, prereq);
+            case CLASSE -> verificarPreRequisitoClasse(ficha, prereq);
+            case ATRIBUTO -> verificarPreRequisitoAtributo(ficha.getId(), prereq);
+            case NIVEL -> verificarPreRequisitoNivel(ficha, prereq);
+            case APTIDAO -> verificarPreRequisitoAptidao(ficha.getId(), prereq);
+        };
+    }
+
+    private boolean verificarPreRequisitoVantagem(Long fichaId, VantagemPreRequisito prereq) {
+        return fichaVantagemRepository
+            .findByFichaIdAndVantagemConfigId(fichaId, prereq.getRequisito().getId())
+            .map(fv -> fv.getNivelAtual() >= prereq.getNivelMinimo())
+            .orElse(false);
+    }
+
+    private boolean verificarPreRequisitoRaca(Ficha ficha, VantagemPreRequisito prereq) {
+        return ficha.getRaca() != null
+            && ficha.getRaca().getId().equals(prereq.getRaca().getId());
+    }
+
+    private boolean verificarPreRequisitoClasse(Ficha ficha, VantagemPreRequisito prereq) {
+        return ficha.getClasse() != null
+            && ficha.getClasse().getId().equals(prereq.getClasse().getId());
+    }
+
+    private boolean verificarPreRequisitoAtributo(Long fichaId, VantagemPreRequisito prereq) {
+        return fichaAtributoRepository
+            .findByFichaIdAndAtributoConfigId(fichaId, prereq.getAtributo().getId())
+            .map(fa -> fa.getBase() >= prereq.getValorMinimo())
+            .orElse(false);
+    }
+
+    private boolean verificarPreRequisitoNivel(Ficha ficha, VantagemPreRequisito prereq) {
+        return ficha.getNivel() >= prereq.getValorMinimo();
+    }
+
+    private boolean verificarPreRequisitoAptidao(Long fichaId, VantagemPreRequisito prereq) {
+        return fichaAptidaoRepository
+            .findByFichaIdAndAptidaoConfigId(fichaId, prereq.getAptidao().getId())
+            .map(fa -> fa.getBase() >= prereq.getValorMinimo())
+            .orElse(false);
+    }
+
+    private String construirDescricaoGrupo(TipoPreRequisito tipo, List<VantagemPreRequisito> grupo) {
+        String itens = grupo.stream()
+            .map(pr -> switch (tipo) {
+                case VANTAGEM -> "'" + pr.getRequisito().getNome() + "' nível " + pr.getNivelMinimo();
+                case RACA -> "Raça " + pr.getRaca().getNome();
+                case CLASSE -> "Classe " + pr.getClasse().getNome();
+                case ATRIBUTO -> pr.getAtributo().getNome() + " >= " + pr.getValorMinimo();
+                case NIVEL -> "Nível >= " + pr.getValorMinimo();
+                case APTIDAO -> pr.getAptidao().getNome() + " >= " + pr.getValorMinimo();
+            })
+            .collect(Collectors.joining(" ou "));
+        return itens;
+    }
 
     private void verificarAcessoLeitura(Ficha ficha) {
         Usuario usuarioAtual = getUsuarioAtual();

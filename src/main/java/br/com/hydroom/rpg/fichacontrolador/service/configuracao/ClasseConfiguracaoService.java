@@ -14,6 +14,7 @@ import br.com.hydroom.rpg.fichacontrolador.repository.ClasseBonusRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.ConfiguracaoAptidaoRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.ConfiguracaoClasseRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.BonusConfigRepository;
+import br.com.hydroom.rpg.fichacontrolador.repository.VantagemPreRequisitoRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,9 @@ public class ClasseConfiguracaoService extends AbstractConfiguracaoService<Class
 
     @Autowired
     private ConfiguracaoAptidaoRepository aptidaoRepository;
+
+    @Autowired
+    private VantagemPreRequisitoRepository vantagemPreRequisitoRepository;
 
     public ClasseConfiguracaoService(ConfiguracaoClasseRepository repository) {
         super(repository, "Classe");
@@ -152,6 +156,18 @@ public class ClasseConfiguracaoService extends AbstractConfiguracaoService<Class
             throw new ValidationException("Bônus de aptidão não pertence à classe informada.");
         }
         classeAptidaoBonusRepository.delete(cab);
+    }
+
+    @Override
+    @Transactional
+    public void deletar(Long id) {
+        long count = vantagemPreRequisitoRepository.countByClasseId(id);
+        if (count > 0) {
+            throw new ConflictException(
+                "Não é possível excluir: Classe usada como pré-requisito em " + count + " vantagem(ns)."
+            );
+        }
+        super.deletar(id);
     }
 
     private void validateUniqueNome(String nome, Long jogoId) {

@@ -25,6 +25,15 @@ public interface VantagemConfigMapper {
 
     @Mapping(target = "requisitoId", source = "requisito.id")
     @Mapping(target = "requisitoNome", source = "requisito.nome")
+    @Mapping(target = "racaId", source = "raca.id")
+    @Mapping(target = "racaNome", source = "raca.nome")
+    @Mapping(target = "classeId", source = "classe.id")
+    @Mapping(target = "classeNome", source = "classe.nome")
+    @Mapping(target = "atributoId", source = "atributo.id")
+    @Mapping(target = "atributoNome", source = "atributo.nome")
+    @Mapping(target = "atributoAbreviacao", source = "atributo.abreviacao")
+    @Mapping(target = "aptidaoId", source = "aptidao.id")
+    @Mapping(target = "aptidaoNome", source = "aptidao.nome")
     VantagemPreRequisitoResponse toPreRequisitoResponse(VantagemPreRequisito pr);
 
     @Mapping(target = "id", ignore = true)

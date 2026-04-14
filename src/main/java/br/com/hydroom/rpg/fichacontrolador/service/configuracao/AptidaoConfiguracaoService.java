@@ -4,7 +4,9 @@ import br.com.hydroom.rpg.fichacontrolador.exception.ConflictException;
 import br.com.hydroom.rpg.fichacontrolador.model.AptidaoConfig;
 import br.com.hydroom.rpg.fichacontrolador.model.TipoAptidao;
 import br.com.hydroom.rpg.fichacontrolador.repository.ConfiguracaoAptidaoRepository;
+import br.com.hydroom.rpg.fichacontrolador.repository.VantagemPreRequisitoRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,9 @@ import java.util.List;
 @Transactional(readOnly = true)
 @Slf4j
 public class AptidaoConfiguracaoService extends AbstractConfiguracaoService<AptidaoConfig, ConfiguracaoAptidaoRepository> {
+
+    @Autowired
+    private VantagemPreRequisitoRepository vantagemPreRequisitoRepository;
 
     public AptidaoConfiguracaoService(ConfiguracaoAptidaoRepository repository) {
         super(repository, "Aptidão");
@@ -70,6 +75,18 @@ public class AptidaoConfiguracaoService extends AbstractConfiguracaoService<Apti
         existente.setDescricao(atualizado.getDescricao());
         existente.setOrdemExibicao(atualizado.getOrdemExibicao());
         existente.setTipoAptidao(atualizado.getTipoAptidao());
+    }
+
+    @Override
+    @Transactional
+    public void deletar(Long id) {
+        long count = vantagemPreRequisitoRepository.countByAptidaoId(id);
+        if (count > 0) {
+            throw new ConflictException(
+                "Não é possível excluir: AptidaoConfig usada como pré-requisito em " + count + " vantagem(ns)."
+            );
+        }
+        super.deletar(id);
     }
 
     private void validateUniqueNome(String nome, Long jogoId) {

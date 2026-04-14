@@ -1,12 +1,22 @@
 package br.com.hydroom.rpg.fichacontrolador.service.configuracao;
 
 import br.com.hydroom.rpg.fichacontrolador.constants.ValidationMessages;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.configuracao.VantagemPreRequisitoRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.configuracao.FormulaValidationResult;
 import br.com.hydroom.rpg.fichacontrolador.exception.ConflictException;
 import br.com.hydroom.rpg.fichacontrolador.exception.ResourceNotFoundException;
 import br.com.hydroom.rpg.fichacontrolador.exception.ValidationException;
+import br.com.hydroom.rpg.fichacontrolador.model.AptidaoConfig;
+import br.com.hydroom.rpg.fichacontrolador.model.AtributoConfig;
+import br.com.hydroom.rpg.fichacontrolador.model.ClassePersonagem;
+import br.com.hydroom.rpg.fichacontrolador.model.Raca;
 import br.com.hydroom.rpg.fichacontrolador.model.VantagemConfig;
 import br.com.hydroom.rpg.fichacontrolador.model.VantagemPreRequisito;
+import br.com.hydroom.rpg.fichacontrolador.model.enums.TipoPreRequisito;
+import br.com.hydroom.rpg.fichacontrolador.repository.ConfiguracaoAptidaoRepository;
+import br.com.hydroom.rpg.fichacontrolador.repository.ConfiguracaoAtributoRepository;
+import br.com.hydroom.rpg.fichacontrolador.repository.ConfiguracaoClasseRepository;
+import br.com.hydroom.rpg.fichacontrolador.repository.ConfiguracaoRacaRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.VantagemConfigRepository;
 import br.com.hydroom.rpg.fichacontrolador.repository.VantagemPreRequisitoRepository;
 import br.com.hydroom.rpg.fichacontrolador.service.FormulaEvaluatorService;
@@ -43,6 +53,18 @@ public class VantagemConfiguracaoService extends AbstractConfiguracaoService<Van
 
     @Autowired
     private VantagemPreRequisitoRepository prerequisitoRepository;
+
+    @Autowired
+    private ConfiguracaoRacaRepository racaRepository;
+
+    @Autowired
+    private ConfiguracaoClasseRepository classeRepository;
+
+    @Autowired
+    private ConfiguracaoAtributoRepository atributoRepository;
+
+    @Autowired
+    private ConfiguracaoAptidaoRepository aptidaoRepository;
 
     public VantagemConfiguracaoService(VantagemConfigRepository repository) {
         super(repository, "Vantagem");
@@ -101,7 +123,28 @@ public class VantagemConfiguracaoService extends AbstractConfiguracaoService<Van
     }
 
     /**
-     * Adiciona um pré-requisito a uma vantagem, validando auto-referência, duplicata, jogo e ciclos.
+     * Adiciona um pré-requisito polimórfico a uma vantagem.
+     *
+     * <p>Delega para o método específico com base no {@code request.tipo()}.</p>
+     */
+    @Transactional
+    public VantagemPreRequisito adicionarPreRequisito(Long vantagemId, VantagemPreRequisitoRequest request) {
+        VantagemConfig vantagem = buscarPorId(vantagemId);
+        Long jogoId = vantagem.getJogo().getId();
+
+        return switch (request.tipo()) {
+            case VANTAGEM -> adicionarPreRequisitoVantagem(vantagem, jogoId, request);
+            case RACA -> adicionarPreRequisitoRaca(vantagem, jogoId, request);
+            case CLASSE -> adicionarPreRequisitoClasse(vantagem, jogoId, request);
+            case ATRIBUTO -> adicionarPreRequisitoAtributo(vantagem, jogoId, request);
+            case NIVEL -> adicionarPreRequisitoNivel(vantagem, request);
+            case APTIDAO -> adicionarPreRequisitoAptidao(vantagem, jogoId, request);
+        };
+    }
+
+    /**
+     * Sobrecarga para compatibilidade retroativa com o tipo VANTAGEM.
+     * Mantida para testes existentes que passam os parâmetros diretamente.
      */
     @Transactional
     public VantagemPreRequisito adicionarPreRequisito(Long vantagemId, Long requisitoId, Integer nivelMinimo) {
@@ -118,10 +161,126 @@ public class VantagemConfiguracaoService extends AbstractConfiguracaoService<Van
 
         VantagemPreRequisito pr = VantagemPreRequisito.builder()
             .vantagem(vantagem)
+            .tipo(TipoPreRequisito.VANTAGEM)
             .requisito(requisito)
             .nivelMinimo(nivelMinimo != null ? nivelMinimo : 1)
             .build();
         return prerequisitoRepository.save(pr);
+    }
+
+    private VantagemPreRequisito adicionarPreRequisitoVantagem(VantagemConfig vantagem, Long jogoId,
+                                                               VantagemPreRequisitoRequest request) {
+        if (request.requisitoId() == null) {
+            throw new ValidationException("requisitoId é obrigatório para pré-requisito do tipo VANTAGEM.");
+        }
+        VantagemConfig requisito = buscarPorId(request.requisitoId());
+        if (!jogoId.equals(requisito.getJogo().getId())) {
+            throw new ValidationException(ValidationMessages.VantagemPreRequisito.JOGOS_DIFERENTES);
+        }
+        if (prerequisitoRepository.existsByVantagemIdAndRequisitoId(vantagem.getId(), request.requisitoId())) {
+            throw new ConflictException(ValidationMessages.VantagemPreRequisito.JA_EXISTE);
+        }
+        verificarCiclo(vantagem.getId(), request.requisitoId());
+
+        return prerequisitoRepository.save(VantagemPreRequisito.builder()
+            .vantagem(vantagem)
+            .tipo(TipoPreRequisito.VANTAGEM)
+            .requisito(requisito)
+            .nivelMinimo(request.nivelMinimo() != null ? request.nivelMinimo() : 1)
+            .build());
+    }
+
+    private VantagemPreRequisito adicionarPreRequisitoRaca(VantagemConfig vantagem, Long jogoId,
+                                                           VantagemPreRequisitoRequest request) {
+        if (request.racaId() == null) {
+            throw new ValidationException("racaId é obrigatório para pré-requisito do tipo RACA.");
+        }
+        Raca raca = racaRepository.findById(request.racaId())
+            .orElseThrow(() -> new ResourceNotFoundException("Raça", request.racaId()));
+        if (!jogoId.equals(raca.getJogo().getId())) {
+            throw new ValidationException(ValidationMessages.VantagemPreRequisito.JOGOS_DIFERENTES);
+        }
+
+        return prerequisitoRepository.save(VantagemPreRequisito.builder()
+            .vantagem(vantagem)
+            .tipo(TipoPreRequisito.RACA)
+            .raca(raca)
+            .build());
+    }
+
+    private VantagemPreRequisito adicionarPreRequisitoClasse(VantagemConfig vantagem, Long jogoId,
+                                                             VantagemPreRequisitoRequest request) {
+        if (request.classeId() == null) {
+            throw new ValidationException("classeId é obrigatório para pré-requisito do tipo CLASSE.");
+        }
+        ClassePersonagem classe = classeRepository.findById(request.classeId())
+            .orElseThrow(() -> new ResourceNotFoundException("Classe", request.classeId()));
+        if (!jogoId.equals(classe.getJogo().getId())) {
+            throw new ValidationException(ValidationMessages.VantagemPreRequisito.JOGOS_DIFERENTES);
+        }
+
+        return prerequisitoRepository.save(VantagemPreRequisito.builder()
+            .vantagem(vantagem)
+            .tipo(TipoPreRequisito.CLASSE)
+            .classe(classe)
+            .build());
+    }
+
+    private VantagemPreRequisito adicionarPreRequisitoAtributo(VantagemConfig vantagem, Long jogoId,
+                                                               VantagemPreRequisitoRequest request) {
+        if (request.atributoId() == null) {
+            throw new ValidationException("atributoId é obrigatório para pré-requisito do tipo ATRIBUTO.");
+        }
+        if (request.valorMinimo() == null) {
+            throw new ValidationException("valorMinimo é obrigatório para pré-requisito do tipo ATRIBUTO.");
+        }
+        AtributoConfig atributo = atributoRepository.findById(request.atributoId())
+            .orElseThrow(() -> new ResourceNotFoundException("AtributoConfig", request.atributoId()));
+        if (!jogoId.equals(atributo.getJogo().getId())) {
+            throw new ValidationException(ValidationMessages.VantagemPreRequisito.JOGOS_DIFERENTES);
+        }
+
+        return prerequisitoRepository.save(VantagemPreRequisito.builder()
+            .vantagem(vantagem)
+            .tipo(TipoPreRequisito.ATRIBUTO)
+            .atributo(atributo)
+            .valorMinimo(request.valorMinimo())
+            .build());
+    }
+
+    private VantagemPreRequisito adicionarPreRequisitoNivel(VantagemConfig vantagem,
+                                                            VantagemPreRequisitoRequest request) {
+        if (request.valorMinimo() == null) {
+            throw new ValidationException("valorMinimo é obrigatório para pré-requisito do tipo NIVEL.");
+        }
+
+        return prerequisitoRepository.save(VantagemPreRequisito.builder()
+            .vantagem(vantagem)
+            .tipo(TipoPreRequisito.NIVEL)
+            .valorMinimo(request.valorMinimo())
+            .build());
+    }
+
+    private VantagemPreRequisito adicionarPreRequisitoAptidao(VantagemConfig vantagem, Long jogoId,
+                                                              VantagemPreRequisitoRequest request) {
+        if (request.aptidaoId() == null) {
+            throw new ValidationException("aptidaoId é obrigatório para pré-requisito do tipo APTIDAO.");
+        }
+        if (request.valorMinimo() == null) {
+            throw new ValidationException("valorMinimo é obrigatório para pré-requisito do tipo APTIDAO.");
+        }
+        AptidaoConfig aptidao = aptidaoRepository.findById(request.aptidaoId())
+            .orElseThrow(() -> new ResourceNotFoundException("AptidaoConfig", request.aptidaoId()));
+        if (!jogoId.equals(aptidao.getJogo().getId())) {
+            throw new ValidationException(ValidationMessages.VantagemPreRequisito.JOGOS_DIFERENTES);
+        }
+
+        return prerequisitoRepository.save(VantagemPreRequisito.builder()
+            .vantagem(vantagem)
+            .tipo(TipoPreRequisito.APTIDAO)
+            .aptidao(aptidao)
+            .valorMinimo(request.valorMinimo())
+            .build());
     }
 
     /**

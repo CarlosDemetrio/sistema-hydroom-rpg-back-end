@@ -117,8 +117,7 @@ public class VantagemController {
     public ResponseEntity<VantagemPreRequisitoResponse> adicionarPreRequisito(
             @PathVariable Long id,
             @Valid @RequestBody VantagemPreRequisitoRequest request) {
-        VantagemPreRequisito pr = configuracaoService.adicionarPreRequisito(
-            id, request.requisitoId(), request.nivelMinimo());
+        VantagemPreRequisito pr = configuracaoService.adicionarPreRequisito(id, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toPreRequisitoResponse(pr));
     }
 

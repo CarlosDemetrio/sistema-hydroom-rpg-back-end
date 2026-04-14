@@ -12,5 +12,6 @@ public record FichaVantagemResponse(
     Integer nivelAtual,
     Integer nivelMaximo,
     Integer custoPago,
-    Boolean concedidoPeloMestre
+    Boolean concedidoPeloMestre,
+    String origem
 ) {}

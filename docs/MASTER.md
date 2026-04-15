@@ -9,7 +9,7 @@
 > Para ver o estado da ultima sessao: `HANDOFF-SESSAO.md`.
 > Para ver o mapa completo de docs/: `README.md`.
 >
-> Ultima atualizacao: 2026-04-14 (rev.17 — sessao 20 Wave P0 CONCLUIDA: S007-T10 FE, S015-T4, S023-BE, UX jogo/cor, NPC form — 814 BE / 1258 FE) | Branch: `main`
+> Ultima atualizacao: 2026-04-14 (rev.18 — sessao 20 Wave P0+P1w2 CONCLUIDA: + S023-FE, UX mass fix 13-14 telas, NPC dificuldade BE, BaseConfig migration — 832 BE / ~1360 FE) | Branch: `main`
 
 ---
 
@@ -17,13 +17,13 @@
 
 | Metrica | Valor |
 |---------|-------|
-| Backend testes | **814 passando**, 0 falhas (+18 Spec 023 BE) |
-| Frontend testes | **1258 passando** (+22 Wave P0; 2 falhas pre-existentes ficha-vantagens-tab) |
+| Backend testes | **832 passando**, 0 falhas (+18 NPC-DIFICULDADE-BE wave 2) |
+| Frontend testes | **~1360 passando** (+56 S023-FE + ~46 wave 2; 2 falhas pre-existentes ficha-vantagens-tab) |
 | Frontend build | 0 erros, 0 warnings |
 | Sprint 1 | **CONCLUIDO** (94%, 29/31 tasks) |
 | Sprint 2 | **ENCERRADO** — 34/35 tasks (97%) + 2 bonus. S007-T10 bloqueada PA-004. |
 | Sprint 3 | **ENCERRADO** — R12-R14 + Copilot R01-R07 + Waves 1-3. |
-| Sprint 4 | **Wave P0 CONCLUIDA** (5/5) — S007-T10 FE + S015-T4 + S023-BE + UX jogo/cor + NPC form. Proximo: Wave P1 (S023-FE + UX-ACCEPT-BTN) |
+| Sprint 4 | **Wave P0 + Wave P1w2 CONCLUIDAS** (9/9) — P0: S007-T10 + S015-T4 + S023-BE + UX jogo/cor + NPC form. P1w2: S023-FE + UX mass fix + NPC-DIFICULDADE-BE + BaseConfig migration. Proximo: GAPs BE->FE (XP/Insolitus/Prospeccao/NPC-dificuldade-FE) |
 | Specs com spec+plan+tasks | 005, 006, 007, 008, 009-ext, 011, 012, 015, **021**, **023** (tasks por criar) |
 | Specs em especificacao | **Spec 023** (aprovada PO, tasks pendentes BA/TL) |
 | Decisoes PO | **TODAS RESOLVIDAS** (GAP-01 a GAP-08, INCONS-02, P-03, PA-001/002, Q14-Q17, PA-021-03, PA-004, PA-015-04, **Spec 023 aprovada**) |
@@ -53,7 +53,7 @@
 | **011** | **Galeria e Anotacoes** | [`specs/011-galeria-anotacoes/`](specs/011-galeria-anotacoes/) | — | 4B / 4F / **8** | CONCLUIDO 9/9 |
 | ~~013~~ | ~~Documentacao Tecnica~~ | — | **CORTADO** | — | CORTADO sessao 20 |
 | ~~014~~ | ~~Cobertura de Testes~~ | [`specs/014-cobertura-testes/`](specs/014-cobertura-testes/) | **CORTADO** | 4B / 2F / **6** | **CORTADO sessao 21 (2026-04-13)** — T1+T5 ja concluidos; T2-T4+T6 descartados pelo PO |
-| **023** | **Pre-requisitos Polimorficos Vantagem** | — | **P0** | ~6B / ~5F / **~11** | **BE CONCLUIDO** (commit `934eaff`, 6 tipos AND/OR, +18 testes). FE pendente = **P1 PRIORITARIO** |
+| **023** | **Pre-requisitos Polimorficos Vantagem** | — | **P0** | ~6B / ~5F / **~11** | **CONCLUIDO BE+FE** — BE commit `934eaff` (+18 testes), FE commit `d08d1c9` (+56 testes, aba polimorfica) |
 | 008-old | Utilidade e Fluidez (dashboard, export/import) | — | — | — | Backend ~100% implementado (pre-existente) |
 | 009-old | NPC backend (fichas mestre, duplicacao) | — | — | — | Backend ~100% (457 testes, pre-existente) |
 
@@ -119,8 +119,8 @@ CORTADOS (sessao 21, 2026-04-13):
   - Spec 014 (Cobertura de Testes — T2-T4+T6); T1+T5 ja haviam sido entregues.
 ```
 
-**Caminho critico Sprint 4 (atualizado Wave P0):** ~~S007-T10 FE~~ + ~~S015-T4 BE~~ + ~~S023-BE~~ + ~~UX jogo/cor~~ + ~~NPC form~~ → **S023-FE (Wave P1 proximo)** → UX-ACCEPT-BTN → demais P1/P2
-**Paralelo possivel (Wave P1):** S023-FE (FE) || UX-ACCEPT-BTN (FE — dominios diferentes)
+**Caminho critico Sprint 4 (atualizado Wave P0 + P1w2):** ~~Wave P0 5/5~~ + ~~S023-FE~~ + ~~UX mass fix~~ + ~~NPC-DIFICULDADE-BE~~ + ~~BaseConfig migration~~ → **GAPs BE->FE P1 (XP/Insolitus/Prospeccao/NPC-FE)** → UX-TIPO-VANTAGEM → demais P1/P2
+**Paralelo possivel (proxima rodada):** telas Mestre (XP/Insolitus/Prospeccao/NPC form) — dominios independentes
 **CORTADO:** Spec 010 (Roles) e Spec 013 (Docs) removidas do backlog ativo (sessao 20)
 
 ---
@@ -241,10 +241,11 @@ APOS TODAS AS SPECS FUNCIONAIS:
 | Risco | Impacto | Mitigacao |
 |-------|---------|-----------|
 | PA-006 nao resolvido | VIG/SAB hardcoded (GAP-CALC-09) | Fora do escopo T0; PO decide |
-| ~~Spec 023 refatora VantagemPreRequisito~~ | ~~Schema change em tabela existente~~ | **RESOLVIDO (Wave P0)** — Hibernate `ddl-auto=update` aplica alteracoes; sem Flyway |
-| 17 telas com acceptButtonProps deprecated | Botao confirmar exclusao pode nao aparecer vermelho | Fix rapido (P1), sem impacto funcional |
-| ~~NPC sem raça/classe no cadastro~~ | — | **RESOLVIDO (Wave P0)** — form ja suportava os campos + testes de cobertura |
-| Divida UX acumulada (dialogs, BaseConfig, cores) | UX inconsistente | P1/P2 — nao bloqueia funcionalidade |
+| ~~Spec 023 refatora VantagemPreRequisito~~ | — | **RESOLVIDO (Wave P0+P1w2)** — BE+FE entregues |
+| ~~17 telas com acceptButtonProps deprecated~~ | — | **RESOLVIDO (wave 2)** — UX mass fix em 13-14 telas (commit `141b054`) |
+| ~~NPC sem raça/classe no cadastro~~ | — | **RESOLVIDO (Wave P0)** — form ja suportava os campos |
+| GAPs BE->FE descobertos (XP/Insolitus/Prospeccao/Dashboard/Export) | Endpoints sem tela — Mestre nao consegue usar | Adicionados ao backlog P1/P2 (sessao 20) |
+| ~~Divida UX (dialogs, BaseConfig parcial)~~ | — | **REDUZIDO (wave 2)** — dialog widths padronizados + 2 telas migradas para BaseConfig |
 
 ---
 
@@ -357,4 +358,4 @@ APOS TODAS AS SPECS FUNCIONAIS:
 ---
 
 *Este documento e a fonte unica de verdade para navegacao do projeto. Atualizar a cada sessao.*
-*Ultima revisao: 2026-04-14 (rev.17 — sessao 20 Wave P0 CONCLUIDA: S007-T10 FE + S015-T4 + S023-BE + UX jogo/cor + NPC form, 814B/1258F testes)*
+*Ultima revisao: 2026-04-14 (rev.18 — sessao 20 Wave P0 + Wave P1 wave 2 CONCLUIDAS: S023-FE + UX mass fix + NPC-DIFICULDADE-BE + BaseConfig migration, 832B/~1360F testes)*

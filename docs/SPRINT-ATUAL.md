@@ -6,9 +6,9 @@
 > Para detalhes por area e historico, ver `PM.md`.
 > Para estado da ultima sessao, ver `HANDOFF-SESSAO.md`.
 >
-> Atualizado: 2026-04-14 (sessao 20 — **Wave P0 CONCLUIDA** 5/5 tasks entregues)
+> Atualizado: 2026-04-14 (sessao 20 — **Wave P0 + Wave P1 wave 2 CONCLUIDAS** 9/9 tasks entregues)
 > PM: Scrum Orchestrator
-> Objetivo: **Wave P0 CONCLUIDA — passa para Wave P1 (S023-FE + UX-ACCEPT-BTN + NPC-TEMPLATE)**
+> Objetivo: **Wave P1 wave 2 CONCLUIDA — passa para GAPs auditoria BE->FE (XP/Insolitus/Prospeccao/NPC-FE)**
 > Duracao estimada: 2-3 semanas
 > Cronologia: `docs/historico/CRONOLOGIA.md` | Rodadas: `docs/tracking/rodadas/` | Copilot: `docs/tracking/rodadas-copilot/`
 
@@ -30,14 +30,15 @@
 
 | Metrica | Valor |
 |---------|-------|
-| Rodadas concluidas | 1 (Wave P0) |
+| Rodadas concluidas | 2 (Wave P0 + Wave P1 wave 2) |
 | Tasks P0 | **5/5 CONCLUIDAS** (S007-T10, S015-T4, S023-BE, UX-JOGO-SELECT+COR-PREVIEW, NPC-FORM-CAMPOS) |
-| Tasks P1 | 5 (S023-FE, UX-ACCEPT-BTN, NPC-TEMPLATE, UX-TIPO-VANTAGEM, UX-NIVEL-MIN-PREREQ) |
-| Tasks P2 | 4 (AUDIT-BE-FE, UX-BASE-COMP, UX-DIALOG-WIDTH, UX-PREREQ-EMPTY) |
-| Total tasks Sprint 4 | **14** (5 P0 CONCLUIDAS + 5 P1 + 4 P2) |
-| Testes backend | **814 passando**, 0 falhas (+18 Spec 023) |
-| Testes frontend | **1258 passando** (+22 Wave P0) + 2 falhas pre-existentes + 2 OOM pre-existentes |
-| Specs em andamento | Spec 007 (13/13 CONCLUIDA), Spec 015 (7/7 CONCLUIDA), **Spec 023** (BE CONCLUIDO, FE pendente) |
+| Tasks P1 wave 2 | **4/4 CONCLUIDAS** (S023-FE, UX mass fix 13-14 telas, NPC-DIFICULDADE-BE, BaseConfig migration) |
+| Tasks P1 pendentes | 6 (GAP-XP-01, GAP-INS-01, GAP-PROS-01, GAP-NPC-FE-01, UX-TIPO-VANTAGEM, UX-NIVEL-MIN-PREREQ) |
+| Tasks P2 | 5 (GAP-DASH-01, GAP-EXPRT-01, AUDIT-BE-FE, UX-BASE-COMP, UX-PREREQ-EMPTY) |
+| Total tasks Sprint 4 | **20** (9 CONCLUIDAS + 6 P1 pend + 5 P2) |
+| Testes backend | **832 passando**, 0 falhas (+18 NPC-DIFICULDADE-BE wave 2) |
+| Testes frontend | **~1360 passando** (+56 S023-FE + ~46 wave 2) + 2 falhas pre-existentes + 2 OOM pre-existentes |
+| Specs em andamento | Spec 007 (13/13), Spec 015 (7/7), **Spec 023** (BE+FE CONCLUIDOS) |
 | Specs CORTADAS | ~~Spec 010~~, ~~Spec 013~~, ~~Spec 014~~ (2026-04-13), ~~PA-017-04~~ |
 
 ### P0 — Tasks Ativas Sprint 4 (Wave P0 — CONCLUIDA 2026-04-14)
@@ -50,24 +51,35 @@
 | 4 | UX-JOGO-SELECT + UX-COR-PREVIEW | FE | Game selector no ConfigLayoutComponent + p-colorpicker bidirecional em raridades | Nenhuma | **[CONCLUIDO]** (+22 testes -> 1258 total) |
 | 5 | NPC-FORM-CAMPOS | FE | Raça/Classe/configs no formulario de criacao de NPC | Spec 009 OK | **[CONCLUIDO]** (pre-impl + 2 testes de cobertura) |
 
-### P1 — Proxima Rodada (Wave P1)
+### P1 wave 2 — CONCLUIDA (sessao 20, 2026-04-14)
+
+| # | ID | Tipo | Descricao | Status |
+|---|-----|------|-----------|--------|
+| 6 | S023-FE | FE | Aba pre-requisitos polimorfica + chips removiveis por tipo | **[CONCLUIDO]** (+56 testes, commit `d08d1c9`) |
+| 7 | UX mass fix (acceptButtonProps + dialog widths) | FE | Corrigido em 13-14 telas de config | **[CONCLUIDO]** (commit `141b054`) |
+| 8 | NPC-DIFICULDADE-BE | BE | NpcDificuldadeConfig + enum FocoNpc (FISICO/MAGICO) | **[CONCLUIDO]** (+18 testes -> 832 total) |
+| 9 | BaseConfig migration | FE | habilidades-config + tipos-item-config → BaseConfigComponent | **[CONCLUIDO]** (+23 testes cada, commit `f30e74d`) |
+
+### P1 — Pendentes (proxima rodada — GAPs auditoria BE->FE)
 
 | # | ID | Tipo | Descricao | Dependencia | Status |
 |---|-----|------|-----------|-------------|--------|
-| 6 | S023-FE | FE | Aba pre-requisitos polimorfica + chips removiveis por tipo | S023-BE CONCLUIDO | **[PENDENTE]** — P1 PRIORITARIO |
-| 7 | UX-ACCEPT-BTN | FE | acceptButtonProps deprecated em 17 telas → `acceptButtonProps: { severity: 'danger' }` | Nenhuma | [PENDENTE] |
-| 8 | NPC-TEMPLATE | BE+FE | Config nivel dificuldade NPC (Facil/Medio/Dificil/Elite/Chefe) + foco FISICO/MAGICO | Nenhuma | [PENDENTE] |
-| 9 | UX-TIPO-VANTAGEM | FE | tipoVantagem no form criacao vantagem (fix: Insolitus nao pode ser criado hoje) | Nenhuma | [PENDENTE] |
-| 10 | UX-NIVEL-MIN-PREREQ | FE | nivelMinimo exibido na lista de pre-req tipo VANTAGEM | S023-FE | [PENDENTE] |
+| 10 | GAP-XP-01 | FE | Tela Mestre `PUT /fichas/{id}/xp` (conceder XP) | Nenhuma | [PENDENTE] |
+| 11 | GAP-INS-01 | FE | UI selecao/concessao Insolitus (service FE ja existe) | Nenhuma | [PENDENTE] |
+| 12 | GAP-PROS-01 | FE | Tela Mestre `GET /jogos/{id}/prospeccao/pendentes` | Nenhuma | [PENDENTE] |
+| 13 | GAP-NPC-FE-01 | FE | Selector dificuldade no form NPC + auto-preenchimento atributos | NPC-DIFICULDADE-BE OK | [PENDENTE] |
+| 14 | UX-TIPO-VANTAGEM | FE | tipoVantagem no form criacao vantagem (Insolitus) | Nenhuma | [PENDENTE] |
+| 15 | UX-NIVEL-MIN-PREREQ | FE | nivelMinimo na lista pre-req VANTAGEM | S023-FE OK | [PENDENTE] |
 
 ### P2 — Pos
 
 | # | ID | Tipo | Descricao | Dependencia | Status |
 |---|-----|------|-----------|-------------|--------|
-| 12 | AUDIT-BE-FE | Auditoria | Auditar endpoints backend sem tela frontend | Nenhuma | [PENDENTE] |
-| 13 | UX-BASE-COMP | FE | Migrar 4 telas para BaseConfigComponent (habilidades, itens, raridades, tipos-item) | Nenhuma | [PENDENTE] |
-| 14 | UX-DIALOG-WIDTH | FE | Padronizar largura dialogs em 9 telas (width + maxWidth: 95vw) | Nenhuma | [PENDENTE] |
-| 15 | UX-PREREQ-EMPTY | FE | Estado vazio aba pre-requisitos — CTA "Adicionar primeiro pre-requisito" | S023-FE | [PENDENTE] |
+| 16 | GAP-DASH-01 | FE | Tela Mestre `GET /jogos/{id}/dashboard` | Nenhuma | [PENDENTE] |
+| 17 | GAP-EXPRT-01 | FE | Interface Export/Import config | Nenhuma | [PENDENTE] |
+| 18 | AUDIT-BE-FE | Auditoria | Auditar demais endpoints backend sem tela | Nenhuma | [PENDENTE] |
+| 19 | UX-BASE-COMP | FE | Migrar telas restantes (itens, raridades) para BaseConfigComponent | Nenhuma | [PENDENTE] |
+| 20 | UX-PREREQ-EMPTY | FE | Estado vazio aba pre-req — CTA "Adicionar primeiro pre-requisito" | S023-FE OK | [PENDENTE] |
 
 ### Spec 023 — Pre-requisitos Polimorficos de Vantagem (NOVO — aprovado PO sessao 20)
 
@@ -80,24 +92,25 @@
 - Mudanca de raca/classe NAO revoga vantagem — Mestre decide manualmente
 
 **Backend (CONCLUIDO — Wave P0, commit `934eaff`):**
-- ~~Refatorar entidade VantagemPreRequisito: coluna `tipo`, campos nullable (`raca_id`, `classe_id`, `atributo_id`, `aptidao_id`, `valor_minimo`)~~ FEITO
-- Schema: **Hibernate `ddl-auto=update`** aplica alteracoes automaticamente (sem Flyway, sem migracao manual)
+- ~~Refatorar entidade VantagemPreRequisito: coluna `tipo`, campos nullable~~ FEITO
+- Schema: **Hibernate `ddl-auto=update`** aplica alteracoes automaticamente
 - ~~FichaVantagemService.comprar() — verificacao por tipo (OR intra-tipo, AND entre tipos)~~ FEITO
 - ~~409 ao deletar Raca/Classe/Atributo/Aptidao usada como pre-req~~ FEITO
 - ~~Concessao Insolitus + VantagemPreDefinida (SISTEMA) ignora pre-requisitos~~ FEITO
 
-**Frontend (tasks por criar por BA/TL):**
-- Select de tipo → campos condicionais
-- Chips removiveis: `[RACA] Elfo OU Anao`, `[ATRIBUTO] FOR >= 14`
-- Hint "Requisitos do mesmo tipo sao alternativos (OU)"
+**Frontend (CONCLUIDO — Wave P1 wave 2, commit `d08d1c9`, +56 testes):**
+- ~~Select de tipo → campos condicionais~~ FEITO
+- ~~Chips removiveis por tipo~~ FEITO
+- ~~Hint OR intra-tipo / AND entre tipos~~ FEITO
 | S017-T11 | jogo-form adicionar p-toast | PENDENTE |
 | S017-T12 | Remover double-toast em 19 componentes | PENDENTE |
 
 ### Bloqueados
-- **S023-BE**: Aguarda BA/TL criarem tasks individuais (spec aprovada, tasks por escrever)
-- **S023-FE**: Depende de S023-BE
-- **UX-PREREQ-EMPTY**: Depende de S023-FE
-- **UX-NIVEL-MIN-PREREQ**: Depende de S023-FE
+- ~~**S023-BE**~~: RESOLVIDO (Wave P0, commit `934eaff`)
+- ~~**S023-FE**~~: RESOLVIDO (Wave P1 wave 2, commit `d08d1c9`)
+- **UX-PREREQ-EMPTY**: Desbloqueado (S023-FE OK) — P2
+- **UX-NIVEL-MIN-PREREQ**: Desbloqueado (S023-FE OK) — P1
+- **GAP-NPC-FE-01**: Desbloqueado (NPC-DIFICULDADE-BE OK) — P1
 
 ### PAs abertos
 | ID | Descricao | Bloqueia | Status |

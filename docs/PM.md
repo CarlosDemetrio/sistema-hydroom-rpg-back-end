@@ -7,7 +7,7 @@
 > Ponto de entrada rapido: `HANDOFF-SESSAO.md` → `MASTER.md` → `PM.md`.
 > Mapa completo de docs: `README.md`.
 >
-> Gerado em: 2026-04-01 | Atualizado: 2026-04-15 (sessao 20, rev.20 — Wave P0 + P1w2 + P1w3 CONCLUIDAS + Spec 024 criada (T2 ja entregue via 023 FE; T1 UX-TIPO-VANTAGEM PENDENTE), 832 BE / ~1433 FE, ~98% completude) | Branch: `main`
+> Gerado em: 2026-04-01 | Atualizado: 2026-04-15 (sessao 21, rev.21 — Rodada 17: Spec 024 CONCLUIDA (2/2) + UX-BASE-COMP (raridades + itens) + GAP-DASH-01 + UX-PREREQ-EMPTY. 832 BE / ~1525 FE, ~99% completude) | Branch: `main`
 > Cronologia: `docs/historico/CRONOLOGIA.md`
 
 ---
@@ -19,7 +19,7 @@
 | Backend: Infraestrutura | 100% | Schema gerenciado pelo Hibernate (ddl-auto). Sem DDL manual necessario para 0.0.1-RC. |
 | Backend: Configuracoes (13 CRUDs) | 100% | Todos com testes de integracao |
 | Backend: Motor de Formulas | **100%** | 7/8 TipoEfeito + 20 testes integracao. FORMULA_CUSTOMIZADA desbloqueado (PA-004 resolvido). Frontend: T9/T10/T11/T12 CONCLUIDOS (T10 entregue Wave P0, 54 testes). |
-| Backend: Conceder XP / Insolitus / Prospeccao | **100%** | Endpoints `PUT /fichas/{id}/xp`, concessao Insolitus e `GET /jogos/{id}/prospeccao/pendentes` agora com UI Mestre (wave 3) |
+| Backend: Conceder XP / Insolitus / Prospeccao | **100%** | Endpoints `PUT /fichas/{id}/xp`, concessao Insolitus e `GET /jogos/{id}/prospeccao/pendentes` com UI Mestre (wave 3) |
 | Backend: NPC dificuldade | **100%** | NpcDificuldadeConfig + FocoNpc (BE wave 2) com selector + auto-fill no FE (wave 3) |
 | Backend: Ficha de Personagem (Spec 006/007) | **100%** | Wizard 6 passos completo (T6-T13). S006-T1/T2/T4/T5 backend CONCLUIDOS. PUT /fichas/{id}/completar funcional. Navega para FichaDetail. |
 | Backend: NPC + Duplicacao (Spec 009) | **100%** | POST /jogos/{id}/npcs + POST /fichas/{id}/duplicar implementados. |
@@ -29,13 +29,13 @@
 | Backend: Perfil Usuario | **100%** | GET/PUT /api/v1/usuarios/me implementado e testado |
 | Backend: Participantes (Spec 005) | **100%** | P1T1/P1T2/P1T3 + P2T1/P2T2/P2T3 CONCLUIDOS (6/6). Strategy Reactivate, banir/desbanir/remover/meu-status, JogoDetail Mestre, JogosDisponiveis Jogador. |
 | Frontend: Modelos e Servicos de API | **100%** | Sub-recursos (008), PontosVantagem/CategoriaVantagem (012), FichaVisibilidade + Prospeccao (009-ext) CONCLUIDOS. |
-| Frontend: Componentes | **~99.5%** | + S023-FE (aba polimorfica), UX mass fix 13-14 telas, BaseConfig migration (habilidades + tipos-item). **Wave 3:** GAP-NPC-FE-01 + GAP-XP-01 + GAP-INS-01 + GAP-PROS-01. Falta apenas P2 (Dashboard + Export/Import + 2 telas BaseConfig restantes). |
-| Frontend: Testes | **100%** | **~1433 passando** (+73 wave 3 sobre ~1360 wave 2; 2 falhas pre-existentes ficha-vantagens-tab) |
+| Frontend: Componentes | **~99.9%** | + S023-FE, UX mass fix, BaseConfig migration (habilidades + tipos-item + raridades + itens). **Wave 3:** GAP-NPC-FE-01 + GAP-XP-01 + GAP-INS-01 + GAP-PROS-01. **R17:** Spec 024 T1 + GAP-DASH-01. Falta apenas P2 residual (AUDIT-BE-FE baixa prio; GAP-EXPRT-01 bloqueado BE). |
+| Frontend: Testes | **100%** | **~1525 passando** (+92 R17 sobre ~1433 wave 3; 2 falhas pre-existentes ficha-vantagens-tab) |
 
-**Completude geral estimada: ~98%** (Sprint 4 Wave P0 + Wave P1 wave 2 + Wave P1 wave 3 CONCLUIDAS — 13/13 tasks)
-**Backend: 832 testes, 0 falhas (sem alteracoes na wave 3)**
-**Frontend: ~1433 testes passando** (+73 wave 3)
-**Total tasks MVP: ~120+** (estimado — inclui Spec 023, UX fixes, NPC gaps + 6 GAPs auditoria BE->FE — 4/6 entregues)
+**Completude geral estimada: ~99%** (Sprint 4 Wave P0 + P1w2 + P1w3 + R17 CONCLUIDAS — 17/17 tasks P1 + 3/5 P2)
+**Backend: 832 testes, 0 falhas (sem alteracoes na R17)**
+**Frontend: ~1525 testes passando** (+92 R17)
+**Total tasks MVP: ~120+** (estimado — inclui Spec 023, Spec 024, UX fixes, NPC gaps + 6 GAPs auditoria BE->FE — 5/6 entregues; GAP-EXPRT-01 bloqueado)
 
 ---
 
@@ -127,7 +127,10 @@
 - **Spec 015 (7/7 CONCLUIDA)** — 4 entidades ConfigPontos, 14 CRUD endpoints, pontos integrados no FichaResumoResponse, DefaultProvider 8 bugs corrigidos, T6/T7 FE concluidos. **T4 CONCLUIDO (Wave P0)** — auto-concessao ja existia como OrigemVantagem, Wave P0 expôs campo `origem` no FichaVantagemResponse (commit `4c04a54`).
 - **Spec 023 (CONCLUIDO BE+FE)** — Pre-requisitos polimorficos: 6 tipos (VANTAGEM/RACA/CLASSE/ATRIBUTO/NIVEL/APTIDAO), OR dentro do tipo + AND entre tipos, 409 em delecao. BE commit `934eaff` (+18 testes), FE commit `d08d1c9` (+56 testes, aba polimorfica + chips removiveis). Schema aplicado por Hibernate `ddl-auto=update`.
 - **NPC Dificuldade BE (NOVO wave 2)** — Nova entidade `NpcDificuldadeConfig` + enum `FocoNpc` (FISICO/MAGICO). Templates Facil/Medio/Dificil/Elite/Chefe. +18 testes -> 832 total. FE (selector no form + auto-preenchimento atributos) pendente = GAP-NPC-FE-01 (P1).
-- **Spec 024 (NOVO sessao 2026-04-15)** — UX Melhorias Sprint 4: 2 tasks (T1 UX-TIPO-VANTAGEM PENDENTE; T2 UX-NIVEL-MIN-PREREQ ja entregue como parte da Spec 023 FE). T1 inclui checkbox Insolitus no form de VantagemConfig + desabilitar formulaCusto + coluna Tipo na tabela + DTOs front + testes Vitest.
+- **Spec 024 (CONCLUIDO 2/2 — rodada 17 2026-04-15)** — UX Melhorias Sprint 4: T1 UX-TIPO-VANTAGEM entregue R17 (checkbox Insolitus no form + coluna Tipo na tabela + desabilitar formulaCusto ao marcar Insolitus + 14 testes novos, 70 totais no componente, 1 commit FE); T2 UX-NIVEL-MIN-PREREQ via Spec 023 FE.
+- **UX-BASE-COMP (rodada 17)** — raridades-item-config (+27 testes) e itens-config (+35 testes) migradas para BaseConfigComponent. 3 commits FE. Juntas com as 2 telas da wave 2 (habilidades + tipos-item), todas as telas alvo estao migradas.
+- **GAP-DASH-01 (rodada 17)** — Dashboard do Mestre implementado: rota `/mestre/dashboard`, 3 cards (resumo, fichas por nivel, ultimas alteracoes), link na sidebar (apenas MESTRE). +16 testes, 1 commit FE.
+- **UX-PREREQ-EMPTY (rodada 17)** — confirmado CONCLUIDO: estado vazio da aba pre-requisitos ja havia sido implementado no codigo durante a Spec 023 FE (commit `d08d1c9`).
 - **Spec 008-old** — DashboardController, duplicacao de jogo, export/import de config, resumo de ficha, filtros, reordenacao batch (100% backend)
 - **Spec 009** — NPC security, POST /jogos/{id}/npcs, POST /fichas/{id}/duplicar, anotacoes. 100% backend
 - **Frontend Sprint 2** — Wizard completo (6 passos), EfeitoFormComponent, JogoDetail Mestre, JogosDisponiveis Jogador, badge Incompleta, WizardRodapeComponent. **624 testes passando, 0 falhas**
@@ -206,22 +209,29 @@
 | 12 | GAP-INS-01 | FE | UI selecao/concessao Insolitus | **[CONCLUIDO]** (UI ja existia + testes incluidos em GAP-XP-01) |
 | 13 | GAP-PROS-01 | FE | Painel Mestre prospeccao pendentes (componente + rota + sidebar) | **[CONCLUIDO]** (+28 testes) |
 
-### P1 — PENDENTES (proxima rodada)
+### Rodada 17 — CONCLUIDA (sessao 21, 2026-04-15)
+
+| # | ID | Tipo | Descricao | Status |
+|---|-----|------|-----------|--------|
+| 14 | **Spec 024 T1** (UX-TIPO-VANTAGEM) | FE | checkbox Insolitus no form + coluna Tipo na tabela | **[CONCLUIDO]** (+14 testes) |
+| 15 | UX-BASE-COMP (raridades-item-config) | FE | migracao para BaseConfigComponent | **[CONCLUIDO]** (+27 testes) |
+| 16 | UX-BASE-COMP (itens-config) | FE | migracao para BaseConfigComponent | **[CONCLUIDO]** (+35 testes) |
+| 17 | GAP-DASH-01 | FE | Dashboard Mestre 3 cards + rota + sidebar | **[CONCLUIDO]** (+16 testes) |
+| — | UX-PREREQ-EMPTY | FE | Estado vazio aba pre-requisitos | **[CONCLUIDO]** (via Spec 023 FE) |
+
+### P1 — TODOS ENTREGUES
+
+Spec 024 T1 era a ultima P1 pendente; entregue em R17. **14/14 P1 entregues.**
+
+### P2 — Estado apos R17
 
 | # | ID | Tipo | Descricao | Dependencia | Status |
 |---|-----|------|-----------|-------------|--------|
-| 14 | **Spec 024 T1** (UX-TIPO-VANTAGEM) | FE | tipoVantagem no form de criacao de vantagem (checkbox Insolitus) + coluna na tabela | Nenhuma | [PENDENTE] (~1-2h) |
-| ~~15~~ | ~~UX-NIVEL-MIN-PREREQ~~ | ~~FE~~ | ~~nivelMinimo na lista pre-req VANTAGEM~~ | ~~S023-FE OK~~ | **CONCLUIDO** via Spec 023 FE (registrado como Spec 024 T2) |
-
-### P2 — POS
-
-| # | ID | Tipo | Descricao | Dependencia | Status |
-|---|-----|------|-----------|-------------|--------|
-| 16 | GAP-DASH-01 | FE | Tela Mestre `GET /jogos/{id}/dashboard` | Nenhuma | [PENDENTE] |
-| 17 | GAP-EXPRT-01 | FE | Interface para Export/Import config | Nenhuma | [PENDENTE] |
-| 18 | AUDIT-BE-FE | Auditoria | Auditar demais endpoints sem tela | Nenhuma | [PENDENTE] |
-| 19 | UX-BASE-COMP | FE | Migrar telas restantes (itens-config + raridades-item-config) para BaseConfigComponent | Nenhuma | [PENDENTE] |
-| 20 | UX-PREREQ-EMPTY | FE | Estado vazio aba pre-requisitos | S023-FE OK | [PENDENTE] |
+| — | GAP-DASH-01 | FE | Dashboard do Mestre | — | **[CONCLUIDO]** (R17) |
+| — | UX-BASE-COMP | FE | itens + raridades para BaseConfigComponent | — | **[CONCLUIDO]** (R17) |
+| — | UX-PREREQ-EMPTY | FE | Estado vazio aba pre-requisitos | — | **[CONCLUIDO]** (via Spec 023 FE) |
+| 4 | GAP-EXPRT-01 | FE | Interface Export/Import config | Endpoint BE | [SKIP — backend nao tem endpoint] |
+| 5 | AUDIT-BE-FE | Auditoria | Auditar demais endpoints sem tela | Nenhuma | [PENDENTE — baixa prio] |
 
 ### Pos-MVP
 
@@ -261,8 +271,9 @@
 | ~~Spec 023 refatora VantagemPreRequisito~~ | — | **RESOLVIDO (Wave P0+P1w2)** — BE+FE entregues |
 | ~~17 telas com acceptButtonProps deprecated~~ | — | **RESOLVIDO (wave 2)** — UX mass fix em 13-14 telas |
 | ~~NPC sem raça/classe no form~~ | — | **RESOLVIDO (Wave P0)** |
-| ~~GAPs BE->FE (XP/Insolitus/Prospeccao/NPC-FE)~~ | — | **RESOLVIDOS (wave 3)** — 4 P1 entregues. Restam DASH-01 + EXPRT-01 (P2) |
-| ~~Divida UX parcial (dialogs, BaseConfig)~~ | — | **REDUZIDO (wave 2)** — dialogs padronizados + 2 telas migradas |
+| ~~GAPs BE->FE (XP/Insolitus/Prospeccao/NPC-FE/DASH)~~ | — | **RESOLVIDOS (wave 3 + R17)** — 5 entregues; GAP-EXPRT-01 bloqueado (BE sem endpoint) |
+| ~~Divida UX parcial (dialogs, BaseConfig)~~ | — | **RESOLVIDO (wave 2 + R17)** — dialogs padronizados + 4 telas migradas (habilidades, tipos-item, raridades, itens) |
+| ~~Spec 024 T1 UX-TIPO-VANTAGEM~~ | — | **RESOLVIDO (R17)** — checkbox Insolitus + coluna Tipo + 14 testes |
 
 ---
 
@@ -280,4 +291,4 @@
 
 ---
 
-*Atualizado: 2026-04-15 (rev.20 — sessao 20 Wave P0 + P1w2 + P1w3 CONCLUIDAS + Spec 024 criada (T2 UX-NIVEL-MIN-PREREQ ja entregue via 023 FE; T1 UX-TIPO-VANTAGEM PENDENTE), 832 BE / ~1433 FE, ~98% completude) | PM/Scrum Master*
+*Atualizado: 2026-04-15 (rev.21 — sessao 21 Rodada 17: Spec 024 CONCLUIDA (2/2) + UX-BASE-COMP (raridades + itens) + GAP-DASH-01 + UX-PREREQ-EMPTY. 832 BE / ~1525 FE, ~99% completude. Sprint 4 praticamente encerrado; restam apenas AUDIT-BE-FE P2 baixa prio e GAP-EXPRT-01 bloqueado) | PM/Scrum Master*

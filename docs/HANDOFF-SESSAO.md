@@ -1,9 +1,9 @@
-# Handoff de Sessao — 2026-04-15 (sessao 20 — Wave P0 + P1w2 + P1w3 entregues)
+# Handoff de Sessao — 2026-04-15 (sessao 20 — Wave P0 + P1w2 + P1w3 entregues + Spec 024 criada)
 
 > Branch atual: `main`
 > Backend: **832 testes** passando, 0 falhas (sem alteracoes na wave 3)
 > Frontend: **~1433 testes** passando (+73 wave 3 sobre ~1360 wave 2; 2 falhas pre-existentes ficha-vantagens-tab)
-> Sprint 4: Wave P0 + Wave P1w2 + Wave P1w3 concluidas — **13/13 tasks entregues** (5 P0 + 4 P1w2 + 4 P1w3).
+> Sprint 4: Wave P0 + Wave P1w2 + Wave P1w3 concluidas — **13/13 tasks entregues** (5 P0 + 4 P1w2 + 4 P1w3). Spec 024 criada (UX-TIPO-VANTAGEM pendente; UX-NIVEL-MIN-PREREQ confirmado CONCLUIDO via Spec 023 FE).
 > Ultima atualizacao: 2026-04-15
 
 ---
@@ -32,6 +32,12 @@
 13. **GAP-PROS-01** — Painel prospeccao pendentes (novo componente + rota + entrada na sidebar), +28 testes
 
 **Total wave 3:** +73 testes frontend (~1360 -> ~1433). Backend inalterado (832).
+
+### Sessao tarde 2026-04-15 — Reorganizacao backlog (PM)
+- **Spec 024 — UX Melhorias Sprint 4** criada com `spec.md`, `plan.md`, `tasks/INDEX.md` e `tasks/P1-T1-tipo-vantagem-frontend.md`
+  - T1 (UX-TIPO-VANTAGEM): pendente — checkbox Insolitus no form + coluna Tipo na tabela + DTOs (~1-2h)
+  - T2 (UX-NIVEL-MIN-PREREQ): registrada como **CONCLUIDA** — entregue como parte da Spec 023 FE (chip e input ja exibem `nivelMinimo` corretamente)
+- Backlog Sprint 4 P1 reorganizado: UX-TIPO-VANTAGEM agora rastreado como Spec 024 T1; UX-NIVEL-MIN-PREREQ removido da lista pendente
 
 **Schema:** gerenciado por Hibernate `ddl-auto=update` — SEM migracoes manuais.
 
@@ -77,6 +83,7 @@
 | 021 | Sistema de Habilidades | CONCLUIDO | — |
 | 022 | DefaultGameConfigProvider refactor | CONCLUIDO | — |
 | **023** | **Pre-requisitos Polimorficos Vantagem** | **CONCLUIDO BE+FE** | BE commit `934eaff`, FE commit `d08d1c9` (+56 testes) |
+| **024** | **UX Melhorias Sprint 4** | **EM ANDAMENTO** (1/2) | T2 (UX-NIVEL-MIN-PREREQ) CONCLUIDA via Spec 023 FE; T1 (UX-TIPO-VANTAGEM) PENDENTE |
 
 **Specs CORTADAS:** ~~010~~ (ADMIN), ~~013~~ (docs), ~~014~~ T2-T4+T6 (cobertura), ~~PA-017-04~~ (export/import)
 
@@ -114,10 +121,10 @@
 
 ### Wave P1 — PENDENTES (proxima rodada)
 
-| # | ID | Tipo | Descricao | Prio | Dependencia |
-|---|-----|------|-----------|------|-------------|
-| 14 | UX-TIPO-VANTAGEM | FE | tipoVantagem no form criacao vantagem (Insolitus) | P1 | Nenhuma |
-| 15 | UX-NIVEL-MIN-PREREQ | FE | nivelMinimo na lista pre-req tipo VANTAGEM | P1 | S023-FE OK |
+| # | ID | Tipo | Descricao | Prio | Dependencia | Status |
+|---|-----|------|-----------|------|-------------|--------|
+| 14 | Spec 024 T1 (UX-TIPO-VANTAGEM) | FE | tipoVantagem no form criacao vantagem (Insolitus) + coluna na tabela | P1 | Nenhuma | [PENDENTE] |
+| ~~15~~ | ~~UX-NIVEL-MIN-PREREQ~~ | ~~FE~~ | ~~nivelMinimo na lista pre-req tipo VANTAGEM~~ | ~~P1~~ | ~~S023-FE OK~~ | **CONCLUIDO via Spec 023 FE (Spec 024 T2)** |
 
 ### Wave P2 — POS
 
@@ -165,8 +172,10 @@
 
 ## Proxima Sessao — Sprint 4 Restante
 
-Foco curto: UX-TIPO-VANTAGEM e UX-NIVEL-MIN-PREREQ (P1 menores).
+Foco curto: **Spec 024 T1 (UX-TIPO-VANTAGEM)** — unica P1 pendente apos confirmacao de UX-NIVEL-MIN-PREREQ ja entregue via Spec 023 FE. Estimativa ~1-2h.
 Depois: P2 (GAP-DASH-01, GAP-EXPRT-01, AUDIT-BE-FE, UX-BASE-COMP itens/raridades, UX-PREREQ-EMPTY).
+
+**Specs ativas:** `docs/specs/024-ux-melhorias-sprint4/` (T1 com criterios de aceite definidos: checkbox Insolitus + desabilitar formulaCusto + coluna Tipo na tabela + testes Vitest).
 
 ---
 

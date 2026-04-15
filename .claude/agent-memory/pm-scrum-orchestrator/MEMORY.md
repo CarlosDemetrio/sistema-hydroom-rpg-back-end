@@ -16,5 +16,6 @@
 - [Spec 017](project_spec017.md) — Correcoes Pre-RC CONCLUIDO, P0+P1+P2+P3
 - [Spec 021](project_spec021.md) — Sistema Habilidades CONCLUIDO, BA+T1 BE+T2 FE (Waves 1+2+3)
 - [Spec 023](project_spec023.md) — Pre-requisitos Polimorficos Vantagem, aprovada PO 2026-04-13, tasks por criar
+- [Spec 024](project_spec024.md) — UX Melhorias Sprint 4 criada 2026-04-15, T1 UX-TIPO-VANTAGEM PENDENTE, T2 ja entregue via 023 FE
 - [UX Debt Sessao 20](project_ux_debt_sessao20.md) — 17 telas acceptButtonProps, 9 dialogs, 4 BaseConfig, cores hex, jogo-select
 - [GAPs MVP Pendentes](project_gaps_pendentes.md) — 3 GAPs sem spec: FichaStatus MORTA, polling, NPC form (GAP-MVP-05 RESOLVIDO R5)

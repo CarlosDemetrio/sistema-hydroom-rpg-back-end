@@ -9,7 +9,7 @@
 > Para ver o estado da ultima sessao: `HANDOFF-SESSAO.md`.
 > Para ver o mapa completo de docs/: `README.md`.
 >
-> Ultima atualizacao: 2026-04-15 (rev.19 — sessao 20 Wave P0+P1w2+P1w3 CONCLUIDA: + GAP-XP/INS/PROS/NPC-FE — 832 BE / ~1433 FE) | Branch: `main`
+> Ultima atualizacao: 2026-04-15 (rev.20 — sessao 20 Wave P0+P1w2+P1w3 CONCLUIDA + Spec 024 criada (T2 ja CONCLUIDA via 023 FE; T1 PENDENTE) — 832 BE / ~1433 FE) | Branch: `main`
 
 ---
 
@@ -23,9 +23,9 @@
 | Sprint 1 | **CONCLUIDO** (94%, 29/31 tasks) |
 | Sprint 2 | **ENCERRADO** — 34/35 tasks (97%) + 2 bonus. S007-T10 bloqueada PA-004. |
 | Sprint 3 | **ENCERRADO** — R12-R14 + Copilot R01-R07 + Waves 1-3. |
-| Sprint 4 | **Wave P0 + P1w2 + P1w3 CONCLUIDAS** (13/13) — P0: S007-T10 + S015-T4 + S023-BE + UX jogo/cor + NPC form. P1w2: S023-FE + UX mass fix + NPC-DIFICULDADE-BE + BaseConfig migration. P1w3: GAP-NPC-FE-01 + GAP-XP-01 + GAP-INS-01 + GAP-PROS-01. Proximo: UX-TIPO-VANTAGEM + UX-NIVEL-MIN-PREREQ + P2 |
-| Specs com spec+plan+tasks | 005, 006, 007, 008, 009-ext, 011, 012, 015, **021**, **023** (tasks por criar) |
-| Specs em especificacao | **Spec 023** (aprovada PO, tasks pendentes BA/TL) |
+| Sprint 4 | **Wave P0 + P1w2 + P1w3 CONCLUIDAS** (13/13) — P0: S007-T10 + S015-T4 + S023-BE + UX jogo/cor + NPC form. P1w2: S023-FE + UX mass fix + NPC-DIFICULDADE-BE + BaseConfig migration. P1w3: GAP-NPC-FE-01 + GAP-XP-01 + GAP-INS-01 + GAP-PROS-01. **Spec 024 criada** (T2 CONCLUIDO via 023 FE; T1 UX-TIPO-VANTAGEM PENDENTE). Proximo: Spec 024 T1 + P2 |
+| Specs com spec+plan+tasks | 005, 006, 007, 008, 009-ext, 011, 012, 015, **021**, **023**, **024** (T1 PENDENTE) |
+| Specs em especificacao | — (Spec 024 ja com tasks) |
 | Decisoes PO | **TODAS RESOLVIDAS** (GAP-01 a GAP-08, INCONS-02, P-03, PA-001/002, Q14-Q17, PA-021-03, PA-004, PA-015-04, **Spec 023 aprovada**) |
 | MVP objetivo | Specs 005-009+012+015+016+021+**023** implementadas e testadas |
 | Total tasks MVP | **~120+** (estimado — inclui Spec 023 + UX fixes + NPC gaps + GAPs auditoria BE->FE) |
@@ -54,6 +54,7 @@
 | ~~013~~ | ~~Documentacao Tecnica~~ | — | **CORTADO** | — | CORTADO sessao 20 |
 | ~~014~~ | ~~Cobertura de Testes~~ | [`specs/014-cobertura-testes/`](specs/014-cobertura-testes/) | **CORTADO** | 4B / 2F / **6** | **CORTADO sessao 21 (2026-04-13)** — T1+T5 ja concluidos; T2-T4+T6 descartados pelo PO |
 | **023** | **Pre-requisitos Polimorficos Vantagem** | — | **P0** | ~6B / ~5F / **~11** | **CONCLUIDO BE+FE** — BE commit `934eaff` (+18 testes), FE commit `d08d1c9` (+56 testes, aba polimorfica) |
+| **024** | **UX Melhorias Sprint 4** | [`specs/024-ux-melhorias-sprint4/`](specs/024-ux-melhorias-sprint4/) | **P1** | 0B / 1F (T2 ja entregue) / **2** | **EM ANDAMENTO** — T2 (UX-NIVEL-MIN-PREREQ) CONCLUIDA via Spec 023 FE; T1 (UX-TIPO-VANTAGEM) PENDENTE (~1-2h) |
 | 008-old | Utilidade e Fluidez (dashboard, export/import) | — | — | — | Backend ~100% implementado (pre-existente) |
 | 009-old | NPC backend (fichas mestre, duplicacao) | — | — | — | Backend ~100% (457 testes, pre-existente) |
 
@@ -119,8 +120,8 @@ CORTADOS (sessao 21, 2026-04-13):
   - Spec 014 (Cobertura de Testes — T2-T4+T6); T1+T5 ja haviam sido entregues.
 ```
 
-**Caminho critico Sprint 4 (atualizado Wave P0 + P1w2 + P1w3):** ~~Wave P0 5/5~~ + ~~S023-FE~~ + ~~UX mass fix~~ + ~~NPC-DIFICULDADE-BE~~ + ~~BaseConfig migration~~ + ~~GAP-NPC-FE-01~~ + ~~GAP-XP-01~~ + ~~GAP-INS-01~~ + ~~GAP-PROS-01~~ → **UX-TIPO-VANTAGEM + UX-NIVEL-MIN-PREREQ** → P2
-**Paralelo possivel (proxima rodada):** UX-TIPO-VANTAGEM e UX-NIVEL-MIN-PREREQ — dominios independentes
+**Caminho critico Sprint 4 (atualizado Wave P0 + P1w2 + P1w3 + Spec 024):** ~~Wave P0 5/5~~ + ~~S023-FE~~ + ~~UX mass fix~~ + ~~NPC-DIFICULDADE-BE~~ + ~~BaseConfig migration~~ + ~~GAP-NPC-FE-01~~ + ~~GAP-XP-01~~ + ~~GAP-INS-01~~ + ~~GAP-PROS-01~~ + ~~UX-NIVEL-MIN-PREREQ (Spec 024 T2 entregue via 023 FE)~~ → **Spec 024 T1 (UX-TIPO-VANTAGEM)** → P2
+**Paralelo possivel (proxima rodada):** Spec 024 T1 e tasks P2 — dominios independentes
 **CORTADO:** Spec 010 (Roles) e Spec 013 (Docs) removidas do backlog ativo (sessao 20)
 
 ---
@@ -292,6 +293,7 @@ APOS TODAS AS SPECS FUNCIONAIS:
 | ~~014 — Cobertura de Testes~~ | **CORTADO 2026-04-13** — [`spec.md`](specs/014-cobertura-testes/spec.md), [`plan.md`](specs/014-cobertura-testes/plan.md), [`tasks/INDEX.md`](specs/014-cobertura-testes/tasks/INDEX.md) — 6 tasks (T1+T5 entregues; T2-T4+T6 descartadas pelo PO) |
 | 015 — ConfigPontos + DefaultProvider | [`spec.md`](specs/015-config-pontos-classe-raca/spec.md), [`plan.md`](specs/015-config-pontos-classe-raca/plan.md), [`tasks/INDEX.md`](specs/015-config-pontos-classe-raca/tasks/INDEX.md) — **7 tasks** |
 | 016 — Sistema de Itens/Equipamentos | **100% ESPECIFICADA** — [`spec.md`](specs/016-sistema-itens/spec.md), [`tasks/INDEX.md`](specs/016-sistema-itens/tasks/INDEX.md), [`dataset/`](specs/016-sistema-itens/dataset/) — **11 tasks** |
+| 024 — UX Melhorias Sprint 4 | [`spec.md`](specs/024-ux-melhorias-sprint4/spec.md), [`plan.md`](specs/024-ux-melhorias-sprint4/plan.md), [`tasks/INDEX.md`](specs/024-ux-melhorias-sprint4/tasks/INDEX.md) — **2 tasks** (T2 entregue via Spec 023 FE; T1 PENDENTE) |
 | Tech Lead Review | [`TECH-LEAD-BACKEND-REVIEW.md`](specs/TECH-LEAD-BACKEND-REVIEW.md) |
 
 ### Analises de Dominio (BA)
@@ -358,4 +360,4 @@ APOS TODAS AS SPECS FUNCIONAIS:
 ---
 
 *Este documento e a fonte unica de verdade para navegacao do projeto. Atualizar a cada sessao.*
-*Ultima revisao: 2026-04-14 (rev.18 — sessao 20 Wave P0 + Wave P1 wave 2 CONCLUIDAS: S023-FE + UX mass fix + NPC-DIFICULDADE-BE + BaseConfig migration, 832B/~1360F testes)*
+*Ultima revisao: 2026-04-15 (rev.20 — sessao 20 Wave P0+P1w2+P1w3 CONCLUIDAS + Spec 024 criada (T2 entregue via 023 FE; T1 UX-TIPO-VANTAGEM PENDENTE), 832B/~1433F testes)*

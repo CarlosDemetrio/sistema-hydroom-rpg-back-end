@@ -7,7 +7,7 @@
 > Ponto de entrada rapido: `HANDOFF-SESSAO.md` → `MASTER.md` → `PM.md`.
 > Mapa completo de docs: `README.md`.
 >
-> Gerado em: 2026-04-01 | Atualizado: 2026-04-15 (sessao 20, rev.19 — Wave P0 + P1w2 + P1w3 CONCLUIDAS: + GAP-XP/INS/PROS/NPC-FE, 832 BE / ~1433 FE, ~98% completude) | Branch: `main`
+> Gerado em: 2026-04-01 | Atualizado: 2026-04-15 (sessao 20, rev.20 — Wave P0 + P1w2 + P1w3 CONCLUIDAS + Spec 024 criada (T2 ja entregue via 023 FE; T1 UX-TIPO-VANTAGEM PENDENTE), 832 BE / ~1433 FE, ~98% completude) | Branch: `main`
 > Cronologia: `docs/historico/CRONOLOGIA.md`
 
 ---
@@ -127,6 +127,7 @@
 - **Spec 015 (7/7 CONCLUIDA)** — 4 entidades ConfigPontos, 14 CRUD endpoints, pontos integrados no FichaResumoResponse, DefaultProvider 8 bugs corrigidos, T6/T7 FE concluidos. **T4 CONCLUIDO (Wave P0)** — auto-concessao ja existia como OrigemVantagem, Wave P0 expôs campo `origem` no FichaVantagemResponse (commit `4c04a54`).
 - **Spec 023 (CONCLUIDO BE+FE)** — Pre-requisitos polimorficos: 6 tipos (VANTAGEM/RACA/CLASSE/ATRIBUTO/NIVEL/APTIDAO), OR dentro do tipo + AND entre tipos, 409 em delecao. BE commit `934eaff` (+18 testes), FE commit `d08d1c9` (+56 testes, aba polimorfica + chips removiveis). Schema aplicado por Hibernate `ddl-auto=update`.
 - **NPC Dificuldade BE (NOVO wave 2)** — Nova entidade `NpcDificuldadeConfig` + enum `FocoNpc` (FISICO/MAGICO). Templates Facil/Medio/Dificil/Elite/Chefe. +18 testes -> 832 total. FE (selector no form + auto-preenchimento atributos) pendente = GAP-NPC-FE-01 (P1).
+- **Spec 024 (NOVO sessao 2026-04-15)** — UX Melhorias Sprint 4: 2 tasks (T1 UX-TIPO-VANTAGEM PENDENTE; T2 UX-NIVEL-MIN-PREREQ ja entregue como parte da Spec 023 FE). T1 inclui checkbox Insolitus no form de VantagemConfig + desabilitar formulaCusto + coluna Tipo na tabela + DTOs front + testes Vitest.
 - **Spec 008-old** — DashboardController, duplicacao de jogo, export/import de config, resumo de ficha, filtros, reordenacao batch (100% backend)
 - **Spec 009** — NPC security, POST /jogos/{id}/npcs, POST /fichas/{id}/duplicar, anotacoes. 100% backend
 - **Frontend Sprint 2** — Wizard completo (6 passos), EfeitoFormComponent, JogoDetail Mestre, JogosDisponiveis Jogador, badge Incompleta, WizardRodapeComponent. **624 testes passando, 0 falhas**
@@ -209,8 +210,8 @@
 
 | # | ID | Tipo | Descricao | Dependencia | Status |
 |---|-----|------|-----------|-------------|--------|
-| 14 | UX-TIPO-VANTAGEM | FE | tipoVantagem no form de criacao de vantagem | Nenhuma | [PENDENTE] |
-| 15 | UX-NIVEL-MIN-PREREQ | FE | nivelMinimo na lista pre-req VANTAGEM | S023-FE OK | [PENDENTE] |
+| 14 | **Spec 024 T1** (UX-TIPO-VANTAGEM) | FE | tipoVantagem no form de criacao de vantagem (checkbox Insolitus) + coluna na tabela | Nenhuma | [PENDENTE] (~1-2h) |
+| ~~15~~ | ~~UX-NIVEL-MIN-PREREQ~~ | ~~FE~~ | ~~nivelMinimo na lista pre-req VANTAGEM~~ | ~~S023-FE OK~~ | **CONCLUIDO** via Spec 023 FE (registrado como Spec 024 T2) |
 
 ### P2 — POS
 
@@ -279,4 +280,4 @@
 
 ---
 
-*Atualizado: 2026-04-15 (rev.19 — sessao 20 Wave P0 + P1w2 + P1w3 CONCLUIDAS: + GAP-NPC-FE-01 + GAP-XP-01 + GAP-INS-01 + GAP-PROS-01, 832 BE / ~1433 FE, ~98% completude) | PM/Scrum Master*
+*Atualizado: 2026-04-15 (rev.20 — sessao 20 Wave P0 + P1w2 + P1w3 CONCLUIDAS + Spec 024 criada (T2 UX-NIVEL-MIN-PREREQ ja entregue via 023 FE; T1 UX-TIPO-VANTAGEM PENDENTE), 832 BE / ~1433 FE, ~98% completude) | PM/Scrum Master*

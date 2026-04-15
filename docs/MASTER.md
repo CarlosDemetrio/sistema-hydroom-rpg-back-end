@@ -9,7 +9,7 @@
 > Para ver o estado da ultima sessao: `HANDOFF-SESSAO.md`.
 > Para ver o mapa completo de docs/: `README.md`.
 >
-> Ultima atualizacao: 2026-04-14 (rev.18 — sessao 20 Wave P0+P1w2 CONCLUIDA: + S023-FE, UX mass fix 13-14 telas, NPC dificuldade BE, BaseConfig migration — 832 BE / ~1360 FE) | Branch: `main`
+> Ultima atualizacao: 2026-04-15 (rev.19 — sessao 20 Wave P0+P1w2+P1w3 CONCLUIDA: + GAP-XP/INS/PROS/NPC-FE — 832 BE / ~1433 FE) | Branch: `main`
 
 ---
 
@@ -17,18 +17,18 @@
 
 | Metrica | Valor |
 |---------|-------|
-| Backend testes | **832 passando**, 0 falhas (+18 NPC-DIFICULDADE-BE wave 2) |
-| Frontend testes | **~1360 passando** (+56 S023-FE + ~46 wave 2; 2 falhas pre-existentes ficha-vantagens-tab) |
+| Backend testes | **832 passando**, 0 falhas (sem alteracoes na wave 3) |
+| Frontend testes | **~1433 passando** (+73 wave 3 sobre ~1360 wave 2; 2 falhas pre-existentes ficha-vantagens-tab) |
 | Frontend build | 0 erros, 0 warnings |
 | Sprint 1 | **CONCLUIDO** (94%, 29/31 tasks) |
 | Sprint 2 | **ENCERRADO** — 34/35 tasks (97%) + 2 bonus. S007-T10 bloqueada PA-004. |
 | Sprint 3 | **ENCERRADO** — R12-R14 + Copilot R01-R07 + Waves 1-3. |
-| Sprint 4 | **Wave P0 + Wave P1w2 CONCLUIDAS** (9/9) — P0: S007-T10 + S015-T4 + S023-BE + UX jogo/cor + NPC form. P1w2: S023-FE + UX mass fix + NPC-DIFICULDADE-BE + BaseConfig migration. Proximo: GAPs BE->FE (XP/Insolitus/Prospeccao/NPC-dificuldade-FE) |
+| Sprint 4 | **Wave P0 + P1w2 + P1w3 CONCLUIDAS** (13/13) — P0: S007-T10 + S015-T4 + S023-BE + UX jogo/cor + NPC form. P1w2: S023-FE + UX mass fix + NPC-DIFICULDADE-BE + BaseConfig migration. P1w3: GAP-NPC-FE-01 + GAP-XP-01 + GAP-INS-01 + GAP-PROS-01. Proximo: UX-TIPO-VANTAGEM + UX-NIVEL-MIN-PREREQ + P2 |
 | Specs com spec+plan+tasks | 005, 006, 007, 008, 009-ext, 011, 012, 015, **021**, **023** (tasks por criar) |
 | Specs em especificacao | **Spec 023** (aprovada PO, tasks pendentes BA/TL) |
 | Decisoes PO | **TODAS RESOLVIDAS** (GAP-01 a GAP-08, INCONS-02, P-03, PA-001/002, Q14-Q17, PA-021-03, PA-004, PA-015-04, **Spec 023 aprovada**) |
 | MVP objetivo | Specs 005-009+012+015+016+021+**023** implementadas e testadas |
-| Total tasks MVP | **~115+** (estimado — inclui Spec 023 + UX fixes + NPC gaps) |
+| Total tasks MVP | **~120+** (estimado — inclui Spec 023 + UX fixes + NPC gaps + GAPs auditoria BE->FE) |
 | Specs CORTADAS | **Spec 010** (ADMIN roles), **Spec 013** (doc tecnica), **Spec 014** (cobertura testes — T2-T4+T6, cortada 2026-04-13), **PA-017-04** (export/import) |
 
 ---
@@ -119,8 +119,8 @@ CORTADOS (sessao 21, 2026-04-13):
   - Spec 014 (Cobertura de Testes — T2-T4+T6); T1+T5 ja haviam sido entregues.
 ```
 
-**Caminho critico Sprint 4 (atualizado Wave P0 + P1w2):** ~~Wave P0 5/5~~ + ~~S023-FE~~ + ~~UX mass fix~~ + ~~NPC-DIFICULDADE-BE~~ + ~~BaseConfig migration~~ → **GAPs BE->FE P1 (XP/Insolitus/Prospeccao/NPC-FE)** → UX-TIPO-VANTAGEM → demais P1/P2
-**Paralelo possivel (proxima rodada):** telas Mestre (XP/Insolitus/Prospeccao/NPC form) — dominios independentes
+**Caminho critico Sprint 4 (atualizado Wave P0 + P1w2 + P1w3):** ~~Wave P0 5/5~~ + ~~S023-FE~~ + ~~UX mass fix~~ + ~~NPC-DIFICULDADE-BE~~ + ~~BaseConfig migration~~ + ~~GAP-NPC-FE-01~~ + ~~GAP-XP-01~~ + ~~GAP-INS-01~~ + ~~GAP-PROS-01~~ → **UX-TIPO-VANTAGEM + UX-NIVEL-MIN-PREREQ** → P2
+**Paralelo possivel (proxima rodada):** UX-TIPO-VANTAGEM e UX-NIVEL-MIN-PREREQ — dominios independentes
 **CORTADO:** Spec 010 (Roles) e Spec 013 (Docs) removidas do backlog ativo (sessao 20)
 
 ---

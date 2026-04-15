@@ -6,9 +6,9 @@
 > Para detalhes por area e historico, ver `PM.md`.
 > Para estado da ultima sessao, ver `HANDOFF-SESSAO.md`.
 >
-> Atualizado: 2026-04-14 (sessao 20 — **Wave P0 + Wave P1 wave 2 CONCLUIDAS** 9/9 tasks entregues)
+> Atualizado: 2026-04-15 (sessao 20 — **Wave P0 + P1w2 + P1w3 CONCLUIDAS** 13/13 tasks entregues)
 > PM: Scrum Orchestrator
-> Objetivo: **Wave P1 wave 2 CONCLUIDA — passa para GAPs auditoria BE->FE (XP/Insolitus/Prospeccao/NPC-FE)**
+> Objetivo: **Wave P1 wave 3 CONCLUIDA — restam apenas UX-TIPO-VANTAGEM + UX-NIVEL-MIN-PREREQ (P1) e P2**
 > Duracao estimada: 2-3 semanas
 > Cronologia: `docs/historico/CRONOLOGIA.md` | Rodadas: `docs/tracking/rodadas/` | Copilot: `docs/tracking/rodadas-copilot/`
 
@@ -30,14 +30,15 @@
 
 | Metrica | Valor |
 |---------|-------|
-| Rodadas concluidas | 2 (Wave P0 + Wave P1 wave 2) |
+| Rodadas concluidas | 3 (Wave P0 + Wave P1 wave 2 + Wave P1 wave 3) |
 | Tasks P0 | **5/5 CONCLUIDAS** (S007-T10, S015-T4, S023-BE, UX-JOGO-SELECT+COR-PREVIEW, NPC-FORM-CAMPOS) |
 | Tasks P1 wave 2 | **4/4 CONCLUIDAS** (S023-FE, UX mass fix 13-14 telas, NPC-DIFICULDADE-BE, BaseConfig migration) |
-| Tasks P1 pendentes | 6 (GAP-XP-01, GAP-INS-01, GAP-PROS-01, GAP-NPC-FE-01, UX-TIPO-VANTAGEM, UX-NIVEL-MIN-PREREQ) |
-| Tasks P2 | 5 (GAP-DASH-01, GAP-EXPRT-01, AUDIT-BE-FE, UX-BASE-COMP, UX-PREREQ-EMPTY) |
-| Total tasks Sprint 4 | **20** (9 CONCLUIDAS + 6 P1 pend + 5 P2) |
-| Testes backend | **832 passando**, 0 falhas (+18 NPC-DIFICULDADE-BE wave 2) |
-| Testes frontend | **~1360 passando** (+56 S023-FE + ~46 wave 2) + 2 falhas pre-existentes + 2 OOM pre-existentes |
+| Tasks P1 wave 3 | **4/4 CONCLUIDAS** (GAP-NPC-FE-01, GAP-XP-01, GAP-INS-01, GAP-PROS-01) |
+| Tasks P1 pendentes | 2 (UX-TIPO-VANTAGEM, UX-NIVEL-MIN-PREREQ) |
+| Tasks P2 | 5 (GAP-DASH-01, GAP-EXPRT-01, AUDIT-BE-FE, UX-BASE-COMP itens/raridades, UX-PREREQ-EMPTY) |
+| Total tasks Sprint 4 | **20** (13 CONCLUIDAS + 2 P1 pend + 5 P2) |
+| Testes backend | **832 passando**, 0 falhas (sem alteracoes na wave 3) |
+| Testes frontend | **~1433 passando** (+73 wave 3 sobre ~1360 wave 2) + 2 falhas pre-existentes + 2 OOM pre-existentes |
 | Specs em andamento | Spec 007 (13/13), Spec 015 (7/7), **Spec 023** (BE+FE CONCLUIDOS) |
 | Specs CORTADAS | ~~Spec 010~~, ~~Spec 013~~, ~~Spec 014~~ (2026-04-13), ~~PA-017-04~~ |
 
@@ -60,14 +61,19 @@
 | 8 | NPC-DIFICULDADE-BE | BE | NpcDificuldadeConfig + enum FocoNpc (FISICO/MAGICO) | **[CONCLUIDO]** (+18 testes -> 832 total) |
 | 9 | BaseConfig migration | FE | habilidades-config + tipos-item-config → BaseConfigComponent | **[CONCLUIDO]** (+23 testes cada, commit `f30e74d`) |
 
-### P1 — Pendentes (proxima rodada — GAPs auditoria BE->FE)
+### P1 wave 3 — CONCLUIDA (sessao 20, 2026-04-15)
+
+| # | ID | Tipo | Descricao | Status |
+|---|-----|------|-----------|--------|
+| 10 | GAP-NPC-FE-01 | FE | Selector dificuldade no form NPC + auto-preenchimento atributos | **[CONCLUIDO]** (+31 testes) |
+| 11 | GAP-XP-01 | FE | Tela Mestre `PUT /fichas/{id}/xp` (Conceder XP — fix endpoint) | **[CONCLUIDO]** (+14 testes) |
+| 12 | GAP-INS-01 | FE | UI selecao/concessao Insolitus | **[CONCLUIDO]** (UI ja existia + testes incluidos em GAP-XP-01) |
+| 13 | GAP-PROS-01 | FE | Painel Mestre prospeccao pendentes (componente + rota + sidebar) | **[CONCLUIDO]** (+28 testes) |
+
+### P1 — Pendentes (proxima rodada)
 
 | # | ID | Tipo | Descricao | Dependencia | Status |
 |---|-----|------|-----------|-------------|--------|
-| 10 | GAP-XP-01 | FE | Tela Mestre `PUT /fichas/{id}/xp` (conceder XP) | Nenhuma | [PENDENTE] |
-| 11 | GAP-INS-01 | FE | UI selecao/concessao Insolitus (service FE ja existe) | Nenhuma | [PENDENTE] |
-| 12 | GAP-PROS-01 | FE | Tela Mestre `GET /jogos/{id}/prospeccao/pendentes` | Nenhuma | [PENDENTE] |
-| 13 | GAP-NPC-FE-01 | FE | Selector dificuldade no form NPC + auto-preenchimento atributos | NPC-DIFICULDADE-BE OK | [PENDENTE] |
 | 14 | UX-TIPO-VANTAGEM | FE | tipoVantagem no form criacao vantagem (Insolitus) | Nenhuma | [PENDENTE] |
 | 15 | UX-NIVEL-MIN-PREREQ | FE | nivelMinimo na lista pre-req VANTAGEM | S023-FE OK | [PENDENTE] |
 
@@ -108,9 +114,10 @@
 ### Bloqueados
 - ~~**S023-BE**~~: RESOLVIDO (Wave P0, commit `934eaff`)
 - ~~**S023-FE**~~: RESOLVIDO (Wave P1 wave 2, commit `d08d1c9`)
+- ~~**GAP-NPC-FE-01**~~: RESOLVIDO (Wave P1 wave 3)
+- ~~**GAP-XP-01 / GAP-INS-01 / GAP-PROS-01**~~: RESOLVIDOS (Wave P1 wave 3)
 - **UX-PREREQ-EMPTY**: Desbloqueado (S023-FE OK) — P2
 - **UX-NIVEL-MIN-PREREQ**: Desbloqueado (S023-FE OK) — P1
-- **GAP-NPC-FE-01**: Desbloqueado (NPC-DIFICULDADE-BE OK) — P1
 
 ### PAs abertos
 | ID | Descricao | Bloqueia | Status |

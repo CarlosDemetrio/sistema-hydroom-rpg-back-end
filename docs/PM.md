@@ -7,7 +7,7 @@
 > Ponto de entrada rapido: `HANDOFF-SESSAO.md` → `MASTER.md` → `PM.md`.
 > Mapa completo de docs: `README.md`.
 >
-> Gerado em: 2026-04-01 | Atualizado: 2026-04-13 (sessao 20, rev.16 — repriorizacao backlog, Spec 023 aprovada, Spec 010+013 cortadas, divida UX catalogada) | Branch: `main`
+> Gerado em: 2026-04-01 | Atualizado: 2026-04-14 (sessao 20, rev.17 — Wave P0 CONCLUIDA: S007-T10 FE, S015-T4, S023-BE, UX jogo/cor, NPC form — 814 BE / 1258 FE) | Branch: `main`
 > Cronologia: `docs/historico/CRONOLOGIA.md`
 
 ---
@@ -18,7 +18,7 @@
 |------|-----------|------------|
 | Backend: Infraestrutura | 100% | Schema gerenciado pelo Hibernate (ddl-auto). Sem DDL manual necessario para 0.0.1-RC. |
 | Backend: Configuracoes (13 CRUDs) | 100% | Todos com testes de integracao |
-| Backend: Motor de Formulas | **97%** | 7/8 TipoEfeito + 20 testes integracao. FORMULA_CUSTOMIZADA desbloqueado (PA-004 resolvido). Frontend: T9/T11/T12 CONCLUIDOS. **T10 P0 Sprint 4**. |
+| Backend: Motor de Formulas | **100%** | 7/8 TipoEfeito + 20 testes integracao. FORMULA_CUSTOMIZADA desbloqueado (PA-004 resolvido). Frontend: T9/T10/T11/T12 CONCLUIDOS (T10 entregue Wave P0, 54 testes). |
 | Backend: Ficha de Personagem (Spec 006/007) | **100%** | Wizard 6 passos completo (T6-T13). S006-T1/T2/T4/T5 backend CONCLUIDOS. PUT /fichas/{id}/completar funcional. Navega para FichaDetail. |
 | Backend: NPC + Duplicacao (Spec 009) | **100%** | POST /jogos/{id}/npcs + POST /fichas/{id}/duplicar implementados. |
 | Backend: NPC Visibilidade (Spec 009-ext) | **100%** | visivelGlobalmente, FichaVisibilidade (4 endpoints), ProspeccaoUso (endpoints conceder/usar/reverter), resetar-estado, essenciaAtual/vidaAtual no resumo. 32 novos testes. |
@@ -27,12 +27,12 @@
 | Backend: Perfil Usuario | **100%** | GET/PUT /api/v1/usuarios/me implementado e testado |
 | Backend: Participantes (Spec 005) | **100%** | P1T1/P1T2/P1T3 + P2T1/P2T2/P2T3 CONCLUIDOS (6/6). Strategy Reactivate, banir/desbanir/remover/meu-status, JogoDetail Mestre, JogosDisponiveis Jogador. |
 | Frontend: Modelos e Servicos de API | **100%** | Sub-recursos (008), PontosVantagem/CategoriaVantagem (012), FichaVisibilidade + Prospeccao (009-ext) CONCLUIDOS. |
-| Frontend: Componentes | **97%** | Wizard completo, configs, sub-recursos, 009-ext, 012, 016 T8-T11, 021 T2. Falta: S007-T10 (FormulaEditor), Spec 023 FE, UX fixes, NPC form. |
-| Frontend: Testes | **100%** | **~1208 passando** (2 falhas pre-existentes ficha-vantagens-tab) |
+| Frontend: Componentes | **98%** | Wizard completo, configs, sub-recursos, 009-ext, 012, 016 T8-T11, 021 T2, S007-T10 (FormulaEditor), UX jogo/cor, NPC form. Falta: Spec 023 FE, UX-ACCEPT-BTN (17 telas). |
+| Frontend: Testes | **100%** | **1258 passando** (+22 Wave P0; 2 falhas pre-existentes ficha-vantagens-tab) |
 
-**Completude geral estimada: ~92%** (Sprint 4 INICIADO — Spec 023 + tasks desbloqueadas + UX + NPC gaps)
-**Backend: 796 testes, 0 falhas**
-**Frontend: ~1208 testes passando** (2 falhas pre-existentes ficha-vantagens-tab)
+**Completude geral estimada: ~94%** (Sprint 4 Wave P0 CONCLUIDA — 5/5 tasks P0)
+**Backend: 814 testes, 0 falhas (+18 Spec 023)**
+**Frontend: 1258 testes passando** (+22 Wave P0; 2 falhas pre-existentes ficha-vantagens-tab)
 **Total tasks MVP: ~115+** (estimado — inclui Spec 023, UX fixes, NPC gaps)
 
 ---
@@ -121,8 +121,9 @@
 - **Spec 005 (backend 100%)** — JogoParticipante: P1T1 (strategy Reactivate), P1T2 (5 endpoints), P1T3 (29 testes). Faltam: P2T1-P2T3 frontend
 - **Spec 006 (100% CONCLUIDA)** — Wizard 6 passos completo (Identificacao, Descricao, Atributos, Aptidoes, Vantagens, Revisao). StepRevisaoComponent, WizardRodapeComponent shared, confirmarCriacao() -> PUT /fichas/{id}/completar -> navega /fichas/{id}. Badge "Incompleta" na listagem retoma rascunho. 624 testes frontend.
 - **Spec 005 (100% CONCLUIDA)** — JogoParticipante: strategy Reactivate, banir/desbanir/remover/meu-status/filtro, 29 testes backend. Frontend: JogoDetail Mestre (remover/banir/filtro), JogosDisponiveis Jogador (solicitar/cancelar/status/badges).
-- **Spec 007 (97% CONCLUIDA)** — 7/8 TipoEfeito + 20 testes integracao. Frontend: EfeitoFormComponent (31 testes), DadoUp seletor, UI Insolitus (dialog busca + revogar). T5alt/T10 DESBLOQUEADOS (PA-004 resolvido).
-- **Spec 015 (6/7)** — 4 entidades ConfigPontos, 14 CRUD endpoints, pontos integrados no FichaResumoResponse, DefaultProvider 8 bugs corrigidos, T6/T7 FE concluidos. **T4 DESBLOQUEADO — P0 Sprint 4** (auto-concessao vantagens pre-definidas + enum OrigemFichaVantagem)
+- **Spec 007 (100% CONCLUIDA)** — 7/8 TipoEfeito + 20 testes integracao. Frontend: EfeitoFormComponent (31 testes), DadoUp seletor, UI Insolitus (dialog busca + revogar), **T10 FormulaEditor (54 testes, Wave P0)**. T5alt BE desbloqueado (PA-004 resolvido).
+- **Spec 015 (7/7 CONCLUIDA)** — 4 entidades ConfigPontos, 14 CRUD endpoints, pontos integrados no FichaResumoResponse, DefaultProvider 8 bugs corrigidos, T6/T7 FE concluidos. **T4 CONCLUIDO (Wave P0)** — auto-concessao ja existia como OrigemVantagem, Wave P0 expôs campo `origem` no FichaVantagemResponse (commit `4c04a54`).
+- **Spec 023 (BE CONCLUIDO, FE pendente)** — Pre-requisitos polimorficos: 6 tipos (VANTAGEM/RACA/CLASSE/ATRIBUTO/NIVEL/APTIDAO), OR dentro do tipo + AND entre tipos, 409 em delecao, +18 testes (commit `934eaff`). Schema aplicado por Hibernate `ddl-auto=update` — sem Flyway. FE polimorfica = P1 Wave 2.
 - **Spec 008-old** — DashboardController, duplicacao de jogo, export/import de config, resumo de ficha, filtros, reordenacao batch (100% backend)
 - **Spec 009** — NPC security, POST /jogos/{id}/npcs, POST /fichas/{id}/duplicar, anotacoes. 100% backend
 - **Frontend Sprint 2** — Wizard completo (6 passos), EfeitoFormComponent, JogoDetail Mestre, JogosDisponiveis Jogador, badge Incompleta, WizardRodapeComponent. **624 testes passando, 0 falhas**
@@ -171,28 +172,27 @@
 
 ---
 
-## Backlog Priorizado — Sprint 4 (sessao 20)
+## Backlog Priorizado — Sprint 4 (atualizado pos-Wave P0)
 
-### P0 — AGORA (tasks desbloqueadas + fundacao Spec 023)
-
-| # | ID | Tipo | Descricao | Dependencia | Status |
-|---|-----|------|-----------|-------------|--------|
-| 1 | S007-T10 | FE | FormulaEditor para FORMULA_CUSTOMIZADA | S007-T9 OK | [PENDENTE] |
-| 2 | S015-T4 | BE | Auto-concessao vantagens pre-definidas + enum OrigemFichaVantagem | S015-T3 OK | [PENDENTE] |
-| 3 | S023-BE | BE | Refatorar VantagemPreRequisito polimorficamente (tipos, AND/OR, migration) | Spec 004 OK | [PENDENTE] — tasks por criar |
-| 4 | UX-JOGO-SELECT | FE | Seletor de jogo nas telas de configuracao do Mestre | Nenhuma | [PENDENTE] |
-| 5 | NPC-FORM-CAMPOS | FE | Raça/Classe/configs no formulario de criacao de NPC | Spec 009 OK | [PENDENTE] |
-
-### P1 — PROXIMA RODADA
+### P0 — CONCLUIDA (Wave P0, sessao 20, 2026-04-14)
 
 | # | ID | Tipo | Descricao | Dependencia | Status |
 |---|-----|------|-----------|-------------|--------|
-| 6 | S023-FE | FE | Aba pre-requisitos polimorfica + chips removiveis por tipo | S023-BE | [PENDENTE] |
+| 1 | S007-T10 | FE | FormulaEditor para FORMULA_CUSTOMIZADA | S007-T9 OK | **[CONCLUIDO]** (54 testes) |
+| 2 | S015-T4 | BE | Auto-concessao vantagens pre-definidas + campo `origem` no response | S015-T3 OK | **[CONCLUIDO]** (pre-impl + commit `4c04a54`) |
+| 3 | S023-BE | BE | Pre-requisitos polimorficos: 6 tipos, AND/OR, 409 em delecao | Spec 004 OK | **[CONCLUIDO]** (commit `934eaff`, +18 testes) |
+| 4 | UX-JOGO-SELECT + UX-COR-PREVIEW | FE | Game selector no ConfigLayout + p-colorpicker bidirecional raridades | Nenhuma | **[CONCLUIDO]** (+22 testes) |
+| 5 | NPC-FORM-CAMPOS | FE | Raça/Classe/configs no formulario de NPC | Spec 009 OK | **[CONCLUIDO]** (pre-impl + 2 testes) |
+
+### P1 — PROXIMA RODADA (Wave P1)
+
+| # | ID | Tipo | Descricao | Dependencia | Status |
+|---|-----|------|-----------|-------------|--------|
+| 6 | S023-FE | FE | Aba pre-requisitos polimorfica + chips removiveis por tipo | S023-BE CONCLUIDO | **[PROXIMO PRIORITARIO]** |
 | 7 | UX-ACCEPT-BTN | FE | Corrigir acceptButtonProps deprecated em 17 telas | Nenhuma | [PENDENTE] |
-| 8 | UX-COR-PREVIEW | FE | Cores hex com preview visual (swatch) junto ao codigo | Nenhuma | [PENDENTE] |
-| 9 | NPC-TEMPLATE | BE+FE | Nivel dificuldade NPC (Facil/Medio/Dificil/Elite/Chefe) + foco FISICO/MAGICO | Nenhuma | [PENDENTE] |
-| 10 | UX-TIPO-VANTAGEM | FE | tipoVantagem no form de criacao de vantagem (Insolitus nao pode ser criado) | Nenhuma | [PENDENTE] |
-| 11 | UX-NIVEL-MIN-PREREQ | FE | nivelMinimo exibido na lista de pre-req tipo VANTAGEM | S023-FE | [PENDENTE] |
+| 8 | NPC-TEMPLATE | BE+FE | Nivel dificuldade NPC (Facil/Medio/Dificil/Elite/Chefe) + foco FISICO/MAGICO | Nenhuma | [PENDENTE] |
+| 9 | UX-TIPO-VANTAGEM | FE | tipoVantagem no form de criacao de vantagem (Insolitus nao pode ser criado) | Nenhuma | [PENDENTE] |
+| 10 | UX-NIVEL-MIN-PREREQ | FE | nivelMinimo exibido na lista de pre-req tipo VANTAGEM | S023-FE | [PENDENTE] |
 
 ### P2 — POS
 
@@ -238,9 +238,9 @@
 | Risco | Impacto | Mitigacao |
 |-------|---------|-----------|
 | PA-006 nao resolvido | VIG/SAB hardcoded (GAP-CALC-09) | Fora do escopo T0; PO decide |
-| Spec 023 refatora VantagemPreRequisito | Schema change em tabela com dados | Migration Flyway com default tipo='VANTAGEM' |
-| 17 telas com acceptButtonProps deprecated | Botao confirmar exclusao visual incorreto | Fix rapido P1 |
-| NPC sem raça/classe no form | Feature incompleta para Mestre | P0 Sprint 4 |
+| ~~Spec 023 refatora VantagemPreRequisito~~ | ~~Schema change em tabela com dados~~ | **RESOLVIDO (Wave P0)** — Hibernate `ddl-auto=update` sem Flyway |
+| 17 telas com acceptButtonProps deprecated | Botao confirmar exclusao visual incorreto | Fix rapido P1 Wave 2 |
+| ~~NPC sem raça/classe no form~~ | — | **RESOLVIDO (Wave P0)** — form ja suportava campos + testes de cobertura |
 | Divida UX (dialogs, BaseConfig, cores) | UX inconsistente | P1/P2 |
 
 ---
@@ -259,4 +259,4 @@
 
 ---
 
-*Atualizado: 2026-04-13 (rev.16 — sessao 20: repriorizacao backlog, Spec 023 aprovada, Spec 010+013 cortadas, divida UX catalogada, ~92% completude) | PM/Scrum Master*
+*Atualizado: 2026-04-14 (rev.17 — sessao 20 Wave P0 CONCLUIDA: S007-T10 FE + S015-T4 + S023-BE + UX jogo/cor + NPC form, 814 BE / 1258 FE, ~94% completude) | PM/Scrum Master*

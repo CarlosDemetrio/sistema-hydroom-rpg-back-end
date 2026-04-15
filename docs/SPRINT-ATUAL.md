@@ -6,9 +6,9 @@
 > Para detalhes por area e historico, ver `PM.md`.
 > Para estado da ultima sessao, ver `HANDOFF-SESSAO.md`.
 >
-> Atualizado: 2026-04-13 (sessao 20 — repriorizacao backlog, Spec 023 aprovada, Spec 010+013 cortadas)
+> Atualizado: 2026-04-14 (sessao 20 — **Wave P0 CONCLUIDA** 5/5 tasks entregues)
 > PM: Scrum Orchestrator
-> Objetivo: **Tasks desbloqueadas (S007-T10, S015-T4) + Spec 023 BE + UX fixes + NPC gaps**
+> Objetivo: **Wave P0 CONCLUIDA — passa para Wave P1 (S023-FE + UX-ACCEPT-BTN + NPC-TEMPLATE)**
 > Duracao estimada: 2-3 semanas
 > Cronologia: `docs/historico/CRONOLOGIA.md` | Rodadas: `docs/tracking/rodadas/` | Copilot: `docs/tracking/rodadas-copilot/`
 
@@ -30,36 +30,35 @@
 
 | Metrica | Valor |
 |---------|-------|
-| Rodadas concluidas | 0 (sprint recem-iniciado) |
-| Tasks P0 | 5 (S007-T10, S015-T4, S023-BE, UX-JOGO-SELECT, NPC-FORM-CAMPOS) |
-| Tasks P1 | 6 (S023-FE, UX-ACCEPT-BTN, UX-COR-PREVIEW, NPC-TEMPLATE, UX-TIPO-VANTAGEM, UX-NIVEL-MIN-PREREQ) |
+| Rodadas concluidas | 1 (Wave P0) |
+| Tasks P0 | **5/5 CONCLUIDAS** (S007-T10, S015-T4, S023-BE, UX-JOGO-SELECT+COR-PREVIEW, NPC-FORM-CAMPOS) |
+| Tasks P1 | 5 (S023-FE, UX-ACCEPT-BTN, NPC-TEMPLATE, UX-TIPO-VANTAGEM, UX-NIVEL-MIN-PREREQ) |
 | Tasks P2 | 4 (AUDIT-BE-FE, UX-BASE-COMP, UX-DIALOG-WIDTH, UX-PREREQ-EMPTY) |
-| Total tasks Sprint 4 | **15** (5 P0 + 6 P1 + 4 P2) |
-| Testes backend | **796 passando**, 0 falhas |
-| Testes frontend | **~1208 passando** + 2 falhas pre-existentes + 2 OOM pre-existentes |
-| Specs em andamento | Spec 007 (12/13 — T10 P0), Spec 015 (6/7 — T4 P0), **Spec 023** (NOVO) |
+| Total tasks Sprint 4 | **14** (5 P0 CONCLUIDAS + 5 P1 + 4 P2) |
+| Testes backend | **814 passando**, 0 falhas (+18 Spec 023) |
+| Testes frontend | **1258 passando** (+22 Wave P0) + 2 falhas pre-existentes + 2 OOM pre-existentes |
+| Specs em andamento | Spec 007 (13/13 CONCLUIDA), Spec 015 (7/7 CONCLUIDA), **Spec 023** (BE CONCLUIDO, FE pendente) |
 | Specs CORTADAS | ~~Spec 010~~, ~~Spec 013~~, ~~Spec 014~~ (2026-04-13), ~~PA-017-04~~ |
 
-### P0 — Tasks Ativas Sprint 4
+### P0 — Tasks Ativas Sprint 4 (Wave P0 — CONCLUIDA 2026-04-14)
 
 | # | ID | Tipo | Descricao | Dependencia | Status |
 |---|-----|------|-----------|-------------|--------|
-| 1 | S007-T10 | FE | FormulaEditor para FORMULA_CUSTOMIZADA (selecionar campo-alvo atributo/bonus) | S007-T9 OK | [PENDENTE] |
-| 2 | S015-T4 | BE | Auto-concessao vantagens pre-definidas + enum OrigemFichaVantagem (JOGADOR/MESTRE/SISTEMA) | S015-T3 OK | [PENDENTE] |
-| 3 | S023-BE | BE | Refatorar VantagemPreRequisito: coluna `tipo`, campos nullable, AND/OR, migration Flyway | Spec 004 OK | [PENDENTE] — tasks por criar (BA/TL) |
-| 4 | UX-JOGO-SELECT | FE | Seletor de jogo nas telas de configuracao do Mestre (bloqueador usabilidade) | Nenhuma | [PENDENTE] |
-| 5 | NPC-FORM-CAMPOS | FE | Raça/Classe/configs no formulario de criacao de NPC | Spec 009 OK | [PENDENTE] |
+| 1 | S007-T10 | FE | FormulaEditor para FORMULA_CUSTOMIZADA (selecionar campo-alvo atributo/bonus) | S007-T9 OK | **[CONCLUIDO]** (54 testes) |
+| 2 | S015-T4 | BE | Auto-concessao vantagens pre-definidas + enum OrigemFichaVantagem | S015-T3 OK | **[CONCLUIDO]** (pre-impl + campo `origem` no response, commit `4c04a54`) |
+| 3 | S023-BE | BE | Pre-requisitos polimorficos: 6 tipos (VANTAGEM/RACA/CLASSE/ATRIBUTO/NIVEL/APTIDAO), AND/OR, 409 em delecao | Spec 004 OK | **[CONCLUIDO]** (commit `934eaff`, +18 testes -> 814 total) |
+| 4 | UX-JOGO-SELECT + UX-COR-PREVIEW | FE | Game selector no ConfigLayoutComponent + p-colorpicker bidirecional em raridades | Nenhuma | **[CONCLUIDO]** (+22 testes -> 1258 total) |
+| 5 | NPC-FORM-CAMPOS | FE | Raça/Classe/configs no formulario de criacao de NPC | Spec 009 OK | **[CONCLUIDO]** (pre-impl + 2 testes de cobertura) |
 
-### P1 — Proxima Rodada
+### P1 — Proxima Rodada (Wave P1)
 
 | # | ID | Tipo | Descricao | Dependencia | Status |
 |---|-----|------|-----------|-------------|--------|
-| 6 | S023-FE | FE | Aba pre-requisitos polimorfica + chips removiveis por tipo | S023-BE | [PENDENTE] |
+| 6 | S023-FE | FE | Aba pre-requisitos polimorfica + chips removiveis por tipo | S023-BE CONCLUIDO | **[PENDENTE]** — P1 PRIORITARIO |
 | 7 | UX-ACCEPT-BTN | FE | acceptButtonProps deprecated em 17 telas → `acceptButtonProps: { severity: 'danger' }` | Nenhuma | [PENDENTE] |
-| 8 | UX-COR-PREVIEW | FE | Cores hex com preview visual (swatch) em RaridadeItemConfig | Nenhuma | [PENDENTE] |
-| 9 | NPC-TEMPLATE | BE+FE | Config nivel dificuldade NPC (Facil/Medio/Dificil/Elite/Chefe) + foco FISICO/MAGICO | Nenhuma | [PENDENTE] |
-| 10 | UX-TIPO-VANTAGEM | FE | tipoVantagem no form criacao vantagem (fix: Insolitus nao pode ser criado hoje) | Nenhuma | [PENDENTE] |
-| 11 | UX-NIVEL-MIN-PREREQ | FE | nivelMinimo exibido na lista de pre-req tipo VANTAGEM | S023-FE | [PENDENTE] |
+| 8 | NPC-TEMPLATE | BE+FE | Config nivel dificuldade NPC (Facil/Medio/Dificil/Elite/Chefe) + foco FISICO/MAGICO | Nenhuma | [PENDENTE] |
+| 9 | UX-TIPO-VANTAGEM | FE | tipoVantagem no form criacao vantagem (fix: Insolitus nao pode ser criado hoje) | Nenhuma | [PENDENTE] |
+| 10 | UX-NIVEL-MIN-PREREQ | FE | nivelMinimo exibido na lista de pre-req tipo VANTAGEM | S023-FE | [PENDENTE] |
 
 ### P2 — Pos
 
@@ -80,11 +79,12 @@
 - 409 ao tentar deletar config usada como pre-req — deve ser **inativada** (campo `ativo`)
 - Mudanca de raca/classe NAO revoga vantagem — Mestre decide manualmente
 
-**Backend (tasks por criar por BA/TL):**
-- Refatorar entidade VantagemPreRequisito: coluna `tipo`, campos nullable (`raca_id`, `classe_id`, `atributo_id`, `aptidao_id`, `valor_minimo`)
-- Migration Flyway: registros existentes → `tipo = 'VANTAGEM'`
-- FichaVantagemService.comprar() — verificacao por tipo
-- 409 ao deletar Raca/Classe/Atributo/Aptidao usada como pre-req
+**Backend (CONCLUIDO — Wave P0, commit `934eaff`):**
+- ~~Refatorar entidade VantagemPreRequisito: coluna `tipo`, campos nullable (`raca_id`, `classe_id`, `atributo_id`, `aptidao_id`, `valor_minimo`)~~ FEITO
+- Schema: **Hibernate `ddl-auto=update`** aplica alteracoes automaticamente (sem Flyway, sem migracao manual)
+- ~~FichaVantagemService.comprar() — verificacao por tipo (OR intra-tipo, AND entre tipos)~~ FEITO
+- ~~409 ao deletar Raca/Classe/Atributo/Aptidao usada como pre-req~~ FEITO
+- ~~Concessao Insolitus + VantagemPreDefinida (SISTEMA) ignora pre-requisitos~~ FEITO
 
 **Frontend (tasks por criar por BA/TL):**
 - Select de tipo → campos condicionais

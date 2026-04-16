@@ -9,7 +9,7 @@
 > Para ver o estado da ultima sessao: `HANDOFF-SESSAO.md`.
 > Para ver o mapa completo de docs/: `README.md`.
 >
-> Ultima atualizacao: 2026-04-15 (rev.21 — sessao 21 rodada 17: Spec 024 CONCLUIDA (2/2) + UX-BASE-COMP + GAP-DASH-01 + UX-PREREQ-EMPTY — 832 BE / ~1525 FE) | Branch: `main`
+> Ultima atualizacao: 2026-04-16 (rev.23 — sessao 22 rodada 19: FichaStatus FE (badges/canEdit/remove Excluir Jogador) + Aba Sessao (vida/essencia/membros + polling 30s + badge header) + S026-T05/T08 + T-025-13 + BE JogoResumoResponse.criadoEm. Sprint 4 segue ENCERRADO; INCONS-02 agora end-to-end BE+FE; GAP novo GAP-ESTADO-COMBATE registrado para R20) | Branch: `main`
 
 ---
 
@@ -17,13 +17,13 @@
 
 | Metrica | Valor |
 |---------|-------|
-| Backend testes | **832 passando**, 0 falhas (sem alteracoes na R17) |
-| Frontend testes | **~1525 passando** (+92 R17 sobre ~1433 wave 3; 2 falhas pre-existentes ficha-vantagens-tab) |
+| Backend testes | **832 passando pre-R18** + R19 afetou 21 testes em JogoResumoResponse.criadoEm (a auditar contagem global) |
+| Frontend testes | **~1525+ pos-R17** + R18 + **+58 testes confirmados em R19** (33 FichaStatus FE + 25 aba Sessao) — reconciliar total |
 | Frontend build | 0 erros, 0 warnings |
 | Sprint 1 | **CONCLUIDO** (94%, 29/31 tasks) |
 | Sprint 2 | **ENCERRADO** — 34/35 tasks (97%) + 2 bonus. S007-T10 bloqueada PA-004. |
 | Sprint 3 | **ENCERRADO** — R12-R14 + Copilot R01-R07 + Waves 1-3. |
-| Sprint 4 | **Wave P0 + P1w2 + P1w3 + R17 CONCLUIDAS** (17/17 P1 + 3/5 P2) — P0: 5 tasks. P1w2: 4 tasks. P1w3: 4 tasks (GAP-NPC-FE-01 + GAP-XP-01 + GAP-INS-01 + GAP-PROS-01). **R17 (2026-04-15 tarde)**: Spec 024 T1 (UX-TIPO-VANTAGEM) + UX-BASE-COMP (raridades + itens) + GAP-DASH-01 + UX-PREREQ-EMPTY. **Spec 024 CONCLUIDA (2/2)**. Restam 2 P2: GAP-EXPRT-01 (bloqueado, BE nao tem endpoint) + AUDIT-BE-FE (baixa prio). |
+| Sprint 4 | **ENCERRADO (R18 — 2026-04-16)**. Wave P0 + P1w2 + P1w3 + R17 + R18 + R19 concluidas (17/17 P1 + 4/5 P2 + Spec 026 T05/T08 + T-025-* FE). **R19 (2026-04-16)**: FichaStatus FE (badges + canEdit MORTA/ABANDONADA + remove Excluir Jogador) + Aba Sessao (vida/essencia/membros + polling 30s + badge header) + S026-T05/T08 (badge pendentes sidebar + Data Criacao + `criadoEm` BE) + T-025-13 (remove Criar Ficha sidebar Jogador) + wizard path param/labels. **INCONS-02 agora end-to-end**. Unico P2 residual: AUDIT-BE-FE (baixa prio). **GAP novo: GAP-ESTADO-COMBATE** (P1, R20). |
 | Specs com spec+plan+tasks | 005, 006, 007, 008, 009-ext, 011, 012, 015, **021**, **023**, **024 (CONCLUIDA 2/2)** |
 | Specs em especificacao | — |
 | Decisoes PO | **TODAS RESOLVIDAS** (GAP-01 a GAP-08, INCONS-02, P-03, PA-001/002, Q14-Q17, PA-021-03, PA-004, PA-015-04, **Spec 023 aprovada**, **Spec 024 aprovada**) |
@@ -54,7 +54,7 @@
 | ~~013~~ | ~~Documentacao Tecnica~~ | — | **CORTADO** | — | CORTADO sessao 20 |
 | ~~014~~ | ~~Cobertura de Testes~~ | [`specs/014-cobertura-testes/`](specs/014-cobertura-testes/) | **CORTADO** | 4B / 2F / **6** | **CORTADO sessao 21 (2026-04-13)** — T1+T5 ja concluidos; T2-T4+T6 descartados pelo PO |
 | **023** | **Pre-requisitos Polimorficos Vantagem** | — | **P0** | ~6B / ~5F / **~11** | **CONCLUIDO BE+FE** — BE commit `934eaff` (+18 testes), FE commit `d08d1c9` (+56 testes, aba polimorfica) |
-| **024** | **UX Melhorias Sprint 4** | [`specs/024-ux-melhorias-sprint4/`](specs/024-ux-melhorias-sprint4/) | **P1** | 0B / 2F / **2** | **CONCLUIDO (2/2)** — T1 (UX-TIPO-VANTAGEM) entregue R17 (+14 testes); T2 (UX-NIVEL-MIN-PREREQ) via Spec 023 FE |
+| **024** | **UX Melhorias Sprint 4** | [`specs/024-ux-melhorias-sprint4/`](specs/024-ux-melhorias-sprint4/) | **P1** | 0B / 2F / **2** | **CONCLUIDO (2/2)** — T1 (UX-TIPO-VANTAGEM) entregue R17 (+14 testes) e consolidada em R18 com DTOs; T2 (UX-NIVEL-MIN-PREREQ) via Spec 023 FE |
 | 008-old | Utilidade e Fluidez (dashboard, export/import) | — | — | — | Backend ~100% implementado (pre-existente) |
 | 009-old | NPC backend (fichas mestre, duplicacao) | — | — | — | Backend ~100% (457 testes, pre-existente) |
 
@@ -120,9 +120,10 @@ CORTADOS (sessao 21, 2026-04-13):
   - Spec 014 (Cobertura de Testes — T2-T4+T6); T1+T5 ja haviam sido entregues.
 ```
 
-**Caminho critico Sprint 4 (apos R17):** ~~Wave P0 5/5~~ + ~~Wave P1w2 4/4~~ + ~~Wave P1w3 4/4~~ + ~~R17 (Spec 024 T1 + UX-BASE-COMP + GAP-DASH-01 + UX-PREREQ-EMPTY)~~ → **Sprint 4 praticamente encerrado**. Residuais P2: AUDIT-BE-FE (baixa prio). GAP-EXPRT-01 bloqueado (BE sem endpoint).
-**Paralelo possivel (proxima rodada):** AUDIT-BE-FE + avaliacao de fechamento v0.0.1-RC
-**CORTADO:** Spec 010 (Roles) e Spec 013 (Docs) removidas do backlog ativo (sessao 20); GAP-EXPRT-01 SKIP por falta de endpoint BE
+**Caminho critico Sprint 4 (apos R19):** ~~Wave P0 5/5~~ + ~~Wave P1w2 4/4~~ + ~~Wave P1w3 4/4~~ + ~~R17~~ + ~~R18 (UX final + Dashboard + FichaStatus MORTA/ABANDONADA + PUT /status + DELETE NPC)~~ + ~~R19 (FichaStatus FE + Aba Sessao + S026-T05/T08 + T-025-13 + BE criadoEm)~~ → **Sprint 4 ENCERRADO**. Residuais: AUDIT-BE-FE (baixa prio) + **GAP-ESTADO-COMBATE** (P1, R20 — endpoint `GET /fichas/{id}/estado-combate` para expor `danoRecebido`). GAP-EXPRT-01 CANCELADO (R18).
+**Foco proxima rodada (R20):** **GAP-ESTADO-COMBATE** (BE cria endpoint + FE consome na aba Sessao) — prioridade imediata por decisao PO.
+**Paralelo possivel (R20):** auditoria de testes backend pos-R18+R19 + AUDIT-BE-FE + avaliacao de fechamento v0.0.1-RC
+**CORTADO:** Spec 010 (Roles) e Spec 013 (Docs) removidas do backlog ativo (sessao 20); GAP-EXPRT-01 CANCELADO na R18 (botoes removidos)
 
 ---
 
@@ -245,9 +246,12 @@ APOS TODAS AS SPECS FUNCIONAIS:
 | ~~Spec 023 refatora VantagemPreRequisito~~ | — | **RESOLVIDO (Wave P0+P1w2)** — BE+FE entregues |
 | ~~17 telas com acceptButtonProps deprecated~~ | — | **RESOLVIDO (wave 2)** — UX mass fix em 13-14 telas (commit `141b054`) |
 | ~~NPC sem raça/classe no cadastro~~ | — | **RESOLVIDO (Wave P0)** — form ja suportava os campos |
-| ~~GAPs BE->FE descobertos (XP/Insolitus/Prospeccao/Dashboard)~~ | — | **RESOLVIDOS (wave 3 + R17)** — 5 entregues; GAP-EXPRT-01 bloqueado por BE sem endpoint |
-| ~~Divida UX (dialogs, BaseConfig parcial)~~ | — | **RESOLVIDO (wave 2 + R17)** — dialog widths padronizados + 4 telas migradas para BaseConfig |
-| ~~Spec 024 T1 UX-TIPO-VANTAGEM~~ | — | **RESOLVIDO (R17)** — +14 testes, checkbox Insolitus + coluna Tipo |
+| ~~GAPs BE->FE descobertos (XP/Insolitus/Prospeccao/Dashboard)~~ | — | **RESOLVIDOS (wave 3 + R17)** — 5 entregues; GAP-EXPRT-01 CANCELADO (R18, botoes removidos) |
+| ~~Divida UX (dialogs, BaseConfig parcial)~~ | — | **RESOLVIDO (wave 2 + R17 + R18)** — dialog widths padronizados + 4 telas migradas para BaseConfig (habilidades, tipos-item, raridades, itens) |
+| ~~Spec 024 T1 UX-TIPO-VANTAGEM~~ | — | **RESOLVIDO (R17+R18)** — +14 testes R17, consolidado com DTOs em R18 |
+| ~~INCONS-02 (fichas deletadas fisicamente)~~ | — | **RESOLVIDO end-to-end** — BE (R18): FichaStatus + PUT /status + DELETE restrito NPC; FE (R19): badges + canEdit + remove Excluir Jogador |
+| Testes backend pos-R18+R19 | FichaStatus novos valores + novos endpoints + JogoResumoResponse.criadoEm | A auditar na proxima rodada; confirmar se contagem global 832 se mantem |
+| **GAP-ESTADO-COMBATE** (R19) | FichaResumoResponse nao expoe `danoRecebido`, aba Sessao FE inicia dano=0 | **R20 PRIORIDADE** — criar `GET /fichas/{id}/estado-combate` (decisao PO) |
 
 ---
 
@@ -259,7 +263,7 @@ APOS TODAS AS SPECS FUNCIONAIS:
 | [`HANDOFF-SESSAO.md`](HANDOFF-SESSAO.md) | Estado da ultima sessao (ativo — primeiro a ler) |
 | [`SPRINT-ATUAL.md`](SPRINT-ATUAL.md) | Sprint corrente tracking detalhado |
 | [`PM.md`](PM.md) | Status detalhado por area + historico de sprints encerradas |
-| [`tracking/rodadas/`](tracking/rodadas/) | Tracking das rodadas (10-17) |
+| [`tracking/rodadas/`](tracking/rodadas/) | Tracking das rodadas (10-19) |
 | [`README.md`](README.md) | Mapa de navegacao completo de docs/ |
 | [`historico/CRONOLOGIA.md`](historico/CRONOLOGIA.md) | Cronologia reversa completa |
 | [`historico/backlogs-iniciais/EPICS-BACKLOG.md`](historico/backlogs-iniciais/EPICS-BACKLOG.md) | Backlog de epicos (fase descoberta — Specs tomaram o lugar) |
@@ -361,4 +365,4 @@ APOS TODAS AS SPECS FUNCIONAIS:
 ---
 
 *Este documento e a fonte unica de verdade para navegacao do projeto. Atualizar a cada sessao.*
-*Ultima revisao: 2026-04-15 (rev.20 — sessao 20 Wave P0+P1w2+P1w3 CONCLUIDAS + Spec 024 criada (T2 entregue via 023 FE; T1 UX-TIPO-VANTAGEM PENDENTE), 832B/~1433F testes)*
+*Ultima revisao: 2026-04-16 (rev.23 — sessao 22 rodada 19: FichaStatus FE + Aba Sessao + S026-T05/T08 + T-025-13 + BE criadoEm. Sprint 4 ENCERRADO — INCONS-02 end-to-end; GAP-ESTADO-COMBATE P1 para R20)*

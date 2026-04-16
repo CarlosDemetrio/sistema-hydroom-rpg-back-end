@@ -3,7 +3,7 @@
 - [Sprint 1 State](project_sprint1_state.md) — CONCLUIDO 94% (29/31), 457 tests, formally closed 2026-04-03
 - [Sprint 2 State](project_sprint2_state.md) — CONCLUIDO, 581B+490F testes (stale — ver Sprint 3)
 - [Sprint 3 State](project_sprint3_state.md) — ENCERRADO, 796B+~1208F testes, Waves 1+2+3 completas (2026-04-13)
-- [Sprint 4 State](project_sprint4_state.md) — ATIVO, 16 tasks (5P0+6P1+5P2), Spec 023+UX+NPC gaps
+- [Sprint 4 State](project_sprint4_state.md) — ENCERRADO 2026-04-16 (R18+R19), 17/17 P1 + 4/5 P2 + Spec 026 T05/T08 + T-025-* FE; INCONS-02 end-to-end
 - [PO Decisions](project_po_decisions_2026_04_03.md) — ALL gaps resolved: INCONS-02 (no delete fichas), P-03 (admin scope), renascimento out
 - [Backend Audit](project_backend_audit.md) — 523 testes rodada 5 (stale — ver Sprint 4 para estado atual)
 - [Frontend Debt](project_frontend_debt.md) — 490 testes (0 falhas), QW-Bug1/Bug2 CONCLUIDOS (R3), 23 gaps parcialmente resolvidos
@@ -16,6 +16,6 @@
 - [Spec 017](project_spec017.md) — Correcoes Pre-RC CONCLUIDO, P0+P1+P2+P3
 - [Spec 021](project_spec021.md) — Sistema Habilidades CONCLUIDO, BA+T1 BE+T2 FE (Waves 1+2+3)
 - [Spec 023](project_spec023.md) — Pre-requisitos Polimorficos Vantagem, aprovada PO 2026-04-13, tasks por criar
-- [Spec 024](project_spec024.md) — UX Melhorias Sprint 4 criada 2026-04-15, T1 UX-TIPO-VANTAGEM PENDENTE, T2 ja entregue via 023 FE
+- [Spec 024](project_spec024.md) — UX Melhorias Sprint 4 CONCLUIDA (2/2) em R17 2026-04-15, T1 +14 testes, T2 via 023 FE
 - [UX Debt Sessao 20](project_ux_debt_sessao20.md) — 17 telas acceptButtonProps, 9 dialogs, 4 BaseConfig, cores hex, jogo-select
-- [GAPs MVP Pendentes](project_gaps_pendentes.md) — 3 GAPs sem spec: FichaStatus MORTA, polling, NPC form (GAP-MVP-05 RESOLVIDO R5)
+- [GAPs MVP Pendentes](project_gaps_pendentes.md) — MVP-02+04 RESOLVIDOS (R18+R19); residuais: MVP-08 + NOVO GAP-ESTADO-COMBATE (P1, R20)

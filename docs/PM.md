@@ -7,7 +7,7 @@
 > Ponto de entrada rapido: `HANDOFF-SESSAO.md` → `MASTER.md` → `PM.md`.
 > Mapa completo de docs: `README.md`.
 >
-> Gerado em: 2026-04-01 | Atualizado: 2026-04-15 (sessao 21, rev.21 — Rodada 17: Spec 024 CONCLUIDA (2/2) + UX-BASE-COMP (raridades + itens) + GAP-DASH-01 + UX-PREREQ-EMPTY. 832 BE / ~1525 FE, ~99% completude) | Branch: `main`
+> Gerado em: 2026-04-01 | Atualizado: 2026-04-16 (sessao 22, rev.23 — Rodada 19: FichaStatus FE (badges + canEdit MORTA/ABANDONADA + remove Excluir Jogador) + Aba Sessao (vida/essencia/membros + polling 30s + badge header) + S026-T05 (badge pendentes sidebar Mestre) + S026-T08 (coluna Data Criacao + BE criadoEm) + T-025-13 (remove Criar Ficha sidebar Jogador) + wizard path param/labels. INCONS-02 agora end-to-end BE+FE. GAP novo: GAP-ESTADO-COMBATE P1 para R20. Backend 832 testes a auditar + 21 afetados em R19. Frontend +58 testes confirmados em R19. Completude ~99%+) | Branch: `main`
 > Cronologia: `docs/historico/CRONOLOGIA.md`
 
 ---
@@ -21,21 +21,23 @@
 | Backend: Motor de Formulas | **100%** | 7/8 TipoEfeito + 20 testes integracao. FORMULA_CUSTOMIZADA desbloqueado (PA-004 resolvido). Frontend: T9/T10/T11/T12 CONCLUIDOS (T10 entregue Wave P0, 54 testes). |
 | Backend: Conceder XP / Insolitus / Prospeccao | **100%** | Endpoints `PUT /fichas/{id}/xp`, concessao Insolitus e `GET /jogos/{id}/prospeccao/pendentes` com UI Mestre (wave 3) |
 | Backend: NPC dificuldade | **100%** | NpcDificuldadeConfig + FocoNpc (BE wave 2) com selector + auto-fill no FE (wave 3) |
-| Backend: Ficha de Personagem (Spec 006/007) | **100%** | Wizard 6 passos completo (T6-T13). S006-T1/T2/T4/T5 backend CONCLUIDOS. PUT /fichas/{id}/completar funcional. Navega para FichaDetail. |
-| Backend: NPC + Duplicacao (Spec 009) | **100%** | POST /jogos/{id}/npcs + POST /fichas/{id}/duplicar implementados. |
+| Backend: Ficha de Personagem (Spec 006/007) | **100%** | Wizard 6 passos completo. **R18:** FichaStatus ganha MORTA/ABANDONADA (COMPLETA @Deprecated); PUT /fichas/{id}/status para Mestre; INCONS-02 do PO totalmente implementado no BE. **R19:** INCONS-02 end-to-end (FE alinhado com badges/canEdit/remove Excluir Jogador). **R20 pendente:** `GET /fichas/{id}/estado-combate` para expor `danoRecebido` por membro. |
+| Backend: NPC + Duplicacao (Spec 009) | **100%** | POST /jogos/{id}/npcs + POST /fichas/{id}/duplicar implementados. **R18:** DELETE /fichas/{id} restaurado como `excluirNpc`, restrito a `isNpc=true`. |
+| Backend: Lista de Jogos (Spec 026) | **100%** | **R19:** `criadoEm` adicionado a `JogoResumoResponse` (+ mapper) — desbloqueia coluna Data Criacao no FE. 21 testes afetados passando. |
 | Backend: NPC Visibilidade (Spec 009-ext) | **100%** | visivelGlobalmente, FichaVisibilidade (4 endpoints), ProspeccaoUso (endpoints conceder/usar/reverter), resetar-estado, essenciaAtual/vidaAtual no resumo. 32 novos testes. |
 | Backend: Anotacoes | 100% | FichaAnotacaoController + Service implementados e testados |
 | Backend: Seguranca (role checks) | **100%** | TODOS controllers com @PreAuthorize. |
 | Backend: Perfil Usuario | **100%** | GET/PUT /api/v1/usuarios/me implementado e testado |
 | Backend: Participantes (Spec 005) | **100%** | P1T1/P1T2/P1T3 + P2T1/P2T2/P2T3 CONCLUIDOS (6/6). Strategy Reactivate, banir/desbanir/remover/meu-status, JogoDetail Mestre, JogosDisponiveis Jogador. |
-| Frontend: Modelos e Servicos de API | **100%** | Sub-recursos (008), PontosVantagem/CategoriaVantagem (012), FichaVisibilidade + Prospeccao (009-ext) CONCLUIDOS. |
-| Frontend: Componentes | **~99.9%** | + S023-FE, UX mass fix, BaseConfig migration (habilidades + tipos-item + raridades + itens). **Wave 3:** GAP-NPC-FE-01 + GAP-XP-01 + GAP-INS-01 + GAP-PROS-01. **R17:** Spec 024 T1 + GAP-DASH-01. Falta apenas P2 residual (AUDIT-BE-FE baixa prio; GAP-EXPRT-01 bloqueado BE). |
-| Frontend: Testes | **100%** | **~1525 passando** (+92 R17 sobre ~1433 wave 3; 2 falhas pre-existentes ficha-vantagens-tab) |
+| Frontend: Modelos e Servicos de API | **100%** | Sub-recursos (008), PontosVantagem/CategoriaVantagem (012), FichaVisibilidade + Prospeccao (009-ext), DTOs UX-TIPO-VANTAGEM (R18), AtualizarStatusFicha (R18), `criadoEm` em JogoResumoResponse (R19). |
+| Frontend: Componentes | **~100%** | + S023-FE, UX mass fix, BaseConfig migration (habilidades + tipos-item + raridades + itens). **Wave 3:** GAP-NPC-FE-01 + GAP-XP-01 + GAP-INS-01 + GAP-PROS-01. **R17:** Spec 024 T1 + GAP-DASH-01. **R18:** Pacote UX final + Dashboard + type fixes. **R19:** FichaStatus FE (badges + canEdit + remove Excluir Jogador) + aba Sessao (vida/essencia/membros + polling 30s + badge header) + S026-T05 (badge sidebar) + S026-T08 (Data Criacao) + T-025-13 + wizard labels/path param. Residual: AUDIT-BE-FE baixa prio. |
+| Frontend: Testes | **100%** | ~1525+ pos-R17 + R18 + **+58 testes confirmados em R19** (33 FichaStatus FE + 25 aba Sessao) — reconciliar total |
 
-**Completude geral estimada: ~99%** (Sprint 4 Wave P0 + P1w2 + P1w3 + R17 CONCLUIDAS — 17/17 tasks P1 + 3/5 P2)
-**Backend: 832 testes, 0 falhas (sem alteracoes na R17)**
-**Frontend: ~1525 testes passando** (+92 R17)
-**Total tasks MVP: ~120+** (estimado — inclui Spec 023, Spec 024, UX fixes, NPC gaps + 6 GAPs auditoria BE->FE — 5/6 entregues; GAP-EXPRT-01 bloqueado)
+**Completude geral estimada: ~99%+** (Sprint 4 ENCERRADO — Wave P0 + P1w2 + P1w3 + R17 + R18 + R19 CONCLUIDAS — 17/17 tasks P1 + 4/5 P2 + Spec 026 T05/T08 + T-025-* FE; GAP-EXPRT-01 CANCELADO R18)
+**Backend: 832 testes pre-R18, 0 falhas — auditar apos R18 (FichaStatus + PUT /status + DELETE NPC) + R19 (21 testes afetados em JogoResumoResponse.criadoEm)**
+**Frontend: ~1525+ testes pos-R17 + R18 + +58 em R19** (reconciliar total na proxima rodada)
+**Total tasks MVP: ~130+** (estimado — inclui Spec 023, Spec 024, Spec 026 T05/T08, T-025-* R19, UX fixes, NPC gaps + 6 GAPs auditoria BE->FE — 5/6 entregues; GAP-EXPRT-01 CANCELADO R18)
+**GAP novo R19:** GAP-ESTADO-COMBATE (P1, R20) — endpoint `GET /fichas/{id}/estado-combate` para expor `danoRecebido` por membro.
 
 ---
 
@@ -219,18 +221,51 @@
 | 17 | GAP-DASH-01 | FE | Dashboard Mestre 3 cards + rota + sidebar | **[CONCLUIDO]** (+16 testes) |
 | — | UX-PREREQ-EMPTY | FE | Estado vazio aba pre-requisitos | **[CONCLUIDO]** (via Spec 023 FE) |
 
+### Rodada 18 — CONCLUIDA (sessao 22, 2026-04-16)
+
+| # | ID | Tipo | Descricao | Status |
+|---|-----|------|-----------|--------|
+| 18.1 | UX-TIPO-VANTAGEM (consolidacao DTOs) | FE | tipoVantagem no form + coluna Tipo + DTOs req/resp | **[CONCLUIDO]** |
+| 18.2 | Dashboard Mestre (JogoDashboard) | FE | Nova tela `/mestre/dashboard` com fichas ativas, pendentes, NPCs | **[CONCLUIDO]** |
+| 18.3 | Migracao BaseConfig (itens + raridades) | FE | `ItensConfigComponent` + `RaridadesItemConfigComponent` migrados | **[CONCLUIDO]** |
+| 18.4 | FE-1 Quick Wins | FE | remove Export/Import, Data Criacao, setTimeout, ConfigComponent dead code | **[CONCLUIDO]** |
+| 18.5 | FE-ROUTE-BUG | FE | corrige rota Editar em ficha-detail (`/jogador/fichas/:id/edit`) | **[CONCLUIDO]** |
+| 18.6 | FE-CONSOLE-LOG | FE | remove console.log do AuthService | **[CONCLUIDO]** |
+| 18.7 | UX-PROFILE-NOME | FE | edicao de nome em Profile via PUT /api/v1/usuarios/me | **[CONCLUIDO]** |
+| 18.8 | UX-BACK-BUTTON | FE | PageHeaderComponent com backRoute em 12 telas de config + dashboard | **[CONCLUIDO]** |
+| 18.9 | NPC-DELETE + NPC-BACK | FE | botao delete com ConfirmDialog + botao voltar em NpcsComponent | **[CONCLUIDO]** |
+| 18.10 | Type fixes | FE | TagSeverity, Partial<Record>, ProgressBar [color], imports | **[CONCLUIDO]** |
+| 18.11 | FichaStatus MORTA/ABANDONADA | BE | adicionados ATIVA/MORTA/ABANDONADA; COMPLETA @Deprecated | **[CONCLUIDO]** |
+| 18.12 | PUT /fichas/{id}/status | BE | novo endpoint para Mestre alterar status + AtualizarStatusFichaRequest | **[CONCLUIDO]** |
+| 18.13 | excluirNpc | BE | DELETE /fichas/{id} restaurado, restrito a NPC (isNpc=true) | **[CONCLUIDO]** |
+
+### Rodada 19 — CONCLUIDA (sessao 22 continuada, 2026-04-16)
+
+| # | ID | Tipo | Descricao | Status |
+|---|-----|------|-----------|--------|
+| 19.1 | T-025-12 | FE | Labels wizard: passo 5 = "Vantagens", passo 6 = "Revisao" | **[CONCLUIDO]** (`27fd3b8`) |
+| 19.2 | T-025-08 | FE | Wizard le fichaId do path param `:id` alem de queryParam | **[CONCLUIDO]** (`3d04f3b`) |
+| 19.3 | T-025-01-FE + T-025-09 + T-025-10 | FE | Badges de status na fichas-list + canEdit bloqueia MORTA/ABANDONADA + remove botao Excluir do Jogador (INCONS-02 FE) | **[CONCLUIDO]** (+33 testes, `9b5ba1b`) |
+| 19.4 | T-025-03 + T-025-04 + T-025-07 + T-025-11 | FE | Aba "Sessao" em ficha-detail (vida/essencia/membros do corpo) + polling 30s + badge status no FichaHeaderComponent | **[CONCLUIDO]** (+25 testes, `65f0c19`) |
+| 19.5 | S026-T08 FE | FE | Coluna "Data Criacao" restaurada na lista de jogos | **[CONCLUIDO]** (`ea0bb09`) |
+| 19.6 | S026-T05 | FE | Badge de participantes pendentes no sidebar do Mestre | **[CONCLUIDO]** (`aaa1abc`) |
+| 19.7 | T-025-13 | FE | Remove item "Criar Ficha" do sidebar do Jogador | **[CONCLUIDO]** (`aaa1abc`) |
+| 19.8 | S026-T08 BE | BE | `criadoEm` adicionado ao JogoResumoResponse + mapper atualizado | **[CONCLUIDO]** (21 testes afetados, `2fc8ece`) |
+
+**Gap tecnico identificado na R19 (P1, R20):** **GAP-ESTADO-COMBATE** — `FichaResumoResponse` nao expoe `danoRecebido` dos membros do corpo, fazendo a aba Sessao iniciar com dano=0. **Decisao PO:** criar novo endpoint `GET /fichas/{id}/estado-combate` (ou similar) em R20, em vez de engrossar o `FichaResumoResponse`.
+
 ### P1 — TODOS ENTREGUES
 
-Spec 024 T1 era a ultima P1 pendente; entregue em R17. **14/14 P1 entregues.**
+Spec 024 T1 era a ultima P1 pendente; entregue em R17 e consolidada em R18 com DTOs. **14/14 P1 entregues.**
 
-### P2 — Estado apos R17
+### P2 — Estado apos R18
 
 | # | ID | Tipo | Descricao | Dependencia | Status |
 |---|-----|------|-----------|-------------|--------|
-| — | GAP-DASH-01 | FE | Dashboard do Mestre | — | **[CONCLUIDO]** (R17) |
-| — | UX-BASE-COMP | FE | itens + raridades para BaseConfigComponent | — | **[CONCLUIDO]** (R17) |
+| — | GAP-DASH-01 | FE | Dashboard do Mestre | — | **[CONCLUIDO]** (R17 + consolidacao R18) |
+| — | UX-BASE-COMP | FE | itens + raridades para BaseConfigComponent | — | **[CONCLUIDO]** (R17 + consolidacao R18) |
 | — | UX-PREREQ-EMPTY | FE | Estado vazio aba pre-requisitos | — | **[CONCLUIDO]** (via Spec 023 FE) |
-| 4 | GAP-EXPRT-01 | FE | Interface Export/Import config | Endpoint BE | [SKIP — backend nao tem endpoint] |
+| 4 | GAP-EXPRT-01 | FE | Interface Export/Import config | Endpoint BE | **[CANCELADO] (R18)** — botoes removidos no FE-1 Quick Win |
 | 5 | AUDIT-BE-FE | Auditoria | Auditar demais endpoints sem tela | Nenhuma | [PENDENTE — baixa prio] |
 
 ### Pos-MVP
@@ -271,9 +306,12 @@ Spec 024 T1 era a ultima P1 pendente; entregue em R17. **14/14 P1 entregues.**
 | ~~Spec 023 refatora VantagemPreRequisito~~ | — | **RESOLVIDO (Wave P0+P1w2)** — BE+FE entregues |
 | ~~17 telas com acceptButtonProps deprecated~~ | — | **RESOLVIDO (wave 2)** — UX mass fix em 13-14 telas |
 | ~~NPC sem raça/classe no form~~ | — | **RESOLVIDO (Wave P0)** |
-| ~~GAPs BE->FE (XP/Insolitus/Prospeccao/NPC-FE/DASH)~~ | — | **RESOLVIDOS (wave 3 + R17)** — 5 entregues; GAP-EXPRT-01 bloqueado (BE sem endpoint) |
-| ~~Divida UX parcial (dialogs, BaseConfig)~~ | — | **RESOLVIDO (wave 2 + R17)** — dialogs padronizados + 4 telas migradas (habilidades, tipos-item, raridades, itens) |
-| ~~Spec 024 T1 UX-TIPO-VANTAGEM~~ | — | **RESOLVIDO (R17)** — checkbox Insolitus + coluna Tipo + 14 testes |
+| ~~GAPs BE->FE (XP/Insolitus/Prospeccao/NPC-FE/DASH)~~ | — | **RESOLVIDOS (wave 3 + R17)** — 5 entregues; GAP-EXPRT-01 CANCELADO (R18) |
+| ~~Divida UX parcial (dialogs, BaseConfig)~~ | — | **RESOLVIDO (wave 2 + R17 + R18)** — dialogs padronizados + 4 telas migradas (habilidades, tipos-item, raridades, itens) |
+| ~~Spec 024 T1 UX-TIPO-VANTAGEM~~ | — | **RESOLVIDO (R17+R18)** — checkbox Insolitus + coluna Tipo + DTOs consolidados |
+| ~~INCONS-02 (fichas deletadas fisicamente)~~ | — | **RESOLVIDO end-to-end** — BE (R18): FichaStatus + PUT /status + DELETE restrito NPC; FE (R19): badges + canEdit + remove Excluir Jogador |
+| Auditoria backend pos-R18+R19 | FichaStatus novos valores + novos endpoints + JogoResumoResponse.criadoEm | Proxima rodada: rodar `./mvnw test` e reconciliar contagem global (era 832 pre-R18) |
+| **GAP-ESTADO-COMBATE** (R19) | FichaResumoResponse nao expoe `danoRecebido` → aba Sessao FE inicia dano=0 | **R20 PRIORIDADE** — criar `GET /fichas/{id}/estado-combate` (decisao PO) |
 
 ---
 
@@ -291,4 +329,4 @@ Spec 024 T1 era a ultima P1 pendente; entregue em R17. **14/14 P1 entregues.**
 
 ---
 
-*Atualizado: 2026-04-15 (rev.21 — sessao 21 Rodada 17: Spec 024 CONCLUIDA (2/2) + UX-BASE-COMP (raridades + itens) + GAP-DASH-01 + UX-PREREQ-EMPTY. 832 BE / ~1525 FE, ~99% completude. Sprint 4 praticamente encerrado; restam apenas AUDIT-BE-FE P2 baixa prio e GAP-EXPRT-01 bloqueado) | PM/Scrum Master*
+*Atualizado: 2026-04-16 (rev.23 — sessao 22 Rodada 19: FichaStatus FE (badges + canEdit + remove Excluir Jogador) + Aba Sessao (vida/essencia/membros + polling 30s + badge header) + S026-T05 (badge pendentes sidebar Mestre) + S026-T08 (Data Criacao FE + BE criadoEm) + T-025-13 (remove Criar Ficha sidebar Jogador) + wizard labels/path param. INCONS-02 end-to-end BE+FE. Sprint 4 ENCERRADO. GAP-EXPRT-01 CANCELADO. Residuais: AUDIT-BE-FE baixa prio + **GAP-ESTADO-COMBATE** P1 para R20. Proxima rodada: criar endpoint `estado-combate`) | PM/Scrum Master*

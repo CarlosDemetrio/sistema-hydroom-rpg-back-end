@@ -46,6 +46,20 @@ public class NpcDificuldadeConfiguracaoService
         return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
+    /**
+     * Cria um NpcDificuldadeConfig, preenchendo {@code ordemExibicao} automaticamente
+     * como {@code MAX + 1} se o valor não for informado (null ou 0).
+     */
+    @Override
+    @Transactional
+    public NpcDificuldadeConfig criar(NpcDificuldadeConfig configuracao) {
+        if (configuracao.getOrdemExibicao() == null || configuracao.getOrdemExibicao() == 0) {
+            configuracao.setOrdemExibicao(
+                calcularProximaOrdemExibicao(configuracao.getJogo().getId(), "NpcDificuldadeConfig"));
+        }
+        return super.criar(configuracao);
+    }
+
     public List<NpcDificuldadeConfig> listarPorFoco(Long jogoId, FocoNpc foco) {
         log.debug("Listando configurações de dificuldade NPC por foco={} para jogo ID: {}", foco, jogoId);
         return repository.findByJogoIdAndFocoOrderByOrdemExibicao(jogoId, foco);

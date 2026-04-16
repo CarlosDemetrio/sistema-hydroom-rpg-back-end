@@ -63,6 +63,20 @@ public class RacaConfiguracaoService extends AbstractConfiguracaoService<Raca, C
         return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
+    /**
+     * Cria uma Raca, preenchendo {@code ordemExibicao} automaticamente
+     * como {@code MAX + 1} se o valor não for informado (null ou 0).
+     */
+    @Override
+    @Transactional
+    public Raca criar(Raca configuracao) {
+        if (configuracao.getOrdemExibicao() == null || configuracao.getOrdemExibicao() == 0) {
+            configuracao.setOrdemExibicao(
+                calcularProximaOrdemExibicao(configuracao.getJogo().getId(), "Raca"));
+        }
+        return super.criar(configuracao);
+    }
+
     public List<Raca> listar(Long jogoId, String nome) {
         if (nome != null && !nome.isBlank()) {
             return repository.findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(jogoId, nome);

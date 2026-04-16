@@ -32,6 +32,20 @@ public class TipoAptidaoConfiguracaoService extends AbstractConfiguracaoService<
         return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
+    /**
+     * Cria um TipoAptidao, preenchendo {@code ordemExibicao} automaticamente
+     * como {@code MAX + 1} se o valor não for informado (null ou 0).
+     */
+    @Override
+    @Transactional
+    public TipoAptidao criar(TipoAptidao configuracao) {
+        if (configuracao.getOrdemExibicao() == null || configuracao.getOrdemExibicao() == 0) {
+            configuracao.setOrdemExibicao(
+                calcularProximaOrdemExibicao(configuracao.getJogo().getId(), "TipoAptidao"));
+        }
+        return super.criar(configuracao);
+    }
+
     public List<TipoAptidao> listar(Long jogoId, String nome) {
         if (nome != null && !nome.isBlank()) {
             return repository.findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(jogoId, nome);

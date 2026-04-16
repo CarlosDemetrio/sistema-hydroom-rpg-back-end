@@ -32,6 +32,20 @@ public class GeneroConfiguracaoService extends AbstractConfiguracaoService<Gener
         return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
+    /**
+     * Cria um GeneroConfig, preenchendo {@code ordemExibicao} automaticamente
+     * como {@code MAX + 1} se o valor não for informado (null ou 0).
+     */
+    @Override
+    @Transactional
+    public GeneroConfig criar(GeneroConfig configuracao) {
+        if (configuracao.getOrdemExibicao() == null || configuracao.getOrdemExibicao() == 0) {
+            configuracao.setOrdemExibicao(
+                calcularProximaOrdemExibicao(configuracao.getJogo().getId(), "GeneroConfig"));
+        }
+        return super.criar(configuracao);
+    }
+
     public List<GeneroConfig> listar(Long jogoId, String nome) {
         if (nome != null && !nome.isBlank()) {
             return repository.findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(jogoId, nome);

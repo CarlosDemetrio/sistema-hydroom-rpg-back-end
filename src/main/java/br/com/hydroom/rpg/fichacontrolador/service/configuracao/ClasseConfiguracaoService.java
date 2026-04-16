@@ -61,7 +61,23 @@ public class ClasseConfiguracaoService extends AbstractConfiguracaoService<Class
     @Override
     public List<ClassePersonagem> listar(Long jogoId) {
         log.debug("Listando classes para jogo ID: {}", jogoId);
-        return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
+        // BUG-007: usar JOIN FETCH para inicializar bonusConfig e aptidaoBonus
+        // antes do retorno, evitando LazyInitializationException no mapper do controller
+        return repository.findByJogoIdWithBonusesOrderByOrdemExibicao(jogoId);
+    }
+
+    /**
+     * Cria uma ClassePersonagem, preenchendo {@code ordemExibicao} automaticamente
+     * como {@code MAX + 1} se o valor não for informado (null ou 0).
+     */
+    @Override
+    @Transactional
+    public ClassePersonagem criar(ClassePersonagem configuracao) {
+        if (configuracao.getOrdemExibicao() == null || configuracao.getOrdemExibicao() == 0) {
+            configuracao.setOrdemExibicao(
+                calcularProximaOrdemExibicao(configuracao.getJogo().getId(), "ClassePersonagem"));
+        }
+        return super.criar(configuracao);
     }
 
     public List<ClassePersonagem> listar(Long jogoId, String nome) {

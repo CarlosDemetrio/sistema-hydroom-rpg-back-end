@@ -32,6 +32,20 @@ public class MembroCorpoConfiguracaoService extends AbstractConfiguracaoService<
         return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
+    /**
+     * Cria um MembroCorpoConfig, preenchendo {@code ordemExibicao} automaticamente
+     * como {@code MAX + 1} se o valor não for informado (null ou 0).
+     */
+    @Override
+    @Transactional
+    public MembroCorpoConfig criar(MembroCorpoConfig configuracao) {
+        if (configuracao.getOrdemExibicao() == null || configuracao.getOrdemExibicao() == 0) {
+            configuracao.setOrdemExibicao(
+                calcularProximaOrdemExibicao(configuracao.getJogo().getId(), "MembroCorpoConfig"));
+        }
+        return super.criar(configuracao);
+    }
+
     public List<MembroCorpoConfig> listar(Long jogoId, String nome) {
         if (nome != null && !nome.isBlank()) {
             return repository.findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(jogoId, nome);

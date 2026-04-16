@@ -38,6 +38,20 @@ public class AptidaoConfiguracaoService extends AbstractConfiguracaoService<Apti
         return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
+    /**
+     * Cria um AptidaoConfig, preenchendo {@code ordemExibicao} automaticamente
+     * como {@code MAX + 1} se o valor não for informado (null ou 0).
+     */
+    @Override
+    @Transactional
+    public AptidaoConfig criar(AptidaoConfig configuracao) {
+        if (configuracao.getOrdemExibicao() == null || configuracao.getOrdemExibicao() == 0) {
+            configuracao.setOrdemExibicao(
+                calcularProximaOrdemExibicao(configuracao.getJogo().getId(), "AptidaoConfig"));
+        }
+        return super.criar(configuracao);
+    }
+
     public List<AptidaoConfig> listar(Long jogoId, String nome) {
         if (nome != null && !nome.isBlank()) {
             return repository.findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(jogoId, nome);

@@ -29,6 +29,20 @@ public class CategoriaVantagemService extends AbstractConfiguracaoService<Catego
         return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
+    /**
+     * Cria uma CategoriaVantagem, preenchendo {@code ordemExibicao} automaticamente
+     * como {@code MAX + 1} se o valor não for informado (null ou 0).
+     */
+    @Override
+    @Transactional
+    public CategoriaVantagem criar(CategoriaVantagem configuracao) {
+        if (configuracao.getOrdemExibicao() == null || configuracao.getOrdemExibicao() == 0) {
+            configuracao.setOrdemExibicao(
+                calcularProximaOrdemExibicao(configuracao.getJogo().getId(), "CategoriaVantagem"));
+        }
+        return super.criar(configuracao);
+    }
+
     @Override
     protected void validarAntesCriar(CategoriaVantagem configuracao) {
         if (repository.existsByJogoIdAndNomeIgnoreCase(configuracao.getJogo().getId(), configuracao.getNome())) {

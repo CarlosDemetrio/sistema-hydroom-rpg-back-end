@@ -37,6 +37,20 @@ public class RaridadeItemConfigService extends AbstractConfiguracaoService<Rarid
         return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
+    /**
+     * Cria um RaridadeItemConfig, preenchendo {@code ordemExibicao} automaticamente
+     * como {@code MAX + 1} se o valor não for informado (0).
+     */
+    @Override
+    @Transactional
+    public RaridadeItemConfig criar(RaridadeItemConfig configuracao) {
+        if (configuracao.getOrdemExibicao() == 0) {
+            configuracao.setOrdemExibicao(
+                calcularProximaOrdemExibicao(configuracao.getJogo().getId(), "RaridadeItemConfig"));
+        }
+        return super.criar(configuracao);
+    }
+
     @Override
     protected void validarAntesCriar(RaridadeItemConfig configuracao) {
         if (repository.existsByJogoIdAndNomeIgnoreCase(configuracao.getJogo().getId(), configuracao.getNome())) {

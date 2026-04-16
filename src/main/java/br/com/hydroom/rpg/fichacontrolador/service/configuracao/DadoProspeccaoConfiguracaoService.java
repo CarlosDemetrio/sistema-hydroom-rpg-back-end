@@ -33,6 +33,20 @@ public class DadoProspeccaoConfiguracaoService extends AbstractConfiguracaoServi
         return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
+    /**
+     * Cria um DadoProspeccaoConfig, preenchendo {@code ordemExibicao} automaticamente
+     * como {@code MAX + 1} se o valor não for informado (null ou 0).
+     */
+    @Override
+    @Transactional
+    public DadoProspeccaoConfig criar(DadoProspeccaoConfig configuracao) {
+        if (configuracao.getOrdemExibicao() == null || configuracao.getOrdemExibicao() == 0) {
+            configuracao.setOrdemExibicao(
+                calcularProximaOrdemExibicao(configuracao.getJogo().getId(), "DadoProspeccaoConfig"));
+        }
+        return super.criar(configuracao);
+    }
+
     public List<DadoProspeccaoConfig> listar(Long jogoId, String nome) {
         if (nome != null && !nome.isBlank()) {
             return repository.findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(jogoId, nome);

@@ -41,5 +41,18 @@ public interface ConfiguracaoClasseRepository extends JpaRepository<ClassePerson
            "WHERE c.id = :id AND c.deletedAt IS NULL")
     Optional<ClassePersonagem> findByIdWithBonuses(@Param("id") Long id);
 
+    /**
+     * Busca todas as classes ativas de um jogo com coleções de bônus inicializadas,
+     * ordenadas por ordem de exibição. Evita LazyInitializationException no mapper.
+     *
+     * <p>Usa DISTINCT para evitar duplicatas causadas pelo JOIN FETCH duplo.</p>
+     */
+    @Query("SELECT DISTINCT c FROM ClassePersonagem c " +
+           "LEFT JOIN FETCH c.bonusConfig cb LEFT JOIN FETCH cb.bonus " +
+           "LEFT JOIN FETCH c.aptidaoBonus ab LEFT JOIN FETCH ab.aptidao " +
+           "WHERE c.jogo.id = :jogoId AND c.deletedAt IS NULL " +
+           "ORDER BY c.ordemExibicao")
+    List<ClassePersonagem> findByJogoIdWithBonusesOrderByOrdemExibicao(@Param("jogoId") Long jogoId);
+
     List<ClassePersonagem> findByJogoIdAndNomeContainingIgnoreCaseOrderByOrdemExibicao(Long jogoId, String nome);
 }

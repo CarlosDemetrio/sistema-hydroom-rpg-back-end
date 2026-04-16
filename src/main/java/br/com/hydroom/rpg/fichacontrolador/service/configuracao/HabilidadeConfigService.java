@@ -30,6 +30,20 @@ public class HabilidadeConfigService
         return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
+    /**
+     * Cria um HabilidadeConfig, preenchendo {@code ordemExibicao} automaticamente
+     * como {@code MAX + 1} se o valor não for informado (null ou 0).
+     */
+    @Override
+    @Transactional
+    public HabilidadeConfig criar(HabilidadeConfig configuracao) {
+        if (configuracao.getOrdemExibicao() == null || configuracao.getOrdemExibicao() == 0) {
+            configuracao.setOrdemExibicao(
+                calcularProximaOrdemExibicao(configuracao.getJogo().getId(), "HabilidadeConfig"));
+        }
+        return super.criar(configuracao);
+    }
+
     @Override
     protected void validarAntesCriar(HabilidadeConfig configuracao) {
         if (repository.existsByJogoIdAndNomeIgnoreCase(

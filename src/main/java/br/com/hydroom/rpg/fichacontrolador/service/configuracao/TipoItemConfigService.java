@@ -34,6 +34,20 @@ public class TipoItemConfigService extends AbstractConfiguracaoService<TipoItemC
         return repository.findByJogoIdOrderByOrdemExibicao(jogoId);
     }
 
+    /**
+     * Cria um TipoItemConfig, preenchendo {@code ordemExibicao} automaticamente
+     * como {@code MAX + 1} se o valor não for informado (0).
+     */
+    @Override
+    @Transactional
+    public TipoItemConfig criar(TipoItemConfig configuracao) {
+        if (configuracao.getOrdemExibicao() == 0) {
+            configuracao.setOrdemExibicao(
+                calcularProximaOrdemExibicao(configuracao.getJogo().getId(), "TipoItemConfig"));
+        }
+        return super.criar(configuracao);
+    }
+
     @Override
     protected void validarAntesCriar(TipoItemConfig configuracao) {
         if (repository.existsByJogoIdAndNomeIgnoreCase(configuracao.getJogo().getId(), configuracao.getNome())) {

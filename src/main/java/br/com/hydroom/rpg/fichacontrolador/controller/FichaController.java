@@ -19,6 +19,7 @@ import br.com.hydroom.rpg.fichacontrolador.dto.request.UsarProspeccaoRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.DuplicarFichaResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaAptidaoResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaAtributoResponse;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaEstadoCombateResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaPreviewResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaResponse;
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaResumoResponse;
@@ -335,6 +336,15 @@ public class FichaController {
         fichaVidaService.atualizarVida(id, request);
         var resumo = fichaResumoService.getResumo(id);
         return ResponseEntity.ok(resumo);
+    }
+
+    @GetMapping("/api/v1/fichas/{id}/estado-combate")
+    @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
+    @Operation(summary = "Estado de combate da ficha",
+               description = "Retorna vida atual, essência atual e dano nos membros do corpo. Fonte autoritativa para a aba Sessão do frontend.")
+    public ResponseEntity<FichaEstadoCombateResponse> getEstadoCombate(@PathVariable Long id) {
+        var estado = fichaVidaService.getEstadoCombate(id);
+        return ResponseEntity.ok(estado);
     }
 
     // ==================== PROSPECÇÃO ====================

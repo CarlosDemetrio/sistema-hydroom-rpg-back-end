@@ -4,10 +4,12 @@ import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarProspeccaoReques
 import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarVidaRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.CreateFichaRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.CriarJogoRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaEstadoCombateResponse;
 import br.com.hydroom.rpg.fichacontrolador.exception.ForbiddenException;
 import br.com.hydroom.rpg.fichacontrolador.exception.ResourceNotFoundException;
 import br.com.hydroom.rpg.fichacontrolador.model.DadoProspeccaoConfig;
 import br.com.hydroom.rpg.fichacontrolador.model.Ficha;
+import br.com.hydroom.rpg.fichacontrolador.model.FichaEssencia;
 import br.com.hydroom.rpg.fichacontrolador.model.FichaProspeccao;
 import br.com.hydroom.rpg.fichacontrolador.model.FichaVida;
 import br.com.hydroom.rpg.fichacontrolador.model.FichaVidaMembro;
@@ -455,6 +457,100 @@ class FichaVidaServiceIntegrationTest {
         // Act & Assert
         assertThrows(ResourceNotFoundException.class,
                 () -> fichaVidaService.atualizarProspeccao(999999L, request));
+    }
+
+    // =========================================================
+    // TESTES: GET ESTADO-COMBATE
+    // =========================================================
+
+    @Test
+    @DisplayName("Deve retornar estado de combate com vida e essência corretos")
+    void deveRetornarEstadoCombateComVidaEEssenciaCorretos() {
+        // Arrange
+        autenticarComo(mestre);
+        fichaVidaService.atualizarVida(fichaMestre.getId(),
+                new AtualizarVidaRequest(42, 7, List.of()));
+
+        // Act
+        FichaEstadoCombateResponse estado = fichaVidaService.getEstadoCombate(fichaMestre.getId());
+
+        // Assert
+        assertThat(estado.vidaAtual()).isEqualTo(42);
+        assertThat(estado.essenciaAtual()).isEqualTo(7);
+        assertThat(estado.vidaTotal()).isGreaterThanOrEqualTo(0);
+        assertThat(estado.essenciaTotal()).isGreaterThanOrEqualTo(0);
+        assertThat(estado.membros()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("Deve retornar membros com danoRecebido persistido")
+    void deveRetornarMembrosComDanoRecebidoPersistido() {
+        // Arrange
+        autenticarComo(mestre);
+        List<FichaVidaMembro> membros = fichaVidaMembroRepository.findByFichaId(fichaMestre.getId());
+
+        if (membros.isEmpty()) {
+            // Sem membros configurados: verifica lista vazia no response
+            FichaEstadoCombateResponse estado = fichaVidaService.getEstadoCombate(fichaMestre.getId());
+            assertThat(estado.membros()).isEmpty();
+            return;
+        }
+
+        FichaVidaMembro primeirMembro = membros.get(0);
+        Long membroConfigId = primeirMembro.getMembroCorpoConfig().getId();
+        fichaVidaService.atualizarVida(fichaMestre.getId(),
+                new AtualizarVidaRequest(50, 10,
+                        List.of(new AtualizarVidaRequest.MembroVidaRequest(membroConfigId, 20))));
+
+        // Act
+        FichaEstadoCombateResponse estado = fichaVidaService.getEstadoCombate(fichaMestre.getId());
+
+        // Assert
+        assertThat(estado.membros()).isNotEmpty();
+        FichaEstadoCombateResponse.MembroEstadoResponse membroResponse = estado.membros().stream()
+                .filter(m -> m.membroCorpoConfigId().equals(membroConfigId))
+                .findFirst()
+                .orElseThrow();
+        assertThat(membroResponse.danoRecebido()).isEqualTo(20);
+        assertThat(membroResponse.vidaRestante()).isEqualTo(
+                Math.max(0, membroResponse.vida() - membroResponse.danoRecebido()));
+        assertThat(membroResponse.nome()).isNotBlank();
+    }
+
+    @Test
+    @DisplayName("Deve lançar ResourceNotFoundException ao buscar estado-combate de ficha inexistente")
+    void deveLancarNotFoundAoBuscarEstadoCombateDeFichaInexistente() {
+        // Arrange
+        autenticarComo(mestre);
+
+        // Act & Assert
+        assertThrows(ResourceNotFoundException.class,
+                () -> fichaVidaService.getEstadoCombate(999999L));
+    }
+
+    @Test
+    @DisplayName("Jogador deve acessar estado-combate de sua própria ficha")
+    void jogadorDeveAcessarEstadoCombateDaSuaFicha() {
+        // Arrange
+        autenticarComo(jogador);
+
+        // Act
+        FichaEstadoCombateResponse estado = fichaVidaService.getEstadoCombate(fichaJogador.getId());
+
+        // Assert
+        assertThat(estado).isNotNull();
+        assertThat(estado.membros()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("Jogador não autorizado deve receber ForbiddenException ao acessar estado-combate de ficha de outro")
+    void jogadorNaoAutorizadoDeveReceberForbiddenAoBuscarEstadoCombate() {
+        // Arrange — outroJogador não é participante do jogo
+        autenticarComo(outroJogador);
+
+        // Act & Assert
+        assertThrows(ForbiddenException.class,
+                () -> fichaVidaService.getEstadoCombate(fichaJogador.getId()));
     }
 
     // =========================================================

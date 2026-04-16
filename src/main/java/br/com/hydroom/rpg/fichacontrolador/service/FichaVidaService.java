@@ -2,6 +2,7 @@ package br.com.hydroom.rpg.fichacontrolador.service;
 
 import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarProspeccaoRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarVidaRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaEstadoCombateResponse;
 import br.com.hydroom.rpg.fichacontrolador.exception.ForbiddenException;
 import br.com.hydroom.rpg.fichacontrolador.exception.ResourceNotFoundException;
 import br.com.hydroom.rpg.fichacontrolador.model.Ficha;
@@ -9,6 +10,7 @@ import br.com.hydroom.rpg.fichacontrolador.model.FichaEssencia;
 import br.com.hydroom.rpg.fichacontrolador.model.FichaProspeccao;
 import br.com.hydroom.rpg.fichacontrolador.model.FichaVida;
 import br.com.hydroom.rpg.fichacontrolador.model.FichaVidaMembro;
+import br.com.hydroom.rpg.fichacontrolador.model.MembroCorpoConfig;
 import br.com.hydroom.rpg.fichacontrolador.model.Usuario;
 import br.com.hydroom.rpg.fichacontrolador.model.enums.RoleJogo;
 import br.com.hydroom.rpg.fichacontrolador.repository.FichaEssenciaRepository;
@@ -99,6 +101,47 @@ public class FichaVidaService {
                 fichaId, request.vidaAtual(), request.essenciaAtual());
 
         return ficha;
+    }
+
+    /**
+     * Retorna o estado de combate atual da ficha: vida, essência e dano por membro.
+     *
+     * <p>Fonte autoritativa para a aba Sessão do frontend. Não recalcula derivados.</p>
+     */
+    public FichaEstadoCombateResponse getEstadoCombate(Long fichaId) {
+        Ficha ficha = fichaRepository.findById(fichaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ficha não encontrada: " + fichaId));
+
+        verificarAcessoLeitura(ficha);
+
+        FichaVida vida = fichaVidaRepository.findByFichaId(fichaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Dados de vida não encontrados para ficha: " + fichaId));
+
+        FichaEssencia essencia = fichaEssenciaRepository.findByFichaId(fichaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Dados de essência não encontrados para ficha: " + fichaId));
+
+        List<FichaVidaMembro> membros = fichaVidaMembroRepository.findByFichaIdWithConfig(fichaId);
+
+        List<FichaEstadoCombateResponse.MembroEstadoResponse> membrosResponse = membros.stream()
+                .map(m -> {
+                    MembroCorpoConfig config = m.getMembroCorpoConfig();
+                    return new FichaEstadoCombateResponse.MembroEstadoResponse(
+                            config.getId(),
+                            config.getNome(),
+                            m.getVida() != null ? m.getVida() : 0,
+                            m.getDanoRecebido() != null ? m.getDanoRecebido() : 0,
+                            m.calcularVidaRestante()
+                    );
+                })
+                .toList();
+
+        return new FichaEstadoCombateResponse(
+                vida.getVidaAtual() != null ? vida.getVidaAtual() : 0,
+                vida.getVidaTotal() != null ? vida.getVidaTotal() : 0,
+                essencia.getEssenciaAtual() != null ? essencia.getEssenciaAtual() : 0,
+                essencia.getTotal() != null ? essencia.getTotal() : 0,
+                membrosResponse
+        );
     }
 
     /**

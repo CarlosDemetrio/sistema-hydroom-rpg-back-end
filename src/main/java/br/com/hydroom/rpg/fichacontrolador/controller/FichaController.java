@@ -3,6 +3,7 @@ package br.com.hydroom.rpg.fichacontrolador.controller;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarAptidaoRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarAtributoRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarProspeccaoRequest;
+import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarStatusFichaRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarVidaRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarVisibilidadeGlobalRequest;
 import br.com.hydroom.rpg.fichacontrolador.dto.request.AtualizarVisibilidadeRequest;
@@ -139,9 +140,9 @@ public class FichaController {
 
     @DeleteMapping("/api/v1/fichas/{id}")
     @PreAuthorize("hasRole('MESTRE')")
-    @Operation(summary = "Deletar ficha (Apenas MESTRE)", description = "Soft delete da ficha")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        fichaService.deletar(id);
+    @Operation(summary = "Excluir NPC (Apenas MESTRE)", description = "Soft delete de NPC. Apenas fichas com isNpc=true podem ser excluídas. Fichas de jogadores nunca são deletadas (INCONS-02).")
+    public ResponseEntity<Void> excluirNpc(@PathVariable Long id) {
+        fichaService.excluirNpc(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -420,9 +421,23 @@ public class FichaController {
     @PutMapping("/api/v1/fichas/{id}/completar")
     @PreAuthorize("hasAnyRole('MESTRE', 'JOGADOR')")
     @Operation(summary = "Completar ficha",
-               description = "Valida e marca a ficha como COMPLETA. Requer raça, classe, gênero, índole e presença preenchidos. Idempotente.")
+               description = "Valida e marca a ficha como ATIVA. Requer raça, classe, gênero, índole e presença preenchidos. Idempotente.")
     public ResponseEntity<FichaResponse> completar(@PathVariable Long id) {
         var ficha = fichaService.completar(id);
+        var response = fichaMapper.toResponse(ficha);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/api/v1/fichas/{id}/status")
+    @PreAuthorize("hasRole('MESTRE')")
+    @Operation(summary = "Alterar status da ficha (Apenas MESTRE)",
+               description = "Permite ao Mestre marcar uma ficha como ATIVA, MORTA ou ABANDONADA. " +
+                             "Fichas em RASCUNHO não podem ter o status alterado por este endpoint. " +
+                             "MORTA e ABANDONADA são estados finais (irreversíveis).")
+    public ResponseEntity<FichaResponse> atualizarStatus(
+            @PathVariable Long id,
+            @Valid @RequestBody AtualizarStatusFichaRequest request) {
+        var ficha = fichaService.atualizarStatus(id, request.status());
         var response = fichaMapper.toResponse(ficha);
         return ResponseEntity.ok(response);
     }

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import br.com.hydroom.rpg.fichacontrolador.dto.response.FichaResumoResponse;
@@ -497,9 +498,9 @@ public class FichaService {
     }
 
     /**
-     * Marca a ficha como COMPLETA após validar que todos os campos obrigatórios estão preenchidos.
+     * Marca a ficha como ATIVA após validar que todos os campos obrigatórios estão preenchidos.
      *
-     * <p>Idempotente: se a ficha já estiver COMPLETA, retorna sem erro.</p>
+     * <p>Idempotente: se a ficha já estiver ATIVA (ou COMPLETA — legado), retorna sem erro.</p>
      * <p>Campos obrigatórios: raça, classe, gênero, índole, presença.</p>
      *
      * @throws ValidationException se algum campo obrigatório estiver ausente
@@ -511,14 +512,80 @@ public class FichaService {
 
         verificarAcessoEscrita(ficha);
 
-        if (FichaStatus.COMPLETA.equals(ficha.getStatus())) {
+        if (FichaStatus.ATIVA.equals(ficha.getStatus()) || FichaStatus.COMPLETA.equals(ficha.getStatus())) {
             return ficha;
         }
 
         fichaValidationService.validarCompletude(ficha);
 
-        ficha.setStatus(FichaStatus.COMPLETA);
+        ficha.setStatus(FichaStatus.ATIVA);
         return fichaRepository.save(ficha);
+    }
+
+    /**
+     * Altera o status de uma ficha (apenas Mestre).
+     *
+     * <p>Regras de transição:</p>
+     * <ul>
+     *   <li>Não pode alterar status de fichas em RASCUNHO (wizard incompleto)</li>
+     *   <li>MORTA e ABANDONADA são estados finais — não há retorno para ATIVA</li>
+     *   <li>Não aceita RASCUNHO ou COMPLETA como novo status via este endpoint</li>
+     * </ul>
+     *
+     * @throws ValidationException se a transição de status for inválida
+     */
+    @Transactional
+    public Ficha atualizarStatus(Long fichaId, FichaStatus novoStatus) {
+        Ficha ficha = fichaRepository.findById(fichaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ficha não encontrada: " + fichaId));
+
+        verificarAcessoMestreDoJogo(ficha);
+
+        FichaStatus statusAtual = ficha.getStatus();
+
+        if (FichaStatus.RASCUNHO.equals(statusAtual)) {
+            throw new ValidationException("Validação de status",
+                    Map.of("status", "Não é possível alterar o status de uma ficha em RASCUNHO."));
+        }
+
+        if (FichaStatus.MORTA.equals(statusAtual) || FichaStatus.ABANDONADA.equals(statusAtual)) {
+            throw new ValidationException("Validação de status",
+                    Map.of("status", "Fichas com status " + statusAtual.name() + " são estados finais e não podem ser alteradas."));
+        }
+
+        if (FichaStatus.RASCUNHO.equals(novoStatus) || FichaStatus.COMPLETA.equals(novoStatus)) {
+            throw new ValidationException("Validação de status",
+                    Map.of("status", "Status inválido para transição: " + novoStatus.name() + ". Use ATIVA, MORTA ou ABANDONADA."));
+        }
+
+        ficha.setStatus(novoStatus);
+        Ficha salva = fichaRepository.save(ficha);
+        log.info("Status da ficha '{}' (ID: {}) alterado de {} para {} pelo Mestre",
+                ficha.getNome(), fichaId, statusAtual, novoStatus);
+        return salva;
+    }
+
+    /**
+     * Exclui (soft delete) um NPC. Apenas fichas com isNpc=true podem ser excluídas.
+     * Fichas de jogadores nunca são deletadas (INCONS-02).
+     *
+     * @throws ValidationException se a ficha não for um NPC
+     */
+    @Transactional
+    public void excluirNpc(Long fichaId) {
+        Ficha ficha = fichaRepository.findById(fichaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ficha não encontrada: " + fichaId));
+
+        verificarAcessoMestreDoJogo(ficha);
+
+        if (!ficha.isNpc()) {
+            throw new ValidationException("Exclusão inválida",
+                    Map.of("ficha", "Apenas NPCs podem ser excluídos. Fichas de jogadores nunca são deletadas."));
+        }
+
+        ficha.delete();
+        fichaRepository.save(ficha);
+        log.info("NPC '{}' (ID: {}) excluído pelo Mestre", ficha.getNome(), fichaId);
     }
 
     /**

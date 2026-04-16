@@ -631,50 +631,6 @@ class FichaServiceIntegrationTest {
     }
 
     // =========================================================
-    // TESTES DE DELEÇÃO
-    // =========================================================
-
-    @Test
-    @DisplayName("Mestre pode deletar ficha (soft delete marca deleted_at)")
-    void mestrePodeDeletarFicha() {
-        // Arrange
-        autenticarComo(mestre);
-        Ficha ficha = fichaService.criar(new CreateFichaRequest(jogo.getId(), "A Ser Deletada", null, null, null, null, null, null, false));
-        Long fichaId = ficha.getId();
-
-        // Verificar que está ativa antes de deletar
-        assertThat(fichaRepository.findById(fichaId)).isPresent();
-
-        // Act
-        fichaService.deletar(fichaId);
-
-        // Assert - soft delete: campo deleted_at deve estar preenchido
-        // Nota: como estamos na mesma transação, usamos findById no repository (ignora @SQLRestriction apenas se consultar entity com cache L1)
-        // Verificamos que o campo deletedAt foi marcado via acesso direto
-        Ficha fichaAposDeletar = fichaRepository.findById(fichaId).orElse(null);
-        // A @SQLRestriction pode não filtrar dentro da mesma transação L1 cache
-        // O importante é que deleted_at foi setado
-        if (fichaAposDeletar != null) {
-            assertThat(fichaAposDeletar.getDeletedAt()).isNotNull();
-        }
-        // Se null, o @SQLRestriction filtrou - também está correto
-    }
-
-    @Test
-    @DisplayName("Jogador não pode deletar fichas")
-    void jogadorNaoPodeDeletarFichas() {
-        // Arrange
-        autenticarComo(mestre);
-        Ficha ficha = fichaService.criar(new CreateFichaRequest(jogo.getId(), "Ficha", jogador.getId(), null, null, null, null, null, false));
-
-        // Act - tentar deletar como jogador
-        autenticarComo(jogador);
-
-        // Assert
-        assertThrows(ForbiddenException.class, () -> fichaService.deletar(ficha.getId()));
-    }
-
-    // =========================================================
     // TESTES DE NPC
     // =========================================================
 
@@ -953,7 +909,7 @@ class FichaServiceIntegrationTest {
     }
 
     @Test
-    @DisplayName("Deve completar ficha com todos os campos obrigatórios preenchidos")
+    @DisplayName("Deve completar ficha com todos os campos obrigatórios preenchidos (status ATIVA)")
     void deveCompletarFichaComTodosOsCampos() {
         // Arrange
         autenticarComo(mestre);
@@ -972,8 +928,8 @@ class FichaServiceIntegrationTest {
         // Act
         Ficha completada = fichaService.completar(ficha.getId());
 
-        // Assert
-        assertThat(completada.getStatus()).isEqualTo(FichaStatus.COMPLETA);
+        // Assert — wizard completo transiciona para ATIVA
+        assertThat(completada.getStatus()).isEqualTo(FichaStatus.ATIVA);
     }
 
     @Test
@@ -1038,7 +994,7 @@ class FichaServiceIntegrationTest {
     }
 
     @Test
-    @DisplayName("Completar ficha já completa é idempotente")
+    @DisplayName("Completar ficha já ativa é idempotente")
     void completarFichaJaCompletaEIdempotente() {
         // Arrange
         autenticarComo(mestre);
@@ -1057,8 +1013,8 @@ class FichaServiceIntegrationTest {
         // Act — segunda chamada não deve lançar exceção
         Ficha resultado = fichaService.completar(ficha.getId());
 
-        // Assert
-        assertThat(resultado.getStatus()).isEqualTo(FichaStatus.COMPLETA);
+        // Assert — idempotente: ficha permanece ATIVA
+        assertThat(resultado.getStatus()).isEqualTo(FichaStatus.ATIVA);
     }
 
     @Test
@@ -1099,7 +1055,7 @@ class FichaServiceIntegrationTest {
     }
 
     @Test
-    @DisplayName("NPC também começa como RASCUNHO e pode ser completado pelo Mestre")
+    @DisplayName("NPC também começa como RASCUNHO e pode ser completado pelo Mestre (status ATIVA)")
     void npcDeveComecarComoRascunhoESerCompletadoPeloMestre() {
         // Arrange
         autenticarComo(mestre);
@@ -1118,8 +1074,163 @@ class FichaServiceIntegrationTest {
         // Act
         Ficha npcCompleto = fichaService.completar(npc.getId());
 
+        // Assert — NPC completado também recebe ATIVA
+        assertThat(npcCompleto.getStatus()).isEqualTo(FichaStatus.ATIVA);
+    }
+
+    // =========================================================
+    // TESTES DE MUDANÇA DE STATUS
+    // =========================================================
+
+    @Test
+    @DisplayName("Mestre pode marcar ficha ativa como MORTA")
+    void mestrePodeMarcarFichaComoMorta() {
+        // Arrange
+        autenticarComo(mestre);
+        Raca raca = racaRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        ClassePersonagem classe = classeRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        GeneroConfig genero = generoRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        IndoleConfig indole = indoleRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        PresencaConfig presenca = presencaRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+
+        Ficha ficha = fichaService.criar(new CreateFichaRequest(
+                jogo.getId(), "Heroi Mortal",
+                null, raca.getId(), classe.getId(), genero.getId(), indole.getId(), presenca.getId(), false));
+        fichaService.completar(ficha.getId());
+
+        // Act
+        Ficha morta = fichaService.atualizarStatus(ficha.getId(), FichaStatus.MORTA);
+
         // Assert
-        assertThat(npcCompleto.getStatus()).isEqualTo(FichaStatus.COMPLETA);
+        assertThat(morta.getStatus()).isEqualTo(FichaStatus.MORTA);
+    }
+
+    @Test
+    @DisplayName("Mestre pode marcar ficha ativa como ABANDONADA")
+    void mestrePodeMarcarFichaComoAbandonada() {
+        // Arrange
+        autenticarComo(mestre);
+        Raca raca = racaRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        ClassePersonagem classe = classeRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        GeneroConfig genero = generoRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        IndoleConfig indole = indoleRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        PresencaConfig presenca = presencaRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+
+        Ficha ficha = fichaService.criar(new CreateFichaRequest(
+                jogo.getId(), "Heroi Abandonado",
+                null, raca.getId(), classe.getId(), genero.getId(), indole.getId(), presenca.getId(), false));
+        fichaService.completar(ficha.getId());
+
+        // Act
+        Ficha abandonada = fichaService.atualizarStatus(ficha.getId(), FichaStatus.ABANDONADA);
+
+        // Assert
+        assertThat(abandonada.getStatus()).isEqualTo(FichaStatus.ABANDONADA);
+    }
+
+    @Test
+    @DisplayName("Não deve permitir alterar status de ficha em RASCUNHO")
+    void naoDevePermitirAlterarStatusDeRascunho() {
+        // Arrange
+        autenticarComo(mestre);
+        Ficha ficha = fichaService.criar(new CreateFichaRequest(
+                jogo.getId(), "Heroi Rascunho", null, null, null, null, null, null, false));
+        assertThat(ficha.getStatus()).isEqualTo(FichaStatus.RASCUNHO);
+
+        // Act & Assert
+        ValidationException ex = assertThrows(ValidationException.class,
+                () -> fichaService.atualizarStatus(ficha.getId(), FichaStatus.MORTA));
+        assertThat(ex.getErrors()).containsKey("status");
+    }
+
+    @Test
+    @DisplayName("Não deve permitir reverter status MORTA para ATIVA (estado final)")
+    void naoDevePermitirReverterStatusFinal() {
+        // Arrange
+        autenticarComo(mestre);
+        Raca raca = racaRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        ClassePersonagem classe = classeRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        GeneroConfig genero = generoRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        IndoleConfig indole = indoleRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        PresencaConfig presenca = presencaRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+
+        Ficha ficha = fichaService.criar(new CreateFichaRequest(
+                jogo.getId(), "Heroi Morto Irrev",
+                null, raca.getId(), classe.getId(), genero.getId(), indole.getId(), presenca.getId(), false));
+        fichaService.completar(ficha.getId());
+        fichaService.atualizarStatus(ficha.getId(), FichaStatus.MORTA);
+
+        // Act & Assert — não pode reverter de MORTA para ATIVA
+        ValidationException ex = assertThrows(ValidationException.class,
+                () -> fichaService.atualizarStatus(ficha.getId(), FichaStatus.ATIVA));
+        assertThat(ex.getErrors()).containsKey("status");
+    }
+
+    @Test
+    @DisplayName("Não deve permitir reverter status ABANDONADA para ATIVA (estado final)")
+    void naoDevePermitirReverterAbandonadaParaAtiva() {
+        // Arrange
+        autenticarComo(mestre);
+        Raca raca = racaRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        ClassePersonagem classe = classeRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        GeneroConfig genero = generoRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        IndoleConfig indole = indoleRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        PresencaConfig presenca = presencaRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+
+        Ficha ficha = fichaService.criar(new CreateFichaRequest(
+                jogo.getId(), "Heroi Abandonado Irrev",
+                null, raca.getId(), classe.getId(), genero.getId(), indole.getId(), presenca.getId(), false));
+        fichaService.completar(ficha.getId());
+        fichaService.atualizarStatus(ficha.getId(), FichaStatus.ABANDONADA);
+
+        // Act & Assert — não pode reverter de ABANDONADA para ATIVA
+        ValidationException ex = assertThrows(ValidationException.class,
+                () -> fichaService.atualizarStatus(ficha.getId(), FichaStatus.ATIVA));
+        assertThat(ex.getErrors()).containsKey("status");
+    }
+
+    @Test
+    @DisplayName("Jogador não pode alterar status de ficha")
+    void jogadorNaoPodeAlterarStatus() {
+        // Arrange
+        autenticarComo(mestre);
+        Raca raca = racaRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        ClassePersonagem classe = classeRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        GeneroConfig genero = generoRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        IndoleConfig indole = indoleRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        PresencaConfig presenca = presencaRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+
+        Ficha ficha = fichaService.criar(new CreateFichaRequest(
+                jogo.getId(), "Ficha Do Jogador",
+                jogador.getId(), raca.getId(), classe.getId(), genero.getId(), indole.getId(), presenca.getId(), false));
+        fichaService.completar(ficha.getId());
+
+        // Act & Assert — jogador não pode chamar atualizarStatus
+        autenticarComo(jogador);
+        assertThrows(ForbiddenException.class,
+                () -> fichaService.atualizarStatus(ficha.getId(), FichaStatus.MORTA));
+    }
+
+    @Test
+    @DisplayName("Não deve aceitar RASCUNHO como novo status via atualizarStatus")
+    void naoDeveAceitarRascunhoComoNovoStatus() {
+        // Arrange
+        autenticarComo(mestre);
+        Raca raca = racaRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        ClassePersonagem classe = classeRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        GeneroConfig genero = generoRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        IndoleConfig indole = indoleRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+        PresencaConfig presenca = presencaRepository.findByJogoIdOrderByOrdemExibicao(jogo.getId()).get(0);
+
+        Ficha ficha = fichaService.criar(new CreateFichaRequest(
+                jogo.getId(), "Heroi Status Invalido",
+                null, raca.getId(), classe.getId(), genero.getId(), indole.getId(), presenca.getId(), false));
+        fichaService.completar(ficha.getId());
+
+        // Act & Assert
+        ValidationException ex = assertThrows(ValidationException.class,
+                () -> fichaService.atualizarStatus(ficha.getId(), FichaStatus.RASCUNHO));
+        assertThat(ex.getErrors()).containsKey("status");
     }
 
     // =========================================================

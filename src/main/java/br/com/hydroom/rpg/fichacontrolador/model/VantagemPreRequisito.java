@@ -50,11 +50,18 @@ public class VantagemPreRequisito extends BaseEntity {
     @JoinColumn(name = "vantagem_id", nullable = false)
     private VantagemConfig vantagem;
 
-    /** Tipo do pré-requisito (polimorfismo por enum). */
+    /**
+     * Tipo do pré-requisito (polimorfismo por enum).
+     *
+     * <p>O {@code columnDefinition} inclui {@code DEFAULT 'VANTAGEM'} para que o
+     * Hibernate {@code ddl-auto=update} consiga adicionar a coluna em tabelas
+     * existentes (PostgreSQL rejeita ADD COLUMN NOT NULL sem DEFAULT em tabelas com dados).</p>
+     */
     @NotNull
     @Builder.Default
     @Enumerated(EnumType.STRING)
-    @Column(name = "tipo", nullable = false, length = 20)
+    @Column(name = "tipo", nullable = false, length = 20,
+            columnDefinition = "VARCHAR(20) NOT NULL DEFAULT 'VANTAGEM'")
     private TipoPreRequisito tipo = TipoPreRequisito.VANTAGEM;
 
     /** [VANTAGEM] A vantagem que É EXIGIDA como pré-requisito. */

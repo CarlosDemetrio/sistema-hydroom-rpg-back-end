@@ -4,7 +4,9 @@ import br.com.hydroom.rpg.fichacontrolador.exception.ConflictException;
 import br.com.hydroom.rpg.fichacontrolador.exception.ResourceNotFoundException;
 import br.com.hydroom.rpg.fichacontrolador.model.BaseEntity;
 import br.com.hydroom.rpg.fichacontrolador.model.ConfiguracaoEntity;
+import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +28,9 @@ public abstract class AbstractConfiguracaoService<T extends BaseEntity & Configu
 
     protected final R repository;
     protected final String entityName;
+
+    @Autowired
+    private EntityManager entityManager;
 
     protected AbstractConfiguracaoService(R repository, String entityName) {
         this.repository = repository;
@@ -50,6 +55,26 @@ public abstract class AbstractConfiguracaoService<T extends BaseEntity & Configu
         T saved = repository.save(configuracao);
         log.info("{} criado com sucesso: ID {}", entityName, saved.getId());
         return saved;
+    }
+
+    /**
+     * Calcula a próxima ordem de exibição para o jogo informado.
+     *
+     * <p>Retorna {@code MAX(ordemExibicao) + 1}. Se não houver registros ainda, retorna 1.
+     * Deve ser chamado pelo serviço concreto em {@link #validarAntesCriar} ou em override de
+     * {@code criar()}, mas apenas para entidades que possuem o campo {@code ordemExibicao}.</p>
+     *
+     * @param jogoId            ID do jogo
+     * @param entitySimpleName  Nome simples da classe JPA (ex: {@code "AtributoConfig"})
+     * @return Próxima ordem de exibição disponível (sempre >= 1)
+     */
+    protected int calcularProximaOrdemExibicao(Long jogoId, String entitySimpleName) {
+        Integer max = entityManager.createQuery(
+                "SELECT MAX(e.ordemExibicao) FROM " + entitySimpleName + " e WHERE e.jogo.id = :jogoId",
+                Integer.class)
+            .setParameter("jogoId", jogoId)
+            .getSingleResult();
+        return max != null ? max + 1 : 1;
     }
 
     @Override

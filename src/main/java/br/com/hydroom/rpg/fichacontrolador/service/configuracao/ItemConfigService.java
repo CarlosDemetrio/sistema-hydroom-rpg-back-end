@@ -49,6 +49,20 @@ public class ItemConfigService extends AbstractConfiguracaoService<ItemConfig, I
     }
 
     /**
+     * Cria um ItemConfig, preenchendo {@code ordemExibicao} automaticamente
+     * como {@code MAX + 1} se o valor não for informado (null ou 0).
+     */
+    @Override
+    @Transactional
+    public ItemConfig criar(ItemConfig configuracao) {
+        if (configuracao.getOrdemExibicao() == 0) {
+            configuracao.setOrdemExibicao(
+                calcularProximaOrdemExibicao(configuracao.getJogo().getId(), "ItemConfig"));
+        }
+        return super.criar(configuracao);
+    }
+
+    /**
      * Busca ItemConfig por ID carregando efeitos e requisitos (evita LazyInitializationException).
      *
      * <p>Usa JOIN FETCH para efeitos e inicializa requisitos separadamente
@@ -124,12 +138,20 @@ public class ItemConfigService extends AbstractConfiguracaoService<ItemConfig, I
 
     /**
      * Listagem paginada com filtros opcionais por nome, raridade e categoria.
+     *
+     * <p>O parâmetro {@code nomeQuery} é pré-processado aqui para evitar
+     * {@code LOWER(null)} no PostgreSQL ({@code function lower(bytea) does not exist}).
+     * Se nulo ou vazio, passa {@code null} ao repositório (sem filtro de nome).
+     * Se informado, converte para {@code "%termo%"} em lowercase antes de passar.</p>
      */
     public Page<ItemConfig> listarComFiltros(
             Long jogoId, String nomeQuery, Long raridadeId, CategoriaItem categoriaItem, Pageable pageable) {
         log.debug("Listando itens do jogo {} com filtros: nome={}, raridade={}, categoria={}",
             jogoId, nomeQuery, raridadeId, categoriaItem);
-        return repository.findByJogoIdWithFilters(jogoId, nomeQuery, raridadeId, categoriaItem, pageable);
+        String nomeLike = (nomeQuery != null && !nomeQuery.isBlank())
+            ? "%" + nomeQuery.toLowerCase() + "%"
+            : null;
+        return repository.findByJogoIdWithFilters(jogoId, nomeLike, raridadeId, categoriaItem, pageable);
     }
 
     /**

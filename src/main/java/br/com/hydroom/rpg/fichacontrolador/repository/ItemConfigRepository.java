@@ -40,19 +40,27 @@ public interface ItemConfigRepository extends JpaRepository<ItemConfig, Long> {
     /**
      * Listagem paginada com filtros opcionais por nome, raridade e categoria.
      */
+    /**
+     * Listagem paginada com filtros opcionais.
+     *
+     * <p>O parâmetro {@code nomeLike} deve chegar pré-processado do service:
+     * {@code null} para sem filtro, ou {@code "%termo%"} (já em lowercase) quando há filtro.
+     * Isso evita {@code LOWER(:param)} com null, que no PostgreSQL lança
+     * {@code function lower(bytea) does not exist}.</p>
+     */
     @Query("""
         SELECT i FROM ItemConfig i
         JOIN FETCH i.raridade r
         JOIN FETCH i.tipo t
         WHERE i.jogo.id = :jogoId
-        AND (:nomeQuery IS NULL OR LOWER(i.nome) LIKE LOWER(CONCAT('%', :nomeQuery, '%')))
+        AND (:nomeLike IS NULL OR LOWER(i.nome) LIKE :nomeLike)
         AND (:raridadeId IS NULL OR r.id = :raridadeId)
         AND (:categoriaItem IS NULL OR t.categoria = :categoriaItem)
         ORDER BY t.categoria, i.ordemExibicao
         """)
     Page<ItemConfig> findByJogoIdWithFilters(
         @Param("jogoId") Long jogoId,
-        @Param("nomeQuery") String nomeQuery,
+        @Param("nomeLike") String nomeLike,
         @Param("raridadeId") Long raridadeId,
         @Param("categoriaItem") CategoriaItem categoriaItem,
         Pageable pageable);

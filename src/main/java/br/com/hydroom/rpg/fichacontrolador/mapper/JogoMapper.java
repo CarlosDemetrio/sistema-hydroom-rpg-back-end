@@ -48,5 +48,6 @@ public interface JogoMapper {
     @Mapping(target = "ativo", expression = "java(jogo.isActive())")
     @Mapping(target = "meuRole", ignore = true)
     @Mapping(target = "totalParticipantes", expression = "java((int) (jogo.getParticipantes() == null ? 0 : jogo.getParticipantes().stream().filter(p -> p.isActive()).count()))")
+    @Mapping(target = "criadoEm", source = "createdAt")
     JogoResumoResponse toResumoResponse(Jogo jogo);
 }

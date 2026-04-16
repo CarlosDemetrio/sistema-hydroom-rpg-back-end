@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 /**
  * Response resumido de um jogo (para listagens).
  *
@@ -23,4 +25,5 @@ public class JogoResumoResponse {
     private Integer totalParticipantes;
     private Boolean ativo;
     private RoleJogo meuRole;
+    private LocalDateTime criadoEm;
 }
